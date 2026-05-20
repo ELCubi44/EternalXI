@@ -1,0 +1,98 @@
+import 'package:eternal_xi/app/routes.dart';
+import 'package:eternal_xi/features/auth/screens/confirm_email_verification_screen.dart';
+import 'package:eternal_xi/features/auth/screens/confirm_password_reset_screen.dart';
+import 'package:eternal_xi/features/auth/screens/login_screen.dart';
+import 'package:eternal_xi/features/auth/screens/register_screen.dart';
+import 'package:eternal_xi/features/auth/screens/request_email_verification_screen.dart';
+import 'package:eternal_xi/features/auth/screens/request_password_reset_screen.dart';
+import 'package:eternal_xi/features/auth/screens/splash_screen.dart';
+import 'package:eternal_xi/features/home/screens/home_screen.dart';
+import 'package:eternal_xi/features/leagues/screens/create_league_screen.dart';
+import 'package:eternal_xi/features/leagues/screens/join_league_screen.dart';
+import 'package:eternal_xi/features/leagues/shell/league_shell_screen.dart';
+import 'package:eternal_xi/features/leagues/screens/my_leagues_screen.dart';
+import 'package:eternal_xi/features/profile/screens/edit_profile_screen.dart';
+import 'package:eternal_xi/features/rewards/presentation/screens/rewards_hub_screen.dart';
+import 'package:go_router/go_router.dart';
+
+final GoRouter appRouter = GoRouter(
+  initialLocation: AppRoutes.splash,
+  routes: [
+    GoRoute(
+      path: AppRoutes.splash,
+      builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.login,
+      builder: (context, state) =>
+          LoginScreen(prefilledCorreo: state.uri.queryParameters['correo']),
+    ),
+    GoRoute(
+      path: AppRoutes.verifyEmailRequest,
+      builder: (context, state) => const RequestEmailVerificationScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.verifyEmailConfirm,
+      builder: (context, state) => ConfirmEmailVerificationScreen(
+        prefilledCorreo: state.uri.queryParameters['correo'],
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.register,
+      builder: (context, state) =>
+          RegisterScreen(prefilledCorreo: state.uri.queryParameters['correo']),
+    ),
+    GoRoute(
+      path: AppRoutes.passwordResetRequest,
+      builder: (context, state) => const RequestPasswordResetScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.passwordResetConfirm,
+      builder: (context, state) => ConfirmPasswordResetScreen(
+        prefilledCorreo: state.uri.queryParameters['correo'],
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.home,
+      builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.leagues,
+      builder: (context, state) => const MyLeaguesScreen(),
+      routes: [
+        GoRoute(
+          path: 'create',
+          builder: (context, state) => const CreateLeagueScreen(),
+        ),
+        GoRoute(
+          path: 'join',
+          builder: (context, state) => const JoinLeagueScreen(),
+        ),
+        GoRoute(
+          path: ':leagueId',
+          builder: (context, state) {
+            final raw = state.pathParameters['leagueId'] ?? '';
+            final id = int.tryParse(raw) ?? 0;
+            final idUsuarioRaw = state.uri.queryParameters['idUsuario'];
+            final idUsuario = idUsuarioRaw != null
+                ? int.tryParse(idUsuarioRaw)
+                : null;
+            return LeagueShellScreen(leagueId: id, idUsuario: idUsuario);
+          },
+        ),
+      ],
+    ),
+    GoRoute(
+      path: AppRoutes.profile,
+      builder: (context, state) => const EditProfileScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.tokensShop,
+      builder: (context, state) {
+        final raw = state.uri.queryParameters['idLiga'];
+        final id = int.tryParse(raw ?? '') ?? 0;
+        return RewardsHubScreen(initialLeagueId: id > 0 ? id : null);
+      },
+    ),
+  ],
+);

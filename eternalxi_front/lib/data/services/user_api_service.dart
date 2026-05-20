@@ -1,0 +1,128 @@
+import 'package:dio/dio.dart';
+import 'package:eternal_xi/core/constants/api_constants.dart';
+import 'package:eternal_xi/core/network/api_client.dart';
+import 'package:eternal_xi/core/network/api_exception.dart';
+import 'package:eternal_xi/data/models/update_user_preferences_request.dart';
+import 'package:eternal_xi/data/models/user_preferences_response.dart';
+import 'package:eternal_xi/data/models/user_resources_response.dart';
+import 'package:eternal_xi/data/models/user_model.dart';
+
+class UserApiService {
+  UserApiService(this._apiClient);
+
+  final ApiClient _apiClient;
+
+  Future<UserModel> getUserById(int id) async {
+    try {
+      final response = await _apiClient.dio.get('${ApiConstants.users}/$id');
+      return UserModel.fromJson(response.data as Map<String, dynamic>);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<UserModel> updateUser({
+    required int id,
+    required String nickname,
+    required int nivel,
+  }) async {
+    try {
+      final response = await _apiClient.dio.patch(
+        '${ApiConstants.users}/$id',
+        data: <String, dynamic>{'nickname': nickname, 'nivel': nivel},
+      );
+      return UserModel.fromJson(response.data as Map<String, dynamic>);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<void> uploadProfilePhoto({
+    required int id,
+    required String filePath,
+  }) async {
+    try {
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(filePath),
+      });
+      await _apiClient.dio.put(
+        '${ApiConstants.users}/$id/photo',
+        data: formData,
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<void> deleteUser(int id) async {
+    try {
+      await _apiClient.dio.delete('${ApiConstants.users}/$id');
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<UserResourcesResponse> getUserResources(int userId) async {
+    try {
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.users}/$userId/resources',
+      );
+      return UserResourcesResponse.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<UserPreferencesResponse> getUserPreferences(int userId) async {
+    try {
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.users}/$userId/preferences',
+      );
+      return UserPreferencesResponse.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<UserPreferencesResponse> updateUserPreferences(
+    int userId,
+    UpdateUserPreferencesRequest request,
+  ) async {
+    try {
+      final response = await _apiClient.dio.put(
+        '${ApiConstants.users}/$userId/preferences',
+        data: request.toJson(),
+      );
+      return UserPreferencesResponse.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<void> registerPushToken({
+    required int idUsuario,
+    required String token,
+    required String plataforma,
+    String? deviceId,
+  }) async {
+    try {
+      await _apiClient.dio.post(
+        '${ApiConstants.users}/push-token',
+        data: <String, dynamic>{
+          'idUsuario': idUsuario,
+          'token': token,
+          'plataforma': plataforma,
+          'deviceId': deviceId,
+        },
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+}

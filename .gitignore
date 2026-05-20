@@ -1,0 +1,29 @@
+# General
+.idea/
+.vscode/
+*.iml
+.DS_Store
+*.log
+
+# Secrets / claves
+.env
+*.env
+*.jks
+*.keystore
+*.p12
+*.pem
+application-prod.properties
+application-secret.properties
+
+# Flutter
+eternalxi_front/build/
+eternalxi_front/.dart_tool/
+eternalxi_front/.gradle/
+eternalxi_front/.flutter-plugins
+eternalxi_front/.flutter-plugins-dependencies
+eternalxi_front/android/.gradle/
+eternalxi_front/ios/Flutter/ephemeral/
+
+# Backend Java
+eternalxi_api_back/target/
+eternalxi_api_back/src/main/resources/application.properties

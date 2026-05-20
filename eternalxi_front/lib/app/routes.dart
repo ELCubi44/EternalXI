@@ -1,0 +1,32 @@
+class AppRoutes {
+  static const splash = '/';
+  static const login = '/login';
+  static const verifyEmailRequest = '/verify-email/request';
+  static const verifyEmailConfirm = '/verify-email/confirm';
+  static const register = '/register';
+  static const passwordResetRequest = '/password-reset/request';
+  static const passwordResetConfirm = '/password-reset/confirm';
+  static const home = '/home';
+  static const profile = '/profile';
+  static const tokensShop = '/profile/tokens-shop';
+
+  /// Recompensas; opcionalmente abre una liga concreta (`GET summary` al entrar).
+  static String rewardsShop({int? idLiga}) {
+    if (idLiga != null && idLiga > 0) {
+      return '$tokensShop?idLiga=$idLiga';
+    }
+    return tokensShop;
+  }
+
+  static const leagues = '/leagues';
+  static const leaguesCreate = '/leagues/create';
+  static const leaguesJoin = '/leagues/join';
+
+  /// Abre la shell de liga. [idUsuario] fuerza el usuario (query); si es null, usa sesión.
+  static String leagueDetail(int idLiga, {int? idUsuario}) {
+    if (idUsuario != null && idUsuario > 0) {
+      return '/leagues/$idLiga?idUsuario=$idUsuario';
+    }
+    return '/leagues/$idLiga';
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "580436038307",
+    "project_id": "myapplication-e71bb962",
+    "storage_bucket": "myapplication-e71bb962.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:580436038307:android:c8492d256ba5493656a516",
+        "android_client_info": {
+          "package_name": "es.eternalxi.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyBg4V35NO_XQ3wtXjldGRIDybih-JbV4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

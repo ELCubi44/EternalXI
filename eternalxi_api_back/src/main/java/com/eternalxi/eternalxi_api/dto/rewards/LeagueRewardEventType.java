@@ -1,0 +1,15 @@
+package com.eternalxi.eternalxi_api.dto.rewards;
+
+public enum LeagueRewardEventType {
+    PACK_OPENED,
+    CARD_OBTAINED,
+    CARD_REDEEMED,
+    BUDGET_GRANTED,
+    PLAYER_SOLD_WITH_CARD,
+    DIRECT_CLAUSE_EXECUTED,
+    PLAYER_PROTECTION_APPLIED,
+    LEAGUE_POINTS_BONUS_APPLIED,
+    VALUE_RECOVERY_APPLIED,
+    COACH_ROULETTE_SPIN,
+    ROUND_REWARD_POINTS
+}
