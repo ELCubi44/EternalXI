@@ -2,7 +2,6 @@ import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/league_participant_lineup_history.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.dart';
-import 'package:eternal_xi/features/leagues/utils/league_saves_stat_visibility.dart';
 import 'package:eternal_xi/features/leagues/utils/league_spanish_datetime.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_participant_lineup_round_pitch.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_player_avatar.dart';
@@ -612,151 +611,145 @@ class _BenchSection extends StatelessWidget {
     bool showJornadaPitchBadges,
   ) {
     final theme = Theme.of(context);
+    final player = items.isEmpty ? null : items.first;
     return Expanded(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w800,
+            ),
           ),
-        ),
+          const SizedBox(height: 8),
+          Center(
+            child: player == null
+                ? const SizedBox(width: 44, height: 76)
+                : _HistoryBenchPlayerBubble(
+                    player: player,
+                    showJornadaPitchBadges: showJornadaPitchBadges,
+                    onTap: onPlayerTap == null
+                        ? null
+                        : () => onPlayerTap!(player),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HistoryBenchPlayerBubble extends StatelessWidget {
+  const _HistoryBenchPlayerBubble({
+    required this.player,
+    required this.showJornadaPitchBadges,
+    this.onTap,
+  });
+
+  final LeagueParticipantLineupRoundPlayer player;
+  final bool showJornadaPitchBadges;
+  final VoidCallback? onTap;
+
+  String get _displayName {
+    final preferred = player.nombreMostrado.trim().isNotEmpty
+        ? player.nombreMostrado.trim()
+        : player.pila.trim().isNotEmpty
+        ? player.pila.trim()
+        : player.nombre.trim();
+    if (preferred.length <= 10) {
+      return preferred;
+    }
+    return '${preferred.substring(0, 9)}…';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final pointsBadge = leagueRoundPlayerPitchBadgeText(
+      player,
+      showJornadaPitchBadges,
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 6),
-              SizedBox(
-                height: 108,
-                child: items.isEmpty
-                    ? Center(
-                        child: Text(
-                          '—',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.outline,
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white70, width: 2),
+                    ),
+                    child: LeaguePlayerAvatar(
+                      player: player.toSquadPlayer(),
+                      size: 44,
+                      circular: true,
+                    ),
+                  ),
+                  if (pointsBadge.isNotEmpty)
+                    Positioned(
+                      left: -4,
+                      bottom: -8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: theme.colorScheme.onPrimaryContainer,
                           ),
                         ),
-                      )
-                    : ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: items.length,
-                        separatorBuilder: (_, _) => const SizedBox(width: 6),
-                        itemBuilder: (context, i) {
-                          final player = items[i];
-                          final benchBadge = leagueRoundPlayerPitchBadgeText(
-                            player,
-                            showJornadaPitchBadges,
-                          );
-                          return SizedBox(
-                            width: 76,
-                            child: Material(
-                              color: colorScheme.surfaceContainerHigh,
-                              borderRadius: BorderRadius.circular(14),
-                              clipBehavior: Clip.antiAlias,
-                              child: InkWell(
-                                onTap: onPlayerTap == null
-                                    ? null
-                                    : () => onPlayerTap!(player),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 8,
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Stack(
-                                        clipBehavior: Clip.none,
-                                        children: [
-                                          LeaguePlayerAvatar(
-                                            player: player.toSquadPlayer(),
-                                            size: 40,
-                                            circular: true,
-                                          ),
-                                          if (showJornadaPitchBadges &&
-                                              player.fantasyBanquilloContandoPorSuplencia)
-                                            Positioned(
-                                              right: -6,
-                                              top: -8,
-                                              child: LeagueRoundFantasySubstitutionBadge(
-                                                message:
-                                                    'Puntos del banquillo que sí cuentan '
-                                                    'en el fantasy por sustituir al titular.',
-                                                iconSize: 12,
-                                                padding: const EdgeInsets.all(2),
-                                              ),
-                                            ),
-                                          if (benchBadge.isNotEmpty)
-                                            Positioned(
-                                              left: -4,
-                                              bottom: -7,
-                                              child: Container(
-                                                padding: const EdgeInsets.symmetric(
-                                                  horizontal: 5,
-                                                  vertical: 1,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: theme.colorScheme.primaryContainer,
-                                                  borderRadius: BorderRadius.circular(999),
-                                                ),
-                                                child: Text(
-                                                  benchBadge,
-                                                  style: theme.textTheme.labelSmall?.copyWith(
-                                                    fontWeight: FontWeight.w800,
-                                                    color: theme
-                                                        .colorScheme
-                                                        .onPrimaryContainer,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        player.nombreMostrado.trim().isNotEmpty
-                                            ? player.nombreMostrado
-                                            : player.pila,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: theme.textTheme.labelSmall?.copyWith(
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      if (showJornadaPitchBadges &&
-                                          leagueShouldShowSavesStat(
-                                            player.posicion,
-                                            player.paradas,
-                                          )) ...[
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          '${player.paradas} par.',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: theme.textTheme.labelSmall?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 10,
-                                            color: colorScheme.onSurfaceVariant,
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
+                        child: Text(
+                          pointsBadge,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
                       ),
+                    ),
+                  if (showJornadaPitchBadges &&
+                      player.fantasyBanquilloContandoPorSuplencia)
+                    Positioned(
+                      right: -6,
+                      top: -8,
+                      child: LeagueRoundFantasySubstitutionBadge(
+                        message:
+                            'Puntos del banquillo que sí cuentan en el fantasy '
+                            'por sustituir al titular.',
+                        iconSize: 12,
+                        padding: const EdgeInsets.all(2),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.black38,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  _displayName,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ],
           ),

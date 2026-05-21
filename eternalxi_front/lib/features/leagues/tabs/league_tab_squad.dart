@@ -42,6 +42,9 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
   String? _error;
   bool _coachToggleLoading = false;
   bool _implicitLineupDirty = false;
+  bool _lineupPanelReportsUnsaved = false;
+  final GlobalKey<LeagueSquadLineupPanelState> _lineupPanelKey =
+      GlobalKey<LeagueSquadLineupPanelState>();
   bool? _pendingCoachActive;
   int? _pendingCoachId;
 
@@ -365,23 +368,68 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
         _pendingCoachActive = false;
         _pendingCoachId = null;
         _pendingCoachSnapshot = null;
+        _implicitLineupDirty = false;
       });
       unawaited(_applyNoCoachSelection());
       return;
     }
-    final originalActive = _entrenadorActivoForSummary();
-    final originalCoachId = _coachForSummary()?.idEntrenador;
     final newCoachId = coach?.idEntrenador;
-    final coachChoiceChanged =
-        !originalActive || newCoachId != originalCoachId;
     setState(() {
-      _pendingCoachActive = active;
+      _pendingCoachActive = true;
       _pendingCoachId = newCoachId;
       _pendingCoachSnapshot = coach;
-      if (coachChoiceChanged) {
-        _implicitLineupDirty = true;
-      }
+      _implicitLineupDirty = false;
     });
+    unawaited(_applyCoachSelection(coach));
+  }
+
+  Future<void> _applyCoachSelection(LeagueCoachAssignment? coach) async {
+    final shell = LeagueShellData.maybeOf(context);
+    if (shell == null) {
+      return;
+    }
+    setState(() => _coachToggleLoading = true);
+    try {
+      final api = context.read<LeaguesApiService>();
+      final idLp = await _resolveOwnLigaParticipanteId(
+        api: api,
+        leagueId: shell.leagueId,
+        idUsuario: shell.idUsuario,
+      );
+      if (!mounted) {
+        return;
+      }
+      if (idLp <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No se pudo resolver tu participante en esta liga.'),
+          ),
+        );
+        return;
+      }
+      await api.setCoachActive(
+        idLiga: shell.leagueId,
+        idLigaParticipante: idLp,
+        idUsuarioSolicitante: shell.idUsuario,
+        activo: true,
+        idEntrenador: coach?.idEntrenador,
+      );
+      if (!mounted) {
+        return;
+      }
+      await _reloadSquadAndLineupAfterCoachToggle();
+      _lineupPanelKey.currentState?.markCoachLayoutApplied();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(_humanError(e))));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _coachToggleLoading = false);
+      }
+    }
   }
 
   Future<void> _applyNoCoachSelection() async {
@@ -419,9 +467,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
         return;
       }
       await _reloadSquadAndLineupAfterCoachToggle();
-      if (mounted) {
-        setState(() => _implicitLineupDirty = true);
-      }
+      _lineupPanelKey.currentState?.markCoachLayoutApplied();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -589,7 +635,25 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
     return 0;
   }
 
+  bool get _lineupHasUnsavedChanges {
+    if (_segment != 0) {
+      return false;
+    }
+    return _lineupPanelReportsUnsaved;
+  }
+
+  Future<bool> _confirmLeaveLineupEditor() async {
+    final panel = _lineupPanelKey.currentState;
+    if (panel == null) {
+      return true;
+    }
+    return panel.confirmLeaveUnsaved();
+  }
+
   Future<void> _openOwnHistory() async {
+    if (!await _confirmLeaveLineupEditor()) {
+      return;
+    }
     final shell = LeagueShellData.maybeOf(context);
     if (shell == null) {
       return;
@@ -762,7 +826,18 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
     final colorScheme = theme.colorScheme;
     final shell = LeagueShellData.maybeOf(context);
 
-    return RefreshIndicator(
+    return PopScope(
+      canPop: !_lineupHasUnsavedChanges,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) {
+          return;
+        }
+        final leave = await _confirmLeaveLineupEditor();
+        if (leave && context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: RefreshIndicator(
       onRefresh: _load,
       child: CustomScrollView(
         key: const PageStorageKey<String>('league_tab_squad'),
@@ -806,9 +881,23 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                     icon: Icon(Icons.groups_2_outlined),
                   ),
                 ],
+                key: ValueKey<int>(_segment),
                 selected: {_segment},
-                onSelectionChanged: (s) {
-                  setState(() => _segment = s.first);
+                onSelectionChanged: (s) async {
+                  final next = s.first;
+                  if (next == _segment) {
+                    return;
+                  }
+                  if (_segment == 0 && next != 0) {
+                    final leave = await _confirmLeaveLineupEditor();
+                    if (!leave) {
+                      return;
+                    }
+                  }
+                  if (!mounted) {
+                    return;
+                  }
+                  setState(() => _segment = next);
                 },
               ),
             ),
@@ -849,6 +938,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                     child: shell == null || _lineup == null
                         ? const Center(child: CircularProgressIndicator())
                         : LeagueSquadLineupPanel(
+                            key: _lineupPanelKey,
                             squad: _players!,
                             lineup: _lineup!,
                             lineupRevision: _lineupRevision,
@@ -869,6 +959,28 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                             onLineupSaveSuccess: () {
                               setState(() => _implicitLineupDirty = false);
                             },
+                            onDiscardPendingCoachChanges: () {
+                              setState(() {
+                                _pendingCoachActive = null;
+                                _pendingCoachId = null;
+                                _pendingCoachSnapshot = null;
+                                _implicitLineupDirty = false;
+                              });
+                            },
+                            onUnsavedStateChanged: (dirty) {
+                              if (_lineupPanelReportsUnsaved == dirty) {
+                                return;
+                              }
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (!mounted ||
+                                    _lineupPanelReportsUnsaved == dirty) {
+                                  return;
+                                }
+                                setState(
+                                  () => _lineupPanelReportsUnsaved = dirty,
+                                );
+                              });
+                            },
                             onProfileLongPress: (p) {
                               LeagueInnerNavigation.openPlayerProfile(
                                 context: context,
@@ -887,6 +999,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
             ..._buildRosterSlivers(theme, colorScheme),
         ],
       ),
+    ),
     );
   }
 }

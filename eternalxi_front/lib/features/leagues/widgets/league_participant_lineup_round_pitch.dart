@@ -3,7 +3,6 @@ import 'package:eternal_xi/data/models/league_coach_assignment.dart';
 import 'package:eternal_xi/data/models/league_lineup_empty_slot.dart';
 import 'package:eternal_xi/data/models/league_participant_lineup_history.dart';
 import 'package:eternal_xi/features/leagues/squad/league_squad_position_bucket.dart';
-import 'package:eternal_xi/features/leagues/utils/league_saves_stat_visibility.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_player_avatar.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_round_fantasy_substitution_badge.dart';
 import 'package:flutter/material.dart';
@@ -622,22 +621,6 @@ class _RoundPitchPlayerBubble extends StatelessWidget {
                   ),
                 ),
               ),
-              if (showJornadaPitchBadges &&
-                  leagueShouldShowSavesStat(
-                    player.posicion,
-                    player.paradas,
-                  )) ...[
-                const SizedBox(height: 3),
-                Text(
-                  '${player.paradas} par.',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: Colors.white70,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 10,
-                    height: 1.1,
-                  ),
-                ),
-              ],
             ],
           ),
         ),

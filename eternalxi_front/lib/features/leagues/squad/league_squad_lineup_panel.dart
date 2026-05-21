@@ -118,6 +118,8 @@ class LeagueSquadLineupPanel extends StatefulWidget {
     this.readOnly = false,
     this.onReadOnlyPlayerTap,
     this.onHistoryTap,
+    this.onDiscardPendingCoachChanges,
+    this.onUnsavedStateChanged,
   });
 
   final List<LeagueSquadPlayer> squad;
@@ -154,8 +156,13 @@ class LeagueSquadLineupPanel extends StatefulWidget {
   final void Function(LeagueSquadPlayer player)? onReadOnlyPlayerTap;
   final VoidCallback? onHistoryTap;
 
+  /// Tras descartar cambios sin guardar (revierte entrenador pendiente en el padre).
+  final VoidCallback? onDiscardPendingCoachChanges;
+
+  final ValueChanged<bool>? onUnsavedStateChanged;
+
   @override
-  State<LeagueSquadLineupPanel> createState() => _LeagueSquadLineupPanelState();
+  State<LeagueSquadLineupPanel> createState() => LeagueSquadLineupPanelState();
 }
 
 class _LineState {
@@ -163,7 +170,8 @@ class _LineState {
 
   final int slotCount;
   final List<LeagueSquadPlayer?> slots = [];
-  final List<LeagueSquadPlayer> bench = [];
+  /// Suplente fantasy de esta demarcación (como mucho uno; es el que sustituye al titular).
+  LeagueSquadPlayer? reserve;
 
   static void fillFromLineup({
     required _LineState target,
@@ -203,40 +211,42 @@ class _LineState {
       return found.isEmpty ? null : found.first;
     }
 
-    List<LeagueSquadPlayer> pickBench(LeagueSquadLine ln) {
-      return reserveIds
-          .map((id) => byId[id])
-          .whereType<LeagueSquadPlayer>()
-          .where((p) => LeagueSquadPositionBucket.forPosition(p.posicion) == ln)
-          .toList()
-        ..sort((a, b) => b.valor.compareTo(a.valor));
+    LeagueSquadPlayer? pickReserve(LeagueSquadLine ln) {
+      final found =
+          reserveIds
+              .map((id) => byId[id])
+              .whereType<LeagueSquadPlayer>()
+              .where((p) => LeagueSquadPositionBucket.forPosition(p.posicion) == ln)
+              .toList()
+            ..sort((a, b) => b.valor.compareTo(a.valor));
+      return found.isEmpty ? null : found.first;
     }
 
     target.slots.clear();
-    target.bench.clear();
+    target.reserve = null;
 
     switch (line) {
       case LeagueSquadLine.porteros:
         target.slots.add(pickOnePortero());
-        target.bench.addAll(pickBench(LeagueSquadLine.porteros));
+        target.reserve = pickReserve(LeagueSquadLine.porteros);
         break;
       case LeagueSquadLine.defensas:
         target.slots.addAll(
           pickStarters(LeagueSquadLine.defensas, target.slotCount),
         );
-        target.bench.addAll(pickBench(LeagueSquadLine.defensas));
+        target.reserve = pickReserve(LeagueSquadLine.defensas);
         break;
       case LeagueSquadLine.mediocentros:
         target.slots.addAll(
           pickStarters(LeagueSquadLine.mediocentros, target.slotCount),
         );
-        target.bench.addAll(pickBench(LeagueSquadLine.mediocentros));
+        target.reserve = pickReserve(LeagueSquadLine.mediocentros);
         break;
       case LeagueSquadLine.delanteros:
         target.slots.addAll(
           pickStarters(LeagueSquadLine.delanteros, target.slotCount),
         );
-        target.bench.addAll(pickBench(LeagueSquadLine.delanteros));
+        target.reserve = pickReserve(LeagueSquadLine.delanteros);
         break;
       case LeagueSquadLine.otros:
         break;
@@ -315,13 +325,14 @@ class _PitchLineupModel {
   }
 }
 
-class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
+class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
   late _PitchLineupModel _model;
   int? _captainId;
   List<int> _baselineTitulares = [];
   List<int> _baselineReservas = [];
   int? _baselineCaptain;
   bool _saving = false;
+  bool _allowSaveAfterCoachLayout = false;
 
   Map<int, LeagueSquadPlayer> _byLigaJugadorId() {
     final m = <int, LeagueSquadPlayer>{};
@@ -347,25 +358,224 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
   void initState() {
     super.initState();
     _applyLineupFromProps(resetBaseline: true);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _emitUnsavedState());
+  }
+
+  bool get hasUnsavedChanges =>
+      !widget.readOnly && (_isLineupDirty() || _allowSaveAfterCoachLayout);
+
+  /// Tras cambiar entrenador en servidor: permite guardar la alineación reorganizada.
+  void markCoachLayoutApplied() {
+    _allowSaveAfterCoachLayout = true;
+    _emitUnsavedState();
+  }
+
+  void _emitUnsavedState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      widget.onUnsavedStateChanged?.call(hasUnsavedChanges);
+    });
+  }
+
+  /// Diálogo al salir de la alineación sin guardar. Devuelve si puede continuar la navegación.
+  Future<bool> confirmLeaveUnsaved() async {
+    if (!hasUnsavedChanges) {
+      return true;
+    }
+    final choice = await showDialog<_UnsavedLineupChoice>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Alineación sin guardar'),
+        content: const Text(
+          'No has guardado la plantilla. ¿Quieres guardarla?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, _UnsavedLineupChoice.stay),
+            child: const Text('Quedarme'),
+          ),
+          TextButton(
+            onPressed: () =>
+                Navigator.pop(ctx, _UnsavedLineupChoice.discardAndLeave),
+            child: const Text('Salir sin guardar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, _UnsavedLineupChoice.save),
+            child: const Text('Guardar'),
+          ),
+        ],
+      ),
+    );
+    switch (choice) {
+      case _UnsavedLineupChoice.save:
+        if (!_canSaveIncludingCoach) {
+          _toast('Completa la alineación antes de guardar.');
+          return false;
+        }
+        await _save();
+        return !hasUnsavedChanges;
+      case _UnsavedLineupChoice.discardAndLeave:
+        discardUnsavedChanges();
+        return true;
+      case _UnsavedLineupChoice.stay:
+      case null:
+        return false;
+    }
+  }
+
+  void discardUnsavedChanges() {
+    _allowSaveAfterCoachLayout = false;
+    widget.onDiscardPendingCoachChanges?.call();
+    _applyLineupFromProps(resetBaseline: true);
+    setState(() {});
+    _emitUnsavedState();
   }
 
   @override
   void didUpdateWidget(covariant LeagueSquadLineupPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.lineupRevision != widget.lineupRevision ||
-        oldWidget.lineup.idJornada != widget.lineup.idJornada ||
-        oldWidget.lineup.bloqueada != widget.lineup.bloqueada ||
-        oldWidget.lineup.formacionEfectiva != widget.lineup.formacionEfectiva ||
-        oldWidget.formacionEfectiva != widget.formacionEfectiva ||
-        oldWidget.entrenadorActivo != widget.entrenadorActivo ||
-        oldWidget.entrenadorAsignado?.idEntrenador !=
-            widget.entrenadorAsignado?.idEntrenador ||
-        !_sameEmptySlotsSnapshot(
-          oldWidget.lineup.emptySlots,
-          widget.lineup.emptySlots,
-        ) ||
-        !_sameSquadSnapshot(oldWidget.squad, widget.squad)) {
-      _applyLineupFromProps(resetBaseline: true);
+    final revisionChanged = oldWidget.lineupRevision != widget.lineupRevision;
+    final jornadaChanged = oldWidget.lineup.idJornada != widget.lineup.idJornada;
+    final serverLineupChanged = !_sameServerLineupSnapshot(
+      oldWidget.lineup,
+      widget.lineup,
+    );
+    final emptySlotsChanged = !_sameEmptySlotsSnapshot(
+      oldWidget.lineup.emptySlots,
+      widget.lineup.emptySlots,
+    );
+    final squadChanged = !_sameSquadSnapshot(oldWidget.squad, widget.squad);
+    final formationChanged =
+        oldWidget.formacionEfectiva != widget.formacionEfectiva;
+    if (revisionChanged ||
+        jornadaChanged ||
+        serverLineupChanged ||
+        emptySlotsChanged ||
+        squadChanged) {
+      _applyLineupFromProps(
+        resetBaseline: revisionChanged || serverLineupChanged,
+      );
+    } else if (formationChanged) {
+      _reapplyFormationKeepingPlayers();
+      _emitUnsavedState();
+    } else {
+      _emitUnsavedState();
+    }
+  }
+
+  void _reapplyFormationKeepingPlayers() {
+    final starters = _orderedStarters();
+    final reserves = <LeagueSquadLine, LeagueSquadPlayer?>{
+      LeagueSquadLine.porteros: _model.gk.reserve,
+      LeagueSquadLine.defensas: _model.defLine.reserve,
+      LeagueSquadLine.mediocentros: _model.midLine.reserve,
+      LeagueSquadLine.delanteros: _model.fwdLine.reserve,
+    };
+    final byId = _byLigaJugadorId();
+    _model = _PitchLineupModel.fromLineup(
+      widget.lineup,
+      byId,
+      widget.formacionEfectiva,
+    );
+    void refillLine(
+      _LineState line,
+      LeagueSquadLine squadLine,
+      List<LeagueSquadPlayer> players,
+    ) {
+      for (var i = 0; i < line.slots.length; i++) {
+        line.slots[i] = i < players.length ? players[i] : null;
+      }
+      line.reserve = reserves[squadLine];
+    }
+
+    final por =
+        starters
+            .where(
+              (p) =>
+                  LeagueSquadPositionBucket.forPosition(p.posicion) ==
+                  LeagueSquadLine.porteros,
+            )
+            .toList();
+    final def =
+        starters
+            .where(
+              (p) =>
+                  LeagueSquadPositionBucket.forPosition(p.posicion) ==
+                  LeagueSquadLine.defensas,
+            )
+            .toList();
+    final med =
+        starters
+            .where(
+              (p) =>
+                  LeagueSquadPositionBucket.forPosition(p.posicion) ==
+                  LeagueSquadLine.mediocentros,
+            )
+            .toList();
+    final del =
+        starters
+            .where(
+              (p) =>
+                  LeagueSquadPositionBucket.forPosition(p.posicion) ==
+                  LeagueSquadLine.delanteros,
+            )
+            .toList();
+    refillLine(_model.gk, LeagueSquadLine.porteros, por);
+    refillLine(_model.defLine, LeagueSquadLine.defensas, def);
+    refillLine(_model.midLine, LeagueSquadLine.mediocentros, med);
+    refillLine(_model.fwdLine, LeagueSquadLine.delanteros, del);
+    if (!widget.readOnly) {
+      _autofillLineupSlots();
+    }
+    _syncReservesAfterLineupChange();
+  }
+
+  bool _autofillStarterSlots(_LineState line) {
+    var changed = false;
+    for (var i = 0; i < line.slots.length; i++) {
+      if (line.slots[i] != null) {
+        continue;
+      }
+      final candidates = _candidatesForSlot(line: line, slotIndex: i);
+      if (candidates.isEmpty) {
+        continue;
+      }
+      line.slots[i] = candidates.first;
+      changed = true;
+    }
+    return changed;
+  }
+
+  bool _autofillReserveForLine(_LineState line) {
+    if (line.reserve != null) {
+      return false;
+    }
+    final candidates = _candidatesForReserve(line);
+    if (candidates.isEmpty) {
+      return false;
+    }
+    line.reserve = candidates.first;
+    return true;
+  }
+
+  void _autofillLineupSlots() {
+    if (widget.readOnly || _blocked) {
+      return;
+    }
+    final changed =
+        _autofillStarterSlots(_model.gk) |
+        _autofillStarterSlots(_model.defLine) |
+        _autofillStarterSlots(_model.midLine) |
+        _autofillStarterSlots(_model.fwdLine) |
+        _autofillReserveForLine(_model.gk) |
+        _autofillReserveForLine(_model.defLine) |
+        _autofillReserveForLine(_model.midLine) |
+        _autofillReserveForLine(_model.fwdLine);
+    if (changed) {
+      _syncReservesAfterLineupChange();
+      _ensureCaptainStillValid();
     }
   }
 
@@ -401,6 +611,25 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
     return prevIds.length == currIds.length && prevIds.containsAll(currIds);
   }
 
+  bool _sameServerLineupSnapshot(
+    LeagueEditableLineup previous,
+    LeagueEditableLineup current,
+  ) {
+    final tPrev = [...previous.titulares]..sort();
+    final tCurr = [...current.titulares]..sort();
+    final rPrev = [...previous.reservas]..sort();
+    final rCurr = [...current.reservas]..sort();
+    return listEquals(tPrev, tCurr) &&
+        listEquals(rPrev, rCurr) &&
+        previous.idCapitan == current.idCapitan &&
+        previous.bloqueada == current.bloqueada &&
+        previous.formacionEfectiva == current.formacionEfectiva;
+  }
+
+  bool _isTitularId(int idLigaJugador) {
+    return _orderedStarters().any((p) => p.idLigaJugador == idLigaJugador);
+  }
+
   void _applyLineupFromProps({required bool resetBaseline}) {
     final byId = _byLigaJugadorId();
     _model = _PitchLineupModel.fromLineup(
@@ -408,67 +637,41 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       byId,
       widget.formacionEfectiva,
     );
-    _rebuildBenchFromFullSquad();
-    if (!widget.readOnly) {
-      _autofillEmptyStarterSlots();
-    }
     _captainId = widget.lineup.idCapitan ?? _fallbackCaptainId();
     if (resetBaseline) {
-      final p = _packIds();
-      _baselineTitulares = [...p.titulares]..sort();
-      _baselineReservas = [...p.reservas]..sort();
+      _baselineTitulares = [...widget.lineup.titulares]..sort();
+      _baselineReservas = [...widget.lineup.reservas]..sort();
       _baselineCaptain = _captainId;
     }
+    if (!widget.readOnly) {
+      _autofillLineupSlots();
+    } else {
+      _syncReservesAfterLineupChange();
+    }
+    _emitUnsavedState();
   }
 
-  void _rebuildBenchFromFullSquad() {
+  void _syncReservesAfterLineupChange() {
     final starterIds = _orderedStarters().map((p) => p.idLigaJugador).toSet();
-    void assignLineBench(_LineState line, LeagueSquadLine targetLine) {
-      final list =
-          _squadPoolForUserLineup()
-              .where(
-                (p) =>
-                    LeagueSquadPositionBucket.forPosition(p.posicion) ==
-                        targetLine &&
-                    !starterIds.contains(p.idLigaJugador),
-              )
-              .toList()
-            ..sort((a, b) => b.valor.compareTo(a.valor));
-      line.bench
-        ..clear()
-        ..addAll(list);
+    void fix(_LineState line) {
+      final r = line.reserve;
+      if (r != null && starterIds.contains(r.idLigaJugador)) {
+        line.reserve = null;
+      }
     }
 
-    assignLineBench(_model.gk, LeagueSquadLine.porteros);
-    assignLineBench(_model.defLine, LeagueSquadLine.defensas);
-    assignLineBench(_model.midLine, LeagueSquadLine.mediocentros);
-    assignLineBench(_model.fwdLine, LeagueSquadLine.delanteros);
+    fix(_model.gk);
+    fix(_model.defLine);
+    fix(_model.midLine);
+    fix(_model.fwdLine);
   }
 
-  void _autofillEmptyStarterSlots() {
-    bool fillLine(_LineState line) {
-      var changed = false;
-      for (var i = 0; i < line.slots.length; i++) {
-        if (line.slots[i] != null) {
-          continue;
-        }
-        if (line.bench.isEmpty) {
-          continue;
-        }
-        line.slots[i] = line.bench.removeAt(0);
-        changed = true;
-      }
-      return changed;
-    }
-
-    final changed =
-        fillLine(_model.gk) |
-        fillLine(_model.defLine) |
-        fillLine(_model.midLine) |
-        fillLine(_model.fwdLine);
-    if (changed) {
-      _rebuildBenchFromFullSquad();
-    }
+  void _mutateLineup(VoidCallback fn) {
+    setState(() {
+      fn();
+      _syncReservesAfterLineupChange();
+    });
+    _emitUnsavedState();
   }
 
   int? _fallbackCaptainId() {
@@ -502,13 +705,12 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       for (final s in _model.fwdLine.slots)
         if (s != null) s.idLigaJugador,
     ];
-    final resAll = <int>[
-      for (final p in _model.gk.bench) p.idLigaJugador,
-      for (final p in _model.defLine.bench) p.idLigaJugador,
-      for (final p in _model.midLine.bench) p.idLigaJugador,
-      for (final p in _model.fwdLine.bench) p.idLigaJugador,
+    final res = <int>[
+      if (_model.gk.reserve != null) _model.gk.reserve!.idLigaJugador,
+      if (_model.defLine.reserve != null) _model.defLine.reserve!.idLigaJugador,
+      if (_model.midLine.reserve != null) _model.midLine.reserve!.idLigaJugador,
+      if (_model.fwdLine.reserve != null) _model.fwdLine.reserve!.idLigaJugador,
     ];
-    final res = resAll.take(4).toList(growable: false);
     if (kDebugMode) {
       debugPrint('[save-debug] titularesPacked=$tit');
       debugPrint('[save-debug] reservasPacked=$res');
@@ -536,15 +738,52 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
 
   bool get _lineupComplete {
     final p = _packIds();
-    return p.titulares.length == 11 && p.reservas.length <= 4;
+    return p.titulares.length <= 11 && p.reservas.length <= 4;
+  }
+
+  Set<int> _reserveIdsExcludingLine(_LineState line) {
+    final ids = <int>{};
+    void collect(_LineState l) {
+      if (!identical(l, line)) {
+        final r = l.reserve;
+        if (r != null) {
+          ids.add(r.idLigaJugador);
+        }
+      }
+    }
+
+    collect(_model.gk);
+    collect(_model.defLine);
+    collect(_model.midLine);
+    collect(_model.fwdLine);
+    return ids;
+  }
+
+  List<LeagueSquadPlayer> _candidatesForReserve(_LineState line) {
+    final targetLine = _lineForState(line);
+    final starterIds = _orderedStarters().map((p) => p.idLigaJugador).toSet();
+    final otherReserveIds = _reserveIdsExcludingLine(line);
+    final out = <LeagueSquadPlayer>[];
+    for (final p in _squadPoolForUserLineup()) {
+      if (LeagueSquadPositionBucket.forPosition(p.posicion) != targetLine) {
+        continue;
+      }
+      if (starterIds.contains(p.idLigaJugador)) {
+        continue;
+      }
+      if (otherReserveIds.contains(p.idLigaJugador)) {
+        continue;
+      }
+      out.add(p);
+    }
+    out.sort((a, b) => b.valor.compareTo(a.valor));
+    return out;
   }
 
   bool get _canSaveIncludingCoach =>
       !_blocked &&
       _lineupComplete &&
-      (_isLineupDirty() ||
-          widget.coachDirty ||
-          widget.implicitLineupDirty);
+      (_isLineupDirty() || _allowSaveAfterCoachLayout);
 
   static String _shortName(LeagueSquadPlayer? p) {
     if (p == null) {
@@ -644,9 +883,11 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
               for (final b in candidates)
                 _lineupSwapOptionTile(
                   player: b,
+                  isTitular: _isTitularId(b.idLigaJugador),
+                  isReserve: line.reserve?.idLigaJugador == b.idLigaJugador,
                   onTap: () {
                     Navigator.pop(context);
-                    setState(() {
+                    _mutateLineup(() {
                       _assignPlayerToSlot(
                         line: line,
                         slotIndex: slotIndex,
@@ -672,6 +913,7 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
     final occupiedStarterIds = _orderedStarters()
         .map((p) => p.idLigaJugador)
         .toSet();
+    final otherReserveIds = _reserveIdsExcludingLine(line);
 
     final out = <LeagueSquadPlayer>[];
     for (final p in _squadPoolForUserLineup()) {
@@ -682,6 +924,9 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
         continue;
       }
       if (p.idLigaJugador == currentId) {
+        continue;
+      }
+      if (otherReserveIds.contains(p.idLigaJugador)) {
         continue;
       }
       if (occupiedStarterIds.contains(p.idLigaJugador) &&
@@ -772,19 +1017,13 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       return;
     }
     final outgoing = line.slots[slotIndex];
-    final incomingBenchIndex = line.bench.indexWhere(
-      (p) => p.idLigaJugador == incoming.idLigaJugador,
-    );
-    if (incomingBenchIndex >= 0) {
-      line.bench.removeAt(incomingBenchIndex);
-      if (outgoing != null &&
-          outgoing.idLigaJugador != incoming.idLigaJugador) {
-        line.bench.add(outgoing);
-      }
-      line.bench.sort((a, b) => b.valor.compareTo(a.valor));
+    if (line.reserve?.idLigaJugador == incoming.idLigaJugador) {
+      line.reserve = null;
+    }
+    if (outgoing != null && outgoing.idLigaJugador != incoming.idLigaJugador) {
+      line.reserve = outgoing;
     }
     line.slots[slotIndex] = incoming;
-    _rebuildBenchFromFullSquad();
   }
 
   void _ensureCaptainStillValid() {
@@ -795,71 +1034,105 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
     }
   }
 
-  Future<void> _onBenchPlayerTap({
+  Future<void> _onReserveSlotTap({
     required _LineState line,
-    required LeagueSquadPlayer benchPlayer,
     required String demarcacion,
   }) async {
     if (widget.readOnly) {
-      widget.onReadOnlyPlayerTap?.call(benchPlayer);
+      final r = line.reserve;
+      if (r != null) {
+        widget.onReadOnlyPlayerTap?.call(r);
+      }
       return;
     }
     if (_blocked) {
       return;
     }
-    final reserveCandidates = line.bench
-        .where((p) => p.idLigaJugador != benchPlayer.idLigaJugador)
+    final current = line.reserve;
+    if (current == null) {
+      final candidates = _candidatesForReserve(line);
+      await _sheetPick(
+        title: 'Suplente',
+        subtitle: 'Elige un suplente para $demarcacion (solo uno por posición).',
+        children: candidates.isEmpty
+            ? [
+                _sheetEmptyState(
+                  'No hay jugadores disponibles para esta demarcación',
+                ),
+              ]
+            : [
+                for (final p in candidates)
+                  _lineupSwapOptionTile(
+                    player: p,
+                    isTitular: false,
+                    isReserve: false,
+                    onTap: () {
+                      Navigator.pop(context);
+                      _mutateLineup(() => line.reserve = p);
+                    },
+                  ),
+              ],
+      );
+      return;
+    }
+
+    final starterCandidates = line.slots.whereType<LeagueSquadPlayer>().toList();
+    final changeCandidates = _candidatesForReserve(line)
+        .where((p) => p.idLigaJugador != current.idLigaJugador)
         .toList(growable: false);
-    final starterCandidates = line.slots
-        .whereType<LeagueSquadPlayer>()
-        .where((p) => p.idLigaJugador != benchPlayer.idLigaJugador)
-        .toList(growable: false);
-    final swapCandidates = <LeagueSquadPlayer>[
-      ...starterCandidates,
-      ...reserveCandidates,
-    ];
     await _sheetPick(
-      title: '',
-      subtitle: '',
+      title: 'Suplente',
+      subtitle: 'Cambiar suplente de $demarcacion o intercambiar con un titular.',
       children: [
-        for (final candidate in swapCandidates)
+        for (final starter in starterCandidates)
           _lineupSwapOptionTile(
-            player: candidate,
+            player: starter,
+            isTitular: true,
+            isReserve: false,
             onTap: () {
               Navigator.pop(context);
-              setState(() {
+              _mutateLineup(() {
                 final slotIndex = line.slots.indexWhere(
-                  (p) => p?.idLigaJugador == candidate.idLigaJugador,
+                  (p) => p?.idLigaJugador == starter.idLigaJugador,
                 );
-                if (slotIndex >= 0) {
-                  _assignPlayerToSlot(
-                    line: line,
-                    slotIndex: slotIndex,
-                    incoming: benchPlayer,
-                  );
-                  _ensureCaptainStillValid();
+                if (slotIndex < 0) {
                   return;
                 }
-                final idxA = line.bench.indexWhere(
-                  (p) => p.idLigaJugador == benchPlayer.idLigaJugador,
+                _assignPlayerToSlot(
+                  line: line,
+                  slotIndex: slotIndex,
+                  incoming: current,
                 );
-                final idxB = line.bench.indexWhere(
-                  (p) => p.idLigaJugador == candidate.idLigaJugador,
-                );
-                if (idxA >= 0 && idxB >= 0) {
-                  final tmp = line.bench[idxA];
-                  line.bench[idxA] = line.bench[idxB];
-                  line.bench[idxB] = tmp;
-                }
+                _ensureCaptainStillValid();
               });
             },
           ),
+        for (final p in changeCandidates)
+          _lineupSwapOptionTile(
+            player: p,
+            isTitular: false,
+            isReserve: false,
+            onTap: () {
+              Navigator.pop(context);
+              _mutateLineup(() => line.reserve = p);
+            },
+          ),
+        ListTile(
+          leading: const Icon(Icons.person_remove_outlined),
+          title: const Text('Quitar suplente'),
+          onTap: () {
+            Navigator.pop(context);
+            _mutateLineup(() => line.reserve = null);
+          },
+        ),
       ],
     );
   }
 
   Widget _lineupSwapOptionTile({
     required LeagueSquadPlayer player,
+    required bool isTitular,
+    bool isReserve = false,
     required VoidCallback onTap,
   }) {
     if (kDebugMode) {
@@ -949,6 +1222,30 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
           mainAxisSize: MainAxisSize.min,
           children: [
             _playerSheetTeamRow(player),
+            if (isTitular || isReserve) ...[
+              const SizedBox(height: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: isTitular
+                      ? colorScheme.primaryContainer.withValues(alpha: 0.92)
+                      : colorScheme.secondaryContainer.withValues(alpha: 0.92),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.35),
+                  ),
+                ),
+                child: Text(
+                  isTitular ? 'Titular' : 'Suplente',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: isTitular
+                        ? colorScheme.onPrimaryContainer
+                        : colorScheme.onSecondaryContainer,
+                  ),
+                ),
+              ),
+            ],
             if (leaguePlayerEstadoIsLesionado(
               leaguePlayerEffectiveEstado(
                 estado: player.estado,
@@ -1037,8 +1334,8 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       return;
     }
     final starters = _orderedStarters();
-    if (starters.length != 11) {
-      _toast('La alineación debe tener 11 titulares para elegir capitán.');
+    if (starters.isEmpty) {
+      _toast('Añade al menos un titular para elegir capitán.');
       return;
     }
     await showModalBottomSheet<void>(
@@ -1092,7 +1389,7 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                               )
                             : null,
                         onTap: () {
-                          setState(() => _captainId = p.idLigaJugador);
+                          _mutateLineup(() => _captainId = p.idLigaJugador);
                           Navigator.pop(ctx);
                         },
                       );
@@ -1107,12 +1404,12 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
     );
   }
 
-  int _requireCaptainIdForSave() {
+  int? _requireCaptainIdForSave() {
     final c = _captainId;
     if (c != null && _packIds().titulares.contains(c)) {
       return c;
     }
-    return _fallbackCaptainId()!;
+    return _fallbackCaptainId();
   }
 
   Future<void> _save() async {
@@ -1140,6 +1437,10 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       }
       final packed = _packIds();
       final idCapitan = _requireCaptainIdForSave();
+      if (idCapitan == null) {
+        _toast('Añade al menos un titular para poder guardar.');
+        return;
+      }
       final body = <String, dynamic>{
         'idUsuario': widget.idUsuario,
         'idJornada': widget.lineup.idJornada,
@@ -1168,8 +1469,10 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
         return;
       }
       _toast('Alineación guardada');
+      _allowSaveAfterCoachLayout = false;
       await widget.onLineupReloaded();
       widget.onLineupSaveSuccess?.call();
+      _emitUnsavedState();
     } catch (e) {
       if (mounted) {
         final msg = e is ApiException
@@ -1264,20 +1567,9 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
   }
 
   Widget _benchHorizontalBar() {
-    final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Banquillo',
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
             Expanded(
               child: _benchRoleCell(
                 roleLabel: 'POR',
@@ -1310,9 +1602,7 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
               ),
             ),
           ],
-        ),
-      ],
-    );
+        );
   }
 
   Widget _benchRoleCell({
@@ -1321,176 +1611,63 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
     required String demarcacion,
   }) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          roleLabel,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.3,
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              roleLabel,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.3,
-              ),
-            ),
-            const SizedBox(height: 6),
-            SizedBox(
-              height: 108,
-              child: line.bench.isEmpty
-                  ? Center(
-                      child: Text(
-                        '—',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.outline,
-                        ),
-                      ),
-                    )
-                  : ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: line.bench.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: 6),
-                      itemBuilder: (context, i) {
-                        final p = line.bench[i];
-                        return Align(
-                          alignment: Alignment.center,
-                          child: _benchPlayerChip(
-                            player: p,
-                            line: line,
-                            demarcacion: demarcacion,
-                            onProfileLongPress: widget.onProfileLongPress,
-                          ),
-                        );
-                      },
-                    ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _benchPlayerChip({
-    required LeagueSquadPlayer player,
-    required _LineState line,
-    required String demarcacion,
-    void Function(LeagueSquadPlayer player)? onProfileLongPress,
-  }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final rating = player.valoracion % 1 == 0
-        ? player.valoracion.toInt().toString()
-        : player.valoracion.toStringAsFixed(1).replaceAll('.', ',');
-    return SizedBox(
-      width: 76,
-      child: Center(
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Material(
-              color: colorScheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(14),
-              clipBehavior: Clip.antiAlias,
-              child: InkWell(
-                onTap: widget.readOnly
-                    ? () => _onBenchPlayerTap(
+        const SizedBox(height: 8),
+        Center(
+          child: _PitchPlayerBubble(
+            player: line.reserve,
+            label: '',
+            size: 44,
+            onTap: widget.readOnly || _blocked
+                ? () {
+                    if (line.reserve != null) {
+                      _onReserveSlotTap(
                         line: line,
-                        benchPlayer: player,
                         demarcacion: demarcacion,
-                      )
-                    : _blocked
-                    ? null
-                    : () => _onBenchPlayerTap(
-                        line: line,
-                        benchPlayer: player,
-                        demarcacion: demarcacion,
-                      ),
-                onLongPress: widget.readOnly || onProfileLongPress == null
-                    ? null
-                    : () => onProfileLongPress(player),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 8,
+                      );
+                    }
+                  }
+                : () => _onReserveSlotTap(
+                    line: line,
+                    demarcacion: demarcacion,
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: Center(
-                          child: LeaguePlayerAvatar(
-                            player: player,
-                            size: 40,
-                            circular: true,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        LeagueDisplayStrings.shortNickname(
-                          _shortName(player),
-                          maxLen: 11,
-                        ),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          height: 1.1,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              right: -6,
-              top: -6,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: BorderRadius.circular(999),
-                  border: Border.all(
-                    color: colorScheme.surfaceContainerHighest,
-                    width: 1.2,
-                  ),
-                ),
-                child: Text(
-                  rating,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onPrimary,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 10,
-                    height: 1.0,
-                  ),
-                ),
-              ),
-            ),
-          ],
+            onLongPressPlayer: line.reserve == null
+                ? null
+                : widget.onProfileLongPress,
+          ),
         ),
-      ),
+      ],
     );
   }
 
   bool _isCaptain(LeagueSquadPlayer? p) =>
       p != null && _captainId != null && p.idLigaJugador == _captainId;
+
+  String _emptySlotPosicionForLine(LeagueSquadLine line) {
+    switch (line) {
+      case LeagueSquadLine.porteros:
+        return 'POR';
+      case LeagueSquadLine.defensas:
+        return 'DEF';
+      case LeagueSquadLine.mediocentros:
+        return 'MED';
+      case LeagueSquadLine.delanteros:
+        return 'DEL';
+      case LeagueSquadLine.otros:
+        return '';
+    }
+  }
 
   LeagueLineupEmptySlot? _penalizedEmptyMeta({
     required LeagueSquadLine line,
@@ -1512,7 +1689,16 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       }
       return es;
     }
-    return null;
+    final posicion = _emptySlotPosicionForLine(line);
+    if (posicion.isEmpty) {
+      return null;
+    }
+    return LeagueLineupEmptySlot(
+      posicion: posicion,
+      orden: slotIndex0Based + 1,
+      penalizacion: -5,
+      emptySlot: true,
+    );
   }
 
   String _headerFormationLabel() {
@@ -1813,165 +1999,155 @@ class _LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
     );
     final gkPlayer = _model.gk.slots.isEmpty ? null : _model.gk.slots[0];
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: constraints.maxHeight.isFinite
-                  ? constraints.maxHeight
-                  : 0,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _headerRow(theme),
-                const SizedBox(height: 14),
-                AspectRatio(
-                  aspectRatio: 0.72,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(22),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          colorScheme.primary.withValues(alpha: 0.35),
-                          const Color(0xFF1B4D32),
-                        ],
-                      ),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.22),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.18),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(22),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          const CustomPaint(painter: _PitchMarkingsPainter()),
-                          Align(
-                            alignment: const Alignment(0, -0.88),
-                            child: _PitchPlayerBubble(
-                              player: gkPlayer,
-                              penalizedEmpty: _penalizedEmptyMeta(
-                                line: LeagueSquadLine.porteros,
-                                slotIndex0Based: 0,
-                                player: gkPlayer,
-                              ),
-                              label: 'POR',
-                              size: 46,
-                              isCaptain: _isCaptain(gkPlayer),
-                              onTap: () => _onTitularTap(
-                                line: _model.gk,
-                                slotIndex: 0,
-                                demarcacion: 'portería',
-                              ),
-                              onLongPressPlayer: widget.onProfileLongPress,
-                            ),
-                          ),
-                          Align(
-                            alignment: const Alignment(0.93, -0.91),
-                            child: _CoachPitchBubble(
-                              coach: widget.entrenadorAsignado,
-                              isActive: widget.entrenadorActivo,
-                              isLoading: widget.coachToggleLoading,
-                              formation: _effectiveFormationForCoachBubble(),
-                              onTap: _onCoachBubbleTap,
-                            ),
-                          ),
-                          ...defAlignments.asMap().entries.map(
-                            (e) => Align(
-                              alignment: e.value,
-                              child: _PitchPlayerBubble(
-                                player: _model.defLine.slots[e.key],
-                                penalizedEmpty: _penalizedEmptyMeta(
-                                  line: LeagueSquadLine.defensas,
-                                  slotIndex0Based: e.key,
-                                  player: _model.defLine.slots[e.key],
-                                ),
-                                label: 'DEF',
-                                size: 44,
-                                isCaptain: _isCaptain(
-                                  _model.defLine.slots[e.key],
-                                ),
-                                onTap: () => _onTitularTap(
-                                  line: _model.defLine,
-                                  slotIndex: e.key,
-                                  demarcacion: 'defensa',
-                                ),
-                                onLongPressPlayer: widget.onProfileLongPress,
-                              ),
-                            ),
-                          ),
-                          ...midAlignments.asMap().entries.map(
-                            (e) => Align(
-                              alignment: e.value,
-                              child: _PitchPlayerBubble(
-                                player: _model.midLine.slots[e.key],
-                                penalizedEmpty: _penalizedEmptyMeta(
-                                  line: LeagueSquadLine.mediocentros,
-                                  slotIndex0Based: e.key,
-                                  player: _model.midLine.slots[e.key],
-                                ),
-                                label: 'MC',
-                                size: 44,
-                                isCaptain: _isCaptain(
-                                  _model.midLine.slots[e.key],
-                                ),
-                                onTap: () => _onTitularTap(
-                                  line: _model.midLine,
-                                  slotIndex: e.key,
-                                  demarcacion: 'mediocentro',
-                                ),
-                                onLongPressPlayer: widget.onProfileLongPress,
-                              ),
-                            ),
-                          ),
-                          ...fwdAlignments.asMap().entries.map(
-                            (e) => Align(
-                              alignment: e.value,
-                              child: _PitchPlayerBubble(
-                                player: _model.fwdLine.slots[e.key],
-                                penalizedEmpty: _penalizedEmptyMeta(
-                                  line: LeagueSquadLine.delanteros,
-                                  slotIndex0Based: e.key,
-                                  player: _model.fwdLine.slots[e.key],
-                                ),
-                                label: 'DEL',
-                                size: 44,
-                                isCaptain: _isCaptain(
-                                  _model.fwdLine.slots[e.key],
-                                ),
-                                onTap: () => _onTitularTap(
-                                  line: _model.fwdLine,
-                                  slotIndex: e.key,
-                                  demarcacion: 'delantera',
-                                ),
-                                onLongPressPlayer: widget.onProfileLongPress,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+    return SingleChildScrollView(
+      primary: false,
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _headerRow(theme),
+          const SizedBox(height: 14),
+          AspectRatio(
+            aspectRatio: 0.72,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    colorScheme.primary.withValues(alpha: 0.35),
+                    const Color(0xFF1B4D32),
+                  ],
                 ),
-                const SizedBox(height: 18),
-                _benchHorizontalBar(),
-              ],
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.22),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.18),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    const CustomPaint(painter: _PitchMarkingsPainter()),
+                    Align(
+                      alignment: const Alignment(0, -0.88),
+                      child: _PitchPlayerBubble(
+                        player: gkPlayer,
+                        penalizedEmpty: _penalizedEmptyMeta(
+                          line: LeagueSquadLine.porteros,
+                          slotIndex0Based: 0,
+                          player: gkPlayer,
+                        ),
+                        label: 'POR',
+                        size: 46,
+                        isCaptain: _isCaptain(gkPlayer),
+                        onTap: () => _onTitularTap(
+                          line: _model.gk,
+                          slotIndex: 0,
+                          demarcacion: 'portería',
+                        ),
+                        onLongPressPlayer: widget.onProfileLongPress,
+                      ),
+                    ),
+                    Align(
+                      alignment: const Alignment(0.93, -0.91),
+                      child: _CoachPitchBubble(
+                        coach: widget.entrenadorAsignado,
+                        isActive: widget.entrenadorActivo,
+                        isLoading: widget.coachToggleLoading,
+                        formation: _effectiveFormationForCoachBubble(),
+                        onTap: _onCoachBubbleTap,
+                      ),
+                    ),
+                    ...defAlignments.asMap().entries.map(
+                      (e) => Align(
+                        alignment: e.value,
+                        child: _PitchPlayerBubble(
+                          player: _model.defLine.slots[e.key],
+                          penalizedEmpty: _penalizedEmptyMeta(
+                            line: LeagueSquadLine.defensas,
+                            slotIndex0Based: e.key,
+                            player: _model.defLine.slots[e.key],
+                          ),
+                          label: 'DEF',
+                          size: 44,
+                          isCaptain: _isCaptain(
+                            _model.defLine.slots[e.key],
+                          ),
+                          onTap: () => _onTitularTap(
+                            line: _model.defLine,
+                            slotIndex: e.key,
+                            demarcacion: 'defensa',
+                          ),
+                          onLongPressPlayer: widget.onProfileLongPress,
+                        ),
+                      ),
+                    ),
+                    ...midAlignments.asMap().entries.map(
+                      (e) => Align(
+                        alignment: e.value,
+                        child: _PitchPlayerBubble(
+                          player: _model.midLine.slots[e.key],
+                          penalizedEmpty: _penalizedEmptyMeta(
+                            line: LeagueSquadLine.mediocentros,
+                            slotIndex0Based: e.key,
+                            player: _model.midLine.slots[e.key],
+                          ),
+                          label: 'MC',
+                          size: 44,
+                          isCaptain: _isCaptain(
+                            _model.midLine.slots[e.key],
+                          ),
+                          onTap: () => _onTitularTap(
+                            line: _model.midLine,
+                            slotIndex: e.key,
+                            demarcacion: 'mediocentro',
+                          ),
+                          onLongPressPlayer: widget.onProfileLongPress,
+                        ),
+                      ),
+                    ),
+                    ...fwdAlignments.asMap().entries.map(
+                      (e) => Align(
+                        alignment: e.value,
+                        child: _PitchPlayerBubble(
+                          player: _model.fwdLine.slots[e.key],
+                          penalizedEmpty: _penalizedEmptyMeta(
+                            line: LeagueSquadLine.delanteros,
+                            slotIndex0Based: e.key,
+                            player: _model.fwdLine.slots[e.key],
+                          ),
+                          label: 'DEL',
+                          size: 44,
+                          isCaptain: _isCaptain(
+                            _model.fwdLine.slots[e.key],
+                          ),
+                          onTap: () => _onTitularTap(
+                            line: _model.fwdLine,
+                            slotIndex: e.key,
+                            demarcacion: 'delantera',
+                          ),
+                          onLongPressPlayer: widget.onProfileLongPress,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-        );
-      },
+          const SizedBox(height: 18),
+          _benchHorizontalBar(),
+        ],
+      ),
     );
   }
 }
@@ -2271,6 +2447,8 @@ class _PitchMarkingsPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+enum _UnsavedLineupChoice { save, discardAndLeave, stay }
 
 class _PitchPlayerBubble extends StatelessWidget {
   const _PitchPlayerBubble({
