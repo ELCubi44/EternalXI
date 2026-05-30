@@ -1,4 +1,5 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/data/models/league_summary.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/leagues/controller/leagues_controller.dart';
@@ -34,14 +35,13 @@ class _RewardsEntryScreenState extends State<RewardsEntryScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = context.rewardsL10n;
     final user = context.watch<AuthController>().currentUser;
     final leagues = context.watch<LeaguesController>();
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(context.l10n.rewards),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(22),
           child: Align(
@@ -49,10 +49,9 @@ class _RewardsEntryScreenState extends State<RewardsEntryScreen> {
             child: Padding(
               padding: const EdgeInsets.only(left: 16, bottom: 8),
               child: Text(
-                'Sobres, cartas y entrenador',
-                style: TextStyle(
-                  color: Colors.white54,
-                  fontSize: 13,
+                l10n.shopSubtitle,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -63,7 +62,7 @@ class _RewardsEntryScreenState extends State<RewardsEntryScreen> {
       body: user == null || user.id <= 0
           ? _Message(
               icon: Icons.person_off_outlined,
-              text: 'No se pudo identificar el usuario actual.',
+              text: l10n.noUserSession,
             )
           : RefreshIndicator(
               color: colorScheme.primary,
@@ -75,9 +74,8 @@ class _RewardsEntryScreenState extends State<RewardsEntryScreen> {
                   _HeroIntro(colorScheme: colorScheme, theme: theme),
                   const SizedBox(height: 22),
                   Text(
-                    'Tus ligas',
+                    l10n.yourLeagues,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: Colors.white,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -93,12 +91,15 @@ class _RewardsEntryScreenState extends State<RewardsEntryScreen> {
                       leagues.myLeagues.isEmpty)
                     Text(
                       leagues.errorMessage!,
-                      style: const TextStyle(color: Colors.white70),
+                      style: TextStyle(color: colorScheme.onSurfaceVariant),
                     )
                   else if (leagues.myLeagues.isEmpty)
-                    const Text(
-                      'No participas en ninguna liga. Crea una o únete con código.',
-                      style: TextStyle(color: Colors.white70, height: 1.35),
+                    Text(
+                      l10n.noLeaguesHint,
+                      style: TextStyle(
+                        color: colorScheme.onSurfaceVariant,
+                        height: 1.35,
+                      ),
                     )
                   else
                     ...leagues.myLeagues.map(
@@ -132,15 +133,16 @@ class _HeroIntro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.rewardsL10n;
     return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colorScheme.primaryContainer.withValues(alpha: 0.45),
-            const Color(0xFF311B92).withValues(alpha: 0.35),
-            const Color(0xFFFFB300).withValues(alpha: 0.12),
+            colorScheme.primaryContainer.withValues(alpha: 0.55),
+            colorScheme.secondaryContainer.withValues(alpha: 0.45),
+            colorScheme.tertiaryContainer.withValues(alpha: 0.35),
           ],
         ),
         borderRadius: BorderRadius.circular(24),
@@ -160,17 +162,16 @@ class _HeroIntro extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Selecciona una liga',
+              l10n.selectLeagueTitle,
               style: theme.textTheme.headlineSmall?.copyWith(
-                color: Colors.white,
                 fontWeight: FontWeight.w800,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Cada liga tiene sus propios puntos de recompensa, sobres, cartas y entrenador.',
+              l10n.selectLeagueBody,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: Colors.white.withValues(alpha: 0.82),
+                color: colorScheme.onSurfaceVariant,
                 height: 1.35,
               ),
             ),
@@ -190,10 +191,12 @@ class _LeaguePickCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final l10n = context.rewardsL10n;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
-        color: const Color(0xFF12182A),
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
@@ -209,13 +212,16 @@ class _LeaguePickCard extends StatelessWidget {
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
                       colors: [
-                        theme.colorScheme.primary.withValues(alpha: 0.5),
-                        theme.colorScheme.tertiary.withValues(alpha: 0.4),
+                        colorScheme.primary.withValues(alpha: 0.5),
+                        colorScheme.tertiary.withValues(alpha: 0.4),
                       ],
                     ),
                   ),
                   alignment: Alignment.center,
-                  child: const Icon(Icons.emoji_events_outlined, color: Colors.white),
+                  child: Icon(
+                    Icons.emoji_events_outlined,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -225,16 +231,15 @@ class _LeaguePickCard extends StatelessWidget {
                       Text(
                         league.nombre,
                         style: theme.textTheme.titleMedium?.copyWith(
-                          color: Colors.white,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${league.participantes} participantes'
-                        '${league.soyAdmin ? ' · Administras' : ''}',
+                        '${l10n.participants(league.participantes)}'
+                        '${league.soyAdmin ? ' · ${l10n.youAdmin}' : ''}',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: Colors.white60,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -242,7 +247,7 @@ class _LeaguePickCard extends StatelessWidget {
                 ),
                 FilledButton(
                   onPressed: onEnter,
-                  child: const Text('Entrar'),
+                  child: Text(l10n.enter),
                 ),
               ],
             ),
@@ -261,15 +266,16 @@ class _Message extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Icon(icon, size: 48, color: Colors.white38),
+        Icon(icon, size: 48, color: colorScheme.outline),
         const SizedBox(height: 16),
         Text(
           text,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Colors.white70,
+                color: colorScheme.onSurfaceVariant,
                 height: 1.35,
               ),
         ),

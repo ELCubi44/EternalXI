@@ -100,6 +100,7 @@ class AuthApiService {
     required int idUsuario,
     required String nuevoCorreo,
     required String codigo,
+    required String codigoCorreoActual,
   }) async {
     try {
       final response = await _apiClient.dio.post(
@@ -107,6 +108,41 @@ class AuthApiService {
         data: {
           'idUsuario': idUsuario,
           'nuevoCorreo': nuevoCorreo,
+          'codigo': codigo,
+          'codigoCorreoActual': codigoCorreoActual,
+        },
+      );
+      return EmailChangeConfirmResponse.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<ApiMessageModel> requestNicknameChange({
+    required int idUsuario,
+    required String contrasenaActual,
+    required String nuevoNickname,
+  }) async {
+    return _postMessage('${ApiConstants.auth}/nickname-change/request', {
+      'idUsuario': idUsuario,
+      'contrasenaActual': contrasenaActual,
+      'nuevoNickname': nuevoNickname,
+    });
+  }
+
+  Future<EmailChangeConfirmResponse> confirmNicknameChange({
+    required int idUsuario,
+    required String nuevoNickname,
+    required String codigo,
+  }) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '${ApiConstants.auth}/nickname-change/confirm',
+        data: {
+          'idUsuario': idUsuario,
+          'nuevoNickname': nuevoNickname,
           'codigo': codigo,
         },
       );

@@ -1,4 +1,5 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/core/network/api_client.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_card_model.dart';
@@ -117,12 +118,12 @@ class _LeagueRewardsScreenState extends State<LeagueRewardsScreen>
 
           final s = c.summary;
           final showCartas = s?.showCartasTab ?? false;
+          final rl10n = context.rewardsL10n;
+          final colorScheme = Theme.of(context).colorScheme;
 
           return Scaffold(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             appBar: AppBar(
               title: Text(context.l10n.leagueRewards),
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(22),
                 child: Align(
@@ -130,12 +131,11 @@ class _LeagueRewardsScreenState extends State<LeagueRewardsScreen>
                   child: Padding(
                     padding: const EdgeInsets.only(left: 16, bottom: 8),
                     child: Text(
-                      'Sobres, cartas y entrenador',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      rl10n.shopSubtitle,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w500,
+                          ),
                     ),
                   ),
                 ),
@@ -176,14 +176,11 @@ class _LeagueRewardsScreenState extends State<LeagueRewardsScreen>
                                   TabBar(
                                     controller: _tabs,
                                     isScrollable: true,
-                                    labelColor: const Color(0xFFFFD54F),
-                                    unselectedLabelColor: Colors.white54,
-                                    indicatorColor: const Color(0xFFFFD54F),
                                     tabs: [
-                                      const Tab(text: 'Sobres'),
-                                      const Tab(text: 'Entrenador'),
-                                      if (showCartas) const Tab(text: 'Cartas'),
-                                      const Tab(text: 'Historial'),
+                                      Tab(text: rl10n.tabPacks),
+                                      Tab(text: rl10n.tabCoach),
+                                      if (showCartas) Tab(text: rl10n.tabCards),
+                                      Tab(text: rl10n.tabHistory),
                                     ],
                                   ),
                                 ),
@@ -266,8 +263,7 @@ class _LeagueRewardsScreenState extends State<LeagueRewardsScreen>
     }
     setState(() => _packBusy = false);
     if (res == null) {
-      final msg = c.errorMessage ??
-          'No se pudo completar la acción. Inténtalo de nuevo.';
+      final msg = c.errorMessage ?? context.rewardsL10n.actionFailed;
       messenger.showSnackBar(SnackBar(content: Text(msg)));
       return;
     }
@@ -299,18 +295,13 @@ class _LeagueRewardsScreenState extends State<LeagueRewardsScreen>
     }
     setState(() => _spinBusy = false);
     if (r == null) {
-      final msg = c.errorMessage ??
-          'No se pudo completar la acción. Inténtalo de nuevo.';
+      final msg = c.errorMessage ?? context.rewardsL10n.actionFailed;
       messenger.showSnackBar(SnackBar(content: Text(msg)));
       return;
     }
     if (r.alreadyUsed) {
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text(
-            'La ruleta ya estaba usada. Se muestra el entrenador asignado.',
-          ),
-        ),
+        SnackBar(content: Text(context.rewardsL10n.rouletteAlreadyUsed)),
       );
       return;
     }
@@ -431,6 +422,7 @@ class _CardsTabBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rl10n = context.rewardsL10n;
     return Column(
       children: [
         SingleChildScrollView(
@@ -439,32 +431,32 @@ class _CardsTabBody extends StatelessWidget {
           child: Row(
             children: [
               _FilterChip(
-                label: 'Todas',
+                label: rl10n.filterAll,
                 selected: filter == null || filter == 'ALL',
                 onTap: () => onFilter('ALL'),
               ),
               _FilterChip(
-                label: 'Venta',
+                label: rl10n.filterSell,
                 selected: filter == 'SELL',
                 onTap: () => onFilter('SELL'),
               ),
               _FilterChip(
-                label: 'Cláusula',
+                label: rl10n.filterClause,
                 selected: filter == 'CLAUSE',
                 onTap: () => onFilter('CLAUSE'),
               ),
               _FilterChip(
-                label: 'Protección',
+                label: rl10n.filterProtection,
                 selected: filter == 'PROT',
                 onTap: () => onFilter('PROT'),
               ),
               _FilterChip(
-                label: 'Puntos',
+                label: rl10n.filterPoints,
                 selected: filter == 'PTS',
                 onTap: () => onFilter('PTS'),
               ),
               _FilterChip(
-                label: 'Valor',
+                label: rl10n.filterValue,
                 selected: filter == 'VAL',
                 onTap: () => onFilter('VAL'),
               ),
@@ -543,6 +535,13 @@ class _ActivityTabState extends State<_ActivityTab> {
     final c = widget.c;
     final visible = _visibleEvents;
     final cs = Theme.of(context).colorScheme;
+    final rl10n = context.rewardsL10n;
+    const filterKeys = [
+      LeagueShopActivityFilters.all,
+      LeagueShopActivityFilters.packs,
+      LeagueShopActivityFilters.roulette,
+      LeagueShopActivityFilters.cards,
+    ];
 
     return Column(
       children: [
@@ -551,18 +550,18 @@ class _ActivityTabState extends State<_ActivityTab> {
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
           child: Row(
             children: [
-              for (final entry in LeagueShopActivityFilters.labels.entries)
+              for (final key in filterKeys)
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: FilterChip(
-                    label: Text(entry.value),
-                    selected: _filter == entry.key,
-                    onSelected: (_) => setState(() => _filter = entry.key),
+                    label: Text(rl10n.shopFilterLabel(key)),
+                    selected: _filter == key,
+                    onSelected: (_) => setState(() => _filter = key),
                     checkmarkColor: cs.primary,
                     backgroundColor: cs.surfaceContainerHigh,
                     selectedColor: cs.surfaceContainerHighest,
                     labelStyle: TextStyle(
-                      color: _filter == entry.key
+                      color: _filter == key
                           ? cs.onSurface
                           : cs.onSurfaceVariant,
                       fontWeight: FontWeight.w600,
@@ -596,7 +595,7 @@ class _ActivityTabState extends State<_ActivityTab> {
                           ),
                           SizedBox(height: 12),
                           Text(
-                            'Aún no hay actividad en esta liga.',
+                            rl10n.activityEmpty,
                             textAlign: TextAlign.center,
                             style: TextStyle(color: cs.onSurfaceVariant),
                           ),

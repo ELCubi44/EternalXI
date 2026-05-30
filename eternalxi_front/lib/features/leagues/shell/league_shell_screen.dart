@@ -14,6 +14,7 @@ import 'package:eternal_xi/features/leagues/widgets/league_shell_budget_bar.dart
 import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.dart';
 import 'package:eternal_xi/shared/widgets/user_tokens_action.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 /// Shell principal de una liga: detalle en memoria y 5 pestañas a pantalla completa con [NavigationBar] M3.
@@ -48,6 +49,18 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
       return true;
     }
     return _lineupLeaveGuard!();
+  }
+
+  Future<void> _leaveLeague() async {
+    if (_tabIndex == 2) {
+      final leave = await _confirmLeaveLineupIfNeeded();
+      if (!leave || !mounted) {
+        return;
+      }
+    }
+    if (mounted) {
+      context.pop();
+    }
   }
 
   Future<void> _selectTab(int index) async {
@@ -213,18 +226,11 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
         if (didPop) {
           return;
         }
-        if (_tabIndex == 2) {
-          final leave = await _confirmLeaveLineupIfNeeded();
-          if (!leave) {
-            return;
-          }
-        }
-        if (context.mounted) {
-          Navigator.of(context).pop();
-        }
+        await _leaveLeague();
       },
       child: Scaffold(
       appBar: AppBar(
+        leading: BackButton(onPressed: _leaveLeague),
         title: Text(_detail?.nombre ?? l10n.league),
         actions: [
           if (_rewardPoints != null)

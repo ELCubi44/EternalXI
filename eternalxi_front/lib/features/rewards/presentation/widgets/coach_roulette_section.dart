@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_summary_model.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/reward_coach_detail_card.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
@@ -18,6 +19,7 @@ class CoachRouletteSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final rl10n = context.rewardsL10n;
     final used = summary.ruletaEntrenadorUsada;
     final coach = summary.entrenadorActual;
     final canAfford =
@@ -63,7 +65,7 @@ class CoachRouletteSection extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    used ? 'Tu entrenador' : 'Ruleta de entrenador',
+                    used ? rl10n.yourCoach : rl10n.coachRouletteTitle,
                     style: theme.textTheme.titleLarge?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w800,
@@ -91,14 +93,14 @@ class CoachRouletteSection extends StatelessWidget {
               RewardCoachDetailCard(coach: coach)
             else if (used)
               Text(
-                'Ruleta ya utilizada',
+                rl10n.rouletteUsed,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: Colors.white54,
                 ),
               )
             else ...[
               Text(
-                'Consigue un entrenador libre para esta liga.',
+                rl10n.coachRouletteHint,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: Colors.white.withValues(alpha: 0.85),
                 ),
@@ -106,7 +108,7 @@ class CoachRouletteSection extends StatelessWidget {
               const SizedBox(height: 14),
               if (!canAfford)
                 Text(
-                  'Puntos insuficientes',
+                  rl10n.insufficientPoints,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: const Color(0xFFFFAB91),
                     fontWeight: FontWeight.w700,
@@ -137,7 +139,7 @@ class CoachRouletteSection extends StatelessWidget {
                           width: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Girar'),
+                      : Text(rl10n.spin),
                 ),
               ),
             ],

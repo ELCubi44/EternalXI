@@ -341,6 +341,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         value: user?.nickname ?? '—',
                         icon: Icons.person_rounded,
                       ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton.icon(
+                          onPressed: userId == null
+                              ? null
+                              : () => context.push(AppRoutes.changeNicknameRequest),
+                          icon: const Icon(Icons.edit_outlined, size: 18),
+                          label: Text(l10n.changeNickname),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -392,7 +402,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ? null
                             : (selection) {
                                 final value = selection.first;
-                                if (value != preferencesController.uiThemeSelection) {
+                                if (value !=
+                                    preferencesController.storedThemePreference) {
                                   _saveTheme(value);
                                 }
                               },
@@ -423,7 +434,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             : (selection) {
                                 final value = selection.first;
                                 if (value !=
-                                    preferencesController.uiLanguageSelection) {
+                                    preferencesController
+                                        .storedLanguagePreference) {
                                   _saveLanguage(value);
                                 }
                               },

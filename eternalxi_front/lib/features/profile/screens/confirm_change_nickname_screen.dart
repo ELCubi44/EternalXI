@@ -9,34 +9,25 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class ConfirmChangeEmailScreen extends StatefulWidget {
-  const ConfirmChangeEmailScreen({super.key, this.prefilledCorreo});
+class ConfirmChangeNicknameScreen extends StatefulWidget {
+  const ConfirmChangeNicknameScreen({super.key, this.prefilledNickname});
 
-  final String? prefilledCorreo;
+  final String? prefilledNickname;
 
   @override
-  State<ConfirmChangeEmailScreen> createState() =>
-      _ConfirmChangeEmailScreenState();
+  State<ConfirmChangeNicknameScreen> createState() =>
+      _ConfirmChangeNicknameScreenState();
 }
 
-class _ConfirmChangeEmailScreenState extends State<ConfirmChangeEmailScreen> {
+class _ConfirmChangeNicknameScreenState
+    extends State<ConfirmChangeNicknameScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _codigoNuevoController = TextEditingController();
-  final _codigoActualController = TextEditingController();
+  final _codigoController = TextEditingController();
 
   @override
   void dispose() {
-    _codigoNuevoController.dispose();
-    _codigoActualController.dispose();
+    _codigoController.dispose();
     super.dispose();
-  }
-
-  String? _codeValidator(String? value, dynamic l10n) {
-    final t = value?.trim() ?? '';
-    if (t.length < 6) {
-      return l10n.validatorCodeSixChars;
-    }
-    return null;
   }
 
   @override
@@ -44,13 +35,13 @@ class _ConfirmChangeEmailScreenState extends State<ConfirmChangeEmailScreen> {
     final l10n = context.l10n;
     final auth = context.watch<AuthController>();
     final theme = Theme.of(context);
-    final nuevoCorreo = widget.prefilledCorreo?.trim() ?? '';
-    final correoActual = (auth.currentUser?.correo ?? '').trim();
+    final nuevoNickname = widget.prefilledNickname?.trim() ?? '';
+    final correo = (auth.currentUser?.correo ?? '').trim();
 
     return AppLoadingOverlay(
       isLoading: auth.isLoading,
       child: Scaffold(
-        appBar: AppBar(title: Text(l10n.confirmEmailChange)),
+        appBar: AppBar(title: Text(l10n.confirmNicknameChange)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Form(
@@ -59,52 +50,45 @@ class _ConfirmChangeEmailScreenState extends State<ConfirmChangeEmailScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  l10n.confirmEmailChangeHint,
+                  l10n.verificationCodeSentToEmail,
                   style: theme.textTheme.bodyMedium,
                 ),
-                const SizedBox(height: 20),
+                if (correo.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    correo,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 16),
                 Text(
-                  l10n.currentEmail,
+                  l10n.newNickname,
                   style: theme.textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  correoActual.isEmpty ? '—' : correoActual,
+                  nuevoNickname.isEmpty ? '—' : nuevoNickname,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
-                ),
-                const SizedBox(height: 14),
-                AppTextField(
-                  controller: _codigoActualController,
-                  label: l10n.verificationCodeCurrentEmail,
-                  textCapitalization: TextCapitalization.characters,
-                  textInputAction: TextInputAction.next,
-                  validator: (v) => _codeValidator(v, l10n),
                 ),
                 const SizedBox(height: 20),
-                Text(
-                  l10n.newEmail,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  nuevoCorreo.isEmpty ? '—' : nuevoCorreo,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 14),
                 AppTextField(
-                  controller: _codigoNuevoController,
-                  label: l10n.verificationCodeNewEmail,
+                  controller: _codigoController,
+                  label: l10n.verificationCode,
                   textCapitalization: TextCapitalization.characters,
                   textInputAction: TextInputAction.done,
-                  validator: (v) => _codeValidator(v, l10n),
+                  validator: (v) {
+                    final t = v?.trim() ?? '';
+                    if (t.length < 6) {
+                      return l10n.validatorCodeSixChars;
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 24),
                 AppPrimaryButton(
@@ -114,15 +98,13 @@ class _ConfirmChangeEmailScreenState extends State<ConfirmChangeEmailScreen> {
                       return;
                     }
                     final userId = auth.currentUser?.id;
-                    if (userId == null || userId <= 0 || nuevoCorreo.isEmpty) {
+                    if (userId == null || userId <= 0 || nuevoNickname.isEmpty) {
                       return;
                     }
-                    final result = await auth.confirmEmailChange(
+                    final result = await auth.confirmNicknameChange(
                       idUsuario: userId,
-                      nuevoCorreo: nuevoCorreo,
-                      codigo: _codigoNuevoController.text.trim().toUpperCase(),
-                      codigoCorreoActual:
-                          _codigoActualController.text.trim().toUpperCase(),
+                      nuevoNickname: nuevoNickname,
+                      codigo: _codigoController.text.trim().toUpperCase(),
                     );
                     if (!context.mounted) {
                       return;

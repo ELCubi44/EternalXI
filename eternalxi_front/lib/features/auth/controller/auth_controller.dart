@@ -222,6 +222,7 @@ class AuthController extends ChangeNotifier {
     required int idUsuario,
     required String nuevoCorreo,
     required String codigo,
+    required String codigoCorreoActual,
   }) async {
     _setLoading(true);
     errorMessage = null;
@@ -229,6 +230,47 @@ class AuthController extends ChangeNotifier {
       final result = await _authApiService.confirmEmailChange(
         idUsuario: idUsuario,
         nuevoCorreo: nuevoCorreo,
+        codigo: codigo,
+        codigoCorreoActual: codigoCorreoActual,
+      );
+      currentUser = result.user;
+      await _secureStorageService.saveUser(result.user);
+      notifyListeners();
+      return result;
+    } catch (e) {
+      errorMessage = e.toString().replaceFirst('Exception: ', '');
+      notifyListeners();
+      return null;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<String?> requestNicknameChange({
+    required int idUsuario,
+    required String contrasenaActual,
+    required String nuevoNickname,
+  }) async {
+    return _runMessageAction(
+      () => _authApiService.requestNicknameChange(
+        idUsuario: idUsuario,
+        contrasenaActual: contrasenaActual,
+        nuevoNickname: nuevoNickname,
+      ),
+    );
+  }
+
+  Future<EmailChangeConfirmResponse?> confirmNicknameChange({
+    required int idUsuario,
+    required String nuevoNickname,
+    required String codigo,
+  }) async {
+    _setLoading(true);
+    errorMessage = null;
+    try {
+      final result = await _authApiService.confirmNicknameChange(
+        idUsuario: idUsuario,
+        nuevoNickname: nuevoNickname,
         codigo: codigo,
       );
       currentUser = result.user;

@@ -8,7 +8,8 @@ import com.eternalxi.eternalxi_api.dto.auth.EmailChangeConfirmRequest;
 import com.eternalxi.eternalxi_api.dto.auth.EmailChangeConfirmResponse;
 import com.eternalxi.eternalxi_api.dto.auth.EmailChangeRequest;
 import com.eternalxi.eternalxi_api.dto.auth.EmailRequest;
-import com.eternalxi.eternalxi_api.dto.auth.LoginRequest;
+import com.eternalxi.eternalxi_api.dto.auth.NicknameChangeConfirmRequest;
+import com.eternalxi.eternalxi_api.dto.auth.NicknameChangeRequest;
 import com.eternalxi.eternalxi_api.dto.auth.PasswordResetConfirmRequest;
 import com.eternalxi.eternalxi_api.dto.auth.RegisterRequest;
 import com.eternalxi.eternalxi_api.dto.auth.RegisterResponse;
@@ -378,17 +379,20 @@ public class AuthController {
             }
 
             String codigo = generarCodigo();
+            String codigoCorreoActual = generarCodigo();
             String upsert = """
-                    INSERT INTO usuario_cambio_correo_pendiente (id_usuario, nuevo_correo, codigo)
-                    VALUES (?, ?, ?)
+                    INSERT INTO usuario_cambio_correo_pendiente (id_usuario, nuevo_correo, codigo, codigo_correo_actual)
+                    VALUES (?, ?, ?, ?)
                     ON DUPLICATE KEY UPDATE nuevo_correo = VALUES(nuevo_correo),
                                             codigo = VALUES(codigo),
+                                            codigo_correo_actual = VALUES(codigo_correo_actual),
                                             creado_en = CURRENT_TIMESTAMP(3)
                     """;
             try (PreparedStatement ps = conn.prepareStatement(upsert)) {
                 ps.setLong(1, request.idUsuario());
                 ps.setString(2, nuevoCorreo);
                 ps.setString(3, codigo);
+                ps.setString(4, codigoCorreoActual);
                 ps.executeUpdate();
             }
 
@@ -396,11 +400,11 @@ public class AuthController {
 
             String correoAntiguo = loadCorreoById(conn, request.idUsuario());
             if (correoAntiguo != null && !correoAntiguo.isBlank()) {
-                emailService.enviarAvisoCambioCorreoAntiguo(correoAntiguo, nuevoCorreo);
+                emailService.enviarCodigoCambioCorreoActual(correoAntiguo, codigoCorreoActual, nuevoCorreo);
             }
 
             return ResponseEntity.ok(new ApiMessageResponse(
-                    "Te hemos enviado un código de verificación al nuevo correo"));
+                    "Te hemos enviado un código al nuevo correo y otro al correo actual"));
         }
     }
 
@@ -418,7 +422,10 @@ public class AuthController {
         }
 
         if (request.codigo() == null || request.codigo().isBlank()) {
-            return ResponseEntity.badRequest().body(new ApiMessageResponse("El código es obligatorio"));
+            return ResponseEntity.badRequest().body(new ApiMessageResponse("El código del nuevo correo es obligatorio"));
+        }
+        if (request.codigoCorreoActual() == null || request.codigoCorreoActual().isBlank()) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse("El código del correo actual es obligatorio"));
         }
 
         ensureEmailChangeTable();
@@ -427,12 +434,13 @@ public class AuthController {
             conn.setAutoCommit(false);
             try {
                 String selectPending = """
-                        SELECT nuevo_correo, codigo, creado_en
+                        SELECT nuevo_correo, codigo, codigo_correo_actual, creado_en
                         FROM usuario_cambio_correo_pendiente
                         WHERE id_usuario = ?
                         FOR UPDATE
                         """;
                 String codigoBd;
+                String codigoCorreoActualBd;
                 String correoPendiente;
                 try (PreparedStatement ps = conn.prepareStatement(selectPending)) {
                     ps.setLong(1, request.idUsuario());
@@ -444,6 +452,7 @@ public class AuthController {
                         }
                         correoPendiente = rs.getString("nuevo_correo");
                         codigoBd = rs.getString("codigo");
+                        codigoCorreoActualBd = rs.getString("codigo_correo_actual");
                         if (rs.getTimestamp("creado_en") != null
                                 && rs.getTimestamp("creado_en").toInstant().isBefore(
                                         java.time.Instant.now().minus(java.time.Duration.ofMinutes(15)))) {
@@ -463,7 +472,14 @@ public class AuthController {
                 if (codigoBd == null || !codigoBd.equalsIgnoreCase(request.codigo().trim())) {
                     conn.rollback();
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(new ApiMessageResponse("Código incorrecto"));
+                            .body(new ApiMessageResponse("Código del nuevo correo incorrecto"));
+                }
+
+                if (codigoCorreoActualBd == null
+                        || !codigoCorreoActualBd.equalsIgnoreCase(request.codigoCorreoActual().trim())) {
+                    conn.rollback();
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(new ApiMessageResponse("Código del correo actual incorrecto"));
                 }
 
                 if (existeCorreo(conn, nuevoCorreo, request.idUsuario())) {
@@ -507,12 +523,200 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/nickname-change/request")
+    public ResponseEntity<?> requestNicknameChange(@RequestBody NicknameChangeRequest request) throws SQLException {
+        if (request.idUsuario() == null || request.idUsuario() <= 0) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse("Usuario no válido"));
+        }
+        if (request.contrasenaActual() == null || request.contrasenaActual().isBlank()) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse("La contraseña actual es obligatoria"));
+        }
+
+        String nuevoNickname;
+        try {
+            nuevoNickname = InputValidator.validateNickname(request.nuevoNickname());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse(e.getMessage()));
+        }
+
+        ensureNicknameChangeTable();
+
+        try (Connection conn = DBConnection.getConnection()) {
+            String sqlUser = """
+                    SELECT id, correo, contrasena, nickname, codigo_reinicio
+                    FROM usuarios WHERE id = ?
+                    """;
+            try (PreparedStatement ps = conn.prepareStatement(sqlUser)) {
+                ps.setLong(1, request.idUsuario());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body(new ApiMessageResponse("Usuario no encontrado"));
+                    }
+
+                    String nicknameActual = rs.getString("nickname");
+                    if (nicknameActual != null && nicknameActual.equals(nuevoNickname)) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(new ApiMessageResponse("El nuevo nickname debe ser distinto del actual"));
+                    }
+
+                    String contrasenaEnc = Usuario.encriptarContrasena(request.contrasenaActual());
+                    if (!contrasenaEnc.equals(rs.getString("contrasena"))) {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .body(new ApiMessageResponse("Contraseña actual incorrecta"));
+                    }
+
+                    if (rs.getString("codigo_reinicio") != null) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(new ApiMessageResponse(
+                                        "Hay un reinicio de contraseña pendiente. Complétalo antes de cambiar el nickname."));
+                    }
+
+                    String correo = rs.getString("correo");
+                    if (correo == null || correo.isBlank()) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(new ApiMessageResponse("No hay un correo asociado para verificar el cambio"));
+                    }
+                }
+            }
+
+            if (existeNickname(conn, nuevoNickname, request.idUsuario())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new ApiMessageResponse("Ese nickname ya está en uso"));
+            }
+
+            String codigo = generarCodigo();
+            String upsert = """
+                    INSERT INTO usuario_cambio_nickname_pendiente (id_usuario, nuevo_nickname, codigo)
+                    VALUES (?, ?, ?)
+                    ON DUPLICATE KEY UPDATE nuevo_nickname = VALUES(nuevo_nickname),
+                                            codigo = VALUES(codigo),
+                                            creado_en = CURRENT_TIMESTAMP(3)
+                    """;
+            try (PreparedStatement ps = conn.prepareStatement(upsert)) {
+                ps.setLong(1, request.idUsuario());
+                ps.setString(2, nuevoNickname);
+                ps.setString(3, codigo);
+                ps.executeUpdate();
+            }
+
+            String correoUsuario = loadCorreoById(conn, request.idUsuario());
+            emailService.enviarCodigoCambioNickname(correoUsuario, codigo, nuevoNickname);
+
+            return ResponseEntity.ok(new ApiMessageResponse(
+                    "Te hemos enviado un código de verificación a tu correo"));
+        }
+    }
+
+    @PostMapping("/nickname-change/confirm")
+    public ResponseEntity<?> confirmNicknameChange(@RequestBody NicknameChangeConfirmRequest request)
+            throws SQLException {
+        if (request.idUsuario() == null || request.idUsuario() <= 0) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse("Usuario no válido"));
+        }
+
+        String nuevoNickname;
+        try {
+            nuevoNickname = InputValidator.validateNickname(request.nuevoNickname());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse(e.getMessage()));
+        }
+
+        if (request.codigo() == null || request.codigo().isBlank()) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse("El código es obligatorio"));
+        }
+
+        ensureNicknameChangeTable();
+
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                String selectPending = """
+                        SELECT nuevo_nickname, codigo, creado_en
+                        FROM usuario_cambio_nickname_pendiente
+                        WHERE id_usuario = ?
+                        FOR UPDATE
+                        """;
+                String codigoBd;
+                String nicknamePendiente;
+                try (PreparedStatement ps = conn.prepareStatement(selectPending)) {
+                    ps.setLong(1, request.idUsuario());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (!rs.next()) {
+                            conn.rollback();
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                    .body(new ApiMessageResponse("No hay ningún cambio de nickname pendiente"));
+                        }
+                        nicknamePendiente = rs.getString("nuevo_nickname");
+                        codigoBd = rs.getString("codigo");
+                        if (rs.getTimestamp("creado_en") != null
+                                && rs.getTimestamp("creado_en").toInstant().isBefore(
+                                        java.time.Instant.now().minus(java.time.Duration.ofMinutes(15)))) {
+                            conn.rollback();
+                            return ResponseEntity.status(HttpStatus.GONE)
+                                    .body(new ApiMessageResponse("El código ha caducado. Solicita uno nuevo."));
+                        }
+                    }
+                }
+
+                if (!nuevoNickname.equals(nicknamePendiente)) {
+                    conn.rollback();
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(new ApiMessageResponse("El nickname no coincide con la solicitud pendiente"));
+                }
+
+                if (codigoBd == null || !codigoBd.equalsIgnoreCase(request.codigo().trim())) {
+                    conn.rollback();
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(new ApiMessageResponse("Código incorrecto"));
+                }
+
+                if (existeNickname(conn, nuevoNickname, request.idUsuario())) {
+                    conn.rollback();
+                    return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .body(new ApiMessageResponse("Ese nickname ya está en uso"));
+                }
+
+                String updateUser = "UPDATE usuarios SET nickname = ? WHERE id = ?";
+                try (PreparedStatement ps = conn.prepareStatement(updateUser)) {
+                    ps.setString(1, nuevoNickname);
+                    ps.setLong(2, request.idUsuario());
+                    if (ps.executeUpdate() != 1) {
+                        conn.rollback();
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(new ApiMessageResponse("No se pudo actualizar el nickname"));
+                    }
+                }
+
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "DELETE FROM usuario_cambio_nickname_pendiente WHERE id_usuario = ?")) {
+                    ps.setLong(1, request.idUsuario());
+                    ps.executeUpdate();
+                }
+
+                UserResponse user = loadUserById(conn, request.idUsuario());
+                conn.commit();
+
+                return ResponseEntity.ok(new EmailChangeConfirmResponse(
+                        "Nickname actualizado correctamente",
+                        user
+                ));
+            } catch (Exception e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        }
+    }
+
     private void ensureEmailChangeTable() throws SQLException {
         String sql = """
                 CREATE TABLE IF NOT EXISTS usuario_cambio_correo_pendiente (
                     id_usuario BIGINT NOT NULL,
                     nuevo_correo VARCHAR(190) NOT NULL,
                     codigo VARCHAR(6) NOT NULL,
+                    codigo_correo_actual VARCHAR(6) NULL,
                     creado_en TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
                     PRIMARY KEY (id_usuario),
                     CONSTRAINT fk_uccp_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios (id) ON DELETE CASCADE
@@ -524,10 +728,41 @@ public class AuthController {
         }
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(
+                     "ALTER TABLE usuario_cambio_correo_pendiente ADD COLUMN codigo_correo_actual VARCHAR(6) NULL AFTER codigo")) {
+            ps.executeUpdate();
+        } catch (SQLException ignored) {
+            // Columna ya existente.
+        }
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(
                      "CREATE INDEX IF NOT EXISTS idx_uccp_nuevo_correo ON usuario_cambio_correo_pendiente (nuevo_correo)")) {
             ps.executeUpdate();
         } catch (SQLException ignored) {
             // MySQL antiguo puede no soportar IF NOT EXISTS en índices; la tabla basta.
+        }
+    }
+
+    private void ensureNicknameChangeTable() throws SQLException {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS usuario_cambio_nickname_pendiente (
+                    id_usuario BIGINT NOT NULL,
+                    nuevo_nickname VARCHAR(24) NOT NULL,
+                    codigo VARCHAR(6) NOT NULL,
+                    creado_en TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+                    PRIMARY KEY (id_usuario),
+                    CONSTRAINT fk_ucnp_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios (id) ON DELETE CASCADE
+                )
+                """;
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.executeUpdate();
+        }
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(
+                     "CREATE INDEX IF NOT EXISTS idx_ucnp_nickname ON usuario_cambio_nickname_pendiente (nuevo_nickname)")) {
+            ps.executeUpdate();
+        } catch (SQLException ignored) {
+            // MySQL antiguo puede no soportar IF NOT EXISTS en índices.
         }
     }
 
@@ -561,6 +796,17 @@ public class AuthController {
         try (PreparedStatement ps = conn.prepareStatement(
                 "SELECT COUNT(*) FROM usuarios WHERE LOWER(correo) = LOWER(?) AND id <> ?")) {
             ps.setString(1, correo);
+            ps.setLong(2, excludeUserId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        }
+    }
+
+    private boolean existeNickname(Connection conn, String nickname, long excludeUserId) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT COUNT(*) FROM usuarios WHERE nickname = ? AND id <> ?")) {
+            ps.setString(1, nickname);
             ps.setLong(2, excludeUserId);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() && rs.getInt(1) > 0;

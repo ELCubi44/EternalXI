@@ -144,7 +144,18 @@ class AppLocalizations {
       'deleteAccount': 'Borrar cuenta',
       'deleteAccountConfirmTitle': 'Confirmar borrado',
       'deleteAccountConfirmBody': 'Esta acción eliminará tu cuenta definitivamente.',
-      'changeEmailHint': 'Por seguridad confirmamos tu identidad y verificamos el nuevo correo antes de aplicar el cambio.',
+      'changeEmailHint': 'Por seguridad confirmamos tu identidad y enviamos un código al correo actual y otro al nuevo antes de aplicar el cambio.',
+      'sendVerificationCodes': 'Enviar códigos de verificación',
+      'confirmEmailChangeHint': 'Introduce el código recibido en cada correo para confirmar el cambio.',
+      'verificationCodeNewEmail': 'Código del nuevo correo',
+      'verificationCodeCurrentEmail': 'Código del correo actual',
+      'changeNickname': 'Cambiar nickname',
+      'changeNicknameHint': 'Por seguridad confirmamos tu identidad con la contraseña y un código enviado a tu correo.',
+      'confirmNicknameChange': 'Confirmar nuevo nickname',
+      'newNickname': 'Nuevo nickname',
+      'currentNickname': 'Nickname actual',
+      'sendNicknameVerificationCode': 'Enviar código de verificación',
+      'verificationCodeSentToEmail': 'Hemos enviado un código a tu correo. Introdúcelo para confirmar el nickname:',
       'verificationCodeSentTo': 'Introduce el código que hemos enviado a:',
       'achievements': 'Logros',
       'achievementsLoadError': 'No se pudieron cargar los logros',
@@ -306,7 +317,18 @@ class AppLocalizations {
       'deleteAccount': 'Delete account',
       'deleteAccountConfirmTitle': 'Confirm deletion',
       'deleteAccountConfirmBody': 'This action will permanently delete your account.',
-      'changeEmailHint': 'For security, we verify your identity and confirm the new email before applying the change.',
+      'changeEmailHint': 'For security, we verify your identity and send a code to your current email and another to the new one before applying the change.',
+      'sendVerificationCodes': 'Send verification codes',
+      'confirmEmailChangeHint': 'Enter the code received at each email address to confirm the change.',
+      'verificationCodeNewEmail': 'New email code',
+      'verificationCodeCurrentEmail': 'Current email code',
+      'changeNickname': 'Change nickname',
+      'changeNicknameHint': 'For security, we verify your identity with your password and a code sent to your email.',
+      'confirmNicknameChange': 'Confirm new nickname',
+      'newNickname': 'New nickname',
+      'currentNickname': 'Current nickname',
+      'sendNicknameVerificationCode': 'Send verification code',
+      'verificationCodeSentToEmail': 'We sent a code to your email. Enter it to confirm your nickname:',
       'verificationCodeSentTo': 'Enter the code we sent to:',
       'achievements': 'Achievements',
       'achievementsLoadError': 'Could not load achievements',
@@ -475,6 +497,17 @@ class AppLocalizations {
   String get deleteAccountConfirmTitle => _t('deleteAccountConfirmTitle');
   String get deleteAccountConfirmBody => _t('deleteAccountConfirmBody');
   String get changeEmailHint => _t('changeEmailHint');
+  String get sendVerificationCodes => _t('sendVerificationCodes');
+  String get confirmEmailChangeHint => _t('confirmEmailChangeHint');
+  String get verificationCodeNewEmail => _t('verificationCodeNewEmail');
+  String get verificationCodeCurrentEmail => _t('verificationCodeCurrentEmail');
+  String get changeNickname => _t('changeNickname');
+  String get changeNicknameHint => _t('changeNicknameHint');
+  String get confirmNicknameChange => _t('confirmNicknameChange');
+  String get newNickname => _t('newNickname');
+  String get currentNickname => _t('currentNickname');
+  String get sendNicknameVerificationCode => _t('sendNicknameVerificationCode');
+  String get verificationCodeSentToEmail => _t('verificationCodeSentToEmail');
   String get verificationCodeSentTo => _t('verificationCodeSentTo');
   String get achievements => _t('achievements');
   String get achievementsLoadError => _t('achievementsLoadError');

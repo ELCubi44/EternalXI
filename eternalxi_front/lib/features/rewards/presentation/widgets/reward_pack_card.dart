@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_pack_model.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_rarity_style.dart';
@@ -56,6 +57,7 @@ class RewardPackCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final rl10n = context.rewardsL10n;
     final canAfford = userPoints >= pack.costePuntos;
 
     return Container(
@@ -109,7 +111,10 @@ class RewardPackCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Dinero: ${formatRewardMoney(pack.presupuestoMin)} — ${formatRewardMoney(pack.presupuestoMax)}',
+              rl10n.moneyRange(
+                formatRewardMoney(pack.presupuestoMin),
+                formatRewardMoney(pack.presupuestoMax),
+              ),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: Colors.white.withValues(alpha: 0.85),
               ),
@@ -117,7 +122,7 @@ class RewardPackCard extends StatelessWidget {
             const SizedBox(height: 14),
             if (!canAfford)
               Text(
-                'Puntos insuficientes',
+                rl10n.insufficientPoints,
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: const Color(0xFFFFAB91),
                   fontWeight: FontWeight.w700,
@@ -145,7 +150,7 @@ class RewardPackCard extends StatelessWidget {
                         width: 22,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Abrir sobre'),
+                    : Text(rl10n.openPack),
               ),
             ),
           ],

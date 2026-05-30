@@ -1,9 +1,9 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/rewards/presentation/screens/league_rewards_screen.dart';
 import 'package:eternal_xi/features/rewards/presentation/screens/rewards_entry_screen.dart';
-import 'package:eternal_xi/features/rewards/presentation/theme/rewards_premium_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -53,7 +53,7 @@ class _RewardsHubScreenState extends State<RewardsHubScreen> {
     } catch (_) {
       if (mounted) {
         setState(() {
-          _leagueName = 'Liga $idLiga';
+          _leagueName = context.rewardsL10n.leagueFallbackName(idLiga);
           _loadingName = false;
         });
       }
@@ -62,27 +62,27 @@ class _RewardsHubScreenState extends State<RewardsHubScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return RewardsPremiumTheme.scope(child: _buildBody(context));
+    return _buildBody(context);
   }
 
   Widget _buildBody(BuildContext context) {
     final id = widget.initialLeagueId;
     final user = context.watch<AuthController>().currentUser;
+    final rl10n = context.rewardsL10n;
     if (id != null && id > 0) {
       if (user == null || user.id <= 0) {
         return Scaffold(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          appBar: AppBar(
-            title: Text(context.l10n.rewards),
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          ),
-          body: const Center(
+          appBar: AppBar(title: Text(context.l10n.rewards)),
+          body: Center(
             child: Padding(
-              padding: EdgeInsets.all(24),
+              padding: const EdgeInsets.all(24),
               child: Text(
-                'No se pudo identificar el usuario actual.',
+                rl10n.noUserSession,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white70, height: 1.35),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      height: 1.35,
+                    ),
               ),
             ),
           ),
@@ -90,11 +90,7 @@ class _RewardsHubScreenState extends State<RewardsHubScreen> {
       }
       if (_loadingName || _leagueName == null) {
         return Scaffold(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          appBar: AppBar(
-            title: Text(context.l10n.leagueRewards),
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          ),
+          appBar: AppBar(title: Text(context.l10n.leagueRewards)),
           body: const Center(child: CircularProgressIndicator()),
         );
       }

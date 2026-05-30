@@ -9,25 +9,26 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class RequestChangeEmailScreen extends StatefulWidget {
-  const RequestChangeEmailScreen({super.key, this.correoActual});
+class RequestChangeNicknameScreen extends StatefulWidget {
+  const RequestChangeNicknameScreen({super.key, this.nicknameActual});
 
-  final String? correoActual;
+  final String? nicknameActual;
 
   @override
-  State<RequestChangeEmailScreen> createState() =>
-      _RequestChangeEmailScreenState();
+  State<RequestChangeNicknameScreen> createState() =>
+      _RequestChangeNicknameScreenState();
 }
 
-class _RequestChangeEmailScreenState extends State<RequestChangeEmailScreen> {
+class _RequestChangeNicknameScreenState
+    extends State<RequestChangeNicknameScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nuevoCorreoController = TextEditingController();
+  final _nuevoNicknameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
   @override
   void dispose() {
-    _nuevoCorreoController.dispose();
+    _nuevoNicknameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -41,7 +42,7 @@ class _RequestChangeEmailScreenState extends State<RequestChangeEmailScreen> {
     return AppLoadingOverlay(
       isLoading: auth.isLoading,
       child: Scaffold(
-        appBar: AppBar(title: Text(l10n.changeEmail)),
+        appBar: AppBar(title: Text(l10n.changeNickname)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Form(
@@ -50,30 +51,29 @@ class _RequestChangeEmailScreenState extends State<RequestChangeEmailScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  l10n.changeEmailHint,
+                  l10n.changeNicknameHint,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                     height: 1.4,
                   ),
                 ),
-                if ((widget.correoActual ?? '').trim().isNotEmpty) ...[
+                if ((widget.nicknameActual ?? '').trim().isNotEmpty) ...[
                   const SizedBox(height: 16),
                   Text(
-                    l10n.currentEmail,
+                    l10n.currentNickname,
                     style: theme.textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(widget.correoActual!.trim()),
+                  Text(widget.nicknameActual!.trim()),
                 ],
                 const SizedBox(height: 20),
                 AppTextField(
-                  controller: _nuevoCorreoController,
-                  label: l10n.newEmail,
-                  keyboardType: TextInputType.emailAddress,
+                  controller: _nuevoNicknameController,
+                  label: l10n.newNickname,
                   textInputAction: TextInputAction.next,
-                  validator: (value) => Validators.email(value, l10n),
+                  validator: (value) => Validators.nickname(value, l10n),
                 ),
                 const SizedBox(height: 14),
                 AppTextField(
@@ -100,7 +100,7 @@ class _RequestChangeEmailScreenState extends State<RequestChangeEmailScreen> {
                 ),
                 const SizedBox(height: 24),
                 AppPrimaryButton(
-                  label: l10n.sendVerificationCodes,
+                  label: l10n.sendNicknameVerificationCode,
                   onPressed: () async {
                     if (!_formKey.currentState!.validate()) {
                       return;
@@ -109,11 +109,11 @@ class _RequestChangeEmailScreenState extends State<RequestChangeEmailScreen> {
                     if (userId == null || userId <= 0) {
                       return;
                     }
-                    final nuevoCorreo = _nuevoCorreoController.text.trim();
-                    final message = await auth.requestEmailChange(
+                    final nuevoNickname = _nuevoNicknameController.text.trim();
+                    final message = await auth.requestNicknameChange(
                       idUsuario: userId,
                       contrasenaActual: _passwordController.text,
-                      nuevoCorreo: nuevoCorreo,
+                      nuevoNickname: nuevoNickname,
                     );
                     if (!context.mounted) {
                       return;
@@ -125,9 +125,9 @@ class _RequestChangeEmailScreenState extends State<RequestChangeEmailScreen> {
                           content: Text(message),
                         ),
                       );
-                      final encoded = Uri.encodeQueryComponent(nuevoCorreo);
+                      final encoded = Uri.encodeQueryComponent(nuevoNickname);
                       context.push(
-                        '${AppRoutes.changeEmailConfirm}?correo=$encoded',
+                        '${AppRoutes.changeNicknameConfirm}?nickname=$encoded',
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(

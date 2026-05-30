@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:eternal_xi/app/localization/app_locale.dart';
 import 'package:eternal_xi/core/localization/app_locale_resolver.dart';
 import 'package:eternal_xi/core/network/api_client.dart';
@@ -133,10 +135,12 @@ class UserPreferencesController extends ChangeNotifier {
         _userApiService.getUserPreferences(userId),
       ]);
       resources = results[0] as UserResourcesResponse;
-      preferences = results[1] as UserPreferencesResponse;
+      final fromServer = results[1] as UserPreferencesResponse;
+      preferences = _mergeWithLocalPreferences(fromServer);
       syncApiLocale();
       await _persistThemeMode(preferences!.themeMode);
       await _persistLanguageCode(preferences!.languageCode);
+      unawaited(_syncExplicitPreferencesIfNeeded(fromServer));
     } catch (e) {
       errorMessage = e.toString().replaceFirst('Exception: ', '');
     } finally {
@@ -240,6 +244,56 @@ class UserPreferencesController extends ChangeNotifier {
     await _secureStorageService.saveLanguageCode(
       _languageToStorage(preference),
     );
+  }
+
+  UserPreferencesResponse _mergeWithLocalPreferences(
+    UserPreferencesResponse fromServer,
+  ) {
+    final themeMode = fromServer.themeMode != UserThemePreference.system
+        ? fromServer.themeMode
+        : _localThemeMode;
+    final languageCode =
+        fromServer.languageCode != UserLanguagePreference.system
+        ? fromServer.languageCode
+        : _localLanguageCode;
+    return UserPreferencesResponse(
+      idUsuario: fromServer.idUsuario,
+      themeMode: themeMode,
+      languageCode: languageCode,
+    );
+  }
+
+  Future<void> _syncExplicitPreferencesIfNeeded(
+    UserPreferencesResponse fromServer,
+  ) async {
+    final userId = _userId;
+    if (userId == null || preferences == null) {
+      return;
+    }
+    final needsThemeSync =
+        fromServer.themeMode == UserThemePreference.system &&
+        preferences!.themeMode != UserThemePreference.system;
+    final needsLanguageSync =
+        fromServer.languageCode == UserLanguagePreference.system &&
+        preferences!.languageCode != UserLanguagePreference.system;
+    if (!needsThemeSync && !needsLanguageSync) {
+      return;
+    }
+    try {
+      preferences = await _userApiService.updateUserPreferences(
+        userId,
+        UpdateUserPreferencesRequest(
+          themeMode: preferences!.themeMode,
+          languageCode: preferences!.languageCode,
+        ),
+      );
+      syncApiLocale();
+      await _persistThemeMode(preferences!.themeMode);
+      await _persistLanguageCode(preferences!.languageCode);
+      notifyListeners();
+    } catch (_) {
+      // Preferencia local ya aplicada; el servidor se sincronizará en el próximo guardado.
+    }
   }
 
   static UserThemePreference themeFromStorage(String? raw) {

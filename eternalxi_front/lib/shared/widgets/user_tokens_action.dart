@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +20,7 @@ class UserTokensAction extends StatelessWidget {
           Icons.storefront_rounded,
           color: colorScheme.primary,
         ),
-        tooltip: 'Recompensas',
+        tooltip: context.l10n.rewards,
       ),
     );
   }
@@ -71,7 +73,7 @@ class LeagueRewardPointsAction extends StatelessWidget {
             color: colorScheme.outlineVariant.withValues(alpha: 0.45),
           ),
         ),
-        tooltip: 'Puntos de recompensa',
+        tooltip: context.rewardsL10n.rewardPointsTooltip,
       ),
     );
   }

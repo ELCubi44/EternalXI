@@ -12,8 +12,10 @@ import 'package:eternal_xi/features/leagues/screens/join_league_screen.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_screen.dart';
 import 'package:eternal_xi/features/leagues/screens/my_leagues_screen.dart';
 import 'package:eternal_xi/features/profile/screens/confirm_change_email_screen.dart';
+import 'package:eternal_xi/features/profile/screens/confirm_change_nickname_screen.dart';
 import 'package:eternal_xi/features/profile/screens/edit_profile_screen.dart';
 import 'package:eternal_xi/features/profile/screens/request_change_email_screen.dart';
+import 'package:eternal_xi/features/profile/screens/request_change_nickname_screen.dart';
 import 'package:eternal_xi/features/rewards/presentation/screens/rewards_hub_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -99,6 +101,20 @@ final GoRouter appRouter = GoRouter(
               path: 'confirm',
               builder: (context, state) => ConfirmChangeEmailScreen(
                 prefilledCorreo: state.uri.queryParameters['correo'],
+              ),
+            ),
+          ],
+        ),
+        GoRoute(
+          path: 'change-nickname',
+          builder: (context, state) => RequestChangeNicknameScreen(
+            nicknameActual: context.read<AuthController>().currentUser?.nickname,
+          ),
+          routes: [
+            GoRoute(
+              path: 'confirm',
+              builder: (context, state) => ConfirmChangeNicknameScreen(
+                prefilledNickname: state.uri.queryParameters['nickname'],
               ),
             ),
           ],

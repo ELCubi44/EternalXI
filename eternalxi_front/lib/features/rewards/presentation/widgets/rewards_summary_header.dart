@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_summary_model.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,8 @@ class RewardsSummaryHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final rl10n = context.rewardsL10n;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
@@ -24,7 +27,7 @@ class RewardsSummaryHeader extends StatelessWidget {
           Text(
             leagueName,
             style: theme.textTheme.titleSmall?.copyWith(
-              color: Colors.white70,
+              color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -34,7 +37,7 @@ class RewardsSummaryHeader extends StatelessWidget {
               Expanded(
                 child: _ChipStat(
                   icon: Icons.stars_rounded,
-                  label: 'Puntos',
+                  label: rl10n.points,
                   value: formatRewardPoints(summary.puntosRecompensaUsuario),
                 ),
               ),
@@ -42,7 +45,7 @@ class RewardsSummaryHeader extends StatelessWidget {
               Expanded(
                 child: _ChipStat(
                   icon: Icons.style_rounded,
-                  label: 'Cartas disponibles',
+                  label: rl10n.cardsAvailable,
                   value: '${summary.cartasDisponibles}',
                 ),
               ),
@@ -68,39 +71,33 @@ class _ChipStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
-        gradient: LinearGradient(
-          colors: [
-            const Color(0xFF1C2742).withValues(alpha: 0.95),
-            const Color(0xFF12182A).withValues(alpha: 0.95),
-          ],
+        color: colorScheme.surfaceContainerHighest,
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.45),
         ),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: const Color(0xFFFFD54F)),
-          const SizedBox(width: 10),
+          Icon(icon, size: 20, color: colorScheme.primary),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   label,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: Colors.white54,
+                    color: colorScheme.onSurfaceVariant,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   value,
                   style: theme.textTheme.titleSmall?.copyWith(
-                    color: Colors.white,
                     fontWeight: FontWeight.w800,
                   ),
                 ),

@@ -53,6 +53,40 @@ final class EmailHtmlTemplates {
         );
     }
 
+    static String emailChangeCurrentAddress(String code, String nuevoCorreo) {
+        return layout(
+                "Confirma desde tu correo actual",
+                "Verifica el cambio de correo en Eternal XI",
+                """
+                <p style="margin:0 0 16px;font-size:16px;line-height:1.5;color:#E8EAED;">
+                  Se ha solicitado cambiar el correo de acceso de tu cuenta en <strong>Eternal XI</strong> a
+                  <strong>%s</strong>. Introduce este código en la app para confirmar que autorizas el cambio.
+                </p>
+                %s
+                <p style="margin:16px 0 0;font-size:14px;line-height:1.5;color:#9AA0A6;">
+                  El código caduca en 15 minutos. Si no reconoces esta acción, cambia tu contraseña cuanto antes.
+                </p>
+                """.formatted(escapeHtml(nuevoCorreo), codeBlock(code))
+        );
+    }
+
+    static String nicknameChangeCode(String code, String nuevoNickname) {
+        return layout(
+                "Confirma tu nuevo nickname",
+                "Verifica el cambio de nickname en Eternal XI",
+                """
+                <p style="margin:0 0 16px;font-size:16px;line-height:1.5;color:#E8EAED;">
+                  Quieres usar <strong>%s</strong> como nuevo nickname en <strong>Eternal XI</strong>.
+                  Introduce este código en la app para confirmar el cambio.
+                </p>
+                %s
+                <p style="margin:16px 0 0;font-size:14px;line-height:1.5;color:#9AA0A6;">
+                  El código caduca en 15 minutos. Si no solicitaste este cambio, ignora el mensaje.
+                </p>
+                """.formatted(escapeHtml(nuevoNickname), codeBlock(code))
+        );
+    }
+
     static String emailChangeOldAddressAlert(String nuevoCorreo) {
         return layout(
                 "Aviso de cambio de correo",

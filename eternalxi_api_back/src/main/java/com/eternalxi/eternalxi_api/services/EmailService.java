@@ -46,6 +46,15 @@ public class EmailService {
         );
     }
 
+    public void enviarCodigoCambioCorreoActual(String destino, String codigo, String nuevoCorreo) {
+        enviarHtml(
+                destino,
+                "Confirma desde tu correo actual — Eternal XI",
+                EmailHtmlTemplates.emailChangeCurrentAddress(codigo, nuevoCorreo),
+                "Tu código para confirmar el cambio desde el correo actual es: " + codigo
+        );
+    }
+
     public void enviarAvisoCambioCorreoAntiguo(String destino, String nuevoCorreo) {
         enviarHtml(
                 destino,
@@ -61,6 +70,15 @@ public class EmailService {
                 "Correo actualizado — Eternal XI",
                 EmailHtmlTemplates.emailChangedConfirmation(nuevoCorreo),
                 "Tu correo de Eternal XI se ha actualizado a: " + nuevoCorreo
+        );
+    }
+
+    public void enviarCodigoCambioNickname(String destino, String codigo, String nuevoNickname) {
+        enviarHtml(
+                destino,
+                "Confirma tu nuevo nickname — Eternal XI",
+                EmailHtmlTemplates.nicknameChangeCode(codigo, nuevoNickname),
+                "Tu código para confirmar el nuevo nickname es: " + codigo
         );
     }
 
