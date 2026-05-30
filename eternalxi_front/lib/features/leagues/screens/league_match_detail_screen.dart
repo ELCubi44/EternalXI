@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/league_calendar_models.dart';
 import 'package:eternal_xi/data/models/league_match_detail_payload.dart';
@@ -58,7 +60,7 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
     if (widget.summary.idPartido <= 0) {
       setState(() {
         _loading = false;
-        _error = 'No se puede cargar el partido: identificador no válido.';
+        _error = context.leagueL10n.invalidMatchIdError;
       });
       return;
     }
@@ -446,6 +448,7 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final ll = context.leagueL10n;
     final payload = _payload;
 
     return Scaffold(
@@ -478,7 +481,7 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  'No se pudo cargar la información del partido.',
+                  ll.couldNotLoadMatchInfo,
                   style: theme.textTheme.bodyLarge,
                 ),
               )
@@ -493,16 +496,16 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
                   ),
                 ),
               SegmentedButton<int>(
-                segments: const [
+                segments: [
                   ButtonSegment<int>(
                     value: 0,
-                    label: Text('Cronología'),
-                    icon: Icon(Icons.timeline_outlined),
+                    label: Text(ll.timelineTab),
+                    icon: const Icon(Icons.timeline_outlined),
                   ),
                   ButtonSegment<int>(
                     value: 1,
-                    label: Text('Alineaciones'),
-                    icon: Icon(Icons.grid_on_outlined),
+                    label: Text(ll.lineupsTab),
+                    icon: const Icon(Icons.grid_on_outlined),
                   ),
                 ],
                 selected: {_segment},
@@ -559,6 +562,7 @@ class _TeamHeaderLarge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final ll = context.leagueL10n;
     final n = name.trim();
     return Material(
       color: Colors.transparent,
@@ -574,7 +578,7 @@ class _TeamHeaderLarge extends StatelessWidget {
               LeagueTeamLogo(idEquipo: idEquipo, size: 68, networkImageUrl: imageUrl),
               const SizedBox(height: 12),
               Text(
-                n.isEmpty ? 'Equipo' : n,
+                n.isEmpty ? ll.genericTeam : n,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w900,
@@ -633,7 +637,7 @@ class _DetailError extends StatelessWidget {
           FilledButton.tonalIcon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh),
-            label: const Text('Reintentar'),
+            label: Text(context.l10n.retry),
           ),
         ],
       ),

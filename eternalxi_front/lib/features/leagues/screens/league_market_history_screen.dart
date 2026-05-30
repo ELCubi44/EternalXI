@@ -1,6 +1,11 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/data/models/league_activity_event.dart';
 import 'package:eternal_xi/data/models/league_market_history_entry.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
+import 'package:eternal_xi/features/leagues/utils/league_history_filters.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_market_history_bubble.dart';
+import 'package:eternal_xi/features/rewards/presentation/widgets/league_activity_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +29,8 @@ class LeagueMarketHistoryScreen extends StatefulWidget {
 class _LeagueMarketHistoryScreenState extends State<LeagueMarketHistoryScreen> {
   bool _loading = true;
   String? _error;
-  List<LeagueMarketHistoryEntry> _entries = const [];
+  List<LeagueUnifiedHistoryItem> _items = const [];
+  String _filter = LeagueMarketHistoryFilters.all;
 
   @override
   void initState() {
@@ -43,15 +49,34 @@ class _LeagueMarketHistoryScreenState extends State<LeagueMarketHistoryScreen> {
     }
     try {
       final api = context.read<LeaguesApiService>();
-      final rows = await api.getMarketHistory(
-        leagueId: widget.leagueId,
-        userId: widget.userId,
-      );
+      final results = await Future.wait([
+        api.getMarketHistory(leagueId: widget.leagueId, userId: widget.userId),
+        api.getLeagueActivity(
+          idLiga: widget.leagueId,
+          idUsuario: widget.userId,
+          limit: 100,
+        ),
+      ]);
       if (!mounted) {
         return;
       }
+      final marketRows = results[0] as List<LeagueMarketHistoryEntry>;
+      final activityRows = results[1] as List<LeagueActivityEvent>;
+      final kicks = activityRows
+          .where((e) => e.tipo.trim().toUpperCase() == 'ADMIN_KICK')
+          .toList();
+
+      final merged = <LeagueUnifiedHistoryItem>[
+        ...marketRows.map(LeagueUnifiedMarketItem.new),
+        ...kicks.map(LeagueUnifiedActivityItem.new),
+      ]..sort((a, b) {
+        final ad = a.sortDate ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final bd = b.sortDate ?? DateTime.fromMillisecondsSinceEpoch(0);
+        return bd.compareTo(ad);
+      });
+
       setState(() {
-        _entries = rows;
+        _items = merged;
         _loading = false;
       });
     } catch (e) {
@@ -65,14 +90,23 @@ class _LeagueMarketHistoryScreenState extends State<LeagueMarketHistoryScreen> {
     }
   }
 
+  List<LeagueUnifiedHistoryItem> get _filteredItems {
+    return _items
+        .where((item) => leagueMarketHistoryMatchesFilter(item, _filter))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final ll = context.leagueL10n;
     final subtitle = (widget.leagueName ?? '').trim().isNotEmpty
-        ? 'Movimientos recientes de ${widget.leagueName!.trim()}'
-        : 'Movimientos recientes de la liga';
+        ? ll.historySubtitleNamed(widget.leagueName!.trim())
+        : ll.historySubtitleGeneric;
+    final filtered = _filteredItems;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Historial del mercado')),
+      appBar: AppBar(title: Text(ll.marketHistoryTitle)),
       body: RefreshIndicator(
         onRefresh: () => _load(keepData: true),
         child: ListView(
@@ -86,6 +120,25 @@ class _LeagueMarketHistoryScreenState extends State<LeagueMarketHistoryScreen> {
               ),
             ),
             const SizedBox(height: 12),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (final entry in LeagueMarketHistoryFilters.labels.entries)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        label: Text(entry.value),
+                        selected: _filter == entry.key,
+                        onSelected: _loading
+                            ? null
+                            : (_) => setState(() => _filter = entry.key),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
             if (_loading)
               const Center(
                 child: Padding(
@@ -95,15 +148,20 @@ class _LeagueMarketHistoryScreenState extends State<LeagueMarketHistoryScreen> {
               )
             else if (_error != null)
               _ErrorState(error: _error!, onRetry: _load)
-            else if (_entries.isEmpty)
+            else if (filtered.isEmpty)
               const _EmptyState()
             else
-              ..._entries.map(
-                (entry) => Padding(
+              ...filtered.map((item) {
+                return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
-                  child: LeagueMarketHistoryBubble(entry: entry),
-                ),
-              ),
+                  child: switch (item) {
+                    LeagueUnifiedMarketItem(:final entry) =>
+                      LeagueMarketHistoryBubble(entry: entry),
+                    LeagueUnifiedActivityItem(:final event) =>
+                      LeagueActivityTile(event: event),
+                  },
+                );
+              }),
           ],
         ),
       ),
@@ -128,7 +186,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Aún no hay movimientos de mercado.',
+            context.leagueL10n.noMovementsForFilter,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -170,7 +228,7 @@ class _ErrorState extends StatelessWidget {
           FilledButton.tonalIcon(
             onPressed: () => onRetry(),
             icon: const Icon(Icons.refresh_rounded),
-            label: const Text('Reintentar'),
+            label: Text(context.l10n.retry),
           ),
         ],
       ),

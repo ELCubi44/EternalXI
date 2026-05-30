@@ -1,95 +1,101 @@
+import 'package:eternal_xi/app/localization/app_localizations.dart';
+
 class Validators {
   static final _nicknameRegex =
       RegExp(r'^[\p{L}\p{N}_\-.]{3,24}$', unicode: true);
 
-  static String? email(String? value) {
+  static String? email(String? value, AppLocalizations l10n) {
     final v = value?.trim() ?? '';
     if (v.isEmpty) {
-      return 'El correo es obligatorio';
+      return l10n.validatorRequiredEmail;
     }
     if (v.length > 190) {
-      return 'Máximo 190 caracteres';
+      return l10n.validatorEmailMaxLength;
     }
     final regex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
     if (!regex.hasMatch(v)) {
-      return 'Correo inválido';
+      return l10n.validatorInvalidEmail;
     }
     return null;
   }
 
-  static String? password(String? value) {
+  static String? password(String? value, AppLocalizations l10n) {
     final v = value ?? '';
     if (v.isEmpty) {
-      return 'La contraseña es obligatoria';
+      return l10n.validatorRequiredPassword;
     }
     if (v.length < 8) {
-      return 'Mínimo 8 caracteres';
+      return l10n.validatorPasswordMinLength;
     }
     if (v.length > 128) {
-      return 'Máximo 128 caracteres';
+      return l10n.validatorPasswordMaxLength;
     }
     return null;
   }
 
-  static String? nickname(String? value) {
+  static String? nickname(String? value, AppLocalizations l10n) {
     final v = value?.trim() ?? '';
     if (v.isEmpty) {
-      return 'El nickname es obligatorio';
+      return l10n.validatorRequiredNickname;
     }
     if (v.contains(' ')) {
-      return 'El nickname no puede contener espacios';
+      return l10n.validatorNicknameNoSpaces;
     }
     if (v.length < 3) {
-      return 'Mínimo 3 caracteres';
+      return l10n.validatorNicknameMinLength;
     }
     if (v.length > 24) {
-      return 'Máximo 24 caracteres';
+      return l10n.validatorNicknameMaxLength;
     }
     if (!_nicknameRegex.hasMatch(v)) {
-      return 'Solo letras, números, guiones, puntos y guiones bajos';
+      return l10n.validatorNicknameInvalidChars;
     }
     return null;
   }
 
-  static String? confirmPassword(String? value, String original) {
+  static String? confirmPassword(
+    String? value,
+    String original,
+    AppLocalizations l10n,
+  ) {
     if ((value ?? '').isEmpty) {
-      return 'Confirma la contraseña';
+      return l10n.validatorConfirmPasswordRequired;
     }
     if (value != original) {
-      return 'Las contraseñas no coinciden';
+      return l10n.validatorPasswordsDontMatch;
     }
     return null;
   }
 
-  static String? verificationCode(String? value) {
+  static String? verificationCode(String? value, AppLocalizations l10n) {
     final v = value?.trim() ?? '';
     if (v.isEmpty) {
-      return 'El código es obligatorio';
+      return l10n.validatorRequiredCode;
     }
     return null;
   }
 
-  static String? leagueName(String? value) {
+  static String? leagueName(String? value, AppLocalizations l10n) {
     final v = value?.trim() ?? '';
     if (v.isEmpty) {
-      return 'El nombre de la liga es obligatorio';
+      return l10n.validatorRequiredLeagueName;
     }
     if (v.length < 3) {
-      return 'Mínimo 3 caracteres';
+      return l10n.validatorLeagueNameMinLength;
     }
     if (v.length > 50) {
-      return 'Máximo 50 caracteres';
+      return l10n.validatorLeagueNameMaxLength;
     }
     return null;
   }
 
-  static String? invitationCode(String? value) {
+  static String? invitationCode(String? value, AppLocalizations l10n) {
     final v = value?.trim() ?? '';
     if (v.isEmpty) {
-      return 'Introduce el código de invitación';
+      return l10n.validatorRequiredInvitationCode;
     }
     if (v.length > 20) {
-      return 'Máximo 20 caracteres';
+      return l10n.validatorInvitationCodeMaxLength;
     }
     return null;
   }

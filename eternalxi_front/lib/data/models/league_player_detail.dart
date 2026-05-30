@@ -1,5 +1,6 @@
 import 'package:eternal_xi/data/models/league_json_read.dart';
 import 'package:eternal_xi/data/models/league_player_round_stats.dart';
+import 'package:eternal_xi/data/models/league_squad_player.dart';
 import 'package:flutter/foundation.dart';
 
 /// Detalle completo de jugador en el contexto de una liga concreta.
@@ -271,6 +272,57 @@ class LeaguePlayerDetail {
         'proteccionJornadaFin',
         'proteccion_jornada_fin',
       ]),
+    );
+  }
+
+  /// Convierte el detalle en [LeagueSquadPlayer], conservando datos del stub si faltan.
+  LeagueSquadPlayer toSquadPlayer({LeagueSquadPlayer? fallback}) {
+    String pickString(String primary, String fb) {
+      final p = primary.trim();
+      if (p.isNotEmpty) {
+        return p;
+      }
+      return fb.trim();
+    }
+
+    return LeagueSquadPlayer(
+      idLigaJugador: idLigaJugador,
+      idJugador: idJugador,
+      nombre: pickString(nombre, fallback?.nombre ?? ''),
+      pila: pickString(pila, fallback?.pila ?? ''),
+      posicion: pickString(posicion, fallback?.posicion ?? ''),
+      valoracion: valoracion > 0 ? valoracion : (fallback?.valoracion ?? 0),
+      idEquipo: idEquipo > 0 ? idEquipo : (fallback?.idEquipo ?? 0),
+      nombreEquipo: pickString(nombreEquipo, fallback?.nombreEquipo ?? ''),
+      estado: pickString(estado, fallback?.estado ?? ''),
+      estadoVisible: estadoVisible ?? fallback?.estadoVisible,
+      cansancio: cansancio,
+      valor: valor > 0 ? valor : (fallback?.valor ?? 0),
+      valorAnterior: valorAnterior > 0 ? valorAnterior : (fallback?.valorAnterior ?? 0),
+      fotoJugador: pickString(fotoJugador, fallback?.fotoJugador ?? ''),
+      enPoolMercado: enPoolMercado || (fallback?.enPoolMercado ?? false),
+      propietarioNick: pickString(propietarioNick, fallback?.propietarioNick ?? ''),
+      idUsuarioDueno: idUsuarioDueno > 0
+          ? idUsuarioDueno
+          : (fallback?.idUsuarioDueno ?? 0),
+      fotoEquipo: fallback?.fotoEquipo ?? '',
+      nombreDuenoVisible: pickString(
+        nombreDuenoVisible,
+        fallback?.nombreDuenoVisible ?? '',
+      ),
+      esMercado: esMercado || (fallback?.esMercado ?? false),
+      tieneOfertaPendiente:
+          tieneOfertaPendiente || (fallback?.tieneOfertaPendiente ?? false),
+      probabilidadTitular: probabilidadTitular ?? fallback?.probabilidadTitular,
+      motivoTitularidad: motivoTitularidad ?? fallback?.motivoTitularidad,
+      idPartidoProbabilidad:
+          idPartidoProbabilidad ?? fallback?.idPartidoProbabilidad,
+      calculadoEnProbabilidad:
+          calculadoEnProbabilidad ?? fallback?.calculadoEnProbabilidad,
+      jugadorProtegido: jugadorProtegido || (fallback?.jugadorProtegido ?? false),
+      proteccionHastaFinTemporada: proteccionHastaFinTemporada ||
+          (fallback?.proteccionHastaFinTemporada ?? false),
+      proteccionJornadaFin: proteccionJornadaFin ?? fallback?.proteccionJornadaFin,
     );
   }
 }

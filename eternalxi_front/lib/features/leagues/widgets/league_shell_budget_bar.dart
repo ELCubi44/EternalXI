@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,7 @@ class LeagueShellBudgetBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final label = LeagueMoneyFormat.money(miDinero);
@@ -40,7 +42,7 @@ class LeagueShellBudgetBar extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Tu presupuesto',
+                      l10n.budget,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
@@ -79,7 +81,7 @@ class LeagueShellBudgetBar extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Historial',
+                          l10n.history,
                           style: theme.textTheme.labelSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: colorScheme.onSurfaceVariant,

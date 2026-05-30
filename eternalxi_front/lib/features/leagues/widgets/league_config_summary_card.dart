@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/data/models/league_detail.dart';
 import 'package:eternal_xi/features/leagues/utils/league_config_labels.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +12,8 @@ class LeagueConfigSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rows = LeagueConfigLabels.summaryRows(detail);
+    final ll = context.leagueL10n;
+    final rows = LeagueConfigLabels.summaryRows(detail, l10n: context.l10n);
     if (rows.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -27,7 +30,7 @@ class LeagueConfigSummaryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Configuración de la liga',
+              ll.leagueConfigSummaryTitle,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),

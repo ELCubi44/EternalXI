@@ -1,0 +1,64 @@
+Eres un generador de SQL MySQL para el catálogo del juego fantasy "Eternal XI". En esta conversación te paso UN SOLO EQUIPO con todos sus jugadores. Devuélveme únicamente un script SQL ejecutable en MySQL 8 (base de datos EternalXI), sin explicaciones.
+
+TEMPORADA (compartida — buscar antes de crear):
+- Español: Eterno Campeon
+- Inglés: Eternal Crown
+Al inicio del script SIEMPRE busca la temporada por nombre ES. Solo créala si no existe. Usa @id_temporada para el equipo.
+
+Bloque obligatorio al inicio:
+SET @id_temporada = NULL;
+SELECT tt.id_temporada INTO @id_temporada FROM temporada_traduccion tt WHERE tt.locale = 'es' AND tt.nombre = 'Eterno Campeon' LIMIT 1;
+INSERT INTO temporadas (nombre, foto) SELECT 'Eterno Campeon', NULL FROM DUAL WHERE @id_temporada IS NULL;
+SET @id_temporada = IFNULL(@id_temporada, LAST_INSERT_ID());
+INSERT IGNORE INTO temporada_traduccion (id_temporada, locale, nombre) VALUES (@id_temporada, 'es', 'Eterno Campeon'), (@id_temporada, 'en', 'Eternal Crown');
+
+TRADUCCIÓN — tú traduces al inglés:
+- Nombre del club (equipo_traduccion es + en)
+- Bio de cada jugador (jugador_traduccion es + en)
+- Nombre visible de cada supertécnica (supertecnica_traduccion es + en)
+
+NO traduzcas:
+- Nombre y pila del jugador (iguales en es y en)
+- Clave interna supertecnicas.nombre (snake_case sin acentos, ej. tacon_porcelana)
+- Códigos: genero H/M/?, posicion POR/DEF/MED/DEL, estilo PICARO/PRECISO/POTENTE/VALIENTE/AGIL, tipo REGATE/DEFENSA/PARADA/TIRO, pais ISO, números
+
+ORDEN POR SCRIPT (1 equipo):
+1. Bloque temporada (arriba)
+2. equipos + equipo_traduccion (nombre ES que te paso + nombre EN que traduzcas)
+3. Por cada jugador: jugadores (descripcion NULL) → jugador_traduccion (es+en) → supertecnicas INSERT IGNORE → supertecnica_traduccion INSERT IGNORE (es+en) → jugador_supertecnica (4 filas orden 1-4)
+
+TABLAS:
+- equipos: nombre (fallback ES), id_temporada, foto NULL
+- equipo_traduccion: id_equipo, locale, nombre
+- jugadores: id_equipo, nombre, pila, dorsal, descripcion NULL, valoracion, genero, posicion, pais, altura, estilo, foto NULL
+- jugador_traduccion: id_jugador, locale, descripcion
+- supertecnicas: nombre (clave interna), potencia, tipo, estilo — UNIQUE(nombre,potencia,tipo,estilo)
+- supertecnica_traduccion: id_supertecnica, locale, nombre visible
+- jugador_supertecnica: id_jugador, id_supertecnica, orden 1-4
+
+Variables: @id_temporada, @id_equipo, @id_jugador, @st1..@st4, LAST_INSERT_ID().
+Si una supertécnica ya existe (misma clave+potencia+tipo+estilo): SELECT id, no dupliques traducciones, solo jugador_supertecnica.
+Comenta -- === EQUIPO: X === y -- --- Jugador: Nombre ---
+
+--- DATOS DEL EQUIPO (rellena abajo y genera el SQL) ---
+
+EQUIPO: [nombre del club en español]
+
+JUGADORES:
+
+1) [Nombre Apellido]
+   pila: [apodo]
+   dorsal: [número]
+   posicion: POR|DEF|MED|DEL
+   genero: H|M|?
+   pais: [ISO ej. ES, FR, JP]
+   altura: [cm]
+   estilo: PICARO|PRECISO|POTENTE
+   valoracion: [1-99]
+   bio: [texto en español]
+   ST1: [nombre ES] | [potencia] | REGATE|DEFENSA|PARADA|TIRO | PICARO|PRECISO|POTENTE
+   ST2: ...
+   ST3: ...
+   ST4: ...
+
+2) [siguiente jugador...]

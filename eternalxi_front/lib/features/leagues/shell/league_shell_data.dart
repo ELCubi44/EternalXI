@@ -12,6 +12,8 @@ class LeagueShellData extends InheritedWidget {
     required this.reload,
     required this.selectTab,
     required this.currentTabIndex,
+    required this.registerLineupLeaveGuard,
+    required this.confirmLeaveLineupIfNeeded,
     required super.child,
   });
 
@@ -22,6 +24,8 @@ class LeagueShellData extends InheritedWidget {
   final Future<void> Function() reload;
   final void Function(int tabIndex) selectTab;
   final int currentTabIndex;
+  final void Function(Future<bool> Function()? guard) registerLineupLeaveGuard;
+  final Future<bool> Function() confirmLeaveLineupIfNeeded;
 
   static LeagueShellData of(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<LeagueShellData>();

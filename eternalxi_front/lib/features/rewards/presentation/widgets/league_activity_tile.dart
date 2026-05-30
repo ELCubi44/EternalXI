@@ -94,6 +94,7 @@ class LeagueActivityTile extends StatelessWidget {
     switch (tipo.trim().toUpperCase()) {
       case 'CARD_REDEEMED':
         return const _ActivityIcon(Icons.auto_awesome_rounded, Color(0xFFFFD54F));
+      case 'COACH_ROULETTE':
       case 'COACH_ROULETTE_SPIN':
         return const _ActivityIcon(Icons.casino_rounded, Color(0xFFCE93D8));
       case 'PACK_OPENED':

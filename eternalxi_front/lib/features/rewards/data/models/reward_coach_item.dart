@@ -10,6 +10,7 @@ class RewardCoachItem {
     required this.idEquipo,
     required this.nombreEquipo,
     required this.fotoEquipo,
+    this.bonusPuntos = 0,
   });
 
   final int idEntrenador;
@@ -19,6 +20,7 @@ class RewardCoachItem {
   final int? idEquipo;
   final String? nombreEquipo;
   final String? fotoEquipo;
+  final int bonusPuntos;
 
   String get displayName {
     final pi = pila.trim();
@@ -65,6 +67,10 @@ class RewardCoachItem {
         'fotoEquipo',
         'foto_equipo',
         'escudoEquipo',
+      ]),
+      bonusPuntos: readLeagueInt(json, const [
+        'bonusPuntos',
+        'bonus_puntos',
       ]),
     );
   }

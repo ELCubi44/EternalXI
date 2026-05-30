@@ -1,13 +1,17 @@
 import 'dart:io';
 
+import 'package:eternal_xi/app/localization/app_locale.dart';
+import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:dio/dio.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 class ApiClient {
-  ApiClient()
-    : dio = Dio(
+  ApiClient({String acceptLanguage = 'es'})
+    : _acceptLanguage = _normalizeLanguage(acceptLanguage),
+      dio = Dio(
         BaseOptions(
           baseUrl: ApiConstants.baseUrl,
           connectTimeout: const Duration(seconds: 15),
@@ -15,7 +19,10 @@ class ApiClient {
           sendTimeout: const Duration(seconds: 20),
           contentType: Headers.jsonContentType,
           responseType: ResponseType.json,
-          headers: {'Accept': 'application/json'},
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Language': _normalizeLanguage(acceptLanguage),
+          },
         ),
       ) {
     if (kDebugMode) {
@@ -23,10 +30,10 @@ class ApiClient {
         LogInterceptor(requestBody: true, responseBody: true),
       );
     }
-    // Placeholder para agregar Authorization en el futuro.
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
+          options.headers['Accept-Language'] = _acceptLanguage;
           handler.next(options);
         },
       ),
@@ -34,8 +41,21 @@ class ApiClient {
   }
 
   final Dio dio;
+  String _acceptLanguage;
+
+  String get acceptLanguage => _acceptLanguage;
+
+  void setAcceptLanguage(String languageTag) {
+    _acceptLanguage = _normalizeLanguage(languageTag);
+    dio.options.headers['Accept-Language'] = _acceptLanguage;
+  }
+
+  static String _normalizeLanguage(String raw) {
+    return raw.trim().toLowerCase().startsWith('en') ? 'en' : 'es';
+  }
 
   String extractErrorMessage(Object error) {
+    final l10n = AppLocalizations(Locale(AppLocale.languageCode));
     if (error is ApiException) {
       return error.message;
     }
@@ -45,7 +65,7 @@ class ApiClient {
           error.type == DioExceptionType.connectionTimeout ||
           error.type == DioExceptionType.receiveTimeout ||
           error.type == DioExceptionType.sendTimeout) {
-        return 'No se pudo conectar con el servidor. Verifica backend y red.';
+        return l10n.apiConnectionError;
       }
 
       final responseData = error.response?.data;
@@ -55,33 +75,35 @@ class ApiClient {
       }
 
       if (error.error is SocketException) {
-        return 'Error de red. Revisa tu conexion y vuelve a intentar.';
+        return l10n.apiNetworkError;
       }
 
-      return 'Error de comunicación con el servidor.';
+      return l10n.apiCommunicationError;
     }
 
-    return 'Ocurrió un error inesperado.';
+    return l10n.apiUnexpectedError;
   }
 
-  static const _knownErrorMessages = <String, String>{
-    'AMOUNT_MUST_BE_INTEGER': 'El importe debe ser un número entero.',
-    'INSUFFICIENT_FUNDS': 'No tienes suficiente dinero.',
-    'FORBIDDEN': 'No tienes permiso para hacer esta acción.',
-    'INTERNAL_ERROR': 'Ha ocurrido un error. Inténtalo de nuevo.',
-  };
-
   static String? _mapBackendError(Map<String, dynamic> data) {
+    final l10n = AppLocalizations(Locale(AppLocale.languageCode));
+    final knownErrorMessages = <String, String>{
+      'AMOUNT_MUST_BE_INTEGER': l10n.apiAmountMustBeInteger,
+      'INSUFFICIENT_FUNDS': l10n.apiInsufficientFunds,
+      'FORBIDDEN': l10n.apiForbidden,
+      'INTERNAL_ERROR': l10n.apiInternalError,
+    };
     final errorCode = data['error'];
     final rawMessage = data['message'] ?? data['mensaje'];
     final msg = rawMessage is String ? rawMessage.trim() : '';
 
     if (errorCode is String && errorCode.trim().isNotEmpty) {
       final code = errorCode.trim().toUpperCase();
-      final known = _knownErrorMessages[code];
+      final known = knownErrorMessages[code];
       if (known != null) return known;
       if (msg.isNotEmpty) return msg;
-      return 'Error del servidor ($code).';
+      return AppLocale.languageCode.startsWith('en')
+          ? 'Server error ($code).'
+          : 'Error del servidor ($code).';
     }
 
     if (msg.isNotEmpty) return msg;

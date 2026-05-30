@@ -1,7 +1,13 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
+import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/data/models/league_summary.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/leagues/controller/leagues_controller.dart';
+import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
+import 'package:eternal_xi/features/profile/widgets/achievements_tab.dart';
+import 'package:eternal_xi/features/profile/widgets/progress_celebration_overlay.dart';
 import 'package:eternal_xi/core/utils/league_asset_urls.dart';
 import 'package:eternal_xi/shared/widgets/user_tokens_action.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +22,25 @@ class MyLeaguesScreen extends StatefulWidget {
 }
 
 class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
+  int _sectionIndex = 0;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
+  }
+
+  void _onSectionChanged(int index) {
+    if (_sectionIndex == index) {
+      return;
+    }
+    setState(() => _sectionIndex = index);
+    if (index == 1) {
+      final id = _resolveUserId();
+      if (id != null && mounted) {
+        context.read<AccountProgressController>().loadProgress(id);
+      }
+    }
   }
 
   int? _resolveUserId() {
@@ -36,25 +57,47 @@ class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
     if (idUsuario == null) {
       return;
     }
-    await context.read<LeaguesController>().loadMyLeagues(idUsuario);
+    await Future.wait([
+      context.read<LeaguesController>().loadMyLeagues(idUsuario),
+      context.read<AccountProgressController>().loadProgress(idUsuario),
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final leagues = context.watch<LeaguesController>();
+    final user = context.watch<AuthController>().currentUser;
     final userId = _resolveUserId();
+    final nickname = user?.nickname ?? 'Jugador';
+    final nivel = user?.nivel ?? 1;
+    final photoUrl = (user != null && user.hasProfilePhoto)
+        ? ApiConstants.userProfilePhotoUrl(
+            user.id,
+            cacheBuster: user.foto.hashCode,
+          )
+        : null;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mis ligas'),
+        title: Text(l10n.myLeagues),
         actions: userId == null
             ? null
             : [
                 const UserTokensAction(),
                 IconButton(
-                  tooltip: 'Unirse a una liga',
+                  tooltip: l10n.profile,
+                  icon: _LeaguesProfileAvatar(
+                    nivel: nivel,
+                    nickname: nickname,
+                    photoUrl: photoUrl,
+                  ),
+                  onPressed: () => context.push(AppRoutes.profile),
+                ),
+                IconButton(
+                  tooltip: l10n.joinLeague,
                   icon: const Icon(Icons.group_add_outlined),
                   onPressed: () async {
                     await context.push(AppRoutes.leaguesJoin);
@@ -64,7 +107,7 @@ class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
                   },
                 ),
                 IconButton(
-                  tooltip: 'Crear liga',
+                  tooltip: l10n.createLeague,
                   icon: const Icon(Icons.add_circle_outline),
                   onPressed: () async {
                     await context.push(AppRoutes.leaguesCreate);
@@ -78,14 +121,43 @@ class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
       ),
       body: userId == null
           ? _NoSessionMessage(colorScheme: colorScheme, theme: theme)
-          : RefreshIndicator(
-              onRefresh: _refresh,
-              child: _LeaguesBody(
-                leagues: leagues,
-                colorScheme: colorScheme,
-                theme: theme,
-                onRetry: _refresh,
+          : ProgressCelebrationOverlay(
+              child: IndexedStack(
+                index: _sectionIndex,
+                children: [
+                  RefreshIndicator(
+                    onRefresh: _refresh,
+                    child: _LeaguesBody(
+                      leagues: leagues,
+                      colorScheme: colorScheme,
+                      theme: theme,
+                      onRetry: _refresh,
+                    ),
+                  ),
+                  RefreshIndicator(
+                    onRefresh: _refresh,
+                    child: AchievementsTab(onRetry: _refresh),
+                  ),
+                ],
               ),
+            ),
+      bottomNavigationBar: userId == null
+          ? null
+          : NavigationBar(
+              selectedIndex: _sectionIndex,
+              onDestinationSelected: _onSectionChanged,
+              destinations: [
+                NavigationDestination(
+                  icon: const Icon(Icons.emoji_events_outlined),
+                  selectedIcon: const Icon(Icons.emoji_events),
+                  label: l10n.leaguesTab,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.military_tech_outlined),
+                  selectedIcon: const Icon(Icons.military_tech),
+                  label: l10n.achievementsTab,
+                ),
+              ],
             ),
     );
   }
@@ -99,6 +171,7 @@ class _NoSessionMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(24),
@@ -106,7 +179,7 @@ class _NoSessionMessage extends StatelessWidget {
         Icon(Icons.person_off_outlined, size: 56, color: colorScheme.outline),
         const SizedBox(height: 16),
         Text(
-          'No hay sesión de usuario',
+          l10n.noUserSession,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
@@ -114,7 +187,7 @@ class _NoSessionMessage extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Inicia sesión para ver tus ligas. Si ya iniciaste sesión, vuelve atrás e inténtalo de nuevo.',
+          l10n.noUserSessionHint,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),
@@ -140,6 +213,7 @@ class _LeaguesBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     if (leagues.isLoading && leagues.myLeagues.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -160,7 +234,7 @@ class _LeaguesBody extends StatelessWidget {
           FilledButton.tonalIcon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh),
-            label: const Text('Reintentar'),
+            label: Text(l10n.retry),
           ),
         ],
       );
@@ -169,7 +243,7 @@ class _LeaguesBody extends StatelessWidget {
     if (leagues.myLeagues.isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 88),
         children: [
           Icon(
             Icons.emoji_events_outlined,
@@ -178,7 +252,7 @@ class _LeaguesBody extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Aún no tienes ligas',
+            l10n.noLeaguesYet,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -186,7 +260,7 @@ class _LeaguesBody extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Crea una liga o únete con un código usando los iconos arriba a la derecha.',
+            l10n.createOrJoinLeagueHint,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
@@ -198,7 +272,7 @@ class _LeaguesBody extends StatelessWidget {
 
     return ListView.separated(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 88),
       itemCount: leagues.myLeagues.length,
       separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
@@ -276,7 +350,7 @@ class _LeagueCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '${league.participantes} participantes',
+                    context.leagueL10n.participantsCount(league.participantes),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -307,6 +381,42 @@ class _LeagueCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _LeaguesProfileAvatar extends StatelessWidget {
+  const _LeaguesProfileAvatar({
+    required this.nivel,
+    required this.nickname,
+    required this.photoUrl,
+  });
+
+  final int nivel;
+  final String nickname;
+  final String? photoUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final initial = nickname.trim().isEmpty
+        ? '?'
+        : nickname.trim().substring(0, 1).toUpperCase();
+
+    return CircleAvatar(
+      radius: 16,
+      backgroundColor: colorScheme.primaryContainer,
+      backgroundImage: photoUrl != null ? NetworkImage(photoUrl!) : null,
+      child: photoUrl == null
+          ? Text(
+              initial,
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: colorScheme.onPrimaryContainer,
+              ),
+            )
+          : null,
     );
   }
 }

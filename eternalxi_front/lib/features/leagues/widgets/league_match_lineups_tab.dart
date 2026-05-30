@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/data/models/league_calendar_models.dart';
 import 'package:eternal_xi/data/models/league_coach_assignment.dart';
 import 'package:eternal_xi/data/models/league_match_detail_payload.dart';
@@ -44,6 +45,7 @@ class LeagueMatchLineupsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final loc = _pickSide(live?.lineupLocal, payload.lineupLocal);
     final vis = _pickSide(live?.lineupVisitante, payload.lineupVisitante);
@@ -56,7 +58,7 @@ class LeagueMatchLineupsTab extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.fromLTRB(12, 24, 12, 30),
         child: Text(
-          'Aun no hay alineaciones disponibles para este partido.',
+          ll.noLineupsForMatch,
           style: theme.textTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
@@ -66,7 +68,7 @@ class LeagueMatchLineupsTab extends StatelessWidget {
     return Column(
       children: [
         _LineupTeamField(
-          label: 'Local',
+          label: ll.homeTeam,
           teamName: summary.nombreLocal,
           teamId: summary.idEquipoLocal,
           escudoUrl: summary.escudoLocalUrl(),
@@ -79,7 +81,7 @@ class LeagueMatchLineupsTab extends StatelessWidget {
         ),
         const SizedBox(height: 18),
         _LineupTeamField(
-          label: 'Visitante',
+          label: ll.awayTeam,
           teamName: summary.nombreVisitante,
           teamId: summary.idEquipoVisitante,
           escudoUrl: summary.escudoVisitanteUrl(),
@@ -123,6 +125,7 @@ class _LineupTeamField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final counts = parseMatchFormation(formationRaw);
@@ -204,7 +207,7 @@ class _LineupTeamField extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        teamName.trim().isEmpty ? 'Equipo' : teamName.trim(),
+                        teamName.trim().isEmpty ? ll.genericTeam : teamName.trim(),
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w900,
                         ),
@@ -229,7 +232,7 @@ class _LineupTeamField extends StatelessWidget {
                       coach: coach!,
                       teamFormationLabel: formationLabel,
                       teamNameDisplay:
-                          teamName.trim().isEmpty ? 'Equipo' : teamName.trim(),
+                          teamName.trim().isEmpty ? ll.genericTeam : teamName.trim(),
                       teamId: teamId,
                     ),
                   ),
@@ -281,7 +284,7 @@ class _LineupTeamField extends StatelessWidget {
             if (subs.isNotEmpty) ...[
               const SizedBox(height: 12),
               Text(
-                'Suplentes',
+                ll.substitutesLabel,
                 style: theme.textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -363,12 +366,14 @@ class _BenchChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final name = LeagueDisplayStrings.shortNickname(
       LeagueDisplayStrings.playerShortName(
         pila: player.pila,
         nombre: player.nombre,
+        ll: ll,
       ),
       maxLen: 14,
     );
@@ -387,7 +392,7 @@ class _BenchChip extends StatelessWidget {
           LeaguePlayerAvatar(player: player, size: 28, circular: true),
           const SizedBox(width: 6),
           Text(
-            name.isEmpty ? 'Jugador' : name,
+            name.isEmpty ? ll.genericPlayer : name,
             style: theme.textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w700,
             ),
@@ -405,11 +410,13 @@ class _FieldPlayerBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final short = LeagueDisplayStrings.shortNickname(
       LeagueDisplayStrings.playerShortName(
         pila: player.pila,
         nombre: player.nombre,
+        ll: ll,
       ),
       maxLen: 10,
     );
@@ -441,7 +448,7 @@ class _FieldPlayerBubble extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            short.isEmpty ? 'Jugador' : short,
+            short.isEmpty ? ll.genericPlayer : short,
             style: theme.textTheme.labelSmall?.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w700,

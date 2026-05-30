@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:eternal_xi/core/storage/secure_storage_service.dart';
+import 'package:eternal_xi/data/models/email_change_confirm_response.dart';
 import 'package:eternal_xi/data/models/user_model.dart';
 import 'package:eternal_xi/data/services/auth_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
@@ -128,6 +129,21 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> refreshCurrentUserFromServer() async {
+    final id = currentUser?.id;
+    if (id == null) {
+      return;
+    }
+    try {
+      final user = await _userApiService.getUserById(id);
+      currentUser = user;
+      await _secureStorageService.saveUser(user);
+      notifyListeners();
+    } catch (_) {
+      // Mantener sesión local si falla el refresco puntual.
+    }
+  }
+
   Future<String?> requestEmailVerification(String correo) async {
     return _runMessageAction(
       () => _authApiService.requestEmailVerification(correo: correo),
@@ -186,6 +202,46 @@ class AuthController extends ChangeNotifier {
         nuevaContrasena: nuevaContrasena,
       ),
     );
+  }
+
+  Future<String?> requestEmailChange({
+    required int idUsuario,
+    required String contrasenaActual,
+    required String nuevoCorreo,
+  }) async {
+    return _runMessageAction(
+      () => _authApiService.requestEmailChange(
+        idUsuario: idUsuario,
+        contrasenaActual: contrasenaActual,
+        nuevoCorreo: nuevoCorreo,
+      ),
+    );
+  }
+
+  Future<EmailChangeConfirmResponse?> confirmEmailChange({
+    required int idUsuario,
+    required String nuevoCorreo,
+    required String codigo,
+  }) async {
+    _setLoading(true);
+    errorMessage = null;
+    try {
+      final result = await _authApiService.confirmEmailChange(
+        idUsuario: idUsuario,
+        nuevoCorreo: nuevoCorreo,
+        codigo: codigo,
+      );
+      currentUser = result.user;
+      await _secureStorageService.saveUser(result.user);
+      notifyListeners();
+      return result;
+    } catch (e) {
+      errorMessage = e.toString().replaceFirst('Exception: ', '');
+      notifyListeners();
+      return null;
+    } finally {
+      _setLoading(false);
+    }
   }
 
   Future<String?> _runMessageAction(Future<dynamic> Function() action) async {

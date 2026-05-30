@@ -22,6 +22,7 @@ import 'package:eternal_xi/data/models/league_coach_assignment.dart';
 import 'package:eternal_xi/data/models/league_buy_now_result.dart';
 import 'package:eternal_xi/data/models/league_sell_player_result.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
+import 'package:eternal_xi/data/models/league_round_standing_row.dart';
 import 'package:eternal_xi/data/models/league_standing_row.dart';
 import 'package:eternal_xi/data/models/league_team_standing_row.dart';
 import 'package:eternal_xi/data/models/create_league_request.dart';
@@ -621,6 +622,24 @@ class LeaguesApiService {
       );
       final rows = readLeagueListMap(response.data);
       return rows.map(LeagueStandingRow.fromJson).toList();
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  /// GET /leagues/{idLiga}/rounds/{idJornada}/standings?idUsuario=
+  Future<List<LeagueRoundStandingRow>> getRoundStandings({
+    required int idLiga,
+    required int idJornada,
+    required int idUsuario,
+  }) async {
+    try {
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.leagues}/$idLiga/rounds/$idJornada/standings',
+        queryParameters: <String, dynamic>{'idUsuario': idUsuario},
+      );
+      final rows = readLeagueListMap(response.data);
+      return rows.map(LeagueRoundStandingRow.fromJson).toList();
     } catch (e) {
       throw ApiException(_apiClient.extractErrorMessage(e));
     }

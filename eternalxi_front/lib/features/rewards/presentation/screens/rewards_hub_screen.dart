@@ -1,7 +1,9 @@
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/rewards/presentation/screens/league_rewards_screen.dart';
 import 'package:eternal_xi/features/rewards/presentation/screens/rewards_entry_screen.dart';
+import 'package:eternal_xi/features/rewards/presentation/theme/rewards_premium_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -60,15 +62,19 @@ class _RewardsHubScreenState extends State<RewardsHubScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return RewardsPremiumTheme.scope(child: _buildBody(context));
+  }
+
+  Widget _buildBody(BuildContext context) {
     final id = widget.initialLeagueId;
     final user = context.watch<AuthController>().currentUser;
     if (id != null && id > 0) {
       if (user == null || user.id <= 0) {
         return Scaffold(
-          backgroundColor: const Color(0xFF070910),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
-            title: const Text('Recompensas'),
-            backgroundColor: const Color(0xFF070910),
+            title: Text(context.l10n.rewards),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           ),
           body: const Center(
             child: Padding(
@@ -84,10 +90,10 @@ class _RewardsHubScreenState extends State<RewardsHubScreen> {
       }
       if (_loadingName || _leagueName == null) {
         return Scaffold(
-          backgroundColor: const Color(0xFF070910),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
-            title: const Text('Recompensas de liga'),
-            backgroundColor: const Color(0xFF070910),
+            title: Text(context.l10n.leagueRewards),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           ),
           body: const Center(child: CircularProgressIndicator()),
         );

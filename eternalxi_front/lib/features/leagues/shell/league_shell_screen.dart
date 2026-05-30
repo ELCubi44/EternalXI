@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/data/models/league_detail.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
@@ -35,10 +37,28 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
   String? _error;
   int _tabIndex = 0;
   int? _rewardPoints;
+  Future<bool> Function()? _lineupLeaveGuard;
 
-  void _selectTab(int index) {
+  void _registerLineupLeaveGuard(Future<bool> Function()? guard) {
+    _lineupLeaveGuard = guard;
+  }
+
+  Future<bool> _confirmLeaveLineupIfNeeded() async {
+    if (_lineupLeaveGuard == null) {
+      return true;
+    }
+    return _lineupLeaveGuard!();
+  }
+
+  Future<void> _selectTab(int index) async {
     if (index < 0 || index > 4 || index == _tabIndex) {
       return;
+    }
+    if (_tabIndex == 2 && index != 2) {
+      final leave = await _confirmLeaveLineupIfNeeded();
+      if (!leave) {
+        return;
+      }
     }
     setState(() => _tabIndex = index);
     if (index == 2 && !_refreshing) {
@@ -68,7 +88,7 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
     if (widget.leagueId <= 0) {
       setState(() {
         _loading = false;
-        _error = 'Identificador de liga no válido.';
+        _error = context.l10n.leagueInvalidId;
       });
       return;
     }
@@ -77,8 +97,7 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
     if (idUsuario == null) {
       setState(() {
         _loading = false;
-        _error =
-            'No hay usuario en sesión. Inicia sesión o pasa idUsuario en la ruta.';
+        _error = context.leagueL10n.noSessionWithRoute;
       });
       return;
     }
@@ -160,6 +179,12 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
   }
 
   Future<void> _openMarketHistory() async {
+    if (_tabIndex == 2) {
+      final leave = await _confirmLeaveLineupIfNeeded();
+      if (!leave || !mounted) {
+        return;
+      }
+    }
     final idUsuario = _effectiveIdUsuario();
     if (idUsuario == null || widget.leagueId <= 0) {
       return;
@@ -177,13 +202,30 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final idUsuario = _effectiveIdUsuario() ?? 0;
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) {
+          return;
+        }
+        if (_tabIndex == 2) {
+          final leave = await _confirmLeaveLineupIfNeeded();
+          if (!leave) {
+            return;
+          }
+        }
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
       appBar: AppBar(
-        title: Text(_detail?.nombre ?? 'Liga'),
+        title: Text(_detail?.nombre ?? l10n.league),
         actions: [
           if (_rewardPoints != null)
             LeagueRewardPointsAction(
@@ -194,7 +236,7 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
             const UserTokensAction(),
           if (_detail != null && !_loading)
             IconButton(
-              tooltip: 'Actualizar',
+              tooltip: l10n.update,
               onPressed: _refreshing ? null : _reload,
               icon: _refreshing
                   ? SizedBox(
@@ -227,7 +269,7 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
                 FilledButton.tonalIcon(
                   onPressed: _load,
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Reintentar'),
+                  label: Text(l10n.retry),
                 ),
               ],
             )
@@ -241,6 +283,8 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
               reload: _reload,
               selectTab: _selectTab,
               currentTabIndex: _tabIndex,
+              registerLineupLeaveGuard: _registerLineupLeaveGuard,
+              confirmLeaveLineupIfNeeded: _confirmLeaveLineupIfNeeded,
               child: SafeArea(
                 left: true,
                 right: true,
@@ -284,34 +328,35 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
               onDestinationSelected: (index) {
                 _selectTab(index);
               },
-              destinations: const [
+              destinations: [
                 NavigationDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home_rounded),
-                  label: 'Inicio',
+                  icon: const Icon(Icons.home_outlined),
+                  selectedIcon: const Icon(Icons.home_rounded),
+                  label: l10n.home,
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.format_list_numbered_outlined),
-                  selectedIcon: Icon(Icons.leaderboard_rounded),
-                  label: 'Tabla',
+                  icon: const Icon(Icons.format_list_numbered_outlined),
+                  selectedIcon: const Icon(Icons.leaderboard_rounded),
+                  label: l10n.standings,
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.sports_soccer_outlined),
-                  selectedIcon: Icon(Icons.sports_soccer),
-                  label: 'Equipo',
+                  icon: const Icon(Icons.sports_soccer_outlined),
+                  selectedIcon: const Icon(Icons.sports_soccer),
+                  label: l10n.squad,
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.storefront_outlined),
-                  selectedIcon: Icon(Icons.storefront),
-                  label: 'Mercado',
+                  icon: const Icon(Icons.storefront_outlined),
+                  selectedIcon: const Icon(Icons.storefront),
+                  label: l10n.market,
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.settings_outlined),
-                  selectedIcon: Icon(Icons.settings),
-                  label: 'Ajustes',
+                  icon: const Icon(Icons.settings_outlined),
+                  selectedIcon: const Icon(Icons.settings),
+                  label: l10n.settings,
                 ),
               ],
             ),
+      ),
     );
   }
 }

@@ -1,0 +1,479 @@
+================================================================================
+=== PROMPT CHATGPT — REGENERAR SQL FURIA MENUDA — COPIAR TODO DESDE AQUÍ ===
+================================================================================
+
+INSTRUCCIÓN PRINCIPAL (léela entera antes de generar nada):
+
+Eres un generador experto de SQL MySQL 8 para el catálogo del juego fantasy
+"Eternal XI". Base de datos: EternalXI.
+
+En ESTE chat ya definimos el equipo **Furia Menuda** con **19 jugadores**,
+cada uno con bio, stats y **4 supertécnicas**.
+
+Tu tarea AHORA es **regenerar el script SQL COMPLETO y CORRECTO** usando
+**EXACTAMENTE** los mismos datos que ya creaste en esta conversación:
+- mismos nombres de jugadores, pilas, dorsales, valoraciones, posiciones,
+  países, alturas, estilos y bios (español + inglés que tradujiste)
+- mismas 4 supertécnicas por jugador (clave interna, potencia, tipo, estilo,
+  nombre visible ES/EN)
+- mismo nombre de equipo en español: **Furia Menuda**
+- misma traducción al inglés del club que ya propusiste en este chat
+
+**NO inventes jugadores nuevos. NO cambies stats. NO omitas ninguno.**
+**NO escribas explicaciones:** devuelve **SOLO** el SQL ejecutable, listo para
+copiar y pegar en la consola MySQL del servidor (puede ir en un bloque ```sql).
+
+================================================================================
+PARTE 1 — QUÉ FALLÓ LA VEZ ANTERIOR (NO LO REPITAS)
+================================================================================
+
+El script anterior insertó jugadores y supertécnicas en catálogo, pero dejó
+**0 enlaces** en jugador_supertecnica porque usaste **nombres de columna
+incorrectos** al hacer SELECT de IDs. MySQL devolvió ERROR en esos SELECT y
+las variables @st1..@st4 quedaron NULL; los INSERT en jugador_supertecnica
+no crearon filas (o fallaron en silencio con INSERT IGNORE).
+
+ERRORES CONCRETOS QUE COMETISTE (PROHIBIDO volver a usarlos):
+
+  INCORRECTO                              CORRECTO
+  ─────────────────────────────────────   ─────────────────────────────────
+  j.id_jugador                            j.id
+  SELECT id_jugador FROM jugadores        SELECT id FROM jugadores
+  id_supertecnica (como columna en ST)    st.id  o  id
+  SELECT id_supertecnica FROM supertecnicas   SELECT id FROM supertecnicas
+  e.id_equipo (en tabla equipos)          e.id
+  JOIN equipos e ON e.id_equipo = ...     JOIN equipos e ON e.id = j.id_equipo
+  et.id_equipo como PK de equipos         equipos.id es la PK; id_equipo solo
+                                          existe en tablas hijas (equipo_traduccion,
+                                          jugadores.id_equipo)
+
+REGLA DE ORO: En MySQL la primary key de temporadas, equipos y jugadores se
+llama **`id`**. En supertecnicas también es **`id`** (BIGINT).
+Las FKs hacia esas tablas se llaman id_temporada, id_equipo, id_jugador,
+id_supertecnica — pero **nunca** uses id_jugador ni id_supertecnica como
+nombre de columna al hacer SELECT sobre la tabla padre.
+
+Patrón OBLIGATORIO para obtener ID de supertécnica:
+
+  SELECT id INTO @st1
+  FROM supertecnicas
+  WHERE nombre = 'campana_temeraria'
+    AND potencia = 80
+    AND tipo = 'PARADA'
+    AND estilo = 'VALIENTE'
+  LIMIT 1;
+
+  -- La columna es `id`. NUNCA escribas: SELECT id_supertecnica INTO ...
+
+Patrón OBLIGATORIO tras insertar jugador:
+
+  SET @id_jugador = LAST_INSERT_ID();
+  -- @id_jugador contiene jugadores.id, NO hay columna id_jugador en jugadores
+
+Patrón OBLIGATORIO para enlazar ST al jugador:
+
+  INSERT INTO jugador_supertecnica (id_jugador, id_supertecnica, orden)
+  VALUES (@id_jugador, @st1, 1);
+
+  -- id_jugador e id_supertecnica SÍ son columnas de jugador_supertecnica (FK).
+  -- Los valores vienen de @id_jugador y @st1..@st4 obtenidos con SELECT id ...
+
+SOBRE WARNINGS: INSERT IGNORE con "Duplicate entry" (1062) es normal si
+re-ejecutas el script. Lo grave es **0 rows affected** en jugador_supertecnica
+porque @stN era NULL.
+
+================================================================================
+PARTE 2 — ESQUEMA REAL DE TABLAS (MySQL 8, BD EternalXI)
+================================================================================
+
+--- temporadas ---
+  id              INT AUTO_INCREMENT PK
+  nombre          VARCHAR   (fallback español, ej. 'Eterno Campeon')
+  foto            VARCHAR NULL
+
+--- temporada_traduccion ---
+  id_temporada    INT FK → temporadas.id
+  locale          VARCHAR(5)   'es' | 'en'
+  nombre          VARCHAR(100)
+  PK (id_temporada, locale)
+
+--- equipos ---
+  id              INT AUTO_INCREMENT PK
+  nombre          VARCHAR   (fallback español)
+  id_temporada    INT FK → temporadas.id
+  foto            VARCHAR NULL
+
+--- equipo_traduccion ---
+  id_equipo       INT FK → equipos.id
+  locale          VARCHAR(5)
+  nombre          VARCHAR(120)
+  PK (id_equipo, locale)
+
+--- jugadores ---
+  id              INT AUTO_INCREMENT PK
+  id_equipo       INT FK → equipos.id
+  nombre          VARCHAR   (nombre completo, NO traducir)
+  pila            VARCHAR   (apodo, NO traducir)
+  dorsal          INT
+  descripcion     TEXT NULL  → SIEMPRE NULL (bio va en jugador_traduccion)
+  valoracion      INT
+  genero          ENUM('H','M','?')
+  posicion        ENUM('POR','DEF','MED','DEL')
+  pais            VARCHAR(64)   código ISO: JP, ES, FR...
+  altura          SMALLINT UNSIGNED  (cm)
+  estilo          ENUM('PICARO','PRECISO','POTENTE','VALIENTE','AGIL')
+  foto            VARCHAR NULL
+
+--- jugador_traduccion ---
+  id_jugador      INT FK → jugadores.id
+  locale          VARCHAR(5)
+  descripcion     TEXT   (bio ES / bio EN traducida)
+  PK (id_jugador, locale)
+
+--- supertecnicas --- (catálogo global, reutilizable entre jugadores)
+  id              BIGINT AUTO_INCREMENT PK
+  nombre          VARCHAR(128)   clave interna snake_case, SIN acentos
+  potencia        TINYINT UNSIGNED
+  tipo            ENUM('REGATE','DEFENSA','PARADA','TIRO')
+  estilo          ENUM('PICARO','PRECISO','POTENTE','VALIENTE','AGIL')
+  UNIQUE (nombre, potencia, tipo, estilo)
+
+--- supertecnica_traduccion ---
+  id_supertecnica BIGINT FK → supertecnicas.id
+  locale          VARCHAR(5)
+  nombre          VARCHAR(128)   nombre visible traducible
+  PK (id_supertecnica, locale)
+
+--- jugador_supertecnica --- (4 filas por jugador, orden 1-4)
+  id              BIGINT AUTO_INCREMENT PK
+  id_jugador      INT FK → jugadores.id
+  id_supertecnica BIGINT FK → supertecnicas.id
+  orden           TINYINT UNSIGNED  (1, 2, 3 o 4)
+  UNIQUE (id_jugador, orden)
+  UNIQUE (id_jugador, id_supertecnica)
+
+================================================================================
+PARTE 3 — QUÉ TRADUCIR Y QUÉ NO
+================================================================================
+
+| Dato                              | ¿Traducir? | Dónde                          |
+|-----------------------------------|------------|--------------------------------|
+| Nombre temporada                  | SÍ         | temporada_traduccion es + en   |
+| Nombre del club                   | SÍ         | equipo_traduccion es + en      |
+| Nombre y pila del jugador         | NO         | jugadores (igual en es/en)     |
+| Bio del jugador                   | SÍ         | jugador_traduccion es + en     |
+| Clave interna ST (campana_temeraria) | NO      | supertecnicas.nombre           |
+| Nombre visible ST ("Campana...")  | SÍ         | supertecnica_traduccion es+en  |
+| genero, posicion, tipo, estilo, pais, dorsal, potencia | NO | códigos fijos |
+
+Temporada compartida (todos los equipos del juego):
+  ES: Eterno Campeon
+  EN: Eternal Crown
+
+================================================================================
+PARTE 4 — ORDEN OBLIGATORIO DEL SCRIPT
+================================================================================
+
+1. USE EternalXI;
+
+2. Bloque temporada (buscar o crear, idempotente):
+
+SET @id_temporada = NULL;
+SELECT tt.id_temporada INTO @id_temporada
+FROM temporada_traduccion tt
+WHERE tt.locale = 'es' AND tt.nombre = 'Eterno Campeon'
+LIMIT 1;
+
+INSERT INTO temporadas (nombre, foto)
+SELECT 'Eterno Campeon', NULL
+FROM DUAL
+WHERE @id_temporada IS NULL;
+
+SET @id_temporada = IFNULL(@id_temporada, LAST_INSERT_ID());
+
+INSERT IGNORE INTO temporada_traduccion (id_temporada, locale, nombre) VALUES
+(@id_temporada, 'es', 'Eterno Campeon'),
+(@id_temporada, 'en', 'Eternal Crown');
+
+3. Bloque equipo Furia Menuda (buscar o crear, idempotente):
+
+SET @id_equipo = NULL;
+SELECT et.id_equipo INTO @id_equipo
+FROM equipo_traduccion et
+WHERE et.locale = 'es' AND et.nombre = 'Furia Menuda'
+LIMIT 1;
+
+INSERT INTO equipos (nombre, id_temporada, foto)
+SELECT 'Furia Menuda', @id_temporada, NULL
+FROM DUAL
+WHERE @id_equipo IS NULL;
+
+SET @id_equipo = IFNULL(@id_equipo, LAST_INSERT_ID());
+
+INSERT IGNORE INTO equipo_traduccion (id_equipo, locale, nombre) VALUES
+(@id_equipo, 'es', 'Furia Menuda'),
+(@id_equipo, 'en', '[nombre EN que ya usaste en este chat, ej. Tiny Fury]');
+
+4. Por CADA uno de los 19 jugadores (en el orden de la lista de abajo):
+
+   a) INSERT INTO jugadores (...) VALUES (@id_equipo, ..., descripcion NULL, ...);
+   b) SET @id_jugador = LAST_INSERT_ID();
+   c) INSERT INTO jugador_traduccion (bio es + en)
+   d) INSERT IGNORE INTO supertecnicas (4 filas si no existen)
+   e) SELECT id INTO @st1..@st4 FROM supertecnicas WHERE nombre=... AND potencia=... AND tipo=... AND estilo=... LIMIT 1;
+      ⚠️ Columna = id. Cuatro SELECT separados. Cuatro variables.
+   f) INSERT IGNORE INTO supertecnica_traduccion (es+en para cada @stN)
+   g) INSERT INTO jugador_supertecnica (id_jugador, id_supertecnica, orden)
+      VALUES (@id_jugador, @st1, 1), (@id_jugador, @st2, 2), (@id_jugador, @st3, 3), (@id_jugador, @st4, 4);
+
+5. Bloque verificación al final (incluir siempre):
+
+SELECT j.nombre, COUNT(js.id) AS num_st
+FROM jugadores j
+JOIN equipos e ON e.id = j.id_equipo
+JOIN equipo_traduccion et ON et.id_equipo = e.id AND et.locale = 'es'
+LEFT JOIN jugador_supertecnica js ON js.id_jugador = j.id
+WHERE et.nombre = 'Furia Menuda'
+GROUP BY j.id, j.nombre
+HAVING COUNT(js.id) <> 4;
+
+SELECT COUNT(*) AS total_enlaces
+FROM jugador_supertecnica js
+JOIN jugadores j ON j.id = js.id_jugador
+JOIN equipos e ON e.id = j.id_equipo
+JOIN equipo_traduccion et ON et.id_equipo = e.id AND et.locale = 'es'
+WHERE et.nombre = 'Furia Menuda';
+
+-- Esperado: primera query 0 filas; total_enlaces = 76 (19 × 4)
+
+================================================================================
+PARTE 5 — PLANTILLA CORRECTA POR JUGADOR (copiar estructura)
+================================================================================
+
+-- --- Jugador: [Nombre Apellido] ---
+INSERT INTO jugadores (
+  id_equipo, nombre, pila, dorsal, descripcion, valoracion,
+  genero, posicion, pais, altura, estilo, foto
+) VALUES (
+  @id_equipo,
+  'Nombre Apellido',
+  'Pila',
+  1,
+  NULL,
+  75,
+  'H',
+  'POR',
+  'JP',
+  170,
+  'VALIENTE',
+  NULL
+);
+SET @id_jugador = LAST_INSERT_ID();
+
+INSERT INTO jugador_traduccion (id_jugador, locale, descripcion) VALUES
+(@id_jugador, 'es', 'Bio en español tal como la definiste en este chat...'),
+(@id_jugador, 'en', 'Bio in English as you translated in this chat...');
+
+INSERT IGNORE INTO supertecnicas (nombre, potencia, tipo, estilo) VALUES
+('clave_st_1', 80, 'PARADA', 'VALIENTE'),
+('clave_st_2', 55, 'PARADA', 'AGIL'),
+('clave_st_3', 40, 'PARADA', 'PICARO'),
+('clave_st_4', 45, 'DEFENSA', 'PICARO');
+
+SELECT id INTO @st1 FROM supertecnicas WHERE nombre='clave_st_1' AND potencia=80 AND tipo='PARADA' AND estilo='VALIENTE' LIMIT 1;
+SELECT id INTO @st2 FROM supertecnicas WHERE nombre='clave_st_2' AND potencia=55 AND tipo='PARADA' AND estilo='AGIL' LIMIT 1;
+SELECT id INTO @st3 FROM supertecnicas WHERE nombre='clave_st_3' AND potencia=40 AND tipo='PARADA' AND estilo='PICARO' LIMIT 1;
+SELECT id INTO @st4 FROM supertecnicas WHERE nombre='clave_st_4' AND potencia=45 AND tipo='DEFENSA' AND estilo='PICARO' LIMIT 1;
+
+INSERT IGNORE INTO supertecnica_traduccion (id_supertecnica, locale, nombre) VALUES
+(@st1, 'es', 'Nombre visible ST1 ES'), (@st1, 'en', 'ST1 visible name EN'),
+(@st2, 'es', 'Nombre visible ST2 ES'), (@st2, 'en', 'ST2 visible name EN'),
+(@st3, 'es', 'Nombre visible ST3 ES'), (@st3, 'en', 'ST3 visible name EN'),
+(@st4, 'es', 'Nombre visible ST4 ES'), (@st4, 'en', 'ST4 visible name EN');
+
+INSERT INTO jugador_supertecnica (id_jugador, id_supertecnica, orden) VALUES
+(@id_jugador, @st1, 1),
+(@id_jugador, @st2, 2),
+(@id_jugador, @st3, 3),
+(@id_jugador, @st4, 4);
+
+================================================================================
+PARTE 6 — REUTILIZAR SUPERTÉCNICAS YA EXISTENTES
+================================================================================
+
+Varios jugadores comparten la misma ST (ej. pared_de_tiza, rastro_de_chispa,
+chut_de_bolsillo, garfio_del_recreo, abrazo_del_tatami).
+
+Si INSERT IGNORE INTO supertecnicas no inserta (ya existe), el SELECT id INTO
+@stN sigue funcionando porque la fila ya está en catálogo.
+
+NO dupliques supertecnica_traduccion si ya existe: usa INSERT IGNORE.
+
+Claves internas: minúsculas, snake_case, sin tildes (ej. campana_temeraria).
+
+================================================================================
+PARTE 7 — LISTA OBLIGATORIA: 19 JUGADORES + 4 ST CADA UNO
+================================================================================
+
+Usa del historial de ESTE chat: pila, dorsal, bio, valoracion, genero,
+posicion, pais, altura, estilo del jugador, y nombres visibles ES/EN de ST.
+
+Las claves internas + stats mecánicos de ST deben ser EXACTAMENTE estos
+(revisa en tu chat los nombres visibles que inventaste):
+
+── 1. Daichi Enomoto (POR) ──
+  ST1: campana_temeraria     | 80 | PARADA  | VALIENTE
+  ST2: palmada_relampago     | 55 | PARADA  | AGIL
+  ST3: garfio_del_recreo     | 40 | PARADA  | PICARO
+  ST4: traba_del_patio       | 45 | DEFENSA | PICARO
+
+── 2. Haruto Shimizu (POR) ──
+  ST1: sello_de_papel        | 60 | PARADA  | PRECISO
+  ST2: caida_de_bambu        | 45 | PARADA  | PRECISO
+  ST3: garfio_del_recreo     | 40 | PARADA  | PICARO
+  ST4: abrazo_del_tatami     | 25 | PARADA  | VALIENTE
+
+── 3. Kazuki Arata (DEF) ──
+  ST1: cerrojo_inquieto      | 70 | DEFENSA | PICARO
+  ST2: pared_de_tiza         | 35 | DEFENSA | POTENTE
+  ST3: curva_traviesa        | 50 | REGATE  | PICARO
+  ST4: rastro_de_chispa      | 30 | REGATE  | AGIL
+
+── 4. Souta Hoshikawa (DEF) ──
+  ST1: bisagra_firme         | 70 | DEFENSA | PRECISO
+  ST2: placa_menuda          | 50 | DEFENSA | POTENTE
+  ST3: pared_de_tiza         | 35 | DEFENSA | POTENTE
+  ST4: rastro_de_chispa      | 30 | REGATE  | AGIL
+
+── 5. Kenta Morisaki (DEF) ──
+  ST1: pared_de_tiza         | 35 | DEFENSA | POTENTE
+  ST2: tropiezo_de_mochila   | 20 | DEFENSA | PICARO
+  ST3: abrazo_del_tatami     | 25 | PARADA  | VALIENTE
+  ST4: bolsa_de_aire         | 15 | PARADA  | AGIL
+
+── 6. Taiga Domon (DEF) ──
+  ST1: tope_de_cantera       | 60 | DEFENSA | POTENTE
+  ST2: codo_de_recreo        | 45 | DEFENSA | POTENTE
+  ST3: pared_de_tiza         | 35 | DEFENSA | POTENTE
+  ST4: tropiezo_de_mochila   | 20 | DEFENSA | PICARO
+
+── 7. Yuto Nakahara (DEF) ──
+  ST1: escudo_saltarin       | 70 | DEFENSA | VALIENTE
+  ST2: pared_de_tiza         | 35 | DEFENSA | POTENTE
+  ST3: brinco_de_tambor      | 55 | REGATE  | AGIL
+  ST4: rastro_de_chispa      | 30 | REGATE  | AGIL
+
+── 8. Ren Akabane (DEF) ──
+  ST1: nudo_de_pizarra       | 50 | DEFENSA | PRECISO
+  ST2: pared_de_tiza         | 35 | DEFENSA | POTENTE
+  ST3: silbido_corto         | 45 | TIRO    | PRECISO
+  ST4: chut_de_bolsillo      | 25 | TIRO    | PICARO
+
+── 9. Raito Kirishima (DEF) ──
+  ST1: chispa_de_guardia     | 70 | DEFENSA | VALIENTE
+  ST2: pared_de_tiza         | 35 | DEFENSA | POTENTE
+  ST3: rastro_de_chispa      | 30 | REGATE  | AGIL
+  ST4: chut_de_bolsillo      | 25 | TIRO    | PICARO
+
+── 10. Goro Matsunaga (DEF) ──
+  ST1: cierre_de_campana     | 60 | DEFENSA | PRECISO
+  ST2: barrera_de_mochi      | 45 | DEFENSA | POTENTE
+  ST3: pared_de_tiza         | 35 | DEFENSA | POTENTE
+  ST4: tropiezo_de_mochila   | 20 | DEFENSA | PICARO
+
+── 11. Itsuki Amamiya (DEF) ──
+  ST1: bisel_sereno          | 65 | DEFENSA | PRECISO
+  ST2: pared_de_tiza         | 35 | DEFENSA | POTENTE
+  ST3: vuelta_de_cromo       | 55 | REGATE  | AGIL
+  ST4: rastro_de_chispa      | 30 | REGATE  | AGIL
+
+── 12. Akito Shinose (MED) ──
+  ST1: eslalon_carmesi       | 65 | REGATE  | AGIL
+  ST2: rastro_de_chispa      | 30 | REGATE  | AGIL
+  ST3: cohete_de_merienda    | 60 | TIRO    | POTENTE
+  ST4: chut_de_bolsillo      | 25 | TIRO    | PICARO
+
+── 13. Hayato Kurogane (MED) ──
+  ST1: nudo_de_pizarra       | 50 | DEFENSA | PRECISO
+  ST2: pared_de_tiza         | 35 | DEFENSA | POTENTE
+  ST3: silbido_corto         | 45 | TIRO    | PRECISO
+  ST4: chut_de_bolsillo      | 25 | TIRO    | PICARO
+
+── 14. Shunpei Asakura (MED) ──
+  ST1: chicle_electrico      | 60 | REGATE  | PICARO
+  ST2: rastro_de_chispa      | 30 | REGATE  | AGIL
+  ST3: mordisco_del_poste    | 55 | TIRO    | POTENTE
+  ST4: chut_de_bolsillo      | 25 | TIRO    | PICARO
+
+── 15. Naoya Kazehara (MED) ──
+  ST1: doble_guino           | 80 | REGATE  | PICARO
+  ST2: silueta_falsa         | 50 | REGATE  | PICARO
+  ST3: rastro_de_chispa      | 30 | REGATE  | AGIL
+  ST4: flechazo_breve        | 60 | TIRO    | PRECISO
+
+── 16. Kaito Igarashi (MED) ──
+  ST1: peonza_de_feria       | 65 | REGATE  | AGIL
+  ST2: rastro_de_chispa      | 30 | REGATE  | AGIL
+  ST3: meteorito_burlon      | 60 | TIRO    | POTENTE
+  ST4: chut_de_bolsillo      | 25 | TIRO    | PICARO
+
+── 17. Ryusei Hino (DEL) ──
+  ST1: vuelta_del_yo_yo      | 55 | REGATE  | AGIL
+  ST2: pared_de_tiza         | 35 | DEFENSA | POTENTE
+  ST3: centella_roja         | 70 | TIRO    | POTENTE
+  ST4: chut_de_bolsillo      | 25 | TIRO    | PICARO
+
+── 18. Daigo Amakura (DEL) ──
+  ST1: tambor_solar          | 70 | TIRO    | VALIENTE
+  ST2: colmillo_de_naranja   | 50 | TIRO    | POTENTE
+  ST3: chut_de_bolsillo      | 25 | TIRO    | PICARO
+  ST4: rastro_de_chispa      | 30 | REGATE  | AGIL
+
+── 19. Kei Suganuma (DEL) ──
+  ST1: aguijon_quieto        | 60 | TIRO    | PRECISO
+  ST2: remate_de_origami     | 45 | TIRO    | PRECISO
+  ST3: chut_de_bolsillo      | 25 | TIRO    | PICARO
+  ST4: rastro_de_chispa      | 30 | REGATE  | AGIL
+
+Composición del equipo: 2 POR, 8 DEF, 4 MED, 5 DEL = 19 jugadores.
+País típico: JP (Japón). Usa los valores exactos de dorsal/valoracion/altura
+que definiste en este chat para cada uno.
+
+================================================================================
+PARTE 8 — CHECKLIST ANTES DE ENTREGAR EL SQL
+================================================================================
+
+Antes de responder, verifica mentalmente:
+
+[ ] Empieza con USE EternalXI;
+[ ] Bloque temporada idempotente (Eterno Campeon / Eternal Crown)
+[ ] Bloque equipo idempotente (Furia Menuda + traducción EN)
+[ ] Exactamente 19 bloques de jugador, todos los de la lista
+[ ] jugadores.descripcion = NULL en todos
+[ ] jugador_traduccion con locale 'es' y 'en' para cada jugador
+[ ] Cada jugador: 4 INSERT IGNORE supertecnicas + 4 SELECT id INTO @stN
+[ ] Ningún SELECT usa id_jugador ni id_supertecnica como columna de tabla padre
+[ ] Cada jugador: 4 filas en jugador_supertecnica (orden 1-4)
+[ ] supertecnica_traduccion es+en para cada ST nueva
+[ ] Comentarios -- === EQUIPO: Furia Menuda === y -- --- Jugador: X ---
+[ ] Queries de verificación al final
+[ ] Sin texto explicativo fuera del SQL
+[ ] Comillas escapadas con '' dentro de strings SQL
+
+================================================================================
+PARTE 9 — CÓMO EJECUTAR (para el usuario, no lo incluyas en el SQL)
+================================================================================
+
+El usuario subirá el .sql al VPS y ejecutará:
+  mysql EternalXI < script.sql
+o desde mysql:
+  source /root/script.sql
+
+================================================================================
+AHORA GENERA EL SCRIPT SQL COMPLETO PARA FURIA MENUDA
+================================================================================
+
+Recorre los 19 jugadores de la Parte 7. Para cada uno recupera del historial
+de ESTE chat sus stats y bios. Genera el SQL entero en un solo bloque.
+
+=== FIN DEL PROMPT — NO COPIES ESTA LÍNEA ===

@@ -32,13 +32,16 @@ public class NightMarketService {
 
 private final NightMarketNotificationService nightMarketNotificationService;
 private final LeagueMarketHistoryService leagueMarketHistoryService;
+private final AccountProgressService accountProgressService;
 
 public NightMarketService(
         NightMarketNotificationService nightMarketNotificationService,
-        LeagueMarketHistoryService leagueMarketHistoryService
+        LeagueMarketHistoryService leagueMarketHistoryService,
+        AccountProgressService accountProgressService
 ) {
     this.nightMarketNotificationService = nightMarketNotificationService;
     this.leagueMarketHistoryService = leagueMarketHistoryService;
+    this.accountProgressService = accountProgressService;
 }
 
     public NightMarketResponse getNightMarket(Long idLiga, Long idUsuario) throws SQLException {
@@ -484,6 +487,13 @@ public NightMarketService(
                 winner.idUsuario(),
                 null,
                 LeagueMarketHistoryService.TYPE_ADJUDICACION_MERCADO,
+                winner.cantidad()
+        );
+        accountProgressService.onMarketAdjudication(
+                conn,
+                winner.idUsuario(),
+                row.idLiga(),
+                row.idMercadoDiario(),
                 winner.cantidad()
         );
 

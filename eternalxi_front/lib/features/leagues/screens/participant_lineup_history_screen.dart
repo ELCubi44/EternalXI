@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/league_participant_lineup_history.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
@@ -195,14 +197,15 @@ class _ParticipantLineupHistoryScreenState
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final ll = context.leagueL10n;
     final nick = (_data?.nickname.trim().isNotEmpty ?? false)
         ? _data!.nickname.trim()
         : (widget.nickname?.trim().isNotEmpty ?? false)
         ? widget.nickname!.trim()
-        : 'Participante';
+        : ll.participantFallback;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Historial de alineaciones')),
+      appBar: AppBar(title: Text(ll.lineupHistoryTitle)),
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading
@@ -225,7 +228,7 @@ class _ParticipantLineupHistoryScreenState
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'No se pudo cargar el historial',
+                    ll.couldNotLoadHistoryTitle,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -236,7 +239,7 @@ class _ParticipantLineupHistoryScreenState
                   FilledButton.tonalIcon(
                     onPressed: _load,
                     icon: const Icon(Icons.refresh_rounded),
-                    label: const Text('Reintentar'),
+                    label: Text(context.l10n.retry),
                   ),
                 ],
               )
@@ -253,7 +256,7 @@ class _ParticipantLineupHistoryScreenState
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    'No hay jornadas disponibles',
+                    ll.noMatchdaysAvailable,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -261,7 +264,7 @@ class _ParticipantLineupHistoryScreenState
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Cuando el backend tenga alineaciones por jornada, aparecerán aquí.',
+                    ll.noMatchdaysHint,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -371,7 +374,8 @@ class _RoundHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final style = _RoundStatusStyle.fromRound(row, colorScheme);
+    final ll = context.leagueL10n;
+    final style = _RoundStatusStyle.fromRound(row, colorScheme, ll);
     final points = detail?.puntosTotales ?? row.puntosTotales;
 
     return Card(
@@ -386,7 +390,7 @@ class _RoundHeader extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                'J${row.numeroJornada}',
+                ll.matchdayShort(row.numeroJornada),
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: style.foreground,
                   fontWeight: FontWeight.w800,
@@ -399,7 +403,7 @@ class _RoundHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Jornada ${row.numeroJornada}',
+                    ll.matchday(row.numeroJornada),
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -451,23 +455,24 @@ class _RoundStatusStyle {
   factory _RoundStatusStyle.fromRound(
     LeagueParticipantLineupRoundSummary row,
     ColorScheme colorScheme,
+    LeagueL10n ll,
   ) {
     if (row.isPending) {
       return _RoundStatusStyle(
-        label: 'Pendiente',
+        label: ll.roundPending,
         background: colorScheme.surfaceContainerHighest,
         foreground: colorScheme.onSurfaceVariant,
       );
     }
     if (row.isInProgress) {
       return _RoundStatusStyle(
-        label: 'En curso',
+        label: ll.roundInProgress,
         background: colorScheme.tertiaryContainer,
         foreground: colorScheme.onTertiaryContainer,
       );
     }
     return _RoundStatusStyle(
-      label: 'Finalizada',
+      label: ll.roundFinished,
       background: colorScheme.primaryContainer,
       foreground: colorScheme.onPrimaryContainer,
     );
@@ -493,7 +498,7 @@ class _RoundEmptyState extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Sin alineación guardada en esta jornada.',
+                context.leagueL10n.noLineupSaved,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -523,7 +528,7 @@ class _RoundErrorState extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'No se pudo cargar la alineación de la jornada.',
+              context.leagueL10n.couldNotLoadLineup,
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -539,7 +544,7 @@ class _RoundErrorState extends StatelessWidget {
             FilledButton.tonalIcon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Reintentar'),
+              label: Text(context.l10n.retry),
             ),
           ],
         ),
@@ -580,11 +585,12 @@ class _BenchSection extends StatelessWidget {
       };
       byRole[normalized]!.add(p);
     }
+    final ll = context.leagueL10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Banquillo',
+          ll.benchLabel,
           style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 10),
@@ -727,9 +733,7 @@ class _HistoryBenchPlayerBubble extends StatelessWidget {
                       right: -6,
                       top: -8,
                       child: LeagueRoundFantasySubstitutionBadge(
-                        message:
-                            'Puntos del banquillo que sí cuentan en el fantasy '
-                            'por sustituir al titular.',
+                        message: context.leagueL10n.starterSubstitutionHint,
                         iconSize: 12,
                         padding: const EdgeInsets.all(2),
                       ),

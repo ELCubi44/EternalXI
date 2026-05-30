@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/data/models/league_listed_player.dart';
 import 'package:eternal_xi/data/models/league_market_team_summary.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
@@ -82,8 +84,9 @@ class _LeagueMarketTeamListScreenState
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    final ll = context.leagueL10n;
     return Scaffold(
-      appBar: AppBar(title: const Text('Listado de equipos')),
+      appBar: AppBar(title: Text(ll.teamListTitle)),
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading
@@ -114,7 +117,7 @@ class _LeagueMarketTeamListScreenState
                   FilledButton.tonalIcon(
                     onPressed: _load,
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Reintentar'),
+                    label: Text(context.l10n.retry),
                   ),
                 ],
               )
@@ -130,7 +133,7 @@ class _LeagueMarketTeamListScreenState
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Sin jugadores en la liga',
+                    ll.noPlayersInLeague,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -138,7 +141,7 @@ class _LeagueMarketTeamListScreenState
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'El listado global no devolvió filas para esta liga.',
+                    ll.emptyGlobalMarketList,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                       height: 1.4,

@@ -67,7 +67,7 @@ public record LeagueCreationConfig(
                 permiteEntresemana,
                 idaYVuelta,
                 recompensaBase,
-                DEFAULT_RECOMPENSA_BONUS_GANADOR,
+                0,
                 dineroPorPunto
         );
     }

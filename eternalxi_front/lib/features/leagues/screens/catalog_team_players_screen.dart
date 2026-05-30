@@ -1,3 +1,6 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/localization/game_labels.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:eternal_xi/data/models/catalog_team_coach.dart';
@@ -10,6 +13,7 @@ import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.d
 import 'package:eternal_xi/features/leagues/widgets/league_player_avatar.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
+import 'package:eternal_xi/features/profile/controller/user_preferences_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -41,6 +45,7 @@ class _CatalogTeamPlayersScreenState extends State<CatalogTeamPlayersScreen> {
   bool _loading = true;
   String? _error;
   CatalogTeamSquad? _squad;
+  String? _loadedForLanguage;
 
   String _humanError(Object e) {
     if (e is ApiException) {
@@ -91,8 +96,13 @@ class _CatalogTeamPlayersScreenState extends State<CatalogTeamPlayersScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final lang = context.watch<UserPreferencesController>().resolvedLanguageTag;
+    if (_loadedForLanguage == lang) {
+      return;
+    }
+    _loadedForLanguage = lang;
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
 
@@ -230,10 +240,9 @@ class _CatalogTeamPlayersScreenState extends State<CatalogTeamPlayersScreen> {
     final idLiga = _resolvedLeagueId();
     final idUsuario = _resolvedUserId();
     if ((idLiga ?? 0) <= 0 || (idUsuario ?? 0) <= 0 || p.idLigaJugador <= 0) {
+      final ll = context.leagueL10n;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No se pudo abrir el detalle fantasy para este jugador.'),
-        ),
+        SnackBar(content: Text(ll.couldNotOpenFantasyDetail)),
       );
       return;
     }
@@ -605,12 +614,13 @@ class _CatalogPositionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     return Padding(
       padding: const EdgeInsets.only(top: 4, left: 4, right: 4),
       child: Text(
-        label,
+        GameLabels.positionLabel(label, l10n: l10n),
         style: theme.textTheme.labelLarge?.copyWith(
           color: colorScheme.primary,
           fontWeight: FontWeight.w900,
@@ -675,7 +685,7 @@ class _CatalogEmptyState extends StatelessWidget {
           Icon(Icons.groups_2_outlined, size: 34, color: colorScheme.onSurfaceVariant),
           const SizedBox(height: 10),
           Text(
-            'Este equipo no tiene jugadores en catálogo.',
+            context.leagueL10n.noCatalogPlayers,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
@@ -712,7 +722,7 @@ class _CatalogErrorState extends StatelessWidget {
           FilledButton.tonalIcon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh_rounded),
-            label: const Text('Reintentar'),
+            label: Text(context.l10n.retry),
           ),
         ],
       ),

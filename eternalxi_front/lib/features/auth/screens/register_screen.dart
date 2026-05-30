@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/core/utils/validators.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
@@ -43,6 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final auth = context.watch<AuthController>();
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -50,9 +52,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       isLoading: auth.isLoading,
       child: Scaffold(
         body: AuthShell(
-          title: 'Crear cuenta',
-          subtitle:
-              'Únete a Eternal XI. Usa un correo válido y un nickname que te represente en las ligas.',
+          title: l10n.registerTitle,
+          subtitle: l10n.registerSubtitle,
           leading: IconButton(
             onPressed: () => context.pop(),
             icon: const Icon(Icons.arrow_back_rounded),
@@ -65,38 +66,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 AppTextField(
                   controller: _correoController,
-                  label: 'Correo electrónico',
+                  label: l10n.email,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
-                  validator: Validators.email,
+                  validator: (value) => Validators.email(value, l10n),
                 ),
                 const SizedBox(height: 14),
                 AppTextField(
                   controller: _nicknameController,
-                  label: 'Nickname',
+                  label: l10n.nickname,
                   textInputAction: TextInputAction.next,
-                  validator: Validators.nickname,
+                  validator: (value) => Validators.nickname(value, l10n),
                 ),
                 const SizedBox(height: 14),
                 AppTextField(
                   controller: _passwordController,
-                  label: 'Contraseña',
+                  label: l10n.password,
                   obscureText: true,
                   textInputAction: TextInputAction.next,
-                  validator: Validators.password,
+                  validator: (value) => Validators.password(value, l10n),
                 ),
                 const SizedBox(height: 14),
                 AppTextField(
                   controller: _confirmPasswordController,
-                  label: 'Repetir contraseña',
+                  label: l10n.repeatPassword,
                   obscureText: true,
                   textInputAction: TextInputAction.done,
                   validator: (v) =>
-                      Validators.confirmPassword(v, _passwordController.text),
+                      Validators.confirmPassword(v, _passwordController.text, l10n),
                 ),
                 const SizedBox(height: 22),
                 AppPrimaryButton(
-                  label: 'Registrarme',
+                  label: l10n.register,
                   onPressed: () async {
                     if (!_formKey.currentState!.validate()) {
                       return;
@@ -128,7 +129,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 12),
                 TextButton(
                   onPressed: () => context.go(AppRoutes.login),
-                  child: const Text('Ya tengo cuenta'),
+                  child: Text(l10n.alreadyHaveAccount),
                 ),
               ],
             ),
@@ -139,10 +140,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _showError(String? message) {
+    final l10n = context.l10n;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        content: Text(message ?? 'No se pudo registrar'),
+        content: Text(message ?? l10n.apiUnexpectedError),
       ),
     );
   }

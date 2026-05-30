@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/core/network/api_client.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_card_model.dart';
@@ -6,6 +7,9 @@ import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.da
 import 'package:eternal_xi/features/rewards/presentation/controllers/rewards_controller.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/coach_roulette_section.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/coach_roulette_strip.dart';
+import 'package:eternal_xi/features/rewards/presentation/widgets/reward_coach_detail_card.dart';
+import 'package:eternal_xi/data/models/league_activity_event.dart';
+import 'package:eternal_xi/features/leagues/utils/league_history_filters.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/league_activity_tile.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/pack_opening_animation_dialog.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/reward_card_detail_sheet.dart';
@@ -115,10 +119,10 @@ class _LeagueRewardsScreenState extends State<LeagueRewardsScreen>
           final showCartas = s?.showCartasTab ?? false;
 
           return Scaffold(
-            backgroundColor: const Color(0xFF070910),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             appBar: AppBar(
-              title: const Text('Recompensas de liga'),
-              backgroundColor: const Color(0xFF070910),
+              title: Text(context.l10n.leagueRewards),
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(22),
                 child: Align(
@@ -323,7 +327,7 @@ class _LeagueRewardsScreenState extends State<LeagueRewardsScreen>
       if (!context.mounted) {
         return;
       }
-      await showCoachWonDialog(context: context, coach: winner);
+      await showCoachWonSheet(context: context, coach: winner);
     }
   }
 }
@@ -346,7 +350,7 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     return Container(
-      color: const Color(0xFF070910),
+      color: Theme.of(context).scaffoldBackgroundColor,
       alignment: Alignment.centerLeft,
       child: tabBar,
     );
@@ -497,16 +501,18 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: FilterChip(
         label: Text(label),
         selected: selected,
         onSelected: (_) => onTap(),
-        checkmarkColor: const Color(0xFFFFD54F),
-        selectedColor: const Color(0xFF263238),
+        checkmarkColor: cs.primary,
+        backgroundColor: cs.surfaceContainerHigh,
+        selectedColor: cs.surfaceContainerHighest,
         labelStyle: TextStyle(
-          color: selected ? Colors.white : Colors.white70,
+          color: selected ? cs.onSurface : cs.onSurfaceVariant,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -514,58 +520,112 @@ class _FilterChip extends StatelessWidget {
   }
 }
 
-class _ActivityTab extends StatelessWidget {
+class _ActivityTab extends StatefulWidget {
   const _ActivityTab({required this.c});
   final RewardsController c;
 
   @override
+  State<_ActivityTab> createState() => _ActivityTabState();
+}
+
+class _ActivityTabState extends State<_ActivityTab> {
+  String _filter = LeagueShopActivityFilters.all;
+
+  List<LeagueActivityEvent> get _visibleEvents {
+    return widget.c.activity
+        .where(LeagueShopActivityFilters.isShopEvent)
+        .where((e) => LeagueShopActivityFilters.matchesFilter(e, _filter))
+        .toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () => c.loadActivity(),
-      color: const Color(0xFFFFD54F),
-      child: c.loadingActivity && c.activity.isEmpty
-          ? const Center(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: CircularProgressIndicator(),
-              ),
-            )
-          : c.activity.isEmpty
-              ? ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(24),
-                  children: const [
-                    SizedBox(height: 60),
-                    Icon(Icons.history_rounded, size: 48, color: Colors.white24),
-                    SizedBox(height: 12),
-                    Text(
-                      'Aún no hay actividad en esta liga.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white54),
+    final c = widget.c;
+    final visible = _visibleEvents;
+    final cs = Theme.of(context).colorScheme;
+
+    return Column(
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+          child: Row(
+            children: [
+              for (final entry in LeagueShopActivityFilters.labels.entries)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    label: Text(entry.value),
+                    selected: _filter == entry.key,
+                    onSelected: (_) => setState(() => _filter = entry.key),
+                    checkmarkColor: cs.primary,
+                    backgroundColor: cs.surfaceContainerHigh,
+                    selectedColor: cs.surfaceContainerHighest,
+                    labelStyle: TextStyle(
+                      color: _filter == entry.key
+                          ? cs.onSurface
+                          : cs.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
                     ),
-                  ],
-                )
-              : ListView.builder(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(16),
-                  itemCount: c.activity.length + (c.hasMoreActivity ? 1 : 0),
-                  itemBuilder: (context, i) {
-                    if (i >= c.activity.length) {
-                      if (!c.loadingActivity) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          c.loadActivity(loadMore: true);
-                        });
-                      }
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(16),
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      );
-                    }
-                    return LeagueActivityTile(event: c.activity[i]);
-                  },
+                  ),
                 ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: () => c.loadActivity(),
+            color: cs.primary,
+            child: c.loadingActivity && c.activity.isEmpty
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(24),
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : visible.isEmpty
+                    ? ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(24),
+                        children: [
+                          SizedBox(height: 60),
+                          Icon(
+                            Icons.history_rounded,
+                            size: 48,
+                            color: cs.outline,
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            'Aún no hay actividad en esta liga.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: cs.onSurfaceVariant),
+                          ),
+                        ],
+                      )
+                    : ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(16),
+                        itemCount: visible.length + (c.hasMoreActivity ? 1 : 0),
+                        itemBuilder: (context, i) {
+                          if (i >= visible.length) {
+                            if (!c.loadingActivity) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                c.loadActivity(loadMore: true);
+                              });
+                            }
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(16),
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            );
+                          }
+                          return LeagueActivityTile(event: visible[i]);
+                        },
+                      ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -578,12 +638,13 @@ class _ErrorBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Text(message, style: const TextStyle(color: Colors.white70)),
+        Text(message, style: TextStyle(color: cs.onSurfaceVariant)),
         const SizedBox(height: 16),
-        FilledButton(onPressed: onRetry, child: const Text('Reintentar')),
+        FilledButton(onPressed: onRetry, child: Text(context.l10n.retry)),
       ],
     );
   }

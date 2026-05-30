@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+
 /// Textos legibles para la feature de ligas (sin IDs visibles).
 abstract final class LeagueDisplayStrings {
   LeagueDisplayStrings._();
@@ -16,6 +18,7 @@ abstract final class LeagueDisplayStrings {
   static String playerShortName({
     required String pila,
     required String nombre,
+    LeagueL10n? ll,
   }) {
     final nick = pila.trim();
     if (nick.isNotEmpty) {
@@ -23,7 +26,7 @@ abstract final class LeagueDisplayStrings {
     }
     final n = nombre.trim();
     if (n.isEmpty) {
-      return 'Jugador';
+      return ll?.genericPlayer ?? 'Jugador';
     }
     final parts = n.split(RegExp(r'\s+'));
     return parts.isNotEmpty ? parts.first : n;

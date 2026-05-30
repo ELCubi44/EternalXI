@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/core/utils/validators.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
@@ -96,13 +97,14 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return AppLoadingOverlay(
       isLoading: _submitting,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Unirse a una liga')),
+        appBar: AppBar(title: Text(l10n.joinLeague)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Form(
@@ -111,7 +113,7 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Introduce el código que te ha compartido el administrador de la liga.',
+                  l10n.joinLeagueDescription,
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -119,11 +121,11 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
                 const SizedBox(height: 24),
                 AppTextField(
                   controller: _codeController,
-                  label: 'Código de invitación',
-                  hintText: 'Ej. ABCD34XZ',
+                  label: l10n.invitationCode,
+                  hintText: l10n.invitationHint,
                   textCapitalization: TextCapitalization.characters,
                   textInputAction: TextInputAction.done,
-                  validator: Validators.invitationCode,
+                  validator: (value) => Validators.invitationCode(value, l10n),
                 ),
                 if (_error != null) ...[
                   const SizedBox(height: 16),
@@ -155,7 +157,7 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
                 ],
                 const SizedBox(height: 28),
                 AppPrimaryButton(
-                  label: 'Unirse',
+                  label: l10n.join,
                   isLoading: _submitting,
                   onPressed: _submitting ? null : _submit,
                 ),

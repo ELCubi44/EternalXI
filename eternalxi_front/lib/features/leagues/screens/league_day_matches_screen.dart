@@ -8,6 +8,7 @@ import 'package:eternal_xi/features/leagues/utils/league_match_display_phase.dar
 import 'package:eternal_xi/features/leagues/utils/league_match_visible_state.dart';
 import 'package:eternal_xi/features/leagues/utils/league_spanish_datetime.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
+import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -141,10 +142,11 @@ class _LeagueDayMatchesScreenState extends State<LeagueDayMatchesScreen> {
       }
     }
 
+    final ll = context.leagueL10n;
     return Scaffold(
       backgroundColor: colorScheme.surfaceContainerLowest,
       appBar: AppBar(
-        title: Text('Partidos · ${_titleDate(widget.day)}'),
+        title: Text(ll.matchesOnDate(_titleDate(widget.day))),
         centerTitle: false,
       ),
       body: ListView.separated(
@@ -353,6 +355,7 @@ class _MatchCenterBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -374,7 +377,7 @@ class _MatchCenterBadge extends StatelessWidget {
             ),
             const SizedBox(height: 2),
             Text(
-              'Inicio',
+              ll.kickoffLabel,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w700,

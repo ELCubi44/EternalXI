@@ -12,12 +12,13 @@ class AppLoadingOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scrim = Theme.of(context).colorScheme.scrim.withValues(alpha: 0.38);
     return Stack(
       children: [
         child,
         if (isLoading)
-          Container(
-            color: Colors.black38,
+          ColoredBox(
+            color: scrim,
             child: const Center(child: CircularProgressIndicator()),
           ),
       ],

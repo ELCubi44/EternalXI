@@ -9,6 +9,7 @@ import com.eternalxi.eternalxi_api.dto.league.LeagueDetailResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueParticipantResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueParticipantSquadResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueOwnSquadResponse;
+import com.eternalxi.eternalxi_api.dto.league.LeagueRoundStandingsRowResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueStandingsRowResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueStarterProbabilitiesResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueSummaryResponse;
@@ -80,6 +81,17 @@ public class LeagueController {
             @RequestParam Long idUsuario
     ) throws SQLException {
         List<LeagueStandingsRowResponse> response = leagueService.getStandings(idLiga, idUsuario);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{idLiga}/rounds/{idJornada}/standings")
+    public ResponseEntity<?> getRoundStandings(
+            @PathVariable Long idLiga,
+            @PathVariable Long idJornada,
+            @RequestParam Long idUsuario
+    ) throws SQLException {
+        List<LeagueRoundStandingsRowResponse> response =
+                leagueService.getRoundStandings(idLiga, idJornada, idUsuario);
         return ResponseEntity.ok(response);
     }
 

@@ -1,6 +1,7 @@
 import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/core/network/api_client.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
+import 'package:eternal_xi/data/models/email_change_confirm_response.dart';
 import 'package:eternal_xi/data/models/api_message_model.dart';
 import 'package:eternal_xi/data/models/auth_response_model.dart';
 import 'package:eternal_xi/data/models/register_response_model.dart';
@@ -81,6 +82,40 @@ class AuthApiService {
       'codigo': codigo,
       'nuevaContrasena': nuevaContrasena,
     });
+  }
+
+  Future<ApiMessageModel> requestEmailChange({
+    required int idUsuario,
+    required String contrasenaActual,
+    required String nuevoCorreo,
+  }) async {
+    return _postMessage('${ApiConstants.auth}/email-change/request', {
+      'idUsuario': idUsuario,
+      'contrasenaActual': contrasenaActual,
+      'nuevoCorreo': nuevoCorreo,
+    });
+  }
+
+  Future<EmailChangeConfirmResponse> confirmEmailChange({
+    required int idUsuario,
+    required String nuevoCorreo,
+    required String codigo,
+  }) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '${ApiConstants.auth}/email-change/confirm',
+        data: {
+          'idUsuario': idUsuario,
+          'nuevoCorreo': nuevoCorreo,
+          'codigo': codigo,
+        },
+      );
+      return EmailChangeConfirmResponse.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
   }
 
   Future<ApiMessageModel> _postMessage(

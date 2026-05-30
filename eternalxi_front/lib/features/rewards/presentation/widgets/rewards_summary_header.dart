@@ -1,5 +1,4 @@
 import 'package:eternal_xi/features/rewards/data/models/reward_summary_model.dart';
-import 'package:eternal_xi/features/rewards/data/models/reward_coach_item.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +15,6 @@ class RewardsSummaryHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final coach = summary.entrenadorActual;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
@@ -31,32 +29,25 @@ class RewardsSummaryHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          Wrap(
-            spacing: 10,
-            runSpacing: 8,
+          Row(
             children: [
-              _ChipStat(
-                icon: Icons.stars_rounded,
-                label: 'Puntos',
-                value: formatRewardPoints(summary.puntosRecompensaUsuario),
+              Expanded(
+                child: _ChipStat(
+                  icon: Icons.stars_rounded,
+                  label: 'Puntos',
+                  value: formatRewardPoints(summary.puntosRecompensaUsuario),
+                ),
               ),
-              _ChipStat(
-                icon: Icons.account_balance_wallet_outlined,
-                label: 'Presupuesto',
-                value: formatRewardMoney(summary.dineroLiga),
-              ),
-              _ChipStat(
-                icon: Icons.style_rounded,
-                label: 'Cartas',
-                value:
-                    '${summary.cartasDisponibles} disp. · ${summary.cartasUsadas} usadas',
+              const SizedBox(width: 10),
+              Expanded(
+                child: _ChipStat(
+                  icon: Icons.style_rounded,
+                  label: 'Cartas disponibles',
+                  value: '${summary.cartasDisponibles}',
+                ),
               ),
             ],
           ),
-          if (coach != null) ...[
-            const SizedBox(height: 12),
-            _CoachLine(coach: coach),
-          ],
         ],
       ),
     );
@@ -78,7 +69,7 @@ class _ChipStat extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         gradient: LinearGradient(
@@ -90,62 +81,30 @@ class _ChipStat extends StatelessWidget {
         border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 18, color: const Color(0xFFFFD54F)),
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: Colors.white54,
-                ),
-              ),
-              Text(
-                value,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CoachLine extends StatelessWidget {
-  const _CoachLine({required this.coach});
-
-  final RewardCoachItem coach;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: const Color(0xFF1A237E).withValues(alpha: 0.35),
-        border: Border.all(color: const Color(0xFF5C6BC0).withValues(alpha: 0.4)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.sports_rounded, color: Color(0xFF9FA8DA), size: 20),
-          const SizedBox(width: 8),
+          Icon(icon, size: 20, color: const Color(0xFFFFD54F)),
+          const SizedBox(width: 10),
           Expanded(
-            child: Text(
-              'Entrenador: ${coach.displayName}'
-              '${(coach.nombreEquipo?.trim().isNotEmpty ?? false) ? ' · ${coach.nombreEquipo}' : ''}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: Colors.white.withValues(alpha: 0.9),
-                fontWeight: FontWeight.w600,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: Colors.white54,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  value,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

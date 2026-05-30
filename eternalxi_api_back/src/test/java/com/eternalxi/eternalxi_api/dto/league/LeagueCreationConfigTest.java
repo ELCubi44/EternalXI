@@ -23,7 +23,7 @@ class LeagueCreationConfigTest {
         assertFalse(config.permiteEntresemana());
         assertTrue(config.idaYVuelta());
         assertEquals(150, config.recompensaBaseJornada());
-        assertEquals(250, config.recompensaBonusGanador());
+        assertEquals(0, config.recompensaBonusGanador());
         assertEquals(100_000L, config.dineroPorPuntoFantasy());
     }
 

@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/features/leagues/utils/league_config_labels.dart';
 import 'package:flutter/material.dart';
 
@@ -36,6 +38,8 @@ class CreateLeagueAdvancedConfigSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -43,22 +47,22 @@ class CreateLeagueAdvancedConfigSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Configuración avanzada',
+          l10n.advancedConfig,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(height: 4),
         Text(
-          'Participantes, calendario, recompensas y economía de la liga.',
+          ll.advancedConfigSubtitle,
           style: theme.textTheme.bodySmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 16),
         _FieldLabel(
-          title: 'Participantes de la liga',
-          subtitle: 'Managers fantasy (no equipos del calendario real).',
+          title: ll.leagueParticipantsTitle,
+          subtitle: ll.leagueParticipantsSubtitle,
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -82,37 +86,31 @@ class CreateLeagueAdvancedConfigSection extends StatelessWidget {
         const SizedBox(height: 20),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
-          title: const Text('Semana previa de fichajes'),
-          subtitle: const Text(
-            'Si está activa, la primera jornada se retrasa una semana para fichar. '
-            'Si no, la liga empieza en el primer bloque disponible.',
-          ),
+          title: Text(ll.signingWeekTitle),
+          subtitle: Text(ll.signingWeekSubtitleFull),
           value: semanaPreviaFichajes,
           onChanged: enabled ? onSemanaPreviaChanged : null,
         ),
         const SizedBox(height: 8),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
-          title: const Text('Añadir jornadas entre semana'),
-          subtitle: const Text(
-            'La liga siempre jugará los fines de semana. Si activas esta opción, '
-            'también habrá jornadas martes y miércoles para que termine antes.',
-          ),
+          title: Text(ll.midweekMatchdaysTitle),
+          subtitle: Text(ll.midweekMatchdaysSubtitleFull),
           value: permiteEntresemana,
           onChanged: enabled ? onPermiteEntresemanaChanged : null,
         ),
         const SizedBox(height: 12),
-        _FieldLabel(title: 'Formato de liga'),
+        _FieldLabel(title: ll.leagueFormat),
         const SizedBox(height: 8),
         SegmentedButton<bool>(
-          segments: const [
+          segments: [
             ButtonSegment(
               value: true,
-              label: Text('Ida y vuelta'),
+              label: Text(ll.roundTrip),
             ),
             ButtonSegment(
               value: false,
-              label: Text('Solo ida'),
+              label: Text(ll.singleLeg),
             ),
           ],
           selected: {idaYVuelta},
@@ -122,9 +120,12 @@ class CreateLeagueAdvancedConfigSection extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         _FieldLabel(
-          title: 'Puntos recompensa por jornada',
-          subtitle:
-              '${LeagueConfigLabels.recompensaMin}–${LeagueConfigLabels.recompensaMax} pts',
+          title: ll.minRewardPerMatchday,
+          subtitle: ll.minRewardSliderSubtitle(
+            LeagueConfigLabels.recompensaStep,
+            LeagueConfigLabels.recompensaMin,
+            LeagueConfigLabels.recompensaMax,
+          ),
         ),
         const SizedBox(height: 4),
         Row(
@@ -166,8 +167,23 @@ class CreateLeagueAdvancedConfigSection extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(height: 6),
+        Text(
+          ll.rewardDistributionWithParticipants(
+            maxParticipantes,
+            LeagueConfigLabels.rewardDistributionPreview(
+              minReward: recompensaBaseJornada,
+              participantCount: maxParticipantes,
+              l10n: l10n,
+            ),
+          ),
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(height: 12),
-        _FieldLabel(title: 'Dinero por punto fantasy'),
+        _FieldLabel(title: ll.moneyPerFantasyPoint),
         const SizedBox(height: 8),
         SegmentedButton<int>(
           segments: [
@@ -175,7 +191,10 @@ class CreateLeagueAdvancedConfigSection extends StatelessWidget {
               ButtonSegment(
                 value: amount,
                 label: Text(
-                  LeagueConfigLabels.dineroPorPuntoOptionLabel(amount),
+                  LeagueConfigLabels.dineroPorPuntoOptionLabel(
+                    amount,
+                    l10n: l10n,
+                  ),
                   style: theme.textTheme.labelSmall,
                 ),
               ),

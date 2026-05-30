@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/app_localizations.dart';
+import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:eternal_xi/data/models/league_detail.dart';
 
@@ -16,49 +18,102 @@ abstract final class LeagueConfigLabels {
   static const int maxParticipantesDefault = 12;
   static const int dineroPorPuntoDefault = 200000;
 
-  static String calendarLabel(bool? permiteEntresemana) {
+  static LeagueL10n? _ll(AppLocalizations? l10n) =>
+      l10n != null ? LeagueL10n.fromL10n(l10n) : null;
+
+  static String calendarLabel(
+    bool? permiteEntresemana, {
+    AppLocalizations? l10n,
+  }) {
+    final ll = _ll(l10n);
     if (permiteEntresemana == null) {
       return '—';
     }
     if (permiteEntresemana) {
-      return 'fines de semana + martes/miércoles';
+      return ll?.calendarWithMidweek ?? 'fines de semana + martes/miércoles';
     }
-    return 'fines de semana';
+    return ll?.calendarWeekendsOnly ?? 'fines de semana';
   }
 
-  static String formatLabel(bool? idaYVuelta) {
+  static String formatLabel(bool? idaYVuelta, {AppLocalizations? l10n}) {
+    final ll = _ll(l10n);
     if (idaYVuelta == null) {
       return '—';
     }
-    return idaYVuelta ? 'Ida y vuelta' : 'Solo ida';
+    return idaYVuelta
+        ? (ll?.roundTrip ?? 'Ida y vuelta')
+        : (ll?.singleLeg ?? 'Solo ida');
   }
 
-  static String semanaPreviaLabel(bool? value) {
+  static String semanaPreviaLabel(bool? value, {AppLocalizations? l10n}) {
+    final ll = _ll(l10n);
     if (value == null) {
       return '—';
     }
-    return value ? 'Sí' : 'No';
+    return value ? (ll?.yesWord ?? 'Sí') : (ll?.noWord ?? 'No');
   }
 
-  static String recompensaJornadaLabel(int? pts) {
+  static String recompensaJornadaLabel(int? pts, {AppLocalizations? l10n}) {
+    final ll = _ll(l10n);
     if (pts == null) {
       return '—';
     }
-    return '$pts pts/jornada';
+    return ll?.minRewardPts(pts) ?? 'Mín. $pts pts (último puesto)';
   }
 
-  static String dineroPorPuntoLabel(int? amount) {
+  /// Reparto descendente: mínimo + 50 pts por cada puesto que sube.
+  static int rewardForRank({
+    required int rank,
+    required int participantCount,
+    required int minReward,
+  }) {
+    if (participantCount < 1) {
+      return minReward;
+    }
+    final safeRank = rank.clamp(1, participantCount);
+    return minReward + (participantCount - safeRank) * recompensaStep;
+  }
+
+  static String rewardDistributionPreview({
+    required int minReward,
+    required int participantCount,
+    AppLocalizations? l10n,
+  }) {
+    final ll = _ll(l10n);
+    if (participantCount < 1) {
+      return '—';
+    }
+    final first = rewardForRank(
+      rank: 1,
+      participantCount: participantCount,
+      minReward: minReward,
+    );
+    if (participantCount == 1) {
+      return '$first pts';
+    }
+    final second = rewardForRank(
+      rank: 2,
+      participantCount: participantCount,
+      minReward: minReward,
+    );
+    return ll?.rewardDistributionPreview('$first', '$second', minReward) ??
+        '$first, $second, …, $minReward pts/jornada';
+  }
+
+  static String dineroPorPuntoLabel(int? amount, {AppLocalizations? l10n}) {
+    final ll = _ll(l10n);
     if (amount == null) {
       return '—';
     }
-    return '${LeagueMoneyFormat.euros(amount.toDouble())}/punto';
+    final formatted = LeagueMoneyFormat.euros(amount.toDouble());
+    return ll?.perPoint(formatted) ?? '$formatted/punto';
   }
 
-  static String dineroPorPuntoOptionLabel(int amount) {
-    return '${LeagueMoneyFormat.euros(amount.toDouble())}/punto';
+  static String dineroPorPuntoOptionLabel(int amount, {AppLocalizations? l10n}) {
+    return dineroPorPuntoLabel(amount, l10n: l10n);
   }
 
-  static String participantesCapLabel(int? max) {
+  static String participantesCapLabel(int? max, {AppLocalizations? l10n}) {
     if (max == null) {
       return '—';
     }
@@ -75,34 +130,38 @@ abstract final class LeagueConfigLabels {
     return '$day/$month a las $hour:$minute';
   }
 
-  static List<LeagueConfigSummaryRow> summaryRows(LeagueDetail detail) {
+  static List<LeagueConfigSummaryRow> summaryRows(
+    LeagueDetail detail, {
+    AppLocalizations? l10n,
+  }) {
+    final ll = _ll(l10n);
     if (!detail.hasConfigSummary) {
       return const [];
     }
     return [
       LeagueConfigSummaryRow(
-        label: 'Participantes',
-        value: participantesCapLabel(detail.maxParticipantes),
+        label: ll?.configParticipants ?? 'Participantes',
+        value: participantesCapLabel(detail.maxParticipantes, l10n: l10n),
       ),
       LeagueConfigSummaryRow(
-        label: 'Calendario',
-        value: calendarLabel(detail.permiteEntresemana),
+        label: ll?.configCalendar ?? 'Calendario',
+        value: calendarLabel(detail.permiteEntresemana, l10n: l10n),
       ),
       LeagueConfigSummaryRow(
-        label: 'Formato',
-        value: formatLabel(detail.idaYVuelta),
+        label: ll?.configFormat ?? 'Formato',
+        value: formatLabel(detail.idaYVuelta, l10n: l10n),
       ),
       LeagueConfigSummaryRow(
-        label: 'Semana previa de fichajes',
-        value: semanaPreviaLabel(detail.semanaPreviaFichajes),
+        label: ll?.configSigningWeek ?? 'Semana previa de fichajes',
+        value: semanaPreviaLabel(detail.semanaPreviaFichajes, l10n: l10n),
       ),
       LeagueConfigSummaryRow(
-        label: 'Recompensa',
-        value: recompensaJornadaLabel(detail.recompensaBaseJornada),
+        label: ll?.configMatchdayReward ?? 'Recompensa jornada',
+        value: recompensaJornadaLabel(detail.recompensaBaseJornada, l10n: l10n),
       ),
       LeagueConfigSummaryRow(
-        label: 'Dinero',
-        value: dineroPorPuntoLabel(detail.dineroPorPuntoFantasy),
+        label: ll?.configMoney ?? 'Dinero',
+        value: dineroPorPuntoLabel(detail.dineroPorPuntoFantasy, l10n: l10n),
       ),
     ];
   }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_card_model.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_card_target_model.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_redeem_result_model.dart';
@@ -259,7 +260,7 @@ Future<void> _confirmAndRedeem({
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(ctx, false),
-          child: const Text('Cancelar'),
+          child: Text(ctx.l10n.cancel),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(ctx, true),

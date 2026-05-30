@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/core/utils/league_coach_photo.dart';
 import 'package:eternal_xi/data/models/league_coach_assignment.dart';
@@ -13,6 +15,7 @@ import 'package:eternal_xi/features/leagues/utils/league_player_visible_estado.d
 import 'package:eternal_xi/features/leagues/utils/league_starter_probability_ui.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_player_avatar.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
+import 'package:eternal_xi/features/leagues/widgets/unsaved_lineup_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -381,45 +384,25 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
 
   /// Diálogo al salir de la alineación sin guardar. Devuelve si puede continuar la navegación.
   Future<bool> confirmLeaveUnsaved() async {
+    final l10n = context.l10n;
     if (!hasUnsavedChanges) {
       return true;
     }
-    final choice = await showDialog<_UnsavedLineupChoice>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Alineación sin guardar'),
-        content: const Text(
-          'No has guardado la plantilla. ¿Quieres guardarla?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, _UnsavedLineupChoice.stay),
-            child: const Text('Quedarme'),
-          ),
-          TextButton(
-            onPressed: () =>
-                Navigator.pop(ctx, _UnsavedLineupChoice.discardAndLeave),
-            child: const Text('Salir sin guardar'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, _UnsavedLineupChoice.save),
-            child: const Text('Guardar'),
-          ),
-        ],
-      ),
+    final choice = parseUnsavedLineupChoice(
+      await showUnsavedLineupDialog<String>(context),
     );
     switch (choice) {
-      case _UnsavedLineupChoice.save:
+      case UnsavedLineupChoice.save:
         if (!_canSaveIncludingCoach) {
-          _toast('Completa la alineación antes de guardar.');
+          _toast(l10n.lineupIncomplete);
           return false;
         }
         await _save();
         return !hasUnsavedChanges;
-      case _UnsavedLineupChoice.discardAndLeave:
+      case UnsavedLineupChoice.discardAndLeave:
         discardUnsavedChanges();
         return true;
-      case _UnsavedLineupChoice.stay:
+      case UnsavedLineupChoice.stay:
       case null:
         return false;
     }
@@ -785,11 +768,11 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       _lineupComplete &&
       (_isLineupDirty() || _allowSaveAfterCoachLayout);
 
-  static String _shortName(LeagueSquadPlayer? p) {
+  static String _shortName(LeagueSquadPlayer? p, LeagueL10n ll) {
     if (p == null) {
       return '—';
     }
-    return LeagueDisplayStrings.playerShortName(pila: p.pila, nombre: p.nombre);
+    return LeagueDisplayStrings.playerShortName(pila: p.pila, nombre: p.nombre, ll: ll);
   }
 
   void _toast(String msg) {
@@ -876,7 +859,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       children: candidates.isEmpty
           ? [
               _sheetEmptyState(
-                'No hay más jugadores disponibles para esta demarcación',
+                context.leagueL10n.noMorePlayersForRole,
               ),
             ]
           : [
@@ -975,9 +958,10 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
   }
 
   Widget _playerSheetTeamRow(LeagueSquadPlayer p) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final teamName = p.nombreEquipo.trim().isEmpty
-        ? 'Equipo'
+        ? ll.teamColumn
         : p.nombreEquipo.trim();
     return Row(
       children: [
@@ -1052,12 +1036,12 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
     if (current == null) {
       final candidates = _candidatesForReserve(line);
       await _sheetPick(
-        title: 'Suplente',
-        subtitle: 'Elige un suplente para $demarcacion (solo uno por posición).',
+        title: context.leagueL10n.substitute,
+        subtitle: context.leagueL10n.substitutePick(demarcacion),
         children: candidates.isEmpty
             ? [
                 _sheetEmptyState(
-                  'No hay jugadores disponibles para esta demarcación',
+                  context.leagueL10n.noPlayersForRole,
                 ),
               ]
             : [
@@ -1081,8 +1065,8 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
         .where((p) => p.idLigaJugador != current.idLigaJugador)
         .toList(growable: false);
     await _sheetPick(
-      title: 'Suplente',
-      subtitle: 'Cambiar suplente de $demarcacion o intercambiar con un titular.',
+      title: context.leagueL10n.substitute,
+      subtitle: context.leagueL10n.substituteChange(demarcacion),
       children: [
         for (final starter in starterCandidates)
           _lineupSwapOptionTile(
@@ -1119,7 +1103,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
           ),
         ListTile(
           leading: const Icon(Icons.person_remove_outlined),
-          title: const Text('Quitar suplente'),
+          title: Text(context.leagueL10n.removeSubstitute),
           onTap: () {
             Navigator.pop(context);
             _mutateLineup(() => line.reserve = null);
@@ -1171,7 +1155,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
           children: [
             Expanded(
               child: Text(
-                _shortName(player),
+                _shortName(player, context.leagueL10n),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleLarge?.copyWith(
@@ -1236,7 +1220,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                   ),
                 ),
                 child: Text(
-                  isTitular ? 'Titular' : 'Suplente',
+                  isTitular ? context.leagueL10n.starterLabel : context.leagueL10n.substitute,
                   style: theme.textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: isTitular
@@ -1272,7 +1256,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Lesionado',
+                      context.leagueL10n.injured,
                       style: theme.textTheme.labelMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: colorScheme.onErrorContainer,
@@ -1308,7 +1292,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Sancionado',
+                      context.leagueL10n.suspended,
                       style: theme.textTheme.labelMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: colorScheme.onTertiaryContainer,
@@ -1330,12 +1314,13 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
   }
 
   Future<void> _openCaptainPicker() async {
+    final l10n = context.l10n;
     if (_blocked) {
       return;
     }
     final starters = _orderedStarters();
     if (starters.isEmpty) {
-      _toast('Añade al menos un titular para elegir capitán.');
+      _toast(l10n.lineupNeedStarterForCaptain);
       return;
     }
     await showModalBottomSheet<void>(
@@ -1361,7 +1346,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                     vertical: 8,
                   ),
                   child: Text(
-                    'Capitán',
+                    l10n.captain,
                     style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -1381,7 +1366,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                           size: 40,
                           circular: true,
                         ),
-                        title: Text(_shortName(p)),
+                        title: Text(_shortName(p, context.leagueL10n)),
                         trailing: sel
                             ? Icon(
                                 Icons.check,
@@ -1413,6 +1398,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
   }
 
   Future<void> _save() async {
+    final l10n = context.l10n;
     if (kDebugMode) {
       final blocked = _blocked;
       final lineupComplete = _lineupComplete;
@@ -1438,7 +1424,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       final packed = _packIds();
       final idCapitan = _requireCaptainIdForSave();
       if (idCapitan == null) {
-        _toast('Añade al menos un titular para poder guardar.');
+        _toast(l10n.lineupNeedStarterToSave);
         return;
       }
       final body = <String, dynamic>{
@@ -1468,7 +1454,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       if (!mounted) {
         return;
       }
-      _toast('Alineación guardada');
+      _toast(l10n.lineupSaved);
       _allowSaveAfterCoachLayout = false;
       await widget.onLineupReloaded();
       widget.onLineupSaveSuccess?.call();
@@ -1488,12 +1474,13 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
   }
 
   Widget _headerRow(ThemeData theme) {
+    final l10n = context.l10n;
     final historyButton = widget.onHistoryTap == null
         ? null
         : OutlinedButton.icon(
             icon: const Icon(Icons.history_rounded, size: 18),
             onPressed: widget.onHistoryTap,
-            label: const Text('Historial'),
+            label: Text(l10n.history),
           );
     if (widget.readOnly) {
       return Row(
@@ -1527,7 +1514,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
         OutlinedButton.icon(
           icon: const Icon(Icons.verified_outlined, size: 18),
           onPressed: (_blocked || _saving) ? null : _openCaptainPicker,
-          label: const Text('Capitán'),
+          label: Text(l10n.captain),
         ),
         const SizedBox(width: 10),
         if (kDebugMode) ...[
@@ -1560,7 +1547,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
             disabledForegroundColor: theme.colorScheme.onSurfaceVariant,
           ),
           onPressed: _saving ? null : (_canSaveIncludingCoach ? _save : null),
-          label: _saving ? const Text('Guardando...') : const Text('Guardar'),
+          label: _saving ? Text(l10n.saving) : Text(l10n.save),
         ),
       ],
     );
@@ -1776,7 +1763,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                 const SizedBox(width: 18),
                 Expanded(
                   child: Text(
-                    'Cargando entrenadores…',
+                    context.leagueL10n.loadingCoaches,
                     style: Theme.of(ctx).textTheme.bodyMedium,
                   ),
                 ),
@@ -1820,7 +1807,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       _CoachPickerOption(
         coach: null,
         isNoCoach: true,
-        title: 'Sin entrenador',
+        title: context.leagueL10n.noCoach,
         formation: '4-3-3',
         teamId: null,
         selected: !widget.entrenadorActivo,
@@ -1834,11 +1821,12 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
           isSelected:
               widget.entrenadorActivo &&
               widget.entrenadorAsignado?.idEntrenador == coach.idEntrenador,
+          coachFallbackLabel: context.leagueL10n.coach,
         ),
     ];
     await _sheetPick(
-      title: 'Entrenador',
-      subtitle: 'Selecciona cómo quieres jugar esta jornada.',
+      title: context.leagueL10n.coach,
+      subtitle: context.leagueL10n.selectCoachForMatchday,
       children: [for (final option in options) _coachPickerOptionTile(option)],
     );
   }
@@ -1902,7 +1890,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
               if (option.equippedBadge)
                 _metaChip(
                   icon: Icons.shield_outlined,
-                  text: 'Equipado',
+                  text: context.leagueL10n.equipped,
                   highlighted: true,
                 ),
             ],
@@ -2169,13 +2157,14 @@ class _CoachPickerOption {
     required LeagueCoachAssignment coach,
     required String formation,
     required bool isSelected,
+    required String coachFallbackLabel,
   }) {
     final bonus = coach.bonusPuntos > 0 ? '+${coach.bonusPuntos}' : null;
     final nombre = coach.entrenadorNombre?.trim() ?? '';
     final pila = coach.entrenadorPila?.trim() ?? '';
     final title = nombre.isNotEmpty
         ? nombre
-        : (pila.isNotEmpty ? pila : 'Entrenador');
+        : (pila.isNotEmpty ? pila : coachFallbackLabel);
     return _CoachPickerOption(
       coach: coach,
       isNoCoach: false,
@@ -2448,8 +2437,6 @@ class _PitchMarkingsPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-enum _UnsavedLineupChoice { save, discardAndLeave, stay }
-
 class _PitchPlayerBubble extends StatelessWidget {
   const _PitchPlayerBubble({
     required this.player,
@@ -2628,10 +2615,12 @@ class _PitchPlayerBubble extends StatelessWidget {
                       top: -2,
                       child: Tooltip(
                         message: player!.proteccionHastaFinTemporada
-                            ? 'Protegido temporada'
+                            ? context.leagueL10n.protectedSeason
                             : player!.proteccionJornadaFin != null
-                                ? 'Protegido hasta J${player!.proteccionJornadaFin}'
-                                : 'Protegido',
+                                ? context.leagueL10n.protectedUntilMatchday(
+                                    player!.proteccionJornadaFin!,
+                                  )
+                                : context.leagueL10n.protectedGeneric,
                         child: Container(
                           width: 18,
                           height: 18,

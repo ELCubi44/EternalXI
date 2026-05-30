@@ -81,8 +81,10 @@ IconData marketHistoryIcon(String tipo) {
       return Icons.flash_on_rounded;
     case 'ACUERDO_USUARIOS':
       return Icons.handshake_rounded;
-    case 'VENTA_MERCADO':
+      case 'VENTA_MERCADO':
       return Icons.storefront_rounded;
+    case 'ADMIN_KICK':
+      return Icons.person_remove_rounded;
     default:
       return Icons.history_rounded;
   }
@@ -98,8 +100,10 @@ Color marketHistoryColor(BuildContext context, String tipo) {
       return Colors.amber.shade700;
     case 'ACUERDO_USUARIOS':
       return Colors.green.shade600;
-    case 'VENTA_MERCADO':
+      case 'VENTA_MERCADO':
       return Colors.deepOrange.shade600;
+    case 'ADMIN_KICK':
+      return Colors.red.shade400;
     default:
       return scheme.outline;
   }
@@ -114,8 +118,10 @@ String marketHistoryTitle(String tipo) {
       return 'Compra directa';
     case 'ACUERDO_USUARIOS':
       return 'Acuerdo';
-    case 'VENTA_MERCADO':
+      case 'VENTA_MERCADO':
       return 'Venta al mercado';
+    case 'ADMIN_KICK':
+      return 'Expulsión';
     default:
       return 'Movimiento de mercado';
   }

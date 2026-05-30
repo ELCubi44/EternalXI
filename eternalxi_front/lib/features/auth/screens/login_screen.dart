@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/core/utils/validators.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
@@ -39,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final auth = context.watch<AuthController>();
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -46,9 +48,8 @@ class _LoginScreenState extends State<LoginScreen> {
       isLoading: auth.isLoading,
       child: Scaffold(
         body: AuthShell(
-          title: 'Entrar',
-          subtitle:
-              'Accede a tu cuenta, gestiona ligas y plantilla con el mismo estilo en toda la app.',
+          title: l10n.loginTitle,
+          subtitle: l10n.loginSubtitle,
           leading: context.canPop()
               ? IconButton(
                   onPressed: () => context.pop(),
@@ -65,22 +66,22 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 AppTextField(
                   controller: _correoController,
-                  label: 'Correo electrónico',
+                  label: l10n.email,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
-                  validator: Validators.email,
+                  validator: (value) => Validators.email(value, l10n),
                 ),
                 const SizedBox(height: 14),
                 AppTextField(
                   controller: _passwordController,
-                  label: 'Contraseña',
+                  label: l10n.password,
                   obscureText: true,
                   textInputAction: TextInputAction.done,
-                  validator: Validators.password,
+                  validator: (value) => Validators.password(value, l10n),
                 ),
                 const SizedBox(height: 22),
                 AppPrimaryButton(
-                  label: 'Iniciar sesión',
+                  label: l10n.login,
                   onPressed: () async {
                     if (!_formKey.currentState!.validate()) {
                       return;
@@ -93,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       return;
                     }
                     if (ok) {
-                      context.go(AppRoutes.home);
+                      context.go(AppRoutes.leagues);
                     } else {
                       _showError(auth.errorMessage);
                     }
@@ -105,11 +106,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     final isCompact = constraints.maxWidth < 380;
                     final createAccount = TextButton(
                       onPressed: () => context.push(AppRoutes.verifyEmailRequest),
-                      child: const Text('Crear cuenta'),
+                      child: Text(l10n.createAccount),
                     );
                     final forgotPassword = TextButton(
                       onPressed: () => context.push(AppRoutes.passwordResetRequest),
-                      child: const Text('He olvidado la contraseña'),
+                      child: Text(l10n.forgotPassword),
                     );
 
                     if (isCompact) {
@@ -143,10 +144,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showError(String? message) {
+    final l10n = context.l10n;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        content: Text(message ?? 'No se pudo iniciar sesión'),
+        content: Text(message ?? l10n.apiUnexpectedError),
       ),
     );
   }

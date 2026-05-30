@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/core/utils/validators.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
@@ -45,6 +46,7 @@ class _ConfirmPasswordResetScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final auth = context.watch<AuthController>();
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -52,9 +54,8 @@ class _ConfirmPasswordResetScreenState
       isLoading: auth.isLoading,
       child: Scaffold(
         body: AuthShell(
-          title: 'Nueva contraseña',
-          subtitle:
-              'Introduce el código recibido por correo y elige una contraseña segura.',
+          title: l10n.confirmPasswordTitle,
+          subtitle: l10n.confirmPasswordSubtitle,
           leading: IconButton(
             onPressed: () => context.pop(),
             icon: const Icon(Icons.arrow_back_rounded),
@@ -67,38 +68,38 @@ class _ConfirmPasswordResetScreenState
               children: [
                 AppTextField(
                   controller: _correoController,
-                  label: 'Correo electrónico',
+                  label: l10n.email,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
-                  validator: Validators.email,
+                  validator: (value) => Validators.email(value, l10n),
                 ),
                 const SizedBox(height: 14),
                 AppTextField(
                   controller: _codigoController,
-                  label: 'Código de verificación',
+                  label: l10n.verificationCode,
                   textInputAction: TextInputAction.next,
-                  validator: Validators.verificationCode,
+                  validator: (value) => Validators.verificationCode(value, l10n),
                 ),
                 const SizedBox(height: 14),
                 AppTextField(
                   controller: _passwordController,
-                  label: 'Nueva contraseña',
+                  label: l10n.newPassword,
                   obscureText: true,
                   textInputAction: TextInputAction.next,
-                  validator: Validators.password,
+                  validator: (value) => Validators.password(value, l10n),
                 ),
                 const SizedBox(height: 14),
                 AppTextField(
                   controller: _confirmPasswordController,
-                  label: 'Repetir contraseña',
+                  label: l10n.repeatPassword,
                   obscureText: true,
                   textInputAction: TextInputAction.done,
                   validator: (v) =>
-                      Validators.confirmPassword(v, _passwordController.text),
+                      Validators.confirmPassword(v, _passwordController.text, l10n),
                 ),
                 const SizedBox(height: 22),
                 AppPrimaryButton(
-                  label: 'Guardar contraseña',
+                  label: l10n.savePassword,
                   onPressed: () async {
                     if (!_formKey.currentState!.validate()) {
                       return;
@@ -136,10 +137,11 @@ class _ConfirmPasswordResetScreenState
   }
 
   void _showError(String? message) {
+    final l10n = context.l10n;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        content: Text(message ?? 'No se pudo cambiar la contraseña'),
+        content: Text(message ?? l10n.apiUnexpectedError),
       ),
     );
   }

@@ -11,6 +11,8 @@ class SecureStorageService {
   static const _nivelKey = 'nivel';
   static const _fotoKey = 'foto';
   static const _themeModeKey = 'themeMode';
+  static const _languageCodeKey = 'languageCode';
+  static String _progressCacheKey(int userId) => 'progressCache_$userId';
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
@@ -57,4 +59,18 @@ class SecureStorageService {
   }
 
   Future<String?> getThemeMode() => _storage.read(key: _themeModeKey);
+
+  Future<void> saveLanguageCode(String languageCode) {
+    return _storage.write(key: _languageCodeKey, value: languageCode);
+  }
+
+  Future<String?> getLanguageCode() => _storage.read(key: _languageCodeKey);
+
+  Future<void> saveProgressCache(int userId, String json) {
+    return _storage.write(key: _progressCacheKey(userId), value: json);
+  }
+
+  Future<String?> loadProgressCache(int userId) {
+    return _storage.read(key: _progressCacheKey(userId));
+  }
 }

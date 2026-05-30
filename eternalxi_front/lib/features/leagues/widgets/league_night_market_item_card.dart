@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/data/models/night_market_models.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
 import 'package:eternal_xi/features/leagues/controller/league_night_market_controller.dart';
@@ -66,22 +68,20 @@ class LeagueNightMarketItemCard extends StatelessWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context) async {
+    final ll = context.leagueL10n;
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Eliminar puja'),
-        content: const Text(
-          '¿Seguro que quieres eliminar tu puja? El dinero retenido '
-          'volverá a tu saldo disponible.',
-        ),
+        title: Text(ll.deleteBid),
+        content: Text(ll.deleteBidConfirmBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Cancelar'),
+            child: Text(c.l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Eliminar'),
+            child: Text(ll.deleteAction),
           ),
         ],
       ),
@@ -115,6 +115,7 @@ class LeagueNightMarketItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final uri = LeaguePlayerPhoto.resolveNightMarket(
@@ -124,7 +125,7 @@ class LeagueNightMarketItemCard extends StatelessWidget {
     final busy = controller.actionItemId == item.idMercadoDiario;
 
     final name = item.nombreVisible.trim().isEmpty
-        ? (item.nombre.trim().isEmpty ? 'Jugador' : item.nombre)
+        ? (item.nombre.trim().isEmpty ? ll.genericPlayer : item.nombre)
         : item.nombreVisible;
 
     return Card(
@@ -239,7 +240,7 @@ class LeagueNightMarketItemCard extends StatelessWidget {
                             final features = <_FeatureData>[
                               _FeatureData(
                                 icon: Icons.sports_soccer_rounded,
-                                label: 'Posicion',
+                                label: ll.positionLabel,
                                 value: LeagueNightMarketFormat.posicionLabel(
                                   item.posicion,
                                 ),
@@ -248,7 +249,7 @@ class LeagueNightMarketItemCard extends StatelessWidget {
                               ),
                               _FeatureData(
                                 icon: Icons.star_rounded,
-                                label: 'Valoracion',
+                                label: ll.valuationLabel,
                                 value: '${item.valoracion}',
                                 color: colorScheme.primary,
                                 showLabel: false,
@@ -279,14 +280,14 @@ class LeagueNightMarketItemCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _MiniStat(
-                      label: 'Valor actual',
+                      label: ll.currentValueLabel,
                       value: LeagueNightMarketFormat.moneyInt(item.valorActual),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: _MiniStat(
-                      label: 'Pujas totales',
+                      label: ll.totalBids,
                       value: '${item.totalPujas}',
                     ),
                   ),
@@ -299,14 +300,14 @@ class LeagueNightMarketItemCard extends StatelessWidget {
                     child: FilledButton(
                       onPressed: busy ? null : () => _openBidSheet(context),
                       child: Text(
-                        item.miPuja == null ? 'Pujar' : 'Actualizar puja',
+                        item.miPuja == null ? ll.bidForPlayer : ll.updateBid,
                       ),
                     ),
                   ),
                   if (item.miPuja != null) ...[
                     const SizedBox(width: 10),
                     IconButton.filledTonal(
-                      tooltip: 'Eliminar puja',
+                      tooltip: ll.deleteBid,
                       onPressed: busy ? null : () => _confirmDelete(context),
                       icon: const Icon(Icons.delete_outline_rounded),
                     ),

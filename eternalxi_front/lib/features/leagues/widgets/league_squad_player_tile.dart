@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
 import 'package:eternal_xi/features/leagues/utils/league_player_availability_icons.dart';
@@ -25,6 +26,7 @@ class LeagueSquadPlayerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final displayName = player.nombre.trim().isNotEmpty
@@ -127,9 +129,9 @@ class LeagueSquadPlayerTile extends StatelessWidget {
                 ],
                 if (hasPendingOffer) ...[
                   Tooltip(
-                    message: 'Tiene una oferta pendiente',
+                    message: ll.hasPendingOfferTooltip,
                     child: Semantics(
-                      label: 'Tiene una oferta pendiente',
+                      label: ll.hasPendingOfferTooltip,
                       child: Container(
                         width: 22,
                         height: 22,

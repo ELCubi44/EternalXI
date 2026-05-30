@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:eternal_xi/data/models/league_player_round_stats.dart';
 import 'package:eternal_xi/features/leagues/utils/league_round_stat_display.dart';
@@ -42,14 +43,14 @@ class _LeaguePlayerProfileRoundsSectionState
     return 0;
   }
 
-  static String _estadoBonito(String raw) {
+  static String _estadoBonito(String raw, LeagueL10n ll) {
     switch (raw.trim().toUpperCase()) {
       case 'EN_CURSO':
-        return 'En curso';
+        return ll.roundInProgress;
       case 'FINALIZADA':
-        return 'Finalizada';
+        return ll.roundFinished;
       case 'PENDIENTE':
-        return 'Pendiente';
+        return ll.roundPending;
       default:
         final t = raw.trim();
         return t.isEmpty ? '—' : t;
@@ -126,13 +127,14 @@ class _LeaguePlayerProfileRoundsSectionState
     super.dispose();
   }
 
-  List<_RoundStatRow> _rowsFor(LeaguePlayerRoundStats stat) {
+  List<_RoundStatRow> _rowsFor(LeaguePlayerRoundStats stat, LeagueL10n ll) {
     final d = stat.puntosDesglose;
     final matchVisible = leagueRoundMatchStatsAreVisible(stat.estadoJornada);
+    final yesNo = (bool v) => v ? ll.yesWord : ll.noWord;
     final rows = <_RoundStatRow>[
       _RoundStatRow(
         icon: Icons.timer_outlined,
-        label: 'Minutos jugados',
+        label: ll.statMinutesPlayed,
         value: leagueRoundStatDisplayValue(
           '${stat.minutosJugados}',
           officialPoints: d.minutos,
@@ -140,7 +142,7 @@ class _LeaguePlayerProfileRoundsSectionState
       ),
       _RoundStatRow(
         icon: Icons.sports_soccer,
-        label: 'Goles',
+        label: ll.statGoals,
         value: leagueRoundStatDisplayValue(
           '${stat.goles}',
           officialPoints: d.goles,
@@ -148,7 +150,7 @@ class _LeaguePlayerProfileRoundsSectionState
       ),
       _RoundStatRow(
         icon: Icons.handshake_outlined,
-        label: 'Asistencias',
+        label: ll.statAssists,
         value: leagueRoundStatDisplayValue(
           '${stat.asistencias}',
           officialPoints: d.asistencias,
@@ -156,7 +158,7 @@ class _LeaguePlayerProfileRoundsSectionState
       ),
       _RoundStatRow(
         icon: Icons.sports_handball_outlined,
-        label: 'Regates',
+        label: ll.statDribbles,
         value: leagueRoundStatDisplayValue(
           '${stat.regates}',
           officialPoints: d.regates,
@@ -164,7 +166,7 @@ class _LeaguePlayerProfileRoundsSectionState
       ),
       _RoundStatRow(
         icon: Icons.shield_moon_outlined,
-        label: 'Balones recuperados',
+        label: ll.statBallsRecovered,
         value: leagueRoundStatDisplayValue(
           '${stat.balonesRecuperados}',
           officialPoints: d.balonesRecuperados,
@@ -176,7 +178,7 @@ class _LeaguePlayerProfileRoundsSectionState
       rows.add(
         _RoundStatRow(
           icon: Icons.pan_tool_alt_outlined,
-          label: 'Paradas',
+          label: ll.statSaves,
           value: leagueRoundStatDisplayValue(
             '${stat.paradas}',
             officialPoints: d.paradas,
@@ -188,15 +190,15 @@ class _LeaguePlayerProfileRoundsSectionState
     rows.addAll([
       _RoundStatRow(
         icon: Icons.clean_hands_outlined,
-        label: 'Portería a cero',
+        label: ll.statCleanSheet,
         value: leagueRoundStatDisplayValue(
-          stat.porteriaCero ? 'Sí' : 'No',
+          yesNo(stat.porteriaCero),
           officialPoints: d.porteriaCero,
         ),
       ),
       _RoundStatRow(
         icon: Icons.shield_outlined,
-        label: 'Goles encajados',
+        label: ll.statGoalsConceded,
         value: leagueRoundStatDisplayValue(
           '${stat.golesEncajados}',
           officialPoints: d.golesEncajados,
@@ -204,7 +206,7 @@ class _LeaguePlayerProfileRoundsSectionState
       ),
       _RoundStatRow(
         icon: Icons.credit_card,
-        label: 'Tarjetas amarillas',
+        label: ll.statYellowCards,
         value: leagueRoundStatDisplayValue(
           '${stat.tarjetasAmarillas}',
           officialPoints: d.tarjetasAmarillas,
@@ -212,7 +214,7 @@ class _LeaguePlayerProfileRoundsSectionState
       ),
       _RoundStatRow(
         icon: Icons.report_rounded,
-        label: 'Tarjetas rojas',
+        label: ll.statRedCards,
         value: leagueRoundStatDisplayValue(
           '${stat.tarjetasRojas}',
           officialPoints: d.tarjetasRojas,
@@ -224,9 +226,9 @@ class _LeaguePlayerProfileRoundsSectionState
       rows.add(
         _RoundStatRow(
           icon: Icons.healing_outlined,
-          label: 'Lesionado en partido',
+          label: ll.statInjuredInMatch,
           value: leagueRoundStatDisplayValue(
-            stat.lesionadoEnPartido ? 'Sí' : 'No',
+            yesNo(stat.lesionadoEnPartido),
             officialPoints: d.lesion,
           ),
         ),
@@ -236,7 +238,7 @@ class _LeaguePlayerProfileRoundsSectionState
     rows.add(
       _RoundStatRow(
         icon: Icons.newspaper_rounded,
-        label: 'Nota del periódico',
+        label: ll.statNewspaperRating,
         value: leagueRoundStatDisplayValue(
           _noteLabel(stat.notaPeriodico),
           officialPoints: matchVisible ? d.notaPeriodico : null,
@@ -249,6 +251,7 @@ class _LeaguePlayerProfileRoundsSectionState
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -256,7 +259,7 @@ class _LeaguePlayerProfileRoundsSectionState
       return Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
         child: Text(
-          'Este jugador aún no tiene jornadas disponibles en el detalle del servidor.',
+          ll.noRoundsForPlayerDetail,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurfaceVariant,
             height: 1.35,
@@ -266,7 +269,7 @@ class _LeaguePlayerProfileRoundsSectionState
     }
 
     final stat = _rounds[_selected.clamp(0, _rounds.length - 1)];
-    final statRows = _rowsFor(stat);
+    final statRows = _rowsFor(stat, ll);
 
     if (kDebugMode) {
       debugPrint(
@@ -295,7 +298,7 @@ class _LeaguePlayerProfileRoundsSectionState
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Historial por jornadas',
+                      ll.roundHistoryByMatchdays,
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
@@ -364,7 +367,9 @@ class _LeaguePlayerProfileRoundsSectionState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Jornada ${stat.numeroJornada > 0 ? stat.numeroJornada : '—'}',
+                        stat.numeroJornada > 0
+                            ? ll.matchday(stat.numeroJornada)
+                            : '—',
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w900,
                         ),
@@ -372,7 +377,7 @@ class _LeaguePlayerProfileRoundsSectionState
                       if (stat.estadoJornada.trim().isNotEmpty) ...[
                         const SizedBox(height: 4),
                         Text(
-                          _estadoBonito(stat.estadoJornada),
+                          _estadoBonito(stat.estadoJornada, ll),
                           style: theme.textTheme.labelMedium?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.w600,
@@ -382,7 +387,7 @@ class _LeaguePlayerProfileRoundsSectionState
                       const SizedBox(height: 12),
                       _StatLine(
                         icon: Icons.stars_rounded,
-                        label: 'Puntos',
+                        label: ll.statPoints,
                         value: LeagueMoneyFormat.points(stat.puntos),
                         emphasized: true,
                       ),

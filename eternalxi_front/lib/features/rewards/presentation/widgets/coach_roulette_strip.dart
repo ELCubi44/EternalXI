@@ -380,37 +380,3 @@ Future<void> showCoachRouletteDialog({
     },
   );
 }
-
-Future<void> showCoachWonDialog({
-  required BuildContext context,
-  required RewardCoachItem coach,
-}) async {
-  await showDialog<void>(
-    context: context,
-    builder: (ctx) {
-      return AlertDialog(
-        title: const Text('¡Entrenador conseguido!'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              coach.displayName,
-              style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            if ((coach.nombreEquipo ?? '').trim().isNotEmpty)
-              Text('Equipo: ${coach.nombreEquipo}'),
-          ],
-        ),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Continuar'),
-          ),
-        ],
-      );
-    },
-  );
-}

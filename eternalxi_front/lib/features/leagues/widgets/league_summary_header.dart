@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/core/utils/league_asset_urls.dart';
 import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:eternal_xi/data/models/league_detail.dart';
@@ -10,16 +11,17 @@ class LeagueSummaryHeader extends StatelessWidget {
 
   final LeagueDetail detail;
 
-  String get _seasonLabel {
+  String _seasonLabel(LeagueL10n ll) {
     final n = detail.nombreTemporada.trim();
     if (n.isNotEmpty) {
       return n;
     }
-    return 'Temporada';
+    return ll.seasonLabel;
   }
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final seasonUri = detail.idTemporada > 0
@@ -71,7 +73,7 @@ class LeagueSummaryHeader extends StatelessWidget {
                                 color: colorScheme.primary,
                               )
                             : null,
-                        label: Text(_seasonLabel),
+                        label: Text(_seasonLabel(ll)),
                         visualDensity: VisualDensity.compact,
                       ),
                       Chip(
@@ -80,7 +82,7 @@ class LeagueSummaryHeader extends StatelessWidget {
                           size: 18,
                           color: colorScheme.primary,
                         ),
-                        label: Text('${detail.participantes} participantes'),
+                        label: Text(ll.participantsCount(detail.participantes)),
                         visualDensity: VisualDensity.compact,
                       ),
                       if (detail.soyAdmin)
@@ -90,7 +92,7 @@ class LeagueSummaryHeader extends StatelessWidget {
                             size: 18,
                             color: colorScheme.primary,
                           ),
-                          label: const Text('Administrador'),
+                          label: Text(ll.administratorBadge),
                           visualDensity: VisualDensity.compact,
                         ),
                     ],
@@ -101,7 +103,7 @@ class LeagueSummaryHeader extends StatelessWidget {
             if (detail.nicknameAdministrador.trim().isNotEmpty) ...[
               const SizedBox(height: 8),
               Text(
-                'Administrador: ${detail.nicknameAdministrador.trim()}',
+                ll.administratorNamed(detail.nicknameAdministrador.trim()),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -110,7 +112,7 @@ class LeagueSummaryHeader extends StatelessWidget {
             LeagueFichajesPhaseBanner(detail: detail),
             const SizedBox(height: 12),
             Text(
-              'Código de invitación',
+              ll.invitationCodeTitle,
               style: theme.textTheme.labelLarge?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -130,7 +132,7 @@ class LeagueSummaryHeader extends StatelessWidget {
                 Expanded(
                   child: _MetricTile(
                     icon: Icons.stars_rounded,
-                    label: 'Puntos',
+                    label: ll.metricPoints,
                     value: LeagueMoneyFormat.points(detail.misPuntos),
                     colorScheme: colorScheme,
                     theme: theme,
@@ -140,7 +142,7 @@ class LeagueSummaryHeader extends StatelessWidget {
                 Expanded(
                   child: _MetricTile(
                     icon: Icons.account_balance_wallet_outlined,
-                    label: 'Dinero',
+                    label: ll.metricMoney,
                     value: LeagueMoneyFormat.money(detail.miDinero),
                     colorScheme: colorScheme,
                     theme: theme,
@@ -150,7 +152,7 @@ class LeagueSummaryHeader extends StatelessWidget {
                 Expanded(
                   child: _MetricTile(
                     icon: Icons.trending_up,
-                    label: 'Valor equipo',
+                    label: ll.metricTeamValue,
                     value: LeagueMoneyFormat.teamValue(detail.miValorEquipo),
                     colorScheme: colorScheme,
                     theme: theme,

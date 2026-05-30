@@ -1,82 +1,219 @@
 import 'package:flutter/material.dart';
 
-/// Muestra el nivel de cuenta de forma decorativa (solo lectura), estilo Material 3.
+/// Barra de experiencia de cuenta. [compact] = solo línea + nivel a la derecha.
 class AccountLevelDisplay extends StatelessWidget {
-  const AccountLevelDisplay({super.key, required this.nivel});
+  const AccountLevelDisplay({
+    super.key,
+    required this.nivel,
+    required this.rango,
+    required this.xpEnNivel,
+    required this.xpParaSiguiente,
+    this.compact = false,
+    this.animateProgress = false,
+    this.displayXpEnNivel,
+    this.displayXpParaSiguiente,
+    this.progressFrom,
+  });
 
   final int nivel;
+  final String rango;
+  final int xpEnNivel;
+  final int xpParaSiguiente;
+  final bool compact;
+  final bool animateProgress;
+  final int? displayXpEnNivel;
+  final int? displayXpParaSiguiente;
+  final double? progressFrom;
+
+  @override
+  Widget build(BuildContext context) {
+    if (compact) {
+      return _CompactLevelBar(
+        nivel: nivel,
+        rango: rango,
+        xpEnNivel: displayXpEnNivel ?? xpEnNivel,
+        xpParaSiguiente: displayXpParaSiguiente ?? xpParaSiguiente,
+        animateProgress: animateProgress,
+        progressFrom: progressFrom,
+      );
+    }
+    return _CardLevelBar(
+      nivel: nivel,
+      rango: rango,
+      xpEnNivel: displayXpEnNivel ?? xpEnNivel,
+      xpParaSiguiente: displayXpParaSiguiente ?? xpParaSiguiente,
+      animateProgress: animateProgress,
+      progressFrom: progressFrom,
+    );
+  }
+}
+
+class _CompactLevelBar extends StatelessWidget {
+  const _CompactLevelBar({
+    required this.nivel,
+    required this.rango,
+    required this.xpEnNivel,
+    required this.xpParaSiguiente,
+    required this.animateProgress,
+    this.progressFrom,
+  });
+
+  final int nivel;
+  final String rango;
+  final int xpEnNivel;
+  final int xpParaSiguiente;
+  final bool animateProgress;
+  final double? progressFrom;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
+    final maxXp = xpParaSiguiente <= 0 ? 1 : xpParaSiguiente;
+    final progress = (xpEnNivel / maxXp).clamp(0.0, 1.0);
+    final from = (progressFrom ?? 0).clamp(0.0, 1.0);
+
+    return Semantics(
+      label: 'Nivel $nivel, $rango. Experiencia $xpEnNivel de $maxXp.',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '$xpEnNivel/$maxXp',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                'Nivel $nivel',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: cs.onSurface,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: TweenAnimationBuilder<double>(
+              duration: animateProgress
+                  ? const Duration(milliseconds: 900)
+                  : Duration.zero,
+              curve: Curves.easeOutCubic,
+              tween: Tween<double>(begin: from, end: progress),
+              builder: (context, value, _) {
+                return LinearProgressIndicator(
+                  value: value,
+                  minHeight: 8,
+                  backgroundColor: cs.surfaceContainerHighest,
+                  color: cs.primary,
+                );
+              },
+            ),
+          ),
+          if (rango.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              rango,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: cs.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _CardLevelBar extends StatelessWidget {
+  const _CardLevelBar({
+    required this.nivel,
+    required this.rango,
+    required this.xpEnNivel,
+    required this.xpParaSiguiente,
+    required this.animateProgress,
+    this.progressFrom,
+  });
+
+  final int nivel;
+  final String rango;
+  final int xpEnNivel;
+  final int xpParaSiguiente;
+  final bool animateProgress;
+  final double? progressFrom;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final maxXp = xpParaSiguiente <= 0 ? 1 : xpParaSiguiente;
+    final progress = (xpEnNivel / maxXp).clamp(0.0, 1.0);
+    final from = (progressFrom ?? 0).clamp(0.0, 1.0);
 
     return Semantics(
       container: true,
-      label: 'Nivel $nivel. Fijado por el juego, no editable.',
+      label: 'Nivel $nivel, rango $rango. Experiencia $xpEnNivel de $maxXp.',
       child: Material(
         color: cs.secondaryContainer,
-        elevation: 0,
-        shadowColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.45)),
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.35)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      cs.primary.withValues(alpha: 0.35),
-                      cs.tertiary.withValues(alpha: 0.4),
-                    ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: cs.primary.withValues(alpha: 0.18),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      rango,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ],
-                ),
-                child: Icon(
-                  Icons.workspace_premium_rounded,
-                  color: cs.onSecondaryContainer,
-                  size: 26,
+                  ),
+                  Text(
+                    'Nivel $nivel',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '$xpEnNivel/$maxXp',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'NIVEL DE CUENTA',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        letterSpacing: 0.9,
-                        fontWeight: FontWeight.w600,
-                        color: cs.onSecondaryContainer.withValues(alpha: 0.72),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '$nivel',
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        height: 1.05,
-                        color: cs.onSecondaryContainer,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(999),
+                child: TweenAnimationBuilder<double>(
+                  duration: animateProgress
+                      ? const Duration(milliseconds: 900)
+                      : Duration.zero,
+                  curve: Curves.easeOutCubic,
+                  tween: Tween<double>(begin: from, end: progress),
+                  builder: (context, value, _) {
+                    return LinearProgressIndicator(
+                      value: value,
+                      minHeight: 10,
+                      backgroundColor: cs.surface.withValues(alpha: 0.35),
+                      color: cs.primary,
+                    );
+                  },
                 ),
               ),
             ],

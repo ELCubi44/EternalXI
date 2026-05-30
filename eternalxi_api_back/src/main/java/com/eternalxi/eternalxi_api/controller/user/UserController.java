@@ -196,7 +196,7 @@ public class UserController {
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody UpdateUserRequest request) throws SQLException {
 
         String sqlSelect = "SELECT id, correo, nickname, nivel, foto FROM usuarios WHERE id = ?";
-        String sqlUpdate = "UPDATE usuarios SET nickname = ?, nivel = ? WHERE id = ?";
+        String sqlUpdate = "UPDATE usuarios SET nickname = ? WHERE id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement psSelect = conn.prepareStatement(sqlSelect);
@@ -224,11 +224,9 @@ public class UserController {
             String nuevoNickname = request.nickname() != null
                     ? InputValidator.validateNickname(request.nickname())
                     : nicknameActual;
-            Integer nuevoNivel = request.nivel() != null ? request.nivel() : nivelActual;
 
             psUpdate.setString(1, nuevoNickname);
-            psUpdate.setInt(2, nuevoNivel);
-            psUpdate.setLong(3, id);
+            psUpdate.setLong(2, id);
 
             int filas = psUpdate.executeUpdate();
 
@@ -241,7 +239,7 @@ public class UserController {
                     id,
                     correoActual,
                     nuevoNickname,
-                    nuevoNivel,
+                    nivelActual,
                     fotoActual
             );
 

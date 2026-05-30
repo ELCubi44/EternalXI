@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/core/utils/validators.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
@@ -30,6 +31,7 @@ class _RequestEmailVerificationScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final auth = context.watch<AuthController>();
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -37,9 +39,8 @@ class _RequestEmailVerificationScreenState
       isLoading: auth.isLoading,
       child: Scaffold(
         body: AuthShell(
-          title: 'Verificar correo',
-          subtitle:
-              'Recibirás un código por email para continuar con el registro de forma segura.',
+          title: l10n.verifyEmailTitle,
+          subtitle: l10n.verifyEmailSubtitle,
           leading: IconButton(
             onPressed: () => context.pop(),
             icon: const Icon(Icons.arrow_back_rounded),
@@ -52,14 +53,14 @@ class _RequestEmailVerificationScreenState
               children: [
                 AppTextField(
                   controller: _correoController,
-                  label: 'Correo electrónico',
+                  label: l10n.email,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.done,
-                  validator: Validators.email,
+                  validator: (value) => Validators.email(value, l10n),
                 ),
                 const SizedBox(height: 22),
                 AppPrimaryButton(
-                  label: 'Enviar código',
+                  label: l10n.sendCode,
                   onPressed: () async {
                     if (!_formKey.currentState!.validate()) {
                       return;
@@ -88,7 +89,7 @@ class _RequestEmailVerificationScreenState
                 const SizedBox(height: 12),
                 TextButton(
                   onPressed: () => context.go(AppRoutes.login),
-                  child: const Text('Ya tengo cuenta'),
+                  child: Text(l10n.alreadyHaveAccount),
                 ),
               ],
             ),
@@ -99,10 +100,11 @@ class _RequestEmailVerificationScreenState
   }
 
   void _showError(String? message) {
+    final l10n = context.l10n;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        content: Text(message ?? 'No se pudo enviar el código'),
+        content: Text(message ?? l10n.apiUnexpectedError),
       ),
     );
   }

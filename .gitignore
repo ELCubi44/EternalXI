@@ -8,6 +8,8 @@
 # Secrets / claves
 .env
 *.env
+.local/deploy.env
+.local/tools/
 *.jks
 *.keystore
 *.p12

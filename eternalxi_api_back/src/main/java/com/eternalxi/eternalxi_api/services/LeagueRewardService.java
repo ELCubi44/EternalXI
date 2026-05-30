@@ -11,10 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Service
 public class LeagueRewardService {
@@ -32,32 +30,36 @@ public class LeagueRewardService {
             long idJornada,
             int numJornada,
             long idUsuario,
-            boolean isWinner,
-            int rewardPts
+            int posicionJornada,
+            int puntosFantasyJornada,
+            int rewardPts,
+            int xpGanada
     ) {}
 
     private final LeagueLineupService leagueLineupService;
     private final LeaguePlayerMarketValueService leaguePlayerMarketValueService;
     private final LeagueActivityService leagueActivityService;
     private final PushNotificationService pushNotificationService;
+    private final AccountProgressService accountProgressService;
 
     public LeagueRewardService(
             LeagueLineupService leagueLineupService,
             LeaguePlayerMarketValueService leaguePlayerMarketValueService,
             LeagueActivityService leagueActivityService,
-            PushNotificationService pushNotificationService
+            PushNotificationService pushNotificationService,
+            AccountProgressService accountProgressService
     ) {
         this.leagueLineupService = leagueLineupService;
         this.leaguePlayerMarketValueService = leaguePlayerMarketValueService;
         this.leagueActivityService = leagueActivityService;
         this.pushNotificationService = pushNotificationService;
+        this.accountProgressService = accountProgressService;
     }
 
     /**
-     * Premios de jornada: puntos de recompensa de liga + dinero por puntos fantasy.
-     * Cada participante recibe {@code recompensa_base_jornada} de la liga.
-     * El/los ganador(es) reciben además {@code recompensa_bonus_ganador}.
-     * El dinero por puntos fantasy usa {@code dinero_por_punto_fantasy} de la liga.
+     * Premios de jornada: puntos de recompensa descendentes por posición fantasy
+     * ({@code recompensa_base_jornada} = mínimo del último puesto, +50 por puesto)
+     * y dinero por puntos fantasy ({@code dinero_por_punto_fantasy}).
      * Idempotente: usa {@code liga_movimientos_economicos} con UNIQUE para no duplicar.
      *
      * @return datos para enviar push tras hacer {@code commit} en la misma transacción que estos cambios
@@ -89,41 +91,49 @@ public class LeagueRewardService {
             return List.of();
         }
 
-        int maxPoints = Integer.MIN_VALUE;
-        for (Integer value : pointsByUser.values()) {
-            if (value != null && value > maxPoints) {
-                maxPoints = value;
-            }
-        }
+        List<LeagueRoundRewardDistribution.ParticipantRef> participantRefs = participants.stream()
+                .map(p -> new LeagueRoundRewardDistribution.ParticipantRef(
+                        p.idLigaParticipante(),
+                        p.idUsuario(),
+                        p.nickname()
+                ))
+                .toList();
 
-        Set<Long> winners = new HashSet<>();
-        for (Map.Entry<Long, Integer> entry : pointsByUser.entrySet()) {
-            Integer points = entry.getValue();
-            if (points != null && points == maxPoints) {
-                winners.add(entry.getKey());
-            }
-        }
+        List<LeagueRoundRewardDistribution.RankedRoundReward> rankedRewards =
+                LeagueRoundRewardDistribution.rankAndAssignRewards(
+                        participantRefs,
+                        pointsByUser,
+                        rewardConfig.recompensaMinimaJornada(),
+                        Map.of()
+                );
 
-        for (ParticipantRow participant : participants) {
-            Long idUsuario = participant.idUsuario();
-            Integer rawPts = pointsByUser.get(idUsuario);
-            int puntosJornada = Math.max(0, rawPts != null ? rawPts : 0);
+        Map<Long, Integer> xpByUser = new java.util.HashMap<>();
+        for (LeagueRoundRewardDistribution.RankedRoundReward ranked : rankedRewards) {
+            Long idUsuario = ranked.idUsuario();
+            int puntosJornada = ranked.puntosFantasyJornada();
             long presupuestoEuros = (long) puntosJornada * rewardConfig.dineroPorPuntoFantasy();
+            int rewardPts = ranked.puntosRecompensaJornada();
 
-            boolean isWinner = winners.contains(idUsuario);
-            int rewardPts = rewardConfig.recompensaBaseJornada()
-                    + (isWinner ? rewardConfig.recompensaBonusGanador() : 0);
-
-            grantRewardPointsIfMissing(conn, idLiga, idJornada, participant.idLigaParticipante(), idUsuario, rewardPts);
+            grantRewardPointsIfMissing(
+                    conn,
+                    idLiga,
+                    idJornada,
+                    ranked.idLigaParticipante(),
+                    idUsuario,
+                    rewardPts
+            );
             grantRoundMoneyIfMissing(
                     conn,
                     idLiga,
                     idJornada,
-                    participant.idLigaParticipante(),
+                    ranked.idLigaParticipante(),
                     idUsuario,
                     puntosJornada,
                     presupuestoEuros
             );
+            int xpGanada = accountProgressService.onRoundFinished(
+                    conn, idLiga, idJornada, idUsuario, puntosJornada);
+            xpByUser.put(idUsuario, xpGanada);
         }
 
         int numJornada = loadRoundNumber(conn, idJornada);
@@ -133,20 +143,22 @@ public class LeagueRewardService {
                 idLiga,
                 null, null,
                 "ROUND_FINISHED",
-                "Jornada " + numJornada + " finalizada: se repartieron puntos de recompensa.",
+                "Jornada " + numJornada + " finalizada: recompensas repartidas por posición.",
                 null, null, null, null, null, null, null
         );
 
-        List<PendingRoundRewardPush> pendingPush = new ArrayList<>(participants.size());
-        for (ParticipantRow participant : participants) {
-            Long idUsuario = participant.idUsuario();
-            boolean isWinner = winners.contains(idUsuario);
-            int rewardPts = rewardConfig.recompensaBaseJornada()
-                    + (isWinner ? rewardConfig.recompensaBonusGanador() : 0);
-
-            pendingPush.add(
-                    new PendingRoundRewardPush(idLiga, idJornada, numJornada, idUsuario, isWinner, rewardPts)
-            );
+        List<PendingRoundRewardPush> pendingPush = new ArrayList<>(rankedRewards.size());
+        for (LeagueRoundRewardDistribution.RankedRoundReward ranked : rankedRewards) {
+            pendingPush.add(new PendingRoundRewardPush(
+                    idLiga,
+                    idJornada,
+                    numJornada,
+                    ranked.idUsuario(),
+                    ranked.posicionJornada(),
+                    ranked.puntosFantasyJornada(),
+                    ranked.puntosRecompensaJornada(),
+                    xpByUser.getOrDefault(ranked.idUsuario(), 0)
+            ));
         }
         return Collections.unmodifiableList(pendingPush);
     }
@@ -320,17 +332,22 @@ public class LeagueRewardService {
 
     private List<ParticipantRow> loadLeagueParticipants(Connection conn, Long idLiga) throws SQLException {
         String sql = """
-                SELECT id, id_usuario
-                FROM liga_participantes
-                WHERE id_liga = ?
-                ORDER BY id ASC
+                SELECT lp.id, lp.id_usuario, COALESCE(u.nickname, '') AS nickname
+                FROM liga_participantes lp
+                LEFT JOIN usuarios u ON u.id = lp.id_usuario
+                WHERE lp.id_liga = ?
+                ORDER BY lp.id ASC
                 """;
         List<ParticipantRow> rows = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, idLiga);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    rows.add(new ParticipantRow(rs.getLong("id"), rs.getLong("id_usuario")));
+                    rows.add(new ParticipantRow(
+                            rs.getLong("id"),
+                            rs.getLong("id_usuario"),
+                            rs.getString("nickname")
+                    ));
                 }
             }
         }
@@ -352,7 +369,6 @@ public class LeagueRewardService {
                 }
                 return new LeagueRoundRewardConfig(
                         rs.getInt("recompensa_base_jornada"),
-                        rs.getInt("recompensa_bonus_ganador"),
                         rs.getLong("dinero_por_punto_fantasy")
                 );
             }
@@ -378,12 +394,22 @@ public class LeagueRewardService {
 
             String title;
             String body;
-            if (item.isWinner()) {
+            String xpSuffix = item.xpGanada() > 0
+                    ? " +" + item.xpGanada() + " XP de cuenta."
+                    : "";
+            if (item.posicionJornada() == 1) {
                 title = "¡Ganador de la jornada!";
-                body = "Has recibido +" + item.rewardPts() + " puntos de recompensa por participar y ganar la jornada. Entra a gastarlos.";
+                body = "Jornada " + item.numJornada() + ": tu equipo sumó "
+                        + item.puntosFantasyJornada() + " pts. Recibiste +"
+                        + item.rewardPts() + " pts de recompensa por quedar 1º."
+                        + xpSuffix;
             } else {
                 title = "Jornada finalizada";
-                body = "Has recibido +" + item.rewardPts() + " puntos de recompensa. Entra a gastarlos en sobres y cartas.";
+                body = "Jornada " + item.numJornada() + ": posición "
+                        + item.posicionJornada() + ". Tu equipo sumó "
+                        + item.puntosFantasyJornada() + " pts y recibiste +"
+                        + item.rewardPts() + " pts de recompensa."
+                        + xpSuffix;
             }
 
             pushNotificationService.sendToUser(
@@ -403,10 +429,9 @@ public class LeagueRewardService {
     }
 
     private record LeagueRoundRewardConfig(
-            int recompensaBaseJornada,
-            int recompensaBonusGanador,
+            int recompensaMinimaJornada,
             long dineroPorPuntoFantasy
     ) {}
 
-    private record ParticipantRow(long idLigaParticipante, long idUsuario) {}
+    private record ParticipantRow(long idLigaParticipante, long idUsuario, String nickname) {}
 }

@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/core/utils/league_asset_urls.dart';
 import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
@@ -327,7 +329,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
     return '$day/$month';
   }
 
-  String _availabilityText() {
+  String _availabilityText(LeagueL10n ll) {
     final info = _unavailableInfo;
     if (info != null) {
       final txt = info.textoDisponibilidad.trim();
@@ -336,21 +338,21 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
       }
       if (info.numeroJornadaDisponible != null &&
           info.numeroJornadaDisponible! > 0) {
-        return 'Disponible para la jornada ${info.numeroJornadaDisponible}';
+        return ll.availableForMatchday(info.numeroJornadaDisponible!);
       }
       if (info.disponibleDesde != null) {
-        return 'Disponible el ${_formatDateShort(info.disponibleDesde)}';
+        return ll.availableOn(_formatDateShort(info.disponibleDesde));
       }
       return info.isSuspended
-          ? 'Sin jornada disponible'
-          : 'Sin fecha de vuelta';
+          ? ll.noMatchdayAvailable
+          : ll.noReturnDate;
     }
     final norm = leaguePlayerEstadoNormalized(_effectiveEstado(_detail));
     if (norm == 'SANCIONADO') {
-      return 'Sin jornada disponible';
+      return ll.noMatchdayAvailable;
     }
     if (norm == 'LESIONADO') {
-      return 'Sin fecha de vuelta';
+      return ll.noReturnDate;
     }
     return '';
   }
@@ -367,7 +369,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
     if (_receivedOffersForPlayer.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No tienes ofertas pendientes.')),
+          SnackBar(content: Text(context.leagueL10n.noOffersPendingSnack)),
         );
       }
       return;
@@ -430,13 +432,16 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
           behavior: SnackBarBehavior.floating,
           content: Row(
             children: [
-              const Icon(Icons.check_circle_rounded, color: Colors.white),
+              Icon(
+                Icons.check_circle_rounded,
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   actionMessage?.trim().isNotEmpty == true
                       ? actionMessage!
-                      : 'Oferta aceptada.',
+                      : context.leagueL10n.offerAccepted,
                 ),
               ),
             ],
@@ -450,7 +455,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
         content: Text(
           actionMessage?.trim().isNotEmpty == true
               ? actionMessage!
-              : 'Oferta rechazada.',
+              : context.leagueL10n.offerRejected,
         ),
       ),
     );
@@ -472,11 +477,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
     if (_detail == null || !ownership.ownershipResolved) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Aún se está resolviendo el estado real del jugador. Inténtalo de nuevo.',
-            ),
-          ),
+          SnackBar(content: Text(context.leagueL10n.resolvingPlayerStatus)),
         );
       }
       return;
@@ -485,9 +486,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
     if (isOwnPlayer) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No puedes hacer una oferta por tu propio jugador.'),
-          ),
+          SnackBar(content: Text(context.leagueL10n.cannotOfferOwnPlayer)),
         );
       }
       return;
@@ -496,7 +495,8 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
       context: context,
       idLiga: leagueId,
       idUsuario: idUsuario,
-      player: widget.player,
+      player: _detail?.toSquadPlayer(fallback: widget.player) ?? widget.player,
+      miDinero: LeagueShellData.maybeOf(context)?.detail?.miDinero.floor(),
       onAfterSuccess: () async {
         final shell = LeagueShellData.maybeOf(context);
         await Future.wait([_loadDetail(), shell?.reload() ?? Future.value()]);
@@ -514,22 +514,22 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
       return;
     }
     final expected = (valorActual * 0.9).round();
+    final ll = context.leagueL10n;
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Vender jugador'),
+        title: Text(ll.sellPlayer),
         content: Text(
-          'Esta operación vende instantáneamente al 90% del valor actual.\n\n'
-          'Cobro estimado: ${LeagueMoneyFormat.euros(expected.toDouble())}',
+          ll.sellInstantBody(LeagueMoneyFormat.euros(expected.toDouble())),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Cancelar'),
+            child: Text(c.l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Vender'),
+            child: Text(ll.sell),
           ),
         ],
       ),
@@ -553,7 +553,9 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Venta realizada por ${LeagueMoneyFormat.euros(result.cantidadVenta.toDouble())}.',
+            context.leagueL10n.saleCompleted(
+              LeagueMoneyFormat.euros(result.cantidadVenta.toDouble()),
+            ),
           ),
         ),
       );
@@ -580,21 +582,22 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
       return;
     }
     final expected = (valorActual * 2).round();
+    final ll = context.leagueL10n;
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Comprar jugador'),
+        title: Text(ll.buyPlayer),
         content: Text(
-          'Se realizará la compra directa por ${LeagueMoneyFormat.euros(expected.toDouble())} (2x del valor actual).',
+          ll.buyDirectBody(LeagueMoneyFormat.euros(expected.toDouble())),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Cancelar'),
+            child: Text(c.l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Comprar'),
+            child: Text(ll.buy),
           ),
         ],
       ),
@@ -618,8 +621,10 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Compra por ${LeagueMoneyFormat.euros(result.cantidadCompra.toDouble())}. '
-            'Nuevo saldo: ${LeagueMoneyFormat.euros(result.nuevoSaldo.toDouble())}.',
+            context.leagueL10n.purchaseCompleted(
+              LeagueMoneyFormat.euros(result.cantidadCompra.toDouble()),
+              LeagueMoneyFormat.euros(result.nuevoSaldo.toDouble()),
+            ),
           ),
         ),
       );
@@ -769,6 +774,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final detail = _detail;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -776,6 +782,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
         ? LeagueDisplayStrings.playerShortName(
             pila: detail?.pila ?? widget.player.pila,
             nombre: detail?.nombre ?? widget.player.nombre,
+            ll: ll,
           )
         : (detail?.nombre ?? widget.player.nombre).trim();
     final pos = (detail?.posicion ?? widget.player.posicion).trim().isEmpty
@@ -825,7 +832,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
     final protFinTemp = detail?.proteccionHastaFinTemporada ?? widget.player.proteccionHastaFinTemporada;
     final protJornadaFin = detail?.proteccionJornadaFin ?? widget.player.proteccionJornadaFin;
     final unavailableLine = (isInjured || isSuspended)
-        ? _availabilityText()
+        ? _availabilityText(ll)
         : '';
     final idUsuario = _resolvedUsuarioId();
     final ownership = _resolveOwnershipContext(
@@ -861,29 +868,29 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Jugador'),
+        title: Text(ll.playerTitle),
         scrolledUnderElevation: 0,
         actions: [
           if (canOffer)
             IconButton(
-              tooltip: 'Hacer oferta',
+              tooltip: ll.makeOffer,
               onPressed: _loading ? null : _openOfferSheet,
               icon: const Icon(Icons.local_offer_outlined),
             ),
           if (canBuyNow)
             TextButton(
               onPressed: _loading ? null : () => _buyPlayerNow(valor),
-              child: const Text('Comprar x2'),
+              child: Text(ll.buyX2),
             ),
           if (canSell)
             TextButton(
               onPressed: _loading ? null : _openManageOffersSheet,
-              child: Text('Ofertas (${_receivedOffersForPlayer.length})'),
+              child: Text(ll.offersCount(_receivedOffersForPlayer.length)),
             ),
           if (canSell)
             TextButton(
               onPressed: _loading ? null : () => _sellPlayer(valor),
-              child: const Text('Vender a la liga'),
+              child: Text(ll.sellToLeague),
             ),
         ],
       ),
@@ -927,12 +934,12 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                               ? Semantics(
                                   button: true,
                                   label: nombreEquipo.isEmpty
-                                      ? 'Ver equipo'
-                                      : 'Ver equipo: $nombreEquipo',
+                                      ? ll.seeTeam
+                                      : ll.seeTeamColon(nombreEquipo),
                                   child: Tooltip(
                                     message: nombreEquipo.isEmpty
-                                        ? 'Ver equipo'
-                                        : 'Ver equipo · $nombreEquipo',
+                                        ? ll.seeTeam
+                                        : ll.seeTeamNamed(nombreEquipo),
                                     child: Material(
                                       color: Colors.transparent,
                                       shape: const CircleBorder(),
@@ -1105,7 +1112,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  isSuspended ? 'Sancionado' : 'Lesionado',
+                                  isSuspended ? ll.suspended : ll.injured,
                                   style: theme.textTheme.labelLarge?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     color: isSuspended
@@ -1142,10 +1149,10 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                                   const SizedBox(width: 6),
                                   Text(
                                     protFinTemp
-                                        ? 'Protegido temporada'
+                                        ? ll.protectedSeason
                                         : protJornadaFin != null
-                                            ? 'Protegido hasta J$protJornadaFin'
-                                            : 'Protegido',
+                                            ? ll.protectedUntilMatchday(protJornadaFin)
+                                            : ll.protectedGeneric,
                                     style: theme.textTheme.labelMedium?.copyWith(
                                       color: const Color(0xFF64B5F6),
                                       fontWeight: FontWeight.w700,
@@ -1168,7 +1175,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                                 borderRadius: BorderRadius.circular(999),
                               ),
                               child: Text(
-                                'Propietario: $ownerLabel',
+                                ll.ownerNamed(ownerLabel),
                                 style: theme.textTheme.labelMedium?.copyWith(
                                   color: colorScheme.onSecondaryContainer,
                                   fontWeight: FontWeight.w700,
@@ -1187,7 +1194,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
             child: Text(
-              'Datos en liga',
+              ll.leagueDataTitle,
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w800,
               ),
@@ -1205,7 +1212,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
               children: [
                 _StatCell(
                   icon: Icons.sports_soccer_outlined,
-                  label: 'Posición',
+                  label: ll.positionLabel,
                   value: pos,
                   colorScheme: colorScheme,
                   theme: theme,
@@ -1213,7 +1220,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                 ),
                 _StatCell(
                   icon: Icons.star_rounded,
-                  label: 'Valoración',
+                  label: ll.valuationLabel,
                   value: _rating(valoracion),
                   colorScheme: colorScheme,
                   theme: theme,
@@ -1222,7 +1229,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                 ),
                 _StatCell(
                   icon: Icons.payments_outlined,
-                  label: 'Valor actual',
+                  label: ll.currentValueLabel,
                   value: LeagueMoneyFormat.money(valor),
                   colorScheme: colorScheme,
                   theme: theme,
@@ -1230,7 +1237,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                 ),
                 _StatCell(
                   icon: Icons.battery_charging_full_rounded,
-                  label: 'Cansancio',
+                  label: ll.fatigueLabel,
                   value: '$cansancio',
                   colorScheme: colorScheme,
                   theme: theme,
@@ -1260,7 +1267,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                   FilledButton.tonalIcon(
                     onPressed: _loadDetail,
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Reintentar'),
+                    label: Text(context.l10n.retry),
                   ),
                 ],
               ),
@@ -1276,7 +1283,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
               child: Text(
-                'Cargando historial desde el servidor...',
+                ll.loadingHistoryFromServer,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -1404,6 +1411,7 @@ class _PlayerOffersManagementSheetState
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -1412,7 +1420,7 @@ class _PlayerOffersManagementSheetState
           children: [
             Expanded(
               child: Text(
-                'Ofertas recibidas',
+                ll.receivedOffersTitle,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -1420,13 +1428,13 @@ class _PlayerOffersManagementSheetState
             ),
             TextButton(
               onPressed: () => Navigator.of(context).maybePop(),
-              child: const Text('Cerrar'),
+              child: Text(context.l10n.close),
             ),
           ],
         ),
         const SizedBox(height: 12),
         if (widget.offers.isEmpty)
-          Text('No hay ofertas pendientes.', style: theme.textTheme.bodyMedium),
+          Text(ll.noPendingOffers, style: theme.textTheme.bodyMedium),
         for (final offer in widget.offers)
           Card(
             elevation: 0,
@@ -1459,7 +1467,7 @@ class _PlayerOffersManagementSheetState
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            _buyerNickname(offer),
+                            _buyerNickname(offer, ll),
                             style: theme.textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
@@ -1498,7 +1506,7 @@ class _PlayerOffersManagementSheetState
                                   setState(() => _busyId = null);
                                   navigator.pop(false);
                                 },
-                          child: const Text('Rechazar'),
+                          child: Text(ll.reject),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -1520,7 +1528,7 @@ class _PlayerOffersManagementSheetState
                                   setState(() => _busyId = null);
                                   navigator.pop(true);
                                 },
-                          child: const Text('Aceptar'),
+                          child: Text(ll.accept),
                         ),
                       ),
                     ],
@@ -1534,12 +1542,12 @@ class _PlayerOffersManagementSheetState
   }
 }
 
-String _buyerNickname(LeagueOfferItem offer) {
+String _buyerNickname(LeagueOfferItem offer, LeagueL10n ll) {
   final nick = offer.nicknameComprador.trim();
   if (nick.isNotEmpty) {
     return nick;
   }
-  return 'Usuario';
+  return ll.genericUser;
 }
 
 class _OfferBuyerAvatar extends StatelessWidget {
@@ -1553,8 +1561,9 @@ class _OfferBuyerAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final url = _resolveUrl();
-    final fallbackText = _buyerNickname(offer);
+    final fallbackText = _buyerNickname(offer, ll);
     if (url == null) {
       return _OfferAvatarFallback(text: fallbackText);
     }

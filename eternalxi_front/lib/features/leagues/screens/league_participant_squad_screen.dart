@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/league_participant_squad_payload.dart';
@@ -347,7 +348,7 @@ class _LeagueParticipantSquadScreenState
                   FilledButton.tonalIcon(
                     onPressed: _load,
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Reintentar'),
+                    label: Text(context.l10n.retry),
                   ),
                 ],
               )
@@ -360,16 +361,16 @@ class _LeagueParticipantSquadScreenState
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
                     sliver: SliverToBoxAdapter(
                       child: SegmentedButton<int>(
-                        segments: const [
+                        segments: [
                           ButtonSegment<int>(
                             value: 0,
-                            label: Text('Alineación'),
-                            icon: Icon(Icons.grid_on_outlined),
+                            label: Text(context.l10n.lineup),
+                            icon: const Icon(Icons.grid_on_outlined),
                           ),
                           ButtonSegment<int>(
                             value: 1,
-                            label: Text('Plantilla'),
-                            icon: Icon(Icons.groups_2_outlined),
+                            label: Text(context.l10n.squad),
+                            icon: const Icon(Icons.groups_2_outlined),
                           ),
                         ],
                         selected: {_segment},

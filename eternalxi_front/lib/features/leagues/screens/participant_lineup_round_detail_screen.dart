@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/league_participant_lineup_history.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
@@ -89,8 +91,9 @@ class _ParticipantLineupRoundDetailScreenState
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    final ll = context.leagueL10n;
     return Scaffold(
-      appBar: AppBar(title: const Text('Detalle de alineación')),
+      appBar: AppBar(title: Text(ll.lineupDetailTitle)),
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading
@@ -113,7 +116,7 @@ class _ParticipantLineupRoundDetailScreenState
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'No se pudo cargar la jornada',
+                    ll.couldNotLoadRound,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -124,7 +127,7 @@ class _ParticipantLineupRoundDetailScreenState
                   FilledButton.tonalIcon(
                     onPressed: _load,
                     icon: const Icon(Icons.refresh_rounded),
-                    label: const Text('Reintentar'),
+                    label: Text(context.l10n.retry),
                   ),
                 ],
               )
@@ -146,11 +149,12 @@ class _DetailBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final ll = context.leagueL10n;
     final nick = data.nickname.trim().isNotEmpty
         ? data.nickname.trim()
         : (fallbackNickname?.trim().isNotEmpty ?? false)
         ? fallbackNickname!.trim()
-        : 'Participante';
+        : ll.participantFallback;
     final status = data.estadoJornada.toUpperCase();
 
     return ListView(
@@ -169,7 +173,7 @@ class _DetailBody extends StatelessWidget {
           runSpacing: 8,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            _MetaChip(label: 'Jornada ${data.numeroJornada}', icon: Icons.event),
+            _MetaChip(label: ll.matchday(data.numeroJornada), icon: Icons.event),
             _MetaChip(label: status, icon: Icons.flag_circle_outlined),
             _MetaChip(
               label:
@@ -202,7 +206,7 @@ class _DetailBody extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          'Titulares',
+          ll.startersLabel,
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
@@ -215,7 +219,7 @@ class _DetailBody extends StatelessWidget {
         ],
         const SizedBox(height: 8),
         Text(
-          'Reservas',
+          ll.reservesLabel,
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
@@ -224,7 +228,7 @@ class _DetailBody extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(14),
               child: Text(
-                'No hay reservas en esta alineación.',
+                ll.noBenchInLineup,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -260,6 +264,7 @@ class _OptionalPointsBreakdownCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final lines = <Widget>[];
@@ -267,7 +272,7 @@ class _OptionalPointsBreakdownCard extends StatelessWidget {
     if (pj != null) {
       lines.add(
         Text(
-          'Puntos jugadores (formación): ${_fmtBreakdownDouble(pj)}',
+          ll.playerPointsBreakdown(pj),
           style: theme.textTheme.bodySmall,
         ),
       );
@@ -276,7 +281,7 @@ class _OptionalPointsBreakdownCard extends StatelessWidget {
     if (pen != null) {
       lines.add(
         Text(
-          'Penalización huecos fantasy: ${_fmtBreakdownDouble(pen)}',
+          ll.fantasyGapPenalty(pen),
           style: theme.textTheme.bodySmall,
         ),
       );
@@ -285,7 +290,7 @@ class _OptionalPointsBreakdownCard extends StatelessWidget {
     if (pe != null) {
       lines.add(
         Text(
-          'Puntos entrenador (fantasy): ${_fmtBreakdownDouble(pe)}',
+          ll.coachPointsBreakdown(pe),
           style: theme.textTheme.bodySmall,
         ),
       );
@@ -295,7 +300,7 @@ class _OptionalPointsBreakdownCard extends StatelessWidget {
     }
     final bodyChildren = <Widget>[
       Text(
-        'Desglose (referencia del servidor)',
+        ll.serverBreakdownReference,
         style: theme.textTheme.labelLarge?.copyWith(
           fontWeight: FontWeight.w800,
           color: colorScheme.onSurfaceVariant,
@@ -339,10 +344,12 @@ class _LineupRoundPlayerStatsCard extends StatelessWidget {
     return value.toStringAsFixed(value % 1 == 0 ? 0 : 1);
   }
 
-  String _boolLabel(bool value) => value ? 'Sí' : 'No';
+  String _boolLabel(bool value, LeagueL10n ll) =>
+      value ? ll.yesWord : ll.noWord;
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final listBadge =
@@ -350,11 +357,9 @@ class _LineupRoundPlayerStatsCard extends StatelessWidget {
     final fantasySubMsg = !showJornadaPitchBadges
         ? null
         : player.fantasyTitularSinConteoPorBanquillo
-        ? 'Titular sin puntos fantasy en esta jornada: cuentan los del '
-              'suplente de tu banquillo.'
+        ? ll.starterNoPointsHint
         : player.fantasyBanquilloContandoPorSuplencia
-        ? 'Puntos del banquillo que sí cuentan en el fantasy por sustituir '
-              'al titular.'
+        ? ll.starterSubstitutionHint
         : null;
     if (kDebugMode) {
       debugPrint(
@@ -422,41 +427,41 @@ class _LineupRoundPlayerStatsCard extends StatelessWidget {
               spacing: 12,
               runSpacing: 8,
               children: [
-                _StatChip(label: 'Minutos', value: '${player.minutosJugados}'),
-                _StatChip(label: 'Goles', value: '${player.goles}'),
-                _StatChip(label: 'Asistencias', value: '${player.asistencias}'),
+                _StatChip(label: ll.statMinutes, value: '${player.minutosJugados}'),
+                _StatChip(label: ll.statGoals, value: '${player.goles}'),
+                _StatChip(label: ll.statAssists, value: '${player.asistencias}'),
                 _StatChip(
-                  label: 'Tarjetas amarillas',
+                  label: ll.statYellowCards,
                   value: '${player.tarjetasAmarillas}',
                 ),
-                _StatChip(label: 'Tarjetas rojas', value: '${player.tarjetasRojas}'),
+                _StatChip(label: ll.statRedCards, value: '${player.tarjetasRojas}'),
                 _StatChip(
-                  label: 'Nota del periódico',
+                  label: ll.statNewspaperRating,
                   value: _formatNote(player.notaPeriodico),
                 ),
                 _StatChip(
-                  label: 'Goles encajados',
+                  label: ll.statGoalsConceded,
                   value: '${player.golesEncajados}',
                 ),
                 _StatChip(
-                  label: 'Portería a cero',
-                  value: _boolLabel(player.porteriaCero),
+                  label: ll.statCleanSheet,
+                  value: _boolLabel(player.porteriaCero, ll),
                 ),
                 _StatChip(
-                  label: 'Lesionado en partido',
-                  value: _boolLabel(player.lesionadoEnPartido),
+                  label: ll.statInjuredInMatch,
+                  value: _boolLabel(player.lesionadoEnPartido, ll),
                 ),
                 if (leagueShouldShowSavesStat(player.posicion, player.paradas))
                   _StatChip(
-                    label: 'Paradas',
+                    label: ll.statSaves,
                     value: leagueParadasStatDisplayValue(
                       player.paradas,
                       officialPoints: player.puntosFantasyParadasOficial,
                     ),
                   ),
-                _StatChip(label: 'Regates', value: '${player.regates}'),
+                _StatChip(label: ll.statDribbles, value: '${player.regates}'),
                 _StatChip(
-                  label: 'Balones recuperados',
+                  label: ll.statBallsRecovered,
                   value: '${player.balonesRecuperados}',
                 ),
               ],

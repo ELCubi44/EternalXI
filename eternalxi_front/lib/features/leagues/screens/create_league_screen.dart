@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/core/utils/league_asset_urls.dart';
 import 'package:eternal_xi/core/utils/validators.dart';
@@ -9,6 +11,7 @@ import 'package:eternal_xi/features/leagues/widgets/create_league_advanced_confi
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/shared/widgets/app_loading_overlay.dart';
 import 'package:eternal_xi/shared/widgets/app_primary_button.dart';
+import 'package:eternal_xi/features/profile/controller/user_preferences_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -39,10 +42,16 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
   bool _idaYVuelta = false;
   int _recompensaBaseJornada = LeagueConfigLabels.recompensaDefault;
   int _dineroPorPuntoFantasy = LeagueConfigLabels.dineroPorPuntoDefault;
+  String? _loadedSeasonsForLanguage;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final lang = context.watch<UserPreferencesController>().resolvedLanguageTag;
+    if (_loadedSeasonsForLanguage == lang) {
+      return;
+    }
+    _loadedSeasonsForLanguage = lang;
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadSeasons());
   }
 
@@ -174,6 +183,8 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -181,11 +192,11 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
       isLoading: _submitting,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Crear liga'),
+          title: Text(l10n.createLeague),
           actions: [
             if (!_seasonsLoading && _seasons.isEmpty)
               IconButton(
-                tooltip: 'Reintentar',
+                tooltip: l10n.retry,
                 onPressed: _submitting ? null : _loadSeasons,
                 icon: const Icon(Icons.refresh_rounded),
               ),
@@ -205,7 +216,7 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
                     counterText: '',
                   ),
                   textInputAction: TextInputAction.next,
-                  validator: Validators.leagueName,
+                  validator: (value) => Validators.leagueName(value, l10n),
                   maxLength: 50,
                   inputFormatters: [
                     LengthLimitingTextInputFormatter(50),
@@ -230,9 +241,9 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
                         const SizedBox(height: 12),
                         Text(
                           _seasonsError != null
-                              ? 'No se pudieron cargar las temporadas.'
+                              ? l10n.preferencesLoadError
                               : (_noAvailableSeasonsMessage ??
-                                    'No hay temporadas disponibles.'),
+                                    l10n.seasonUnavailable),
                           style: theme.textTheme.bodyLarge?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
@@ -339,15 +350,20 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
                           ? null
                           : (v) => setState(() => _advancedExpanded = v),
                       title: Text(
-                        'Configuración avanzada',
+                        l10n.advancedConfig,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       subtitle: Text(
-                        '$_maxParticipantes participantes · '
-                        '${LeagueConfigLabels.calendarLabel(_permiteEntresemana)} · '
-                        '${LeagueConfigLabels.formatLabel(_idaYVuelta)}',
+                        ll.createLeagueParticipantsSummary(
+                          _maxParticipantes,
+                          LeagueConfigLabels.calendarLabel(
+                            _permiteEntresemana,
+                            l10n: l10n,
+                          ),
+                          LeagueConfigLabels.formatLabel(_idaYVuelta, l10n: l10n),
+                        ),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -411,7 +427,7 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
                 ],
                 const SizedBox(height: 28),
                 AppPrimaryButton(
-                  label: 'Crear liga',
+                  label: l10n.createLeague,
                   isLoading: _submitting,
                   onPressed:
                       _submitting ||

@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/data/models/league_team_standing_row.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.dart';
@@ -63,8 +65,9 @@ class _LeagueTeamStandingsScreenState extends State<LeagueTeamStandingsScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final ll = context.leagueL10n;
     return Scaffold(
-      appBar: AppBar(title: const Text('Clasificación de equipos')),
+      appBar: AppBar(title: Text(ll.teamStandingsTitle)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
@@ -92,7 +95,7 @@ class _LeagueTeamStandingsScreenState extends State<LeagueTeamStandingsScreen> {
                           child: FilledButton.tonalIcon(
                             onPressed: _load,
                             icon: const Icon(Icons.refresh),
-                            label: const Text('Reintentar'),
+                            label: Text(context.l10n.retry),
                           ),
                         ),
                       ],
@@ -108,7 +111,7 @@ class _LeagueTeamStandingsScreenState extends State<LeagueTeamStandingsScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: 42),
                   child: Text(
-                    'Todavía no hay clasificación disponible',
+                    ll.noTeamStandingsYet,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurfaceVariant,
@@ -197,6 +200,7 @@ class _TeamStandingsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.7),
@@ -207,7 +211,7 @@ class _TeamStandingsHeader extends StatelessWidget {
         child: Row(
           children: [
             _th('#', 30),
-            _th('Equipo', 212, alignLeft: true),
+            _th(ll.teamColumn, 212, alignLeft: true),
             _th('PJ', 34),
             _th('G', 28),
             _th('E', 28),
@@ -255,6 +259,7 @@ class _TeamStandingsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final teamName = row.nombreEquipo.trim();
+    final ll = context.leagueL10n;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
       child: Row(
@@ -268,12 +273,12 @@ class _TeamStandingsRow extends StatelessWidget {
                   Semantics(
                     button: true,
                     label: teamName.isEmpty
-                        ? 'Ver equipo'
-                        : 'Ver equipo: $teamName',
+                        ? ll.seeTeam
+                        : ll.seeTeamColon(teamName),
                     child: Tooltip(
                       message: teamName.isEmpty
-                          ? 'Ver equipo'
-                          : 'Ver equipo · $teamName',
+                          ? ll.seeTeam
+                          : ll.seeTeamNamed(teamName),
                       child: Material(
                         color: Colors.transparent,
                         shape: const CircleBorder(),

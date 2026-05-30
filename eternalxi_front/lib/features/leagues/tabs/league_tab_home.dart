@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/data/models/league_calendar_models.dart';
 import 'package:eternal_xi/data/models/league_home_feed.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
@@ -15,6 +17,15 @@ import 'package:eternal_xi/features/leagues/widgets/league_month_calendar.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+enum _LeagueHomeSummarySection {
+  standings,
+  topScorers,
+  topAssists,
+  cleanSheets,
+  injured,
+  suspended,
+}
 
 /// Agrupa partidos por día calendario local usando la fecha real de cada partido
 /// (`inicioEn` → [LeagueMatchSummary.fechaPartido]). No usa rangos de jornada.
@@ -216,7 +227,7 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
     if (shell == null) {
       setState(() {
         _loading = false;
-        _error = 'No se pudo resolver el contexto de la liga.';
+        _error = context.leagueL10n.couldNotResolveLeagueContext;
       });
       return;
     }
@@ -323,9 +334,7 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
     }
     if (merged.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No hay partidos programados para esta fecha.'),
-        ),
+        SnackBar(content: Text(context.leagueL10n.noMatchesScheduled)),
       );
       return;
     }
@@ -379,9 +388,10 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
     return sorted;
   }
 
-  void _onSummarySeeMore(String section) {
+  void _onSummarySeeMore(_LeagueHomeSummarySection section) {
     final shell = LeagueShellData.maybeOf(context);
-    if (section == 'Clasificación') {
+    final ll = context.leagueL10n;
+    if (section == _LeagueHomeSummarySection.standings) {
       if (shell == null) {
         return;
       }
@@ -396,40 +406,42 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
       return;
     }
     switch (section) {
-      case 'Goleadores':
+      case _LeagueHomeSummarySection.topScorers:
         _openStatsList(
-          title: 'Mejores goleadores',
-          subtitle: 'Listado completo de goleadores de la liga.',
+          title: ll.topScorers,
+          subtitle: ll.topScorersSubtitle,
           items: _topPlayersToItems(_homeFeed.goleadores, maxItems: 10),
         );
         break;
-      case 'Asistentes':
+      case _LeagueHomeSummarySection.topAssists:
         _openStatsList(
-          title: 'Mejores asistentes',
-          subtitle: 'Listado completo de asistentes de la liga.',
+          title: ll.topAssists,
+          subtitle: ll.topAssistsSubtitle,
           items: _topPlayersToItems(_homeFeed.asistidores, maxItems: 10),
         );
         break;
-      case 'Porterías a cero':
+      case _LeagueHomeSummarySection.cleanSheets:
         _openStatsList(
-          title: 'Porterías a cero',
-          subtitle: 'Porteros con más porterías a cero.',
+          title: ll.cleanSheets,
+          subtitle: ll.cleanSheetsSubtitle,
           items: _topPlayersToItems(_homeFeed.porteriasCero, maxItems: 10),
         );
         break;
-      case 'Lesionados':
+      case _LeagueHomeSummarySection.injured:
         _openStatsList(
-          title: 'Lesionados',
-          subtitle: 'Jugadores lesionados activos ordenados por vuelta.',
+          title: ll.injuredPlayers,
+          subtitle: ll.injuredPlayersSubtitle,
           items: _unavailableToItems(_unavailableSorted(injured: true)),
         );
         break;
-      case 'Sancionados':
+      case _LeagueHomeSummarySection.suspended:
         _openStatsList(
-          title: 'Sancionados',
-          subtitle: 'Jugadores sancionados activos ordenados por vuelta.',
+          title: ll.suspendedPlayers,
+          subtitle: ll.suspendedPlayersSubtitle,
           items: _unavailableToItems(_unavailableSorted(injured: false)),
         );
+        break;
+      case _LeagueHomeSummarySection.standings:
         break;
     }
   }
@@ -439,13 +451,14 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
     required String subtitle,
     required List<LeagueStatsListItem> items,
   }) {
+    final ll = context.leagueL10n;
     Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
         builder: (_) => LeagueStatsListScreen(
           title: title,
           subtitle: subtitle,
           items: items,
-          emptyText: 'Aún no hay estadísticas',
+          emptyText: ll.noStatsYet,
         ),
       ),
     );
@@ -578,22 +591,27 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
   }
 
   String _availabilityText(LeagueUnavailablePlayer row) {
+    final ll = context.leagueL10n;
     final txt = row.textoDisponibilidad.trim();
     if (txt.isNotEmpty) {
       return txt;
     }
     if (row.numeroJornadaDisponible != null &&
         row.numeroJornadaDisponible! > 0) {
-      return 'Disponible para la jornada ${row.numeroJornadaDisponible}';
+      return ll.availableForMatchday(row.numeroJornadaDisponible!);
     }
     if (row.disponibleDesde != null) {
-      return 'Disponible el ${LeagueSpanishDateTime.formatDateNumeric(row.disponibleDesde)}';
+      return ll.availableOn(
+        LeagueSpanishDateTime.formatDateNumeric(row.disponibleDesde),
+      );
     }
-    return 'Sin fecha de vuelta';
+    return ll.noReturnDate;
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final ll = context.leagueL10n;
     super.build(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -601,9 +619,9 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
     final activityDays = _calendarActivityDays();
     final summaryPages = <Widget>[
       _LeagueHomeCompactCard(
-        title: 'Clasificación de equipos',
+        title: ll.teamStandingsTitle,
         dense: true,
-        onSeeMore: () => _onSummarySeeMore('Clasificación'),
+        onSeeMore: () => _onSummarySeeMore(_LeagueHomeSummarySection.standings),
         child: _CompactTeamStandingsTable(
           rows: _teamStandings,
           loading: _teamStandingsLoading,
@@ -612,29 +630,29 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
         ),
       ),
       _LeagueHomeCompactCard(
-        title: 'Mejores goleadores',
-        onSeeMore: () => _onSummarySeeMore('Goleadores'),
+        title: ll.topScorers,
+        onSeeMore: () => _onSummarySeeMore(_LeagueHomeSummarySection.topScorers),
         child: _CompactTopPlayersTable(
           rows: _homeFeed.goleadores,
-          valueLabel: 'Goles',
+          valueLabel: ll.statGoals,
           onTapPlayer: _openTopPlayerDetail,
         ),
       ),
       _LeagueHomeCompactCard(
-        title: 'Mejores asistentes',
-        onSeeMore: () => _onSummarySeeMore('Asistentes'),
+        title: ll.topAssists,
+        onSeeMore: () => _onSummarySeeMore(_LeagueHomeSummarySection.topAssists),
         child: _CompactTopPlayersTable(
           rows: _homeFeed.asistidores,
-          valueLabel: 'Asist.',
+          valueLabel: ll.assistsShort,
           onTapPlayer: _openTopPlayerDetail,
         ),
       ),
       _LeagueHomeCompactCard(
-        title: 'Porterías a cero',
-        onSeeMore: () => _onSummarySeeMore('Porterías a cero'),
+        title: ll.cleanSheets,
+        onSeeMore: () => _onSummarySeeMore(_LeagueHomeSummarySection.cleanSheets),
         child: _CompactTopPlayersTable(
           rows: _homeFeed.porteriasCero,
-          valueLabel: 'PC',
+          valueLabel: ll.cleanSheetsShort,
           onTapPlayer: _openTopPlayerDetail,
         ),
       ),
@@ -657,7 +675,7 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             sliver: SliverToBoxAdapter(
               child: Text(
-                'Calendario de partidos',
+                l10n.home,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -718,7 +736,7 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
               sliver: SliverToBoxAdapter(
                 child: Text(
-                  'Resumen de liga',
+                  ll.leagueSummaryTitle,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
@@ -775,28 +793,31 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
                             setState(() => _unavailablePage = index),
                         children: [
                           _LeagueHomeCompactCard(
-                            title: 'Lesionados',
-                            onSeeMore: () => _onSummarySeeMore('Lesionados'),
+                            title: ll.injuredPlayers,
+                            onSeeMore: () =>
+                                _onSummarySeeMore(_LeagueHomeSummarySection.injured),
                             child: _CompactUnavailableListTable(
                               rows: _unavailableSorted(injured: true),
                               loading: _unavailableLoading,
                               error: _unavailableError,
                               onRetry: () => _loadSchedule(force: true),
                               resolveAvailabilityText: _availabilityText,
-                              emptyText: 'No hay lesionados actualmente',
+                              emptyText: ll.noInjuredCurrently,
                               onTapPlayer: _openUnavailablePlayerDetail,
                             ),
                           ),
                           _LeagueHomeCompactCard(
-                            title: 'Sancionados',
-                            onSeeMore: () => _onSummarySeeMore('Sancionados'),
+                            title: ll.suspendedPlayers,
+                            onSeeMore: () => _onSummarySeeMore(
+                              _LeagueHomeSummarySection.suspended,
+                            ),
                             child: _CompactUnavailableListTable(
                               rows: _unavailableSorted(injured: false),
                               loading: _unavailableLoading,
                               error: _unavailableError,
                               onRetry: () => _loadSchedule(force: true),
                               resolveAvailabilityText: _availabilityText,
-                              emptyText: 'No hay sancionados actualmente',
+                              emptyText: ll.noSuspendedCurrently,
                               onTapPlayer: _openUnavailablePlayerDetail,
                             ),
                           ),
@@ -836,7 +857,7 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
                   children: [
                     if (_rounds.isEmpty && _error == null)
                       Text(
-                        'No hay jornadas en la respuesta del servidor.',
+                        ll.noRoundsInResponse,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                           height: 1.4,
@@ -844,7 +865,7 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
                       )
                     else if (activityDays.isEmpty && _rounds.isNotEmpty)
                       Text(
-                        'Hay jornadas pero no se encontraron partidos con fecha de inicio (inicioEn) o falló la carga de alguna jornada. Usa actualizar e inténtalo de nuevo.',
+                        ll.noRoundsWithMatches,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                           height: 1.4,
@@ -928,7 +949,7 @@ class _LeagueHomeCompactCard extends StatelessWidget {
                             )
                           : null,
                       onPressed: onSeeMore,
-                      child: const Text('Ver más'),
+                      child: Text(context.l10n.continueText),
                     ),
                   ],
                 ),
@@ -990,7 +1011,7 @@ class _CompactTeamStandingsTable extends StatelessWidget {
             child: TextButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh, size: 16),
-              label: const Text('Reintentar'),
+              label: Text(context.l10n.retry),
             ),
           ),
         ],
@@ -998,9 +1019,7 @@ class _CompactTeamStandingsTable extends StatelessWidget {
     }
 
     if (rows.isEmpty) {
-      return const _CompactEmptyState(
-        text: 'Todavía no hay clasificación disponible',
-      );
+      return _CompactEmptyState(text: context.leagueL10n.noTeamStandingsYet);
     }
 
     final preview = rows.take(5).toList(growable: false);
@@ -1027,19 +1046,25 @@ class _TeamTableHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final ll = context.leagueL10n;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.75),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
         child: Row(
           children: [
-            _TeamHeaderCell(value: '#', width: 20),
-            SizedBox(width: 4),
-            Expanded(child: _TeamHeaderCell(value: 'Equipo', alignLeft: true)),
-            SizedBox(width: 4),
+            const _TeamHeaderCell(value: '#', width: 20),
+            const SizedBox(width: 4),
+            Expanded(
+              child: _TeamHeaderCell(
+                value: ll.teamColumn,
+                alignLeft: true,
+              ),
+            ),
+            const SizedBox(width: 4),
             _TeamHeaderCell(value: 'PTS', width: 36, bold: true),
           ],
         ),
@@ -1057,6 +1082,7 @@ class _TeamTableRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final teamName = row.nombreEquipo.trim();
     final theme = Theme.of(context);
+    final ll = context.leagueL10n;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -1081,12 +1107,12 @@ class _TeamTableRow extends StatelessWidget {
                   Semantics(
                     button: true,
                     label: teamName.isEmpty
-                        ? 'Ver equipo'
-                        : 'Ver equipo: $teamName',
+                        ? ll.seeTeam
+                        : ll.seeTeamColon(teamName),
                     child: Tooltip(
                       message: teamName.isEmpty
-                          ? 'Ver equipo'
-                          : 'Ver equipo · $teamName',
+                          ? ll.seeTeam
+                          : ll.seeTeamNamed(teamName),
                       child: Material(
                         color: Colors.transparent,
                         shape: const CircleBorder(),
@@ -1225,7 +1251,7 @@ class _CompactTopPlayersTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (rows.isEmpty) {
-      return const _CompactEmptyState(text: 'Aún no hay estadísticas');
+      return _CompactEmptyState(text: context.leagueL10n.noStatsYet);
     }
     final top = rows.take(4).toList(growable: false);
     final theme = Theme.of(context);
@@ -1341,7 +1367,7 @@ class _CompactUnavailableListTable extends StatelessWidget {
             child: TextButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh, size: 16),
-              label: const Text('Reintentar'),
+              label: Text(context.l10n.retry),
             ),
           ),
         ],

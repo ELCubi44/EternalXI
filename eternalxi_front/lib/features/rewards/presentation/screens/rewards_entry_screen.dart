@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/data/models/league_summary.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/leagues/controller/leagues_controller.dart';
@@ -37,10 +38,10 @@ class _RewardsEntryScreenState extends State<RewardsEntryScreen> {
     final leagues = context.watch<LeaguesController>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF070910),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Recompensas'),
-        backgroundColor: const Color(0xFF070910),
+        title: Text(context.l10n.rewards),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(22),
           child: Align(

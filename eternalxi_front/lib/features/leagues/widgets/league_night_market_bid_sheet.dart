@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/data/models/night_market_models.dart';
 import 'package:eternal_xi/features/leagues/controller/league_night_market_controller.dart';
 import 'package:eternal_xi/features/leagues/utils/league_night_market_format.dart';
@@ -80,27 +82,28 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
     return LeagueThousandsInputFormatter.parseToInt(_amountController.text);
   }
 
-  String? _validateAmount(int? value) {
+  String? _validateAmount(int? value, LeagueL10n ll) {
     if (value == null) {
-      return 'Indica un importe.';
+      return ll.indicateAmount;
     }
     if (value <= 0) {
-      return 'El importe debe ser un entero positivo.';
+      return ll.bidMustBePositiveInteger;
     }
     if (value < _item.precioSalida) {
-      return 'La puja no puede ser inferior al minimo permitido '
-          '(${LeagueNightMarketFormat.moneyInt(_item.precioSalida)}).';
+      return ll.bidBelowMinimum(
+        LeagueNightMarketFormat.moneyInt(_item.precioSalida),
+      );
     }
     if (value > _maxBidAllowed) {
-      return 'Según tu saldo y tu puja actual, el máximo que puedes pujar '
-          'es ${LeagueNightMarketFormat.moneyInt(_maxBidAllowed)}.';
+      return ll.maxBidError(LeagueNightMarketFormat.moneyInt(_maxBidAllowed));
     }
     return null;
   }
 
   Future<void> _confirm() async {
+    final ll = context.leagueL10n;
     final v = _parseAmount();
-    final err = _validateAmount(v);
+    final err = _validateAmount(v, ll);
     setState(() => _fieldError = err);
     if (err != null || v == null) {
       return;
@@ -142,21 +145,20 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
     if (_item.miPuja == null) {
       return;
     }
+    final ll = context.leagueL10n;
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Eliminar puja'),
-        content: const Text(
-          'Se eliminará tu puja y el saldo retenido volverá a estar disponible.',
-        ),
+        title: Text(ll.deleteBid),
+        content: Text(ll.deleteBidBodyShort),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Cancelar'),
+            child: Text(c.l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Eliminar'),
+            child: Text(ll.deleteAction),
           ),
         ],
       ),
@@ -191,6 +193,7 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final photoUri = LeaguePlayerPhoto.resolveNightMarket(
@@ -205,7 +208,7 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            _item.miPuja == null ? 'Pujar por jugador' : 'Actualizar puja',
+            _item.miPuja == null ? ll.bidForPlayer : ll.updateBid,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w700,
             ),
@@ -271,21 +274,21 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
           ),
           const SizedBox(height: 16),
           _InfoRow(
-            label: 'Posición',
+            label: ll.positionLabel,
             value: LeagueNightMarketFormat.posicionLabel(_item.posicion),
           ),
-          _InfoRow(label: 'Valoración', value: '${_item.valoracion}'),
+          _InfoRow(label: ll.valuationLabel, value: '${_item.valoracion}'),
           _InfoRow(
-            label: 'Valor actual',
+            label: ll.currentValueLabel,
             value: LeagueNightMarketFormat.moneyInt(_item.valorActual),
           ),
           if (_item.miPuja != null)
             _InfoRow(
-              label: 'Tu puja actual',
+              label: ll.yourCurrentBid,
               value: LeagueNightMarketFormat.myBidOrNone(_item.miPuja),
             ),
           _InfoRow(
-            label: 'Saldo disponible',
+            label: ll.availableBalance,
             value: LeagueNightMarketFormat.moneyInt(_market.saldoDisponible),
           ),
           const SizedBox(height: 12),
@@ -309,7 +312,7 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Si dos usuarios pujan lo mismo, gana la puja más antigua.',
+                    ll.tieBreakHint,
                     style: theme.textTheme.bodySmall?.copyWith(
                       height: 1.35,
                       color: colorScheme.onSurfaceVariant,
@@ -325,7 +328,7 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
             keyboardType: TextInputType.number,
             inputFormatters: [_amountFormatter],
             decoration: InputDecoration(
-              labelText: 'Importe de la puja',
+              labelText: ll.bidAmountLabel,
               suffixText: '€',
               errorText: _fieldError,
               border: const OutlineInputBorder(),
@@ -342,7 +345,7 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
               Expanded(
                 child: OutlinedButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancelar'),
+                  child: Text(context.l10n.cancel),
                 ),
               ),
               const SizedBox(width: 12),
@@ -355,7 +358,7 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Confirmar puja'),
+                      : Text(ll.confirmBid),
                 ),
               ),
             ],
@@ -365,7 +368,7 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
             TextButton.icon(
               onPressed: _submitting ? null : _deleteBid,
               icon: const Icon(Icons.delete_outline_rounded),
-              label: const Text('Eliminar puja'),
+              label: Text(ll.deleteBid),
             ),
           ],
         ],

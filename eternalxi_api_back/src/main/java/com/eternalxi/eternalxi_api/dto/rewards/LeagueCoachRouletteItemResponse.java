@@ -7,5 +7,6 @@ public record LeagueCoachRouletteItemResponse(
         String foto,
         Integer idEquipo,
         String nombreEquipo,
-        String fotoEquipo
+        String fotoEquipo,
+        Integer bonusPuntos
 ) {}

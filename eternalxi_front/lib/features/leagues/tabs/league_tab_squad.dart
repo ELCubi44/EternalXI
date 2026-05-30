@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'dart:async';
 
 import 'package:eternal_xi/core/network/api_exception.dart';
@@ -55,6 +57,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
   Object? _lastShellDetailRef;
   bool _hasLoadedAtLeastOnce = false;
   bool _loadScheduled = false;
+  LeagueShellData? _registeredShell;
 
   /// Jornada de la alineación cargada (probabilidad titular en squad/detalle).
   int? get _idJornadaActiva =>
@@ -113,6 +116,11 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
     super.didChangeDependencies();
     _handleExternalSegmentRequest();
     final shell = LeagueShellData.maybeOf(context);
+    if (shell != null && !identical(shell, _registeredShell)) {
+      _registeredShell?.registerLineupLeaveGuard(null);
+      _registeredShell = shell;
+      shell.registerLineupLeaveGuard(_confirmLeaveLineupEditor);
+    }
     final detailRef = shell?.detail;
     final detailChanged = !identical(_lastShellDetailRef, detailRef);
     _lastShellDetailRef = detailRef;
@@ -138,6 +146,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
 
   @override
   void dispose() {
+    _registeredShell?.registerLineupLeaveGuard(null);
     LeagueTabSquad.externalSegmentRequest.removeListener(
       _handleExternalSegmentRequest,
     );
@@ -152,7 +161,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
     if (shell == null) {
       setState(() {
         _loading = false;
-        _error = 'No se pudo cargar el contexto de la liga.';
+        _error = context.leagueL10n.couldNotLoadLeagueContext;
       });
       return;
     }
@@ -401,9 +410,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
       }
       if (idLp <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No se pudo resolver tu participante en esta liga.'),
-          ),
+          SnackBar(content: Text(context.leagueL10n.couldNotResolveParticipant)),
         );
         return;
       }
@@ -450,9 +457,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
       }
       if (idLp <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No se pudo resolver tu participante en esta liga.'),
-          ),
+          SnackBar(content: Text(context.leagueL10n.couldNotResolveParticipant)),
         );
         return;
       }
@@ -502,9 +507,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
       }
       if (idLp <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No se pudo resolver tu participante en esta liga.'),
-          ),
+          SnackBar(content: Text(context.leagueL10n.couldNotResolveParticipant)),
         );
         return false;
       }
@@ -670,9 +673,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
       }
       if (idLigaParticipante <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No se pudo resolver tu participante en esta liga.'),
-          ),
+          SnackBar(content: Text(context.leagueL10n.couldNotResolveParticipant)),
         );
         return;
       }
@@ -821,6 +822,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     super.build(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -850,7 +852,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                 children: [
                   Expanded(
                     child: Text(
-                      'Equipo',
+                      l10n.squad,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -859,7 +861,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                   OutlinedButton.icon(
                     onPressed: _openOwnHistory,
                     icon: const Icon(Icons.history_rounded, size: 18),
-                    label: const Text('Historial'),
+                    label: Text(l10n.history),
                   ),
                 ],
               ),
@@ -869,16 +871,16 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             sliver: SliverToBoxAdapter(
               child: SegmentedButton<int>(
-                segments: const [
+                segments: [
                   ButtonSegment<int>(
                     value: 0,
-                    label: Text('Alineación'),
-                    icon: Icon(Icons.grid_on_outlined),
+                    label: Text(l10n.lineup),
+                    icon: const Icon(Icons.grid_on_outlined),
                   ),
                   ButtonSegment<int>(
                     value: 1,
-                    label: Text('Plantilla'),
-                    icon: Icon(Icons.groups_2_outlined),
+                    label: Text(l10n.squad),
+                    icon: const Icon(Icons.groups_2_outlined),
                   ),
                 ],
                 key: ValueKey<int>(_segment),
@@ -981,7 +983,13 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                                 );
                               });
                             },
-                            onProfileLongPress: (p) {
+                            onProfileLongPress: (p) async {
+                              if (!await _confirmLeaveLineupEditor()) {
+                                return;
+                              }
+                              if (!context.mounted) {
+                                return;
+                              }
                               LeagueInnerNavigation.openPlayerProfile(
                                 context: context,
                                 player: p,
@@ -1031,7 +1039,7 @@ class _LineupFetchError extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'No se pudo cargar la alineación',
+            context.leagueL10n.couldNotLoadLineupTitle,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -1047,7 +1055,7 @@ class _LineupFetchError extends StatelessWidget {
           FilledButton.tonalIcon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh),
-            label: const Text('Reintentar'),
+            label: Text(context.l10n.retry),
           ),
         ],
       ),
@@ -1086,7 +1094,7 @@ class _SquadError extends StatelessWidget {
           FilledButton.tonalIcon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh),
-            label: const Text('Reintentar'),
+            label: Text(context.l10n.retry),
           ),
         ],
       ),
@@ -1114,7 +1122,7 @@ class _SquadEmpty extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Plantilla vacía',
+            context.leagueL10n.emptySquadTitle,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -1122,7 +1130,7 @@ class _SquadEmpty extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Aún no tienes jugadores asignados en esta liga o el servidor devolvió una lista vacía.',
+            context.leagueL10n.emptySquadBody,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurfaceVariant,
               height: 1.4,

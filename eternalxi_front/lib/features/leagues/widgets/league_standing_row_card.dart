@@ -4,18 +4,22 @@ import 'package:flutter/material.dart';
 
 /// Tarjeta de clasificación: posición, nickname, puntos (protagonistas) y valor de equipo.
 class LeagueStandingRowCard extends StatelessWidget {
+  final LeagueStandingRow row;
+  final bool isFirstPlace;
+  final bool isCurrentUser;
+  final VoidCallback? onPeerTap;
+  final int? puntosFantasyJornada;
+  final int? puntosRecompensaJornada;
+
   const LeagueStandingRowCard({
     super.key,
     required this.row,
     required this.isFirstPlace,
     required this.isCurrentUser,
     this.onPeerTap,
+    this.puntosFantasyJornada,
+    this.puntosRecompensaJornada,
   });
-
-  final LeagueStandingRow row;
-  final bool isFirstPlace;
-  final bool isCurrentUser;
-  final VoidCallback? onPeerTap;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +57,8 @@ class LeagueStandingRowCard extends StatelessWidget {
     final decoration = firstDecoration ?? userTint;
     final ptsLabel = LeagueMoneyFormat.points(row.puntosTotales);
     final valorLabel = LeagueMoneyFormat.teamValue(row.valorTotalEquipo);
+    final showRoundBreakdown =
+        puntosFantasyJornada != null && puntosRecompensaJornada != null;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -99,20 +105,40 @@ class LeagueStandingRowCard extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 6),
-                              Text(
-                                valorLabel,
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
+                              if (showRoundBreakdown) ...[
+                                Text(
+                                  'Equipo: ${LeagueMoneyFormat.points(puntosFantasyJornada!.toDouble())}',
+                                  style: theme.textTheme.labelLarge?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Recompensa: +${LeagueMoneyFormat.points(puntosRecompensaJornada!.toDouble())}',
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ] else
+                                Text(
+                                  valorLabel,
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                             ],
                           ),
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          ptsLabel,
+                          showRoundBreakdown
+                              ? LeagueMoneyFormat.points(
+                                  puntosFantasyJornada!.toDouble(),
+                                )
+                              : ptsLabel,
                           textAlign: TextAlign.end,
                           style: theme.textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.w900,

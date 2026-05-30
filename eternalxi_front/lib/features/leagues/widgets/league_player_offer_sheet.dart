@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
@@ -15,6 +17,8 @@ class LeaguePlayerOfferSheet extends StatefulWidget {
     required this.idUsuario,
     required this.player,
     this.miDinero,
+    this.idOferta,
+    this.cantidadActual,
     this.onAfterSuccess,
   });
 
@@ -22,7 +26,13 @@ class LeaguePlayerOfferSheet extends StatefulWidget {
   final int idUsuario;
   final LeagueSquadPlayer player;
   final int? miDinero;
+
+  /// Si se indica, el sheet opera en modo edición (actualizar/cancelar oferta).
+  final int? idOferta;
+  final int? cantidadActual;
   final Future<void> Function()? onAfterSuccess;
+
+  bool get _isEditing => idOferta != null && cantidadActual != null;
 
   static Future<void> show({
     required BuildContext context,
@@ -30,13 +40,13 @@ class LeaguePlayerOfferSheet extends StatefulWidget {
     required int idUsuario,
     required LeagueSquadPlayer player,
     int? miDinero,
+    int? idOferta,
+    int? cantidadActual,
     Future<void> Function()? onAfterSuccess,
   }) {
     if (player.idUsuarioDueno == idUsuario) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No puedes enviar oferta por un jugador tuyo.'),
-        ),
+        SnackBar(content: Text(context.leagueL10n.cannotOfferOwnSnack)),
       );
       return Future.value();
     }
@@ -52,6 +62,8 @@ class LeaguePlayerOfferSheet extends StatefulWidget {
           idUsuario: idUsuario,
           player: player,
           miDinero: miDinero,
+          idOferta: idOferta,
+          cantidadActual: cantidadActual,
           onAfterSuccess: onAfterSuccess,
         ),
       ),
@@ -70,22 +82,26 @@ class _LeaguePlayerOfferSheetState extends State<LeaguePlayerOfferSheet> {
 
   int get _minOffer => widget.player.valor.ceil();
 
+  int get _maxOfferAllowed =>
+      (widget.miDinero ?? 0) + (widget.cantidadActual ?? 0);
+
   int? _parseAmount() =>
       LeagueThousandsInputFormatter.parseToInt(_amountController.text);
 
-  String? _validate(int? amount) {
+  String? _validate(int? amount, LeagueL10n ll) {
     if (amount == null) {
-      return 'Indica un importe.';
+      return ll.indicateAmount;
     }
     if (amount <= 0) {
-      return 'El importe debe ser mayor que 0.';
+      return ll.amountMustBePositive;
     }
     if (amount < _minOffer) {
-      return 'La oferta mínima por este jugador es ${LeagueMoneyFormat.money(_minOffer.toDouble())}.';
+      return ll.minOfferError(LeagueMoneyFormat.money(_minOffer.toDouble()));
     }
-    final budget = widget.miDinero;
-    if (budget != null && amount > budget) {
-      return 'No tienes suficiente dinero para hacer esta oferta.';
+    if (widget.miDinero != null && amount > _maxOfferAllowed) {
+      return ll.maxOfferError(
+        LeagueMoneyFormat.money(_maxOfferAllowed.toDouble()),
+      );
     }
     return null;
   }
@@ -93,7 +109,12 @@ class _LeaguePlayerOfferSheetState extends State<LeaguePlayerOfferSheet> {
   @override
   void initState() {
     super.initState();
-    _amountController = TextEditingController();
+    final initial = widget.cantidadActual != null && widget.cantidadActual! > 0
+        ? LeagueThousandsInputFormatter.formatDigits(
+            widget.cantidadActual!.toString(),
+          )
+        : '';
+    _amountController = TextEditingController(text: initial);
   }
 
   @override
@@ -104,7 +125,8 @@ class _LeaguePlayerOfferSheetState extends State<LeaguePlayerOfferSheet> {
 
   Future<void> _submit() async {
     final amount = _parseAmount();
-    final err = _validate(amount);
+    final ll = context.leagueL10n;
+    final err = _validate(amount, ll);
     setState(() => _fieldError = err);
     if (err != null || amount == null) {
       return;
@@ -129,9 +151,76 @@ class _LeaguePlayerOfferSheetState extends State<LeaguePlayerOfferSheet> {
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Oferta enviada correctamente.')),
+      if (widget._isEditing) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.leagueL10n.offerUpdated)),
+        );
+      } else {
+        await showOfferSentConfirmation(context);
+      }
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _fieldError = e.toString().replaceFirst('Exception: ', '');
+      });
+    } finally {
+      if (mounted) {
+        setState(() => _submitting = false);
+      }
+    }
+  }
+
+  Future<void> _cancelOffer() async {
+    final idOferta = widget.idOferta;
+    if (idOferta == null) {
+      return;
+    }
+    final ll = context.leagueL10n;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: Text(c.l10n.cancelOffer),
+        content: Text(ll.cancelOfferConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(c, false),
+            child: Text(ll.goBack),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(c, true),
+            child: Text(c.l10n.cancelOffer),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) {
+      return;
+    }
+    setState(() {
+      _submitting = true;
+      _fieldError = null;
+    });
+    try {
+      final api = context.read<LeaguesApiService>();
+      final response = await api.cancelOffer(
+        idLiga: widget.idLiga,
+        idOferta: idOferta,
+        idUsuario: widget.idUsuario,
       );
+      if (!mounted) {
+        return;
+      }
+      Navigator.of(context).pop();
+      await widget.onAfterSuccess?.call();
+      if (!mounted) {
+        return;
+      }
+      final msg = response.message.trim().isEmpty
+          ? context.leagueL10n.offerCancelledSuccess
+          : response.message.trim();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     } catch (e) {
       if (!mounted) {
         return;
@@ -148,6 +237,7 @@ class _LeaguePlayerOfferSheetState extends State<LeaguePlayerOfferSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final p = widget.player;
@@ -155,10 +245,9 @@ class _LeaguePlayerOfferSheetState extends State<LeaguePlayerOfferSheet> {
     final displayName = LeagueDisplayStrings.playerShortName(
       pila: p.pila,
       nombre: p.nombre,
+      ll: ll,
     );
-    final ownerName = p.nombreDuenoVisible.trim().isEmpty
-        ? (p.propietarioNick.trim().isEmpty ? '—' : p.propietarioNick.trim())
-        : p.nombreDuenoVisible.trim();
+    final ownerName = _resolveOwnerName(p);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
@@ -167,7 +256,7 @@ class _LeaguePlayerOfferSheetState extends State<LeaguePlayerOfferSheet> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Hacer oferta',
+            widget._isEditing ? ll.updateOffer : ll.makeOffer,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w800,
             ),
@@ -225,18 +314,28 @@ class _LeaguePlayerOfferSheetState extends State<LeaguePlayerOfferSheet> {
             ],
           ),
           const SizedBox(height: 14),
-          _InfoRow(label: 'Dueño actual', value: ownerName),
+          _InfoRow(label: ll.currentOwner, value: ownerName),
           _InfoRow(
-            label: 'Valor actual',
+            label: ll.currentValueLabel,
             value: LeagueMoneyFormat.money(p.valor),
           ),
+          if (widget.cantidadActual != null)
+            _InfoRow(
+              label: ll.yourCurrentOffer,
+              value: LeagueMoneyFormat.money(widget.cantidadActual!.toDouble()),
+            ),
+          if (widget.miDinero != null)
+            _InfoRow(
+              label: ll.availableBalance,
+              value: LeagueMoneyFormat.money(widget.miDinero!.toDouble()),
+            ),
           const SizedBox(height: 14),
           TextField(
             controller: _amountController,
             keyboardType: TextInputType.number,
             inputFormatters: [_formatter],
             decoration: InputDecoration(
-              labelText: 'Cantidad ofertada',
+              labelText: ll.offerAmountLabel,
               suffixText: '€',
               errorText: _fieldError,
               border: const OutlineInputBorder(),
@@ -255,7 +354,7 @@ class _LeaguePlayerOfferSheetState extends State<LeaguePlayerOfferSheet> {
                   onPressed: _submitting
                       ? null
                       : () => Navigator.of(context).pop(),
-                  child: const Text('Cancelar'),
+                  child: Text(context.l10n.cancel),
                 ),
               ),
               const SizedBox(width: 10),
@@ -268,11 +367,19 @@ class _LeaguePlayerOfferSheetState extends State<LeaguePlayerOfferSheet> {
                           height: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Enviar oferta'),
+                      : Text(widget._isEditing ? ll.confirmOffer : ll.sendOfferButton),
                 ),
               ),
             ],
           ),
+          if (widget._isEditing) ...[
+            const SizedBox(height: 10),
+            TextButton.icon(
+              onPressed: _submitting ? null : _cancelOffer,
+              icon: const Icon(Icons.delete_outline_rounded),
+              label: Text(context.l10n.cancelOffer),
+            ),
+          ],
         ],
       ),
     );
@@ -291,6 +398,46 @@ class _LeaguePlayerOfferSheetState extends State<LeaguePlayerOfferSheet> {
       ),
     );
   }
+}
+
+String _resolveOwnerName(LeagueSquadPlayer player) {
+  final visible = player.nombreDuenoVisible.trim();
+  if (visible.isNotEmpty) {
+    return visible;
+  }
+  final nick = player.propietarioNick.trim();
+  if (nick.isNotEmpty) {
+    return nick;
+  }
+  if (player.idUsuarioDueno > 0 &&
+      player.idUsuarioDueno != LeagueSquadPlayer.usuarioMercadoId) {
+    return 'Usuario #${player.idUsuarioDueno}';
+  }
+  return '—';
+}
+
+Future<void> showOfferSentConfirmation(BuildContext context) {
+  final ll = context.leagueL10n;
+  final theme = Theme.of(context);
+  final colorScheme = theme.colorScheme;
+  return showDialog<void>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      icon: Icon(
+        Icons.check_circle_outline_rounded,
+        color: colorScheme.primary,
+        size: 40,
+      ),
+      title: Text(ll.offerSentTitle),
+      content: Text(ll.offerRegisteredBody),
+      actions: [
+        FilledButton(
+          onPressed: () => Navigator.of(dialogContext).pop(),
+          child: Text(ll.understood),
+        ),
+      ],
+    ),
+  );
 }
 
 class _InfoRow extends StatelessWidget {

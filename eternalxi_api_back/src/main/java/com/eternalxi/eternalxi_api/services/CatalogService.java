@@ -7,8 +7,8 @@ import com.eternalxi.eternalxi_api.dto.catalog.CatalogTeamSquadResponse;
 import com.eternalxi.eternalxi_api.dto.catalog.CatalogTeamResponse;
 import com.eternalxi.eternalxi_api.dto.catalog.SeasonResponse;
 import com.eternalxi.eternalxi_api.util.LeagueAssetUrls;
+import com.eternalxi.eternalxi_api.util.LocaleSupport;
 import org.springframework.stereotype.Service;
-
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,25 +19,34 @@ import java.util.List;
 
 @Service
 public class CatalogService {
-    public List<SeasonResponse> listSeasons() throws SQLException {
+
+    public List<SeasonResponse> listSeasons(String locale) throws SQLException {
+        String resolvedLocale = resolveLocale(locale);
         try (Connection conn = DBConnection.getConnection()) {
+            ensureTranslationSchema(conn);
             String sql = """
-                    SELECT id, nombre, foto
-                    FROM temporadas
-                    ORDER BY id ASC
+                    SELECT t.id,
+                           COALESCE(tt.nombre, t.nombre) AS nombre,
+                           t.foto
+                    FROM temporadas t
+                    LEFT JOIN temporada_traduccion tt
+                      ON tt.id_temporada = t.id
+                     AND tt.locale = ?
+                    ORDER BY t.id ASC
                     """;
 
             List<SeasonResponse> seasons = new ArrayList<>();
 
-            try (PreparedStatement ps = conn.prepareStatement(sql);
-                 ResultSet rs = ps.executeQuery()) {
-
-                while (rs.next()) {
-                    seasons.add(new SeasonResponse(
-                            rs.getLong("id"),
-                            rs.getString("nombre"),
-                            rs.getString("foto")
-                    ));
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, resolvedLocale);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        seasons.add(new SeasonResponse(
+                                rs.getLong("id"),
+                                rs.getString("nombre"),
+                                rs.getString("foto")
+                        ));
+                    }
                 }
             }
 
@@ -45,23 +54,32 @@ public class CatalogService {
         }
     }
 
-    public List<CatalogTeamResponse> listTeamsBySeason(Long seasonId) throws SQLException {
+    public List<CatalogTeamResponse> listTeamsBySeason(Long seasonId, String locale) throws SQLException {
         if (seasonId == null) {
             throw new IllegalArgumentException("Falta seasonId");
         }
 
+        String resolvedLocale = resolveLocale(locale);
         try (Connection conn = DBConnection.getConnection()) {
+            ensureTranslationSchema(conn);
             String sql = """
-                    SELECT id, nombre, id_temporada, foto
-                    FROM equipos
-                    WHERE id_temporada = ?
-                    ORDER BY id ASC
+                    SELECT e.id,
+                           COALESCE(et.nombre, e.nombre) AS nombre,
+                           e.id_temporada,
+                           e.foto
+                    FROM equipos e
+                    LEFT JOIN equipo_traduccion et
+                      ON et.id_equipo = e.id
+                     AND et.locale = ?
+                    WHERE e.id_temporada = ?
+                    ORDER BY e.id ASC
                     """;
 
             List<CatalogTeamResponse> teams = new ArrayList<>();
 
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setLong(1, seasonId);
+                ps.setString(1, resolvedLocale);
+                ps.setLong(2, seasonId);
 
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
@@ -82,107 +100,89 @@ public class CatalogService {
         }
     }
 
-    public List<CatalogTeamPlayerResponse> listPlayersByTeam(Long idEquipo, Long seasonId) throws SQLException {
+    public List<CatalogTeamPlayerResponse> listPlayersByTeam(
+            Long idEquipo,
+            Long seasonId,
+            String locale
+    ) throws SQLException {
         if (idEquipo == null) {
             throw new IllegalArgumentException("Falta idEquipo");
         }
 
+        String resolvedLocale = resolveLocale(locale);
         try (Connection conn = DBConnection.getConnection()) {
+            ensureTranslationSchema(conn);
             ensureTeamExists(conn, idEquipo);
 
             if (seasonId != null) {
                 ensureTeamBelongsToSeason(conn, idEquipo, seasonId);
             }
 
-            String sql = """
-                    SELECT id,
-                           id_equipo,
-                           nombre,
-                           pila,
-                           dorsal,
-                           descripcion,
-                           valoracion,
-                           genero,
-                           posicion,
-                           foto
-                    FROM jugadores
-                    WHERE id_equipo = ?
-                    ORDER BY dorsal ASC, id ASC
-                    """;
-
-            List<CatalogTeamPlayerResponse> players = new ArrayList<>();
-
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setLong(1, idEquipo);
-
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        Integer dorsal = rs.getObject("dorsal", Integer.class);
-                        Integer valoracion = rs.getObject("valoracion", Integer.class);
-
-                        long playerId = rs.getLong("id");
-                        String playerPhoto = LeagueAssetUrls.player(playerId);
-                        players.add(new CatalogTeamPlayerResponse(
-                                playerId,
-                                null,
-                                rs.getLong("id_equipo"),
-                                rs.getString("nombre"),
-                                rs.getString("pila"),
-                                dorsal,
-                                rs.getString("descripcion"),
-                                valoracion,
-                                rs.getString("genero"),
-                                rs.getString("posicion"),
-                                playerPhoto,
-                                playerPhoto,
-                                null,
-                                null,
-                                null
-                        ));
-                    }
-                }
-            }
-
-            return players;
+            return queryPlayersByTeam(conn, idEquipo, null, resolvedLocale);
         }
     }
 
-    public CatalogTeamSquadResponse getTeamSquad(Long idEquipo, Long seasonId, Long idLiga) throws SQLException {
+    public CatalogTeamSquadResponse getTeamSquad(
+            Long idEquipo,
+            Long seasonId,
+            Long idLiga,
+            String locale
+    ) throws SQLException {
         if (idEquipo == null) {
             throw new IllegalArgumentException("Falta idEquipo");
         }
 
+        String resolvedLocale = resolveLocale(locale);
         try (Connection conn = DBConnection.getConnection()) {
-            CatalogTeamResponse team = loadTeam(conn, idEquipo, seasonId);
+            ensureTranslationSchema(conn);
+            CatalogTeamResponse team = loadTeam(conn, idEquipo, seasonId, resolvedLocale);
             if (idLiga != null) {
                 ensureTeamBelongsToLeague(conn, idEquipo, idLiga);
             }
             CatalogTeamCoachResponse coach = loadActiveCoachByTeam(conn, idEquipo);
-            List<CatalogTeamPlayerResponse> players = loadPlayersByTeam(conn, idEquipo, idLiga);
+            List<CatalogTeamPlayerResponse> players = queryPlayersByTeam(conn, idEquipo, idLiga, resolvedLocale);
             return new CatalogTeamSquadResponse(team, coach, players);
         }
     }
 
-    private CatalogTeamResponse loadTeam(Connection conn, Long idEquipo, Long seasonId) throws SQLException {
+    private CatalogTeamResponse loadTeam(
+            Connection conn,
+            Long idEquipo,
+            Long seasonId,
+            String locale
+    ) throws SQLException {
         String sql = seasonId == null
                 ? """
-                SELECT id, nombre, id_temporada, foto
-                FROM equipos
-                WHERE id = ?
+                SELECT e.id,
+                       COALESCE(et.nombre, e.nombre) AS nombre,
+                       e.id_temporada,
+                       e.foto
+                FROM equipos e
+                LEFT JOIN equipo_traduccion et
+                  ON et.id_equipo = e.id
+                 AND et.locale = ?
+                WHERE e.id = ?
                 LIMIT 1
                 """
                 : """
-                SELECT id, nombre, id_temporada, foto
-                FROM equipos
-                WHERE id = ?
-                  AND id_temporada = ?
+                SELECT e.id,
+                       COALESCE(et.nombre, e.nombre) AS nombre,
+                       e.id_temporada,
+                       e.foto
+                FROM equipos e
+                LEFT JOIN equipo_traduccion et
+                  ON et.id_equipo = e.id
+                 AND et.locale = ?
+                WHERE e.id = ?
+                  AND e.id_temporada = ?
                 LIMIT 1
                 """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, idEquipo);
+            ps.setString(1, locale);
+            ps.setLong(2, idEquipo);
             if (seasonId != null) {
-                ps.setLong(2, seasonId);
+                ps.setLong(3, seasonId);
             }
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -251,7 +251,12 @@ public class CatalogService {
         }
     }
 
-    private List<CatalogTeamPlayerResponse> loadPlayersByTeam(Connection conn, Long idEquipo, Long idLiga) throws SQLException {
+    private List<CatalogTeamPlayerResponse> queryPlayersByTeam(
+            Connection conn,
+            Long idEquipo,
+            Long idLiga,
+            String locale
+    ) throws SQLException {
         String sql = """
                 SELECT j.id,
                        lj.id AS id_liga_jugador,
@@ -262,12 +267,15 @@ public class CatalogService {
                        j.nombre,
                        j.pila,
                        j.dorsal,
-                       j.descripcion,
+                       COALESCE(jt.descripcion, j.descripcion) AS descripcion,
                        j.valoracion,
                        j.genero,
                        j.posicion,
                        j.foto
                 FROM jugadores j
+                LEFT JOIN jugador_traduccion jt
+                  ON jt.id_jugador = j.id
+                 AND jt.locale = ?
                 LEFT JOIN liga_jugadores lj
                   ON lj.id_jugador = j.id
                  AND lj.id_liga = ?
@@ -278,12 +286,13 @@ public class CatalogService {
         List<CatalogTeamPlayerResponse> players = new ArrayList<>();
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, locale);
             if (idLiga == null) {
-                ps.setNull(1, java.sql.Types.BIGINT);
+                ps.setNull(2, java.sql.Types.BIGINT);
             } else {
-                ps.setLong(1, idLiga);
+                ps.setLong(2, idLiga);
             }
-            ps.setLong(2, idEquipo);
+            ps.setLong(3, idEquipo);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -311,6 +320,40 @@ public class CatalogService {
         }
 
         return players;
+    }
+
+    private void ensureTranslationSchema(Connection conn) throws SQLException {
+        conn.createStatement().execute("""
+                CREATE TABLE IF NOT EXISTS temporada_traduccion (
+                    id_temporada INT NOT NULL,
+                    locale VARCHAR(5) NOT NULL,
+                    nombre VARCHAR(100) NOT NULL,
+                    PRIMARY KEY (id_temporada, locale)
+                )
+                """);
+        conn.createStatement().execute("""
+                CREATE TABLE IF NOT EXISTS equipo_traduccion (
+                    id_equipo INT NOT NULL,
+                    locale VARCHAR(5) NOT NULL,
+                    nombre VARCHAR(120) NOT NULL,
+                    PRIMARY KEY (id_equipo, locale)
+                )
+                """);
+        conn.createStatement().execute("""
+                CREATE TABLE IF NOT EXISTS jugador_traduccion (
+                    id_jugador INT NOT NULL,
+                    locale VARCHAR(5) NOT NULL,
+                    descripcion TEXT NULL,
+                    PRIMARY KEY (id_jugador, locale)
+                )
+                """);
+    }
+
+    private static String resolveLocale(String locale) {
+        if (locale == null || locale.isBlank()) {
+            return LocaleSupport.DEFAULT;
+        }
+        return LocaleSupport.fromAcceptLanguage(locale);
     }
 
     private void ensureTeamBelongsToLeague(Connection conn, Long idEquipo, Long idLiga) throws SQLException {

@@ -15,6 +15,7 @@ import com.eternalxi.eternalxi_api.dto.league.LeagueParticipantResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueParticipantSquadResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueSquadPlayerResponse;
 import com.eternalxi.eternalxi_api.dto.league.StarterProbabilityLite;
+import com.eternalxi.eternalxi_api.dto.league.LeagueRoundStandingsRowResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueStandingsRowResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueSummaryResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeaveLeagueRequest;
@@ -77,6 +78,8 @@ public class LeagueService {
     private LeagueLineupService leagueLineupService;
     @Autowired
     private LeagueActivityService leagueActivityService;
+    @Autowired
+    private AccountProgressService accountProgressService;
 
     public LeagueService(
             LeaguePlayerPricingService pricingService,
@@ -479,6 +482,149 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
 
             return standings;
         }
+    }
+
+    public List<LeagueRoundStandingsRowResponse> getRoundStandings(
+            Long idLiga,
+            Long idJornada,
+            Long idUsuario
+    ) throws SQLException {
+        if (idLiga == null || idJornada == null || idUsuario == null) {
+            throw new IllegalArgumentException("Faltan datos obligatorios");
+        }
+
+        try (Connection conn = DBConnection.getConnection()) {
+            if (!isParticipant(conn, idLiga, idUsuario)) {
+                throw new IllegalArgumentException("No perteneces a esta liga");
+            }
+
+            String estadoJornada = loadRoundEstado(conn, idLiga, idJornada);
+            if (estadoJornada == null) {
+                throw new IllegalArgumentException("Jornada no encontrada");
+            }
+            if (!"FINALIZADA".equals(estadoJornada)) {
+                throw new IllegalArgumentException("La jornada aún no está finalizada");
+            }
+
+            int recompensaMinima = loadLeagueRecompensaMinima(conn, idLiga);
+            Map<Long, Integer> fantasyByUser = leagueLineupService.calculateRoundPointsByUser(
+                    conn,
+                    idLiga,
+                    idJornada
+            );
+            Map<Long, Integer> grantedRewards = loadRoundGrantedRewards(conn, idLiga, idJornada);
+
+            String participantsSql = """
+                    SELECT lp.id AS id_liga_participante,
+                           lp.id_usuario,
+                           COALESCE(u.nickname, '') AS nickname,
+                           CASE WHEN l.id_administrador = lp.id_usuario THEN TRUE ELSE FALSE END AS admin,
+                           COALESCE(SUM(lj.valor), 0) AS valor_total_equipo
+                    FROM liga_participantes lp
+                    INNER JOIN usuarios u ON u.id = lp.id_usuario
+                    INNER JOIN ligas l ON l.id = lp.id_liga
+                    LEFT JOIN liga_jugadores lj
+                      ON lj.id_liga = lp.id_liga
+                     AND lj.id_usuario_dueno = lp.id_usuario
+                    WHERE lp.id_liga = ?
+                    GROUP BY lp.id, lp.id_usuario, u.nickname, l.id_administrador
+                    ORDER BY lp.id ASC
+                    """;
+
+            List<LeagueRoundRewardDistribution.ParticipantRef> participantRefs = new ArrayList<>();
+            Map<Long, Long> valorByUser = new java.util.HashMap<>();
+            Map<Long, Boolean> adminByUser = new java.util.HashMap<>();
+
+            try (PreparedStatement ps = conn.prepareStatement(participantsSql)) {
+                ps.setLong(1, idLiga);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        long idUsu = rs.getLong("id_usuario");
+                        participantRefs.add(new LeagueRoundRewardDistribution.ParticipantRef(
+                                rs.getLong("id_liga_participante"),
+                                idUsu,
+                                rs.getString("nickname")
+                        ));
+                        valorByUser.put(idUsu, rs.getLong("valor_total_equipo"));
+                        adminByUser.put(idUsu, rs.getBoolean("admin"));
+                    }
+                }
+            }
+
+            List<LeagueRoundRewardDistribution.RankedRoundReward> ranked =
+                    LeagueRoundRewardDistribution.rankAndAssignRewards(
+                            participantRefs,
+                            fantasyByUser,
+                            recompensaMinima,
+                            grantedRewards
+                    );
+
+            List<LeagueRoundStandingsRowResponse> rows = new ArrayList<>(ranked.size());
+            for (LeagueRoundRewardDistribution.RankedRoundReward item : ranked) {
+                rows.add(new LeagueRoundStandingsRowResponse(
+                        item.posicionJornada(),
+                        item.idLigaParticipante(),
+                        item.idUsuario(),
+                        item.nickname(),
+                        item.puntosFantasyJornada(),
+                        item.puntosRecompensaJornada(),
+                        valorByUser.getOrDefault(item.idUsuario(), 0L),
+                        adminByUser.getOrDefault(item.idUsuario(), false)
+                ));
+            }
+            return rows;
+        }
+    }
+
+    private String loadRoundEstado(Connection conn, Long idLiga, Long idJornada) throws SQLException {
+        String sql = """
+                SELECT estado
+                FROM jornadas
+                WHERE id = ? AND id_liga = ?
+                LIMIT 1
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idJornada);
+            ps.setLong(2, idLiga);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getString("estado") : null;
+            }
+        }
+    }
+
+    private int loadLeagueRecompensaMinima(Connection conn, Long idLiga) throws SQLException {
+        String sql = "SELECT recompensa_base_jornada FROM ligas WHERE id = ? LIMIT 1";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idLiga);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    throw new IllegalArgumentException("Liga no encontrada: " + idLiga);
+                }
+                return rs.getInt("recompensa_base_jornada");
+            }
+        }
+    }
+
+    private Map<Long, Integer> loadRoundGrantedRewards(Connection conn, Long idLiga, Long idJornada)
+            throws SQLException {
+        String sql = """
+                SELECT id_usuario, puntos
+                FROM liga_movimientos_economicos
+                WHERE id_liga = ?
+                  AND id_jornada = ?
+                  AND tipo = 'PUNTOS_RECOMPENSA_JORNADA'
+                """;
+        Map<Long, Integer> out = new java.util.HashMap<>();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idLiga);
+            ps.setLong(2, idJornada);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    out.put(rs.getLong("id_usuario"), rs.getInt("puntos"));
+                }
+            }
+        }
+        return out;
     }
 
     public List<LeagueParticipantResponse> getParticipants(Long idLiga, Long idUsuario) throws SQLException {
@@ -1262,6 +1408,8 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
                     ps.setLong(1, idLiga);
                     ps.executeUpdate();
                 }
+
+                accountProgressService.onLeagueClosed(conn, idLiga);
 
                 conn.commit();
 

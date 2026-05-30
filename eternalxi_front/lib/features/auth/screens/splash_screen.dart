@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:flutter/material.dart';
@@ -21,12 +22,13 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!mounted) {
         return;
       }
-      context.go(hasSession ? AppRoutes.home : AppRoutes.login);
+      context.go(hasSession ? AppRoutes.leagues : AppRoutes.login);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -54,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                'Eternal XI',
+                l10n.appTitle,
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w900,
                   letterSpacing: 0.5,
@@ -62,7 +64,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Cargando…',
+                l10n.loading,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),

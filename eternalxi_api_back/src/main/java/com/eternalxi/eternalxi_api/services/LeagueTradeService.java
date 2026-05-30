@@ -30,19 +30,22 @@ public class LeagueTradeService {
     private final LeagueOfferNotificationService leagueOfferNotificationService;
     private final LeagueStarterProbabilityService leagueStarterProbabilityService;
     private final LeaguePlayerMarketValueService leaguePlayerMarketValueService;
+    private final AccountProgressService accountProgressService;
 
     public LeagueTradeService(
             LeagueLineupService leagueLineupService,
             LeagueMarketHistoryService leagueMarketHistoryService,
             LeagueOfferNotificationService leagueOfferNotificationService,
             LeagueStarterProbabilityService leagueStarterProbabilityService,
-            LeaguePlayerMarketValueService leaguePlayerMarketValueService
+            LeaguePlayerMarketValueService leaguePlayerMarketValueService,
+            AccountProgressService accountProgressService
     ) {
         this.leagueLineupService = leagueLineupService;
         this.leagueMarketHistoryService = leagueMarketHistoryService;
         this.leagueOfferNotificationService = leagueOfferNotificationService;
         this.leagueStarterProbabilityService = leagueStarterProbabilityService;
         this.leaguePlayerMarketValueService = leaguePlayerMarketValueService;
+        this.accountProgressService = accountProgressService;
     }
 
     public LeagueInstantSellResponse sellPlayerToMarket(Long idLiga, Long idLigaJugador, Long idUsuario) throws SQLException {
@@ -93,6 +96,8 @@ public class LeagueTradeService {
                 }
 
                 long nuevoSaldo = loadParticipantMoneyForUpdate(conn, idLiga, idUsuario);
+
+                accountProgressService.onPlayerSold(conn, idUsuario, idLiga, cantidadVenta);
 
                 conn.commit();
 

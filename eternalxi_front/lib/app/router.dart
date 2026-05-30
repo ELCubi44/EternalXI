@@ -5,15 +5,18 @@ import 'package:eternal_xi/features/auth/screens/login_screen.dart';
 import 'package:eternal_xi/features/auth/screens/register_screen.dart';
 import 'package:eternal_xi/features/auth/screens/request_email_verification_screen.dart';
 import 'package:eternal_xi/features/auth/screens/request_password_reset_screen.dart';
+import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/auth/screens/splash_screen.dart';
-import 'package:eternal_xi/features/home/screens/home_screen.dart';
 import 'package:eternal_xi/features/leagues/screens/create_league_screen.dart';
 import 'package:eternal_xi/features/leagues/screens/join_league_screen.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_screen.dart';
 import 'package:eternal_xi/features/leagues/screens/my_leagues_screen.dart';
+import 'package:eternal_xi/features/profile/screens/confirm_change_email_screen.dart';
 import 'package:eternal_xi/features/profile/screens/edit_profile_screen.dart';
+import 'package:eternal_xi/features/profile/screens/request_change_email_screen.dart';
 import 'package:eternal_xi/features/rewards/presentation/screens/rewards_hub_screen.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.splash,
@@ -54,7 +57,7 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.home,
-      builder: (context, state) => const HomeScreen(),
+      redirect: (context, state) => AppRoutes.leagues,
     ),
     GoRoute(
       path: AppRoutes.leagues,
@@ -85,6 +88,22 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.profile,
       builder: (context, state) => const EditProfileScreen(),
+      routes: [
+        GoRoute(
+          path: 'change-email',
+          builder: (context, state) => RequestChangeEmailScreen(
+            correoActual: context.read<AuthController>().currentUser?.correo,
+          ),
+          routes: [
+            GoRoute(
+              path: 'confirm',
+              builder: (context, state) => ConfirmChangeEmailScreen(
+                prefilledCorreo: state.uri.queryParameters['correo'],
+              ),
+            ),
+          ],
+        ),
+      ],
     ),
     GoRoute(
       path: AppRoutes.tokensShop,

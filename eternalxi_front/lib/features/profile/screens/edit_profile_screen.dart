@@ -1,8 +1,9 @@
-import 'package:eternal_xi/app/localization/app_localizations.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/data/models/user_preferences_response.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
 import 'package:eternal_xi/features/profile/controller/profile_controller.dart';
 import 'package:eternal_xi/features/profile/controller/user_preferences_controller.dart';
 import 'package:eternal_xi/features/profile/widgets/account_level_display.dart';
@@ -40,6 +41,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return;
     }
     await profileController.loadProfile(userId);
+    await context.read<AccountProgressController>().loadProgress(userId);
     await preferencesController.loadAll();
     if (!mounted) {
       return;
@@ -49,16 +51,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
   }
 
-  Future<void> _savePreferences({
-    required UserThemePreference themeMode,
-    required UserLanguagePreference languageCode,
-  }) async {
-    final l10n = AppLocalizations.of(context);
+  Future<void> _saveTheme(UserThemePreference themeMode) async {
+    final l10n = context.l10n;
     final controller = context.read<UserPreferencesController>();
-    final ok = await controller.updatePreferences(
-      themeMode: themeMode,
-      languageCode: languageCode,
-    );
+    final ok = await controller.updateTheme(themeMode);
+    if (!mounted) {
+      return;
+    }
+    final messenger = ScaffoldMessenger.of(context);
+    if (ok) {
+      messenger.showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(l10n.preferencesUpdated),
+        ),
+      );
+    } else {
+      messenger.showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Theme.of(context).colorScheme.error,
+          content: Text(controller.errorMessage ?? l10n.preferencesSaveError),
+        ),
+      );
+    }
+  }
+
+  Future<void> _saveLanguage(UserLanguagePreference languageCode) async {
+    final l10n = context.l10n;
+    final controller = context.read<UserPreferencesController>();
+    final ok = await controller.updateLanguage(languageCode);
     if (!mounted) {
       return;
     }
@@ -227,9 +249,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context);
+    final l10n = context.l10n;
     final colorScheme = theme.colorScheme;
     final profile = context.watch<ProfileController>();
+    final progressCtrl = context.watch<AccountProgressController>();
+    final progress = progressCtrl.progress;
     final preferencesController = context.watch<UserPreferencesController>();
     final auth = context.watch<AuthController>();
     final user = profile.user ?? auth.currentUser;
@@ -239,7 +263,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return AppLoadingOverlay(
       isLoading: profile.isLoading,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Perfil')),
+        appBar: AppBar(title: Text(l10n.profile)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           child: Column(
@@ -282,22 +306,38 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'Datos de la cuenta',
+                        l10n.accountData,
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 16),
-                      AccountLevelDisplay(nivel: user?.nivel ?? 1),
-                      const SizedBox(height: 16),
-                      _ReadOnlyInfoTile(
-                        label: 'Correo',
-                        value: user?.correo ?? '—',
-                        icon: Icons.alternate_email_rounded,
+                      AccountLevelDisplay(
+                        compact: true,
+                        nivel: progress?.nivel ?? user?.nivel ?? 1,
+                        rango: progress?.rango ?? 'Novato',
+                        xpEnNivel: progress?.xpEnNivel ?? 0,
+                        xpParaSiguiente: progress?.xpParaSiguienteNivel ?? 100,
                       ),
                       const SizedBox(height: 16),
                       _ReadOnlyInfoTile(
-                        label: 'Nickname',
+                        label: l10n.email,
+                        value: user?.correo ?? '—',
+                        icon: Icons.alternate_email_rounded,
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton.icon(
+                          onPressed: userId == null
+                              ? null
+                              : () => context.push(AppRoutes.changeEmailRequest),
+                          icon: const Icon(Icons.edit_outlined, size: 18),
+                          label: Text(l10n.changeEmail),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _ReadOnlyInfoTile(
+                        label: l10n.nickname,
                         value: user?.nickname ?? '—',
                         icon: Icons.person_rounded,
                       ),
@@ -326,77 +366,66 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      DropdownButtonFormField<UserThemePreference>(
-                        initialValue: preferencesController.currentThemePreference,
-                        decoration: InputDecoration(
-                          labelText: l10n.themeModeLabel,
+                      Text(
+                        l10n.themeModeLabel,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
                         ),
-                        items: [
-                          DropdownMenuItem(
-                            value: UserThemePreference.system,
-                            child: Text(l10n.systemOption),
-                          ),
-                          DropdownMenuItem(
+                      ),
+                      const SizedBox(height: 10),
+                      SegmentedButton<UserThemePreference>(
+                        segments: [
+                          ButtonSegment(
                             value: UserThemePreference.light,
-                            child: Text(l10n.lightOption),
+                            label: Text(l10n.lightOption),
+                            icon: const Icon(Icons.light_mode_outlined),
                           ),
-                          DropdownMenuItem(
+                          ButtonSegment(
                             value: UserThemePreference.dark,
-                            child: Text(l10n.darkOption),
+                            label: Text(l10n.darkOption),
+                            icon: const Icon(Icons.dark_mode_outlined),
                           ),
                         ],
-                        onChanged: preferencesController.isSaving
+                        selected: {preferencesController.uiThemeSelection},
+                        emptySelectionAllowed: false,
+                        onSelectionChanged: preferencesController.isSaving
                             ? null
-                            : (value) {
-                                if (value == null) {
-                                  return;
+                            : (selection) {
+                                final value = selection.first;
+                                if (value != preferencesController.uiThemeSelection) {
+                                  _saveTheme(value);
                                 }
-                                _savePreferences(
-                                  themeMode: value,
-                                  languageCode:
-                                      preferencesController
-                                          .preferences
-                                          ?.languageCode ??
-                                      UserLanguagePreference.system,
-                                );
                               },
                       ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<UserLanguagePreference>(
-                        initialValue:
-                            preferencesController.preferences?.languageCode ??
-                            UserLanguagePreference.system,
-                        decoration: InputDecoration(
-                          labelText: l10n.languageLabel,
+                      const SizedBox(height: 20),
+                      Text(
+                        l10n.languageLabel,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
                         ),
-                        items: [
-                          DropdownMenuItem(
-                            value: UserLanguagePreference.system,
-                            child: Text(l10n.systemOption),
-                          ),
-                          DropdownMenuItem(
+                      ),
+                      const SizedBox(height: 10),
+                      SegmentedButton<UserLanguagePreference>(
+                        segments: [
+                          ButtonSegment(
                             value: UserLanguagePreference.es,
-                            child: Text(l10n.spanishOption),
+                            label: Text(l10n.spanishOption),
                           ),
-                          DropdownMenuItem(
+                          ButtonSegment(
                             value: UserLanguagePreference.en,
-                            child: Text(l10n.englishOption),
+                            label: Text(l10n.englishOption),
                           ),
                         ],
-                        onChanged: preferencesController.isSaving
+                        selected: {preferencesController.uiLanguageSelection},
+                        emptySelectionAllowed: false,
+                        onSelectionChanged: preferencesController.isSaving
                             ? null
-                            : (value) {
-                                if (value == null) {
-                                  return;
+                            : (selection) {
+                                final value = selection.first;
+                                if (value !=
+                                    preferencesController.uiLanguageSelection) {
+                                  _saveLanguage(value);
                                 }
-                                _savePreferences(
-                                  themeMode:
-                                      preferencesController
-                                          .preferences
-                                          ?.themeMode ??
-                                      UserThemePreference.system,
-                                  languageCode: value,
-                                );
                               },
                       ),
                       if (preferencesController.isSaving) ...[
@@ -432,7 +461,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   }
                 },
                 icon: const Icon(Icons.logout_rounded),
-                label: const Text('Cerrar sesion'),
+                label: Text(l10n.logout),
               ),
               const SizedBox(height: 8),
               TextButton(
@@ -440,7 +469,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ? null
                     : () => _confirmDelete(context, userId),
                 child: Text(
-                  'Borrar cuenta',
+                  l10n.deleteAccount,
                   style: TextStyle(color: colorScheme.error),
                 ),
               ),
@@ -463,16 +492,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final accepted = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirmar borrado'),
-        content: const Text('Esta accion eliminara tu cuenta definitivamente.'),
+        title: Text(context.l10n.deleteAccountConfirmTitle),
+        content: Text(context.l10n.deleteAccountConfirmBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(context.l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Eliminar'),
+            child: Text(context.l10n.delete),
           ),
         ],
       ),

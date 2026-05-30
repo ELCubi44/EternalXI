@@ -1,4 +1,5 @@
 import 'package:eternal_xi/data/models/league_json_read.dart';
+import 'package:eternal_xi/data/models/league_squad_player.dart';
 
 class LeagueOfferItem {
   const LeagueOfferItem({
@@ -152,4 +153,32 @@ class LeagueOfferItem {
   }
 
   bool get pendiente => estado.trim().toUpperCase() == 'PENDIENTE';
+
+  LeagueSquadPlayer toSquadPlayer() {
+    return LeagueSquadPlayer(
+      idLigaJugador: idLigaJugador,
+      idLiga: idLiga,
+      idJugador: idJugador,
+      nombre: nombre,
+      pila: pila,
+      posicion: posicion,
+      valoracion: valorActual.toDouble(),
+      idEquipo: idEquipo,
+      nombreEquipo: nombreEquipo,
+      estado: estadoJugador,
+      cansancio: cansancio,
+      valor: valorActual.toDouble(),
+      fotoJugador: fotoJugador,
+      enPoolMercado: false,
+      propietarioNick: nicknameDuenoActual,
+      idUsuarioDueno: idUsuarioDuenoActual,
+      fotoEquipo: fotoEquipo,
+      nombreDuenoVisible: nicknameDuenoActual,
+      esMercado: false,
+      probabilidadTitular: probabilidadTitular,
+      motivoTitularidad: motivoTitularidad,
+      idPartidoProbabilidad: idPartidoProbabilidad,
+      calculadoEnProbabilidad: calculadoEnProbabilidad,
+    );
+  }
 }

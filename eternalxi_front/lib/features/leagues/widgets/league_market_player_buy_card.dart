@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
@@ -47,22 +49,25 @@ class _LeagueMarketPlayerBuyCardState extends State<LeagueMarketPlayerBuyCard> {
       return;
     }
     final price = LeagueMarketPlayerBuyCard.directBuyPrice(widget.player);
+    final ll = context.leagueL10n;
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Comprar jugador'),
+        title: Text(ll.buyPlayer),
         content: Text(
-          'Se realizará la compra directa por ${LeagueMoneyFormat.money(price)} '
-          '(2× el valor actual ${LeagueMoneyFormat.money(widget.player.valor)}).',
+          ll.buyDirectDetailedBody(
+            LeagueMoneyFormat.money(price),
+            LeagueMoneyFormat.money(widget.player.valor),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Cancelar'),
+            child: Text(c.l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Comprar'),
+            child: Text(ll.buy),
           ),
         ],
       ),
@@ -87,8 +92,10 @@ class _LeagueMarketPlayerBuyCardState extends State<LeagueMarketPlayerBuyCard> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Compra por ${LeagueMoneyFormat.money(result.cantidadCompra.toDouble())}. '
-            'Nuevo saldo: ${LeagueMoneyFormat.money(result.nuevoSaldo.toDouble())}.',
+            context.leagueL10n.purchaseCompleted(
+              LeagueMoneyFormat.money(result.cantidadCompra.toDouble()),
+              LeagueMoneyFormat.money(result.nuevoSaldo.toDouble()),
+            ),
           ),
         ),
       );
@@ -115,6 +122,8 @@ class _LeagueMarketPlayerBuyCardState extends State<LeagueMarketPlayerBuyCard> {
     if (_busy || _isOwn || _isMarket) {
       return;
     }
+    final shell = LeagueShellData.maybeOf(context);
+    final miDinero = shell?.detail?.miDinero.floor();
     setState(() => _busy = true);
     try {
       await LeaguePlayerOfferSheet.show(
@@ -122,8 +131,8 @@ class _LeagueMarketPlayerBuyCardState extends State<LeagueMarketPlayerBuyCard> {
         idLiga: widget.idLiga,
         idUsuario: widget.idUsuario,
         player: widget.player,
+        miDinero: miDinero,
         onAfterSuccess: () async {
-          final shell = LeagueShellData.maybeOf(context);
           await Future.wait([
             shell?.reload() ?? Future.value(),
             widget.onAfterAction(),
@@ -154,9 +163,11 @@ class _LeagueMarketPlayerBuyCardState extends State<LeagueMarketPlayerBuyCard> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final p = widget.player;
+    final ll = context.leagueL10n;
     final name = LeagueDisplayStrings.playerShortName(
       pila: p.pila,
       nombre: p.nombre,
+      ll: ll,
     );
     final buyPrice = LeagueMarketPlayerBuyCard.directBuyPrice(p);
     final ownerName = p.nombreDuenoVisible.trim().isNotEmpty
@@ -208,7 +219,7 @@ class _LeagueMarketPlayerBuyCardState extends State<LeagueMarketPlayerBuyCard> {
                   const SizedBox(height: 6),
                   if (_isOwn)
                     Text(
-                      'Eres el dueño y ya',
+                      ll.youAreOwnerAlready,
                       style: theme.textTheme.labelLarge?.copyWith(
                         color: colorScheme.primary,
                         fontWeight: FontWeight.w700,

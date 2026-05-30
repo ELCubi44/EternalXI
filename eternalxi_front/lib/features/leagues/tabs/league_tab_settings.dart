@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/data/models/league_detail.dart';
 import 'package:eternal_xi/data/models/league_participant.dart';
@@ -44,7 +46,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
   }
 
   static String _shareMessage(String code) {
-    return 'Únete a mi liga de Eternal XI con este código: $code';
+    return 'Eternal XI: $code';
   }
 
   Future<void> _loadParticipants() async {
@@ -99,7 +101,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Código copiado al portapapeles')),
+      SnackBar(content: Text(context.l10n.copy)),
     );
   }
 
@@ -201,7 +203,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
     }
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Participante expulsado')));
+    ).showSnackBar(SnackBar(content: Text(context.leagueL10n.participantExpelled)));
   }
 
   Future<int?> _showDelegatePicker(List<LeagueParticipant> others) async {
@@ -220,21 +222,20 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
     LeagueShellData shell,
   ) async {
     if (!detail.soyAdmin) {
+      final ll = context.leagueL10n;
       final ok = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Salir de la liga'),
-          content: const Text(
-            'Dejarás de participar en esta liga. Podrás volver a unirte solo con una nueva invitación.',
-          ),
+          title: Text(ll.leaveLeagueConfirmTitle),
+          content: Text(ll.leaveLeagueBody),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancelar'),
+              child: Text(ctx.l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Salir'),
+              child: Text(ll.leaveButton),
             ),
           ],
         ),
@@ -257,18 +258,16 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
     }
 
     if (detail.participantes <= 1) {
+      final ll = context.leagueL10n;
       await showDialog<void>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('No puedes abandonar la liga'),
-          content: const Text(
-            'Eres el único participante. No hay a quien delegar la administración. '
-            'Para salir, primero cierra la liga con el botón de administración.',
-          ),
+          title: Text(ll.cannotLeaveLeagueTitle),
+          content: Text(ll.cannotLeaveOnlyParticipantBody),
           actions: [
             FilledButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Entendido'),
+              child: Text(ll.understood),
             ),
           ],
         ),
@@ -285,11 +284,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
         [];
     if (others.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'No hay otros participantes para delegar. Actualiza o cierra la liga.',
-          ),
-        ),
+        SnackBar(content: Text(context.leagueL10n.noOtherParticipantsToDelegate)),
       );
       return;
     }
@@ -301,21 +296,20 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
 
     final nick = others.firstWhere((p) => p.idUsuario == newAdminId).nickname;
 
+    final ll = context.leagueL10n;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Confirmar salida'),
-        content: Text(
-          'Primero delegaremos la administración a $nick y después saldrás de la liga. Esta acción no se puede deshacer desde la app.',
-        ),
+        title: Text(ll.confirmLeaveTitle),
+        content: Text(ll.leaveAfterDelegateBody(nick)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: Text(ctx.l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Ceder y salir'),
+            child: Text(ll.cedeAndLeave),
           ),
         ],
       ),
@@ -350,14 +344,11 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
     final detail = shell?.detail;
     if (detail != null && detail.participantes > 1) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'No puedes cerrar la liga mientras haya más participantes. Delega el administrador antes de salir.',
-          ),
-        ),
+        SnackBar(content: Text(context.leagueL10n.cannotCloseLeagueWithParticipants)),
       );
       return;
     }
+    final ll = context.leagueL10n;
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -365,14 +356,12 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
           Icons.warning_amber_rounded,
           color: Theme.of(ctx).colorScheme.error,
         ),
-        title: const Text('Cerrar liga'),
-        content: const Text(
-          'La liga se cerrará para todos los participantes. Esta acción es definitiva.',
-        ),
+        title: Text(ll.closeLeague),
+        content: Text(ll.closeLeagueBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: Text(ctx.l10n.cancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
@@ -380,7 +369,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
               foregroundColor: Theme.of(ctx).colorScheme.onError,
             ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Cerrar'),
+            child: Text(ctx.l10n.close),
           ),
         ],
       ),
@@ -412,11 +401,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
         [];
     if (others.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'No hay participantes disponibles para delegar el administrador.',
-          ),
-        ),
+        SnackBar(content: Text(context.leagueL10n.noParticipantsToDelegateAdmin)),
       );
       return;
     }
@@ -427,19 +412,20 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
     }
 
     final nick = others.firstWhere((p) => p.idUsuario == newAdminId).nickname;
+    final ll = context.leagueL10n;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delegar administrador'),
-        content: Text('¿Delegar la administración de la liga a $nick?'),
+        title: Text(ll.delegateAdmin),
+        content: Text(ll.delegateAdminConfirm(nick)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: Text(ctx.l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delegar'),
+            child: Text(ll.delegateAction),
           ),
         ],
       ),
@@ -464,15 +450,16 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
   }
 
   Future<void> _onKickPressed(LeagueParticipant p) async {
+    final ll = context.leagueL10n;
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Expulsar participante'),
-        content: Text('¿Expulsar a ${p.nickname}?'),
+        title: Text(ll.kickParticipantTitle),
+        content: Text(ll.kickParticipantConfirm(p.nickname)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: Text(ctx.l10n.cancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
@@ -480,7 +467,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
               foregroundColor: Theme.of(ctx).colorScheme.onError,
             ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Expulsar'),
+            child: Text(ll.kickAction),
           ),
         ],
       ),
@@ -501,12 +488,14 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final ll = context.leagueL10n;
     super.build(context);
     final shell = LeagueShellData.maybeOf(context);
     final detail = shell?.detail;
 
     if (shell == null || detail == null) {
-      return const Center(child: Text('Ajustes no disponibles'));
+      return Center(child: Text(l10n.settings));
     }
 
     final theme = Theme.of(context);
@@ -516,19 +505,17 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
     final adminAlone = isAdmin && detail.participantes <= 1;
 
     final sectionWidgets = <Widget>[
-      _RewardsLeagueShortcut(leagueId: shell.leagueId),
-      const SizedBox(height: 16),
       Text(
-        'Ajustes de la liga',
+        l10n.settings,
         style: theme.textTheme.headlineSmall?.copyWith(
           fontWeight: FontWeight.w600,
         ),
       ),
       const SizedBox(height: 20),
       if (detail.hasConfigSummary) ...[
-        const _SectionTitle(
+        _SectionTitle(
           icon: Icons.tune_rounded,
-          title: 'Configuración',
+          title: ll.configuration,
         ),
         LeagueConfigSummaryCard(detail: detail),
         if (detail.isFichajesPhaseActive) ...[
@@ -537,9 +524,9 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
         ],
         const SizedBox(height: 24),
       ],
-      const _SectionTitle(
+      _SectionTitle(
         icon: Icons.key_outlined,
-        title: 'Código de invitación',
+        title: ll.invitationCodeTitle,
       ),
       Card(
         elevation: 0,
@@ -564,7 +551,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
                     child: FilledButton.tonalIcon(
                       onPressed: code.isEmpty ? null : () => _copyCode(code),
                       icon: const Icon(Icons.copy_rounded),
-                      label: const Text('Copiar'),
+                      label: Text(l10n.copy),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -572,7 +559,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
                     child: FilledButton.tonalIcon(
                       onPressed: code.isEmpty ? null : () => _shareCode(code),
                       icon: const Icon(Icons.share_rounded),
-                      label: const Text('Compartir'),
+                      label: Text(l10n.share),
                     ),
                   ),
                 ],
@@ -583,9 +570,9 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
       ),
       const SizedBox(height: 24),
       if (isAdmin) ...[
-        const _SectionTitle(
+        _SectionTitle(
           icon: Icons.groups_outlined,
-          title: 'Participantes',
+          title: ll.participants,
         ),
         _ParticipantsBlock(
           loading: _loadingParticipants,
@@ -599,9 +586,9 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
           colorScheme: colorScheme,
         ),
         const SizedBox(height: 24),
-        const _SectionTitle(
+        _SectionTitle(
           icon: Icons.gavel_outlined,
-          title: 'Administración',
+          title: ll.administration,
         ),
         Card(
           elevation: 0,
@@ -612,14 +599,14 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Cerrar liga',
+                  ll.closeLeague,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Todos perderán el acceso. Usa esta opción cuando la competición haya terminado.',
+                  ll.closeLeagueHint,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -628,7 +615,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
                 FilledButton.tonalIcon(
                   onPressed: () => _onTransferAdminPressed(detail, shell),
                   icon: const Icon(Icons.swap_horiz_rounded),
-                  label: const Text('Delegar administrador'),
+                  label: Text(ll.delegateAdmin),
                 ),
                 const SizedBox(height: 12),
                 FilledButton.icon(
@@ -638,7 +625,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
                   ),
                   onPressed: _onCloseLeaguePressed,
                   icon: const Icon(Icons.lock_outline),
-                  label: const Text('Cerrar liga'),
+                  label: Text(ll.closeLeague),
                 ),
               ],
             ),
@@ -646,9 +633,9 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
         ),
         const SizedBox(height: 16),
       ],
-      const _SectionTitle(
+      _SectionTitle(
         icon: Icons.logout_outlined,
-        title: 'Tu participación',
+        title: ll.yourParticipation,
       ),
       Card(
         elevation: 0,
@@ -660,8 +647,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
             children: [
               if (adminAlone) ...[
                 Text(
-                  'Eres el único miembro: no puedes abandonar la liga sin delegar. '
-                  'Usa «Cerrar liga» en Administración para finalizar.',
+                  ll.adminAloneCannotLeaveHint,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -669,13 +655,13 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
                 const SizedBox(height: 12),
                 FilledButton.tonal(
                   onPressed: null,
-                  child: const Text('Salir de la liga (no disponible)'),
+                  child: Text(ll.leaveLeagueUnavailable),
                 ),
               ] else ...[
                 Text(
                   isAdmin
-                      ? 'Saldrás de la liga tras elegir a quién delegar la administración.'
-                      : 'Dejarás de ver esta liga en tu listado hasta que vuelvas a unirte.',
+                      ? ll.adminLeaveParticipationHint
+                      : ll.memberLeaveParticipationHint,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -684,7 +670,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
                 OutlinedButton.icon(
                   onPressed: () => _onLeavePressed(detail, shell),
                   icon: const Icon(Icons.exit_to_app_rounded),
-                  label: const Text('Salir de la liga'),
+                  label: Text(ll.leaveLeague),
                 ),
               ],
             ],
@@ -731,6 +717,7 @@ class _DelegatePickerSheetState extends State<_DelegatePickerSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final ll = context.leagueL10n;
     final bottom = MediaQuery.paddingOf(context).bottom;
     final maxH = math.min(400.0, MediaQuery.sizeOf(context).height * 0.5);
 
@@ -746,14 +733,14 @@ class _DelegatePickerSheetState extends State<_DelegatePickerSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Nuevo administrador',
+            ll.newAdminTitle,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Elige a quién cedes el rol de administrador. Después confirmarás la salida.',
+            ll.newAdminSubtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -795,7 +782,7 @@ class _DelegatePickerSheetState extends State<_DelegatePickerSheet> {
                         radius: 14,
                       ),
                       subtitle: p.admin
-                          ? const Text('Administrador actual')
+                          ? Text(ll.currentAdmin)
                           : null,
                       trailing: selected
                           ? Icon(
@@ -819,7 +806,7 @@ class _DelegatePickerSheetState extends State<_DelegatePickerSheet> {
               Expanded(
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'),
+                  child: Text(context.l10n.cancel),
                 ),
               ),
               const SizedBox(width: 12),
@@ -828,7 +815,7 @@ class _DelegatePickerSheetState extends State<_DelegatePickerSheet> {
                   onPressed: _selected == null
                       ? null
                       : () => Navigator.pop(context, _selected),
-                  child: const Text('Continuar'),
+                  child: Text(context.l10n.continueText),
                 ),
               ),
             ],
@@ -891,6 +878,7 @@ class _ParticipantsBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     if (loading && (participants == null || participants!.isEmpty)) {
       return const Padding(
         padding: EdgeInsets.all(24),
@@ -910,7 +898,7 @@ class _ParticipantsBlock extends StatelessWidget {
               FilledButton.tonalIcon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Reintentar'),
+                label: Text(context.l10n.retry),
               ),
             ],
           ),
@@ -925,7 +913,7 @@ class _ParticipantsBlock extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Text(
-            'No hay participantes en la respuesta del servidor.',
+            ll.noParticipantsInResponse,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
@@ -974,6 +962,7 @@ class _ParticipantTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
     return Material(
       color: colorScheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(14),
@@ -1002,7 +991,7 @@ class _ParticipantTile extends StatelessWidget {
         ),
         subtitle: participant.admin
             ? Text(
-                'Administrador',
+                ll.administratorBadge,
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: colorScheme.primary,
                 ),
@@ -1010,12 +999,12 @@ class _ParticipantTile extends StatelessWidget {
             : null,
         trailing: isSelf
             ? Chip(
-                label: const Text('Tú'),
+                label: Text(ll.youLabel),
                 visualDensity: VisualDensity.compact,
                 backgroundColor: colorScheme.primaryContainer,
               )
             : IconButton(
-                tooltip: 'Expulsar',
+                tooltip: ll.kickTooltip,
                 icon: Icon(
                   Icons.person_remove_outlined,
                   color: colorScheme.error,
@@ -1069,54 +1058,6 @@ class _UserPhotoAvatar extends StatelessWidget {
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => fallback,
               ),
-      ),
-    );
-  }
-}
-
-class _RewardsLeagueShortcut extends StatelessWidget {
-  const _RewardsLeagueShortcut({required this.leagueId});
-
-  final int leagueId;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          colors: [
-            theme.colorScheme.primary.withValues(alpha: 0.38),
-            const Color(0xFF311B92).withValues(alpha: 0.28),
-          ],
-        ),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35),
-        ),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-        leading: const Icon(Icons.redeem_rounded, color: Color(0xFFFFD54F)),
-        title: Text(
-          'Recompensas',
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-          ),
-        ),
-        subtitle: Text(
-          'Sobres, cartas y entrenador',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: Colors.white.withValues(alpha: 0.75),
-          ),
-        ),
-        trailing: Icon(
-          Icons.arrow_forward_ios_rounded,
-          size: 16,
-          color: Colors.white.withValues(alpha: 0.55),
-        ),
-        onTap: () => context.push(AppRoutes.rewardsShop(idLiga: leagueId)),
       ),
     );
   }

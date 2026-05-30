@@ -66,17 +66,20 @@ public class LeagueRewardsService {
     private final LeagueLineupService leagueLineupService;
     private final LeaguePlayerMarketValueService leaguePlayerMarketValueService;
     private final LeagueActivityService leagueActivityService;
+    private final AccountProgressService accountProgressService;
 
     public LeagueRewardsService(
             LeagueTradeService leagueTradeService,
             LeagueLineupService leagueLineupService,
             LeaguePlayerMarketValueService leaguePlayerMarketValueService,
-            LeagueActivityService leagueActivityService
+            LeagueActivityService leagueActivityService,
+            AccountProgressService accountProgressService
     ) {
         this.leagueTradeService = leagueTradeService;
         this.leagueLineupService = leagueLineupService;
         this.leaguePlayerMarketValueService = leaguePlayerMarketValueService;
         this.leagueActivityService = leagueActivityService;
+        this.accountProgressService = accountProgressService;
     }
 
     public LeagueRewardsSummaryResponse getSummary(Long idLiga, Long idUsuario) throws SQLException {
@@ -87,7 +90,7 @@ public class LeagueRewardsService {
             cleanupExpired(conn, idLiga);
 
             boolean ruletaUsada = loadRouletteUsed(conn, p.idLigaParticipante());
-            LeagueCoachRouletteItemResponse coach = loadEquippedCoachSummary(conn, p.idLigaParticipante());
+            LeagueCoachRouletteItemResponse coach = loadCoachSummaryForRewards(conn, p.idLigaParticipante());
             int[] counts = countCardsByState(conn, p.idLigaParticipante());
 
             return new LeagueRewardsSummaryResponse(
@@ -159,6 +162,8 @@ public class LeagueRewardsService {
                         idLigaPart, null, null, idCarta, null, budget, null
                 );
 
+                accountProgressService.onPackOpened(conn, idUsuario, idLiga, idLigaPart);
+
                 conn.commit();
                 return new LeaguePackOpenResponse(packType.name(), coste, puntosRest, budget, nuevoDinero, cardDto);
             } catch (Exception e) {
@@ -183,7 +188,7 @@ public class LeagueRewardsService {
                 cleanupExpired(conn, idLiga);
 
                 RouletteRow rr = lockOrInsertRoulette(conn, part.idLigaParticipante());
-                LeagueCoachRouletteItemResponse actual = loadEquippedCoachSummary(conn, part.idLigaParticipante());
+                LeagueCoachRouletteItemResponse actual = loadCoachSummaryForRewards(conn, part.idLigaParticipante());
                 if (rr.usado()) {
                     conn.commit();
                     return new LeagueCoachRouletteSpinResponse(true, actual, List.of(), coste, null);
@@ -223,6 +228,8 @@ public class LeagueRewardsService {
                         actNick + " usó la ruleta de entrenador y obtuvo a " + won.nombre() + ".",
                         idLigaPart, null, null, null, won.idEntrenador(), (long) coste, null
                 );
+
+                accountProgressService.onCoachRoulette(conn, idUsuario, idLiga);
 
                 conn.commit();
                 return new LeagueCoachRouletteSpinResponse(false, mapCoachPick(won), items, coste, puntosRest);
@@ -432,6 +439,7 @@ public class LeagueRewardsService {
                 "Venta con carta " + card.codigo(),
                 null
         );
+        accountProgressService.onPlayerSold(conn, idUsuario, idLiga, recibido);
         return LeagueCardRedeemResponse.sell(
                 idLj,
                 nombre,
@@ -506,6 +514,8 @@ public class LeagueRewardsService {
                 null
         );
 
+        accountProgressService.onClauseExecuted(conn, idUsuario, idLiga, valorEfectivo);
+
         return LeagueCardRedeemResponse.clause(
                 idLj,
                 lj.nombreJugador(),
@@ -577,6 +587,8 @@ public class LeagueRewardsService {
                 "Protección aplicada",
                 null
         );
+
+        accountProgressService.onProtectionApplied(conn, idUsuario, idLiga, part.idLigaParticipante());
 
         return LeagueCardRedeemResponse.protect(idLj, nombre, jIni, jFin, season);
     }
@@ -738,7 +750,7 @@ public class LeagueRewardsService {
 
     private record RouletteRow(long id, boolean usado) {}
 
-    private record CoachPickRow(long idEntrenador, String nombre, String pila, String foto, int idEquipo, String nombreEquipo, String fotoEquipo) {}
+    private record CoachPickRow(long idEntrenador, String nombre, String pila, String foto, int idEquipo, String nombreEquipo, String fotoEquipo, int bonusPuntos) {}
 
     private void ensureUsuario(Connection conn, Long idUsuario) throws SQLException {
         String sql = "SELECT 1 FROM usuarios WHERE id = ? LIMIT 1";
@@ -1184,7 +1196,8 @@ public class LeagueRewardsService {
 
     private List<CoachPickRow> loadFreeCoachesForLeague(Connection conn, Long idLiga) throws SQLException {
         String sql = """
-                SELECT e.id, e.nombre, e.pila, e.foto, e.id_equipo, eq.nombre AS nombre_equipo, eq.foto AS foto_equipo
+                SELECT e.id, e.nombre, e.pila, e.foto, e.id_equipo, eq.nombre AS nombre_equipo, eq.foto AS foto_equipo,
+                       e.bonus_puntos
                 FROM entrenadores e
                 INNER JOIN ligas l ON l.id = ? AND l.id_temporada = e.id_temporada
                 LEFT JOIN equipos eq ON eq.id = e.id_equipo
@@ -1208,7 +1221,8 @@ public class LeagueRewardsService {
                             rs.getString("foto"),
                             rs.getInt("id_equipo"),
                             rs.getString("nombre_equipo"),
-                            rs.getString("foto_equipo")
+                            rs.getString("foto_equipo"),
+                            rs.getInt("bonus_puntos")
                     ));
                 }
             }
@@ -1237,13 +1251,55 @@ public class LeagueRewardsService {
                 LeagueAssetUrls.manager(r.idEntrenador()),
                 r.idEquipo(),
                 r.nombreEquipo(),
-                LeagueAssetUrls.team(r.idEquipo())
+                LeagueAssetUrls.team(r.idEquipo()),
+                r.bonusPuntos()
         );
+    }
+
+    private LeagueCoachRouletteItemResponse loadCoachSummaryForRewards(Connection conn, long idLigaParticipante) throws SQLException {
+        LeagueCoachRouletteItemResponse active = loadEquippedCoachSummary(conn, idLigaParticipante);
+        if (active != null) {
+            return active;
+        }
+        return loadRouletteAssignedCoachSummary(conn, idLigaParticipante);
+    }
+
+    private LeagueCoachRouletteItemResponse loadRouletteAssignedCoachSummary(Connection conn, long idLigaParticipante) throws SQLException {
+        String sql = """
+                SELECT e.id, e.nombre, e.pila, e.foto, e.id_equipo, eq.nombre AS nombre_equipo, eq.foto AS foto_equipo,
+                       e.bonus_puntos
+                FROM liga_participante_ruleta_entrenador lpr
+                INNER JOIN entrenadores e ON e.id = lpr.id_entrenador_asignado
+                LEFT JOIN equipos eq ON eq.id = e.id_equipo
+                WHERE lpr.id_liga_participante = ?
+                  AND lpr.usado = TRUE
+                  AND lpr.id_entrenador_asignado IS NOT NULL
+                LIMIT 1
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idLigaParticipante);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                return new LeagueCoachRouletteItemResponse(
+                        rs.getLong("id"),
+                        rs.getString("nombre"),
+                        rs.getString("pila"),
+                        LeagueAssetUrls.manager(rs.getLong("id")),
+                        rs.getInt("id_equipo"),
+                        rs.getString("nombre_equipo"),
+                        LeagueAssetUrls.team(rs.getInt("id_equipo")),
+                        rs.getInt("bonus_puntos")
+                );
+            }
+        }
     }
 
     private LeagueCoachRouletteItemResponse loadEquippedCoachSummary(Connection conn, long idLigaParticipante) throws SQLException {
         String sql = """
-                SELECT e.id, e.nombre, e.pila, e.foto, e.id_equipo, eq.nombre AS nombre_equipo, eq.foto AS foto_equipo
+                SELECT e.id, e.nombre, e.pila, e.foto, e.id_equipo, eq.nombre AS nombre_equipo, eq.foto AS foto_equipo,
+                       e.bonus_puntos
                 FROM liga_participante_entrenador lpe
                 INNER JOIN entrenadores e ON e.id = lpe.id_entrenador
                 LEFT JOIN equipos eq ON eq.id = e.id_equipo
@@ -1263,7 +1319,8 @@ public class LeagueRewardsService {
                         LeagueAssetUrls.manager(rs.getLong("id")),
                         rs.getInt("id_equipo"),
                         rs.getString("nombre_equipo"),
-                        LeagueAssetUrls.team(rs.getInt("id_equipo"))
+                        LeagueAssetUrls.team(rs.getInt("id_equipo")),
+                        rs.getInt("bonus_puntos")
                 );
             }
         }

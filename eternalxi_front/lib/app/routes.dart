@@ -8,6 +8,8 @@ class AppRoutes {
   static const passwordResetConfirm = '/password-reset/confirm';
   static const home = '/home';
   static const profile = '/profile';
+  static const changeEmailRequest = '/profile/change-email';
+  static const changeEmailConfirm = '/profile/change-email/confirm';
   static const tokensShop = '/profile/tokens-shop';
 
   /// Recompensas; opcionalmente abre una liga concreta (`GET summary` al entrar).
