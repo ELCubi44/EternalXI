@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_pack_open_result.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_card_model.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/rarity_badge.dart';
@@ -100,6 +101,7 @@ class _PackOpeningAnimationDialogState extends State<PackOpeningAnimationDialog>
 
   @override
   Widget build(BuildContext context) {
+    final rl10n = context.rewardsL10n;
     final card = widget.result.cartaObtenida;
     final style = styleForRarity(card.rareza);
     return Dialog.fullscreen(
@@ -135,7 +137,7 @@ class _PackOpeningAnimationDialogState extends State<PackOpeningAnimationDialog>
                   Expanded(
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 420),
-                      child: _buildPhase(style, card),
+                      child: _buildPhase(style, card, rl10n),
                     ),
                   ),
                   if (_phase == _PackPhase.card && _cardFlipped) ...[
@@ -144,14 +146,14 @@ class _PackOpeningAnimationDialogState extends State<PackOpeningAnimationDialog>
                         Expanded(
                           child: OutlinedButton(
                             onPressed: widget.onViewCards,
-                            child: const Text('Ver mis cartas'),
+                            child: Text(rl10n.viewMyCards),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: FilledButton(
                             onPressed: widget.onClose,
-                            child: const Text('Cerrar'),
+                            child: Text(rl10n.close),
                           ),
                         ),
                       ],
@@ -166,11 +168,11 @@ class _PackOpeningAnimationDialogState extends State<PackOpeningAnimationDialog>
     );
   }
 
-  Widget _buildPhase(RewardRarityStyle style, RewardCardModel card) {
+  Widget _buildPhase(RewardRarityStyle style, RewardCardModel card, RewardsL10n rl10n) {
     switch (_phase) {
       case _PackPhase.intro:
       case _PackPhase.opening:
-        return _PackEnvelope(phase: _phase, epic: _epic);
+        return _PackEnvelope(phase: _phase, epic: _epic, rl10n: rl10n);
       case _PackPhase.money:
         return Column(
           key: const ValueKey('money'),
@@ -189,7 +191,7 @@ class _PackOpeningAnimationDialogState extends State<PackOpeningAnimationDialog>
             ),
             const SizedBox(height: 12),
             Text(
-              'Abriendo sobre…',
+              rl10n.openingPack,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: Colors.white70,
               ),
@@ -204,16 +206,21 @@ class _PackOpeningAnimationDialogState extends State<PackOpeningAnimationDialog>
             _FlipCardY(
               key: ValueKey(_cardFlipped),
               flipped: _cardFlipped,
-              front: _cardFace(style, card, revealed: false),
-              back: _cardFace(style, card, revealed: true),
+              front: _cardFace(style, card, revealed: false, rl10n: rl10n),
+              back: _cardFace(style, card, revealed: true, rl10n: rl10n),
             ),
           ],
         );
     }
   }
 
-  Widget _cardFace(RewardRarityStyle style, RewardCardModel card, {required bool revealed}) {
-    final effectLabel = tipoEfectoLabel(card.tipoEfecto);
+  Widget _cardFace(
+    RewardRarityStyle style,
+    RewardCardModel card, {
+    required bool revealed,
+    required RewardsL10n rl10n,
+  }) {
+    final effectLabel = rl10n.tipoEfectoLabel(card.tipoEfecto);
     return Container(
       width: 260,
       height: 360,
@@ -299,10 +306,15 @@ class _PackOpeningAnimationDialogState extends State<PackOpeningAnimationDialog>
 }
 
 class _PackEnvelope extends StatelessWidget {
-  const _PackEnvelope({required this.phase, required this.epic});
+  const _PackEnvelope({
+    required this.phase,
+    required this.epic,
+    required this.rl10n,
+  });
 
   final _PackPhase phase;
   final bool epic;
+  final RewardsL10n rl10n;
 
   @override
   Widget build(BuildContext context) {
@@ -358,7 +370,7 @@ class _PackEnvelope extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  open ? '…' : 'Abriendo sobre…',
+                  open ? '…' : rl10n.openingPack,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Colors.white70,
                     fontWeight: FontWeight.w700,

@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_card_model.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/reward_card_tile.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class RewardCardGrid extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(28),
           child: Text(
-            'No tienes cartas en esta liga todavía. Abre sobres para conseguir cartas.',
+            context.rewardsL10n.noCardsYet,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: Colors.white70,

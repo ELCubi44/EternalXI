@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_card_model.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/rarity_badge.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
@@ -29,9 +30,11 @@ class _CardDetailContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final rl10n = context.rewardsL10n;
     final s = styleForRarity(card.rareza);
     final bottom = MediaQuery.paddingOf(context).bottom;
-    final params = parseCardParams(card.parametrosJson);
+    final params = rl10n.parseCardParams(card.parametrosJson);
+    final effectLabel = rl10n.tipoEfectoLabel(card.tipoEfecto);
 
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + bottom),
@@ -57,7 +60,7 @@ class _CardDetailContent extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            if (tipoEfectoLabel(card.tipoEfecto).isNotEmpty)
+            if (effectLabel.isNotEmpty)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
@@ -65,14 +68,14 @@ class _CardDetailContent extends StatelessWidget {
                   color: Colors.white.withValues(alpha: 0.08),
                 ),
                 child: Text(
-                  tipoEfectoLabel(card.tipoEfecto),
+                  effectLabel,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: Colors.white70,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
-            if (tipoEfectoLabel(card.tipoEfecto).isNotEmpty)
+            if (effectLabel.isNotEmpty)
               const SizedBox(height: 16),
             Text(
               card.descripcion,
@@ -105,7 +108,7 @@ class _CardDetailContent extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Efecto',
+                          rl10n.cardEffect,
                           style: theme.textTheme.labelLarge?.copyWith(
                             color: Colors.white70,
                             fontWeight: FontWeight.w700,
@@ -148,8 +151,8 @@ class _CardDetailContent extends StatelessWidget {
                   ? const Color(0xFF81C784)
                   : Colors.white38,
               iconSize: 8,
-              label: 'Estado',
-              value: estadoLabel(card.estado),
+              label: rl10n.cardStatus,
+              value: rl10n.estadoLabel(card.estado),
             ),
             if (card.obtenidoEn != null) ...[
               const SizedBox(height: 6),
@@ -157,7 +160,7 @@ class _CardDetailContent extends StatelessWidget {
                 icon: Icons.calendar_today_rounded,
                 iconColor: Colors.white38,
                 iconSize: 14,
-                label: 'Obtenida',
+                label: rl10n.cardObtained,
                 value: formatRewardDateTime(context, card.obtenidoEn),
               ),
             ],
@@ -167,7 +170,7 @@ class _CardDetailContent extends StatelessWidget {
                 icon: Icons.check_circle_outline_rounded,
                 iconColor: Colors.white38,
                 iconSize: 14,
-                label: 'Usada',
+                label: rl10n.cardUsedOn,
                 value: formatRewardDateTime(context, card.usadoEn),
               ),
             ],
@@ -180,7 +183,7 @@ class _CardDetailContent extends StatelessWidget {
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: const Text('Usar carta'),
+                  child: Text(rl10n.useCard),
                 ),
               )
             else
@@ -194,7 +197,7 @@ class _CardDetailContent extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.05),
                   ),
                   child: Text(
-                    'Carta usada',
+                    rl10n.cardUsedLabel,
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: Colors.white38,
                       fontWeight: FontWeight.w600,
@@ -207,7 +210,7 @@ class _CardDetailContent extends StatelessWidget {
               width: double.infinity,
               child: TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cerrar'),
+                child: Text(rl10n.close),
               ),
             ),
           ],

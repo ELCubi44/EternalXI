@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/data/models/league_activity_event.dart';
 import 'package:flutter/material.dart';
 
@@ -81,11 +82,9 @@ class LeagueActivityTile extends StatelessWidget {
     if (utc == null) return '—';
     final local = utc.toLocal();
     final now = DateTime.now();
-    final diff = now.difference(local);
-    if (diff.inMinutes < 1) return 'ahora';
-    if (diff.inMinutes < 60) return 'hace ${diff.inMinutes} min';
-    if (diff.inHours < 24) return 'hace ${diff.inHours} h';
-    if (diff.inDays < 7) return 'hace ${diff.inDays} d';
+    final rl10n = context.rewardsL10n;
+    final relative = rl10n.relativeTime(local, now);
+    if (relative.isNotEmpty) return relative;
     final loc = MaterialLocalizations.of(context);
     return loc.formatShortDate(local);
   }

@@ -1,33 +1,7 @@
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_event_model.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
 import 'package:flutter/material.dart';
-
-String rewardEventTypeLabel(String tipo) {
-  switch (tipo.trim().toUpperCase()) {
-    case 'PACK_OPENED':
-      return 'Sobre abierto';
-    case 'BUDGET_GRANTED':
-      return 'Presupuesto recibido';
-    case 'CARD_OBTAINED':
-      return 'Carta obtenida';
-    case 'CARD_REDEEMED':
-      return 'Carta usada';
-    case 'COACH_ROULETTE_SPIN':
-      return 'Ruleta de entrenador';
-    case 'PLAYER_SOLD_WITH_CARD':
-      return 'Venta especial';
-    case 'DIRECT_CLAUSE_EXECUTED':
-      return 'Cláusula';
-    case 'PLAYER_PROTECTION_APPLIED':
-      return 'Protección';
-    case 'LEAGUE_POINTS_BONUS_APPLIED':
-      return 'Bonus de puntos';
-    case 'VALUE_RECOVERY_APPLIED':
-      return 'Recuperación de valor';
-    default:
-      return tipo;
-  }
-}
 
 class RewardEventTile extends StatelessWidget {
   const RewardEventTile({super.key, required this.event});
@@ -37,6 +11,7 @@ class RewardEventTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final rl10n = context.rewardsL10n;
     final dateStr = formatRewardDateTime(context, event.creadoEn);
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -53,7 +28,7 @@ class RewardEventTile extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  rewardEventTypeLabel(event.tipo),
+                  rl10n.rewardEventTypeLabel(event.tipo),
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
@@ -79,7 +54,7 @@ class RewardEventTile extends StatelessWidget {
           if (event.cantidad != null) ...[
             const SizedBox(height: 4),
             Text(
-              'Cantidad: ${event.cantidad}',
+              rl10n.quantity(event.cantidad!),
               style: theme.textTheme.labelSmall?.copyWith(
                 color: const Color(0xFFFFD54F),
               ),

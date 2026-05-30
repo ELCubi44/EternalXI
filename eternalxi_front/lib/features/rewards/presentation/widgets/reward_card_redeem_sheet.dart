@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_card_model.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_card_target_model.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_redeem_result_model.dart';
@@ -101,6 +102,7 @@ class _RedeemSheetBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rl10n = context.rewardsL10n;
     final c = context.watch<_RedeemSheetController>();
     final bottom = MediaQuery.paddingOf(context).bottom;
     return Padding(
@@ -122,7 +124,7 @@ class _RedeemSheetBody extends StatelessWidget {
                 const SizedBox(height: 12),
                 FilledButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cerrar'),
+                  child: Text(rl10n.close),
                 ),
               ],
             );
@@ -158,7 +160,7 @@ class _RedeemSheetBody extends StatelessWidget {
                 _RecoveryTargets(controller: c)
               else
                 Text(
-                  'Tipo de carta no soportado en la app: $tipo',
+                  rl10n.unsupportedCardTypeWithCode(tipo),
                   style: const TextStyle(color: Colors.orangeAccent),
                 ),
             ],
@@ -172,78 +174,6 @@ class _RedeemSheetBody extends StatelessWidget {
 // ─── Helpers (hoja de canje: importes completos, sin abreviaturas) ───
 
 String _moneyFull(int? v) => v != null ? formatRewardMoneyFull(v) : '—';
-
-String? _valoracionLinea(double? v) =>
-    v == null ? null : 'Valoración: ${v.round()}';
-
-String _humanizeBlockedMotivo(String? raw) {
-  final t = raw?.trim();
-  if (t == null || t.isEmpty) {
-    return '';
-  }
-  final u = t.toUpperCase().replaceAll(' ', '_');
-  switch (u) {
-    case 'SUPERA_VALOR_MAXIMO_CARTA':
-      return 'Supera el valor máximo de esta carta';
-    case 'JUGADOR_PROTEGIDO':
-    case 'PLAYER_PROTECTED':
-      return 'Jugador protegido';
-    case 'PROTECCION_ACTIVA':
-      return 'Protección activa';
-    case 'PROTECCION_IGUAL_O_SUPERIOR':
-      return 'Protección igual o superior activa';
-    default:
-      return '';
-  }
-}
-
-String _blockedPlayerMessage(RewardCardTargetPlayer p) {
-  final m = _humanizeBlockedMotivo(p.motivoBloqueo);
-  if (m.isNotEmpty) {
-    return m;
-  }
-  if (p.protegido == true) {
-    return 'Jugador protegido';
-  }
-  return '';
-}
-
-String? _proteccionTitularLinea(RewardCardTargetPlayer p) {
-  if (p.protegido != true) {
-    return null;
-  }
-  if (p.proteccionHastaFinTemporada == true) {
-    return 'Protegido toda la temporada';
-  }
-  final n = p.numeroJornadaFinProteccion;
-  if (n != null) {
-    return 'Protegido hasta la jornada $n';
-  }
-  return null;
-}
-
-String? _recoveryBajandoLinea(RewardCardTargetPlayer p) {
-  final d = p.diferenciaValorPreview;
-  if (d != null) {
-    final negativo = d > 0 ? -d : d;
-    return 'Bajando: ${formatRewardMoneyFull(negativo)}';
-  }
-  final a = p.valorAnterior;
-  final b = p.valorActual;
-  if (a == null || b == null || a <= b) {
-    return null;
-  }
-  final drop = a - b;
-  return 'Bajando: ${formatRewardMoneyFull(-drop)}';
-}
-
-String? _recoverySubeLinea(RewardCardTargetPlayer p) {
-  final inc = p.incrementoValorDiarioPreview;
-  if (inc == null || inc <= 0) {
-    return null;
-  }
-  return 'Subirá: +${formatRewardMoneyFull(inc)}/día';
-}
 
 Future<void> _confirmAndRedeem({
   required BuildContext sheetContext,
@@ -264,7 +194,7 @@ Future<void> _confirmAndRedeem({
         ),
         FilledButton(
           onPressed: () => Navigator.pop(ctx, true),
-          child: const Text('Confirmar'),
+          child: Text(ctx.rewardsL10n.confirm),
         ),
       ],
     ),
@@ -282,75 +212,25 @@ Future<void> _confirmAndRedeem({
     Navigator.pop(sheetContext);
     _showRedeemSuccess(sheetContext, result);
   } else {
-    final msg = rewards.errorMessage ?? 'No se pudo completar la acción. Inténtalo de nuevo.';
+    final rl10n = sheetContext.rewardsL10n;
+    final msg = rewards.errorMessage ?? rl10n.actionFailed;
     ScaffoldMessenger.of(sheetContext).showSnackBar(SnackBar(content: Text(msg)));
   }
 }
 
 void _showRedeemSuccess(BuildContext context, RewardRedeemResultModel r) {
-  final tipo = r.tipoEfecto.toUpperCase();
-  String title = 'Listo';
-  final lines = <String>[];
-
-  switch (tipo) {
-    case 'SELL_PLAYER_BONUS':
-      title = 'Venta completada';
-      if (r.nombreJugador != null) lines.add('Jugador: ${r.nombreJugador}');
-      if (r.cantidadRecibida != null) {
-        lines.add('Has recibido ${formatRewardMoneyFull(r.cantidadRecibida!)}');
-      }
-      if (r.nuevoDineroLiga != null) {
-        lines.add('Nuevo presupuesto: ${formatRewardMoneyFull(r.nuevoDineroLiga!)}');
-      }
-    case 'DIRECT_CLAUSE':
-      title = 'Cláusula ejecutada';
-      if (r.nombreJugador != null) {
-        lines.add('${r.nombreJugador} ahora está en tu plantilla.');
-      } else {
-        lines.add('Jugador añadido a tu plantilla.');
-      }
-      if (r.pagadoPorAtacante != null) {
-        lines.add('Pagado: ${formatRewardMoneyFull(r.pagadoPorAtacante!)}');
-      }
-      if (r.nuevoDineroAtacante != null) {
-        lines.add('Tu presupuesto: ${formatRewardMoneyFull(r.nuevoDineroAtacante!)}');
-      }
-    case 'PROTECT_PLAYER':
-      title = 'Jugador protegido';
-      if (r.nombreJugador != null) lines.add(r.nombreJugador!);
-      if (r.proteccionHastaFinTemporada == true) {
-        lines.add('Protegido toda la temporada');
-      } else if (r.numeroJornadaFinProteccion != null) {
-        lines.add('Protegido hasta la jornada ${r.numeroJornadaFinProteccion}');
-      }
-    case 'ADD_LEAGUE_POINTS':
-      title = 'Puntos añadidos';
-      if (r.puntosAnadidos != null) lines.add('+${r.puntosAnadidos} puntos');
-      if (r.puntosTotalesEfectivos != null) lines.add('Nuevo total: ${r.puntosTotalesEfectivos}');
-    case 'TEMPORARY_VALUE_RECOVERY':
-      title = 'Valor temporal aplicado';
-      if (r.nombreJugador != null) lines.add(r.nombreJugador!);
-      if (r.valorTemporal != null) {
-        lines.add('Nuevo valor temporal: ${formatRewardMoneyFull(r.valorTemporal!)}');
-      }
-      if (r.numeroJornadaExpiracion != null) {
-        lines.add('Expira en la jornada ${r.numeroJornadaExpiracion}');
-      }
-    default:
-      title = 'Operación completada';
-  }
-
-  if (lines.isEmpty) lines.add('Operación completada.');
+  final rl10n = context.rewardsL10n;
+  final success = rl10n.redeemSuccessMessage(r);
 
   showDialog<void>(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: Text(title),
-      content: Text(lines.join('\n')),
+      title: Text(success.title),
+      content: Text(success.lines.join('\n')),
       actions: [
         FilledButton(
           onPressed: () => Navigator.pop(ctx),
-          child: const Text('OK'),
+          child: Text(rl10n.ok),
         ),
       ],
     ),
@@ -470,10 +350,11 @@ class _AddPointsConfirm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rl10n = context.rewardsL10n;
     final preview = controller.targets?.puntosAnadidosPreview;
     final text = preview != null
-        ? 'Esta carta sumará +$preview puntos a tu clasificación de liga.'
-        : 'Sumará puntos a tu clasificación de esta liga.';
+        ? rl10n.addPointsPreview(preview)
+        : rl10n.addPointsGeneric;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -482,7 +363,7 @@ class _AddPointsConfirm extends StatelessWidget {
         Align(
           alignment: Alignment.centerRight,
           child: _CompactActionButton(
-            label: 'Usar carta',
+            label: rl10n.useCard,
             busy: controller.redeeming,
             onPressed: controller.redeeming
                 ? null
@@ -490,7 +371,7 @@ class _AddPointsConfirm extends StatelessWidget {
                       sheetContext: context,
                       c: controller,
                       idLigaJugadorObjetivo: null,
-                      confirmTitle: 'Usar carta',
+                      confirmTitle: rl10n.useCard,
                       confirmBody: text,
                     ),
           ),
@@ -508,15 +389,16 @@ class _SellTargets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rl10n = context.rewardsL10n;
     final list = controller.targets?.objetivos ?? const [];
     if (list.isEmpty) {
-      return _emptyTargets('No tienes jugadores disponibles para usar esta carta de venta.');
+      return _emptyTargets(rl10n.noSellTargets);
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Elige jugador para vender',
+          rl10n.choosePlayerToSell,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 6),
@@ -533,6 +415,7 @@ class _SellPlayerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rl10n = context.rewardsL10n;
     final p = player;
     final hasEscudo = LeagueAssetUrls.buildBackendImageUrl(p.fotoEquipo) != null;
     return Card(
@@ -578,18 +461,18 @@ class _SellPlayerCard extends StatelessWidget {
                       _positionChip(p.posicion),
                     ],
                   ),
-                  if (_valoracionLinea(p.valoracionActual) != null)
+                  if (p.valoracionActual != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        _valoracionLinea(p.valoracionActual)!,
+                        rl10n.valuation(p.valoracionActual!.round()),
                         style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
                       ),
                     ),
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
-                      'Valor: ${_moneyFull(p.valorActual)}',
+                      rl10n.valueLabel(_moneyFull(p.valorActual)),
                       style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
                     ),
                   ),
@@ -597,7 +480,7 @@ class _SellPlayerCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        'Recibirás: ${_moneyFull(p.cantidadRecibidaPreview)}',
+                        rl10n.youWillReceive(_moneyFull(p.cantidadRecibidaPreview)),
                         style: const TextStyle(
                           color: Color(0xFF81C784),
                           fontSize: 11,
@@ -610,7 +493,7 @@ class _SellPlayerCard extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerRight,
                     child: _CompactActionButton(
-                      label: 'Vender',
+                      label: rl10n.sell,
                       busy: controller.redeeming,
                       onPressed: controller.redeeming
                           ? null
@@ -618,10 +501,11 @@ class _SellPlayerCard extends StatelessWidget {
                                 sheetContext: context,
                                 c: controller,
                                 idLigaJugadorObjetivo: p.idLigaJugador,
-                                confirmTitle: 'Vender jugador',
-                                confirmBody: 'Vas a vender a ${p.nombreJugador}.\n'
-                                    'Recibirás ${_moneyFull(p.cantidadRecibidaPreview)}.\n'
-                                    'Esta acción no se puede deshacer.',
+                                confirmTitle: rl10n.sellPlayerTitle,
+                                confirmBody: rl10n.sellPlayerConfirm(
+                                  p.nombreJugador,
+                                  _moneyFull(p.cantidadRecibidaPreview),
+                                ),
                               ),
                     ),
                   ),
@@ -650,10 +534,11 @@ class _ClauseTargetsState extends State<_ClauseTargets> {
 
   @override
   Widget build(BuildContext context) {
+    final rl10n = context.rewardsL10n;
     final parts = widget.controller.targets?.participantesObjetivo ?? const [];
 
     if (parts.isEmpty) {
-      return _emptyTargets('No hay jugadores disponibles para esta cláusula.');
+      return _emptyTargets(rl10n.noClauseTargets);
     }
 
     if (_selected != null) {
@@ -668,7 +553,7 @@ class _ClauseTargetsState extends State<_ClauseTargets> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Elige participante rival',
+          rl10n.chooseRivalParticipant,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
@@ -682,7 +567,7 @@ class _ClauseTargetsState extends State<_ClauseTargets> {
                 onTap: () => setState(() => _selected = pt),
                 title: Text(pt.nickname, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
                 subtitle: Text(
-                  '${pt.jugadoresDisponibles} disponibles · ${pt.jugadoresBloqueados} bloqueados',
+                  rl10n.participantsAvailableBlocked(pt.jugadoresDisponibles, pt.jugadoresBloqueados),
                   style: const TextStyle(color: Colors.white54, fontSize: 12),
                 ),
                 trailing: const Icon(Icons.chevron_right_rounded, color: Colors.white38),
@@ -705,6 +590,7 @@ class _ClauseParticipantSquad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rl10n = context.rewardsL10n;
     final ok = participant.objetivos;
     final blocked = participant.objetivosBloqueados;
     final theme = Theme.of(context);
@@ -722,7 +608,7 @@ class _ClauseParticipantSquad extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Plantilla de ${participant.nickname}',
+              rl10n.squadOf(participant.nickname),
               style: theme.textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
             ),
           ),
@@ -730,17 +616,17 @@ class _ClauseParticipantSquad extends StatelessWidget {
         const SizedBox(height: 12),
 
         if (ok.isEmpty && blocked.isEmpty)
-          _emptyTargets('Este participante no tiene jugadores disponibles.'),
+          _emptyTargets(rl10n.noPlayersForParticipant),
 
         if (ok.isNotEmpty) ...[
-          Text('Disponibles', style: theme.textTheme.labelLarge?.copyWith(color: const Color(0xFFFFD54F), fontWeight: FontWeight.w700)),
+          Text(rl10n.availablePlayers, style: theme.textTheme.labelLarge?.copyWith(color: const Color(0xFFFFD54F), fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
           ...ok.map((p) => _ClausePlayerCard(player: p, controller: controller)),
         ],
 
         if (blocked.isNotEmpty) ...[
           const SizedBox(height: 16),
-          Text('Bloqueados', style: theme.textTheme.labelLarge?.copyWith(color: Colors.white54, fontWeight: FontWeight.w700)),
+          Text(rl10n.blockedPlayers, style: theme.textTheme.labelLarge?.copyWith(color: Colors.white54, fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
           ...blocked.map((p) => _ClauseBlockedCard(player: p)),
         ],
@@ -756,6 +642,7 @@ class _ClausePlayerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rl10n = context.rewardsL10n;
     final p = player;
     return Card(
       margin: const EdgeInsets.only(bottom: 4),
@@ -814,18 +701,18 @@ class _ClausePlayerCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                  if (_valoracionLinea(p.valoracionActual) != null)
+                  if (p.valoracionActual != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        _valoracionLinea(p.valoracionActual)!,
+                        rl10n.valuation(p.valoracionActual!.round()),
                         style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
                       ),
                     ),
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
-                      'Valor: ${_moneyFull(p.valorActual)}',
+                      rl10n.valueLabel(_moneyFull(p.valorActual)),
                       style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
                     ),
                   ),
@@ -833,7 +720,7 @@ class _ClausePlayerCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        'Pagarás: ${_moneyFull(p.costeClausulaAtacante)}',
+                        rl10n.youWillPay(_moneyFull(p.costeClausulaAtacante)),
                         style: const TextStyle(
                           color: Color(0xFFFFAB91),
                           fontSize: 11,
@@ -846,7 +733,7 @@ class _ClausePlayerCard extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerRight,
                     child: _CompactActionButton(
-                      label: 'Clausular',
+                      label: rl10n.clause,
                       busy: controller.redeeming,
                       onPressed: controller.redeeming
                           ? null
@@ -854,10 +741,11 @@ class _ClausePlayerCard extends StatelessWidget {
                                 sheetContext: context,
                                 c: controller,
                                 idLigaJugadorObjetivo: p.idLigaJugador,
-                                confirmTitle: 'Ejecutar cláusula',
-                                confirmBody: 'Vas a clausular a ${p.nombreJugador}.\n'
-                                    'Pagarás ${_moneyFull(p.costeClausulaAtacante)}.\n'
-                                    'Esta acción no se puede deshacer.',
+                                confirmTitle: rl10n.executeClauseTitle,
+                                confirmBody: rl10n.executeClauseConfirm(
+                                  p.nombreJugador,
+                                  _moneyFull(p.costeClausulaAtacante),
+                                ),
                               ),
                     ),
                   ),
@@ -877,6 +765,7 @@ class _ClauseBlockedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rl10n = context.rewardsL10n;
     final p = player;
     return Card(
       margin: const EdgeInsets.only(bottom: 4),
@@ -917,11 +806,11 @@ class _ClauseBlockedCard extends StatelessWidget {
                       _positionChip(p.posicion),
                     ],
                   ),
-                  if (_blockedPlayerMessage(p).isNotEmpty)
+                  if (rl10n.blockedPlayerMessage(p).isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        _blockedPlayerMessage(p),
+                        rl10n.blockedPlayerMessage(p),
                         style: const TextStyle(color: Color(0xFFFFAB91), fontSize: 10, height: 1.2),
                       ),
                     ),
@@ -929,7 +818,7 @@ class _ClauseBlockedCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        'Coste: ${_moneyFull(p.costeClausulaAtacante)}',
+                        rl10n.costLabel(_moneyFull(p.costeClausulaAtacante)),
                         style: const TextStyle(color: Colors.white30, fontSize: 10),
                       ),
                     ),
@@ -951,9 +840,10 @@ class _ProtectTargets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rl10n = context.rewardsL10n;
     final list = controller.targets?.objetivos ?? const [];
     if (list.isEmpty) {
-      return _emptyTargets('No tienes jugadores disponibles para proteger.');
+      return _emptyTargets(rl10n.noProtectTargets);
     }
 
     final card = controller.card;
@@ -965,10 +855,13 @@ class _ProtectTargets extends StatelessWidget {
         if (decoded is Map) {
           final params = Map<String, dynamic>.from(decoded);
           if (params['seasonLong'] == true || params['temporadaCompleta'] == true) {
-            protLabel = 'Esta carta protege hasta final de temporada';
+            protLabel = rl10n.protectUntilSeasonEnd;
           } else {
             final rounds = params['rounds'] ?? params['jornadas'];
-            if (rounds != null) protLabel = 'Esta carta protege durante $rounds jornadas';
+            if (rounds != null) {
+              final n = rounds is int ? rounds : int.tryParse(rounds.toString());
+              if (n != null) protLabel = rl10n.protectForRounds(n);
+            }
           }
         }
       }
@@ -978,7 +871,7 @@ class _ProtectTargets extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Elige jugador a proteger',
+          rl10n.choosePlayerToProtect,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
         ),
         if (protLabel != null) ...[
@@ -1007,12 +900,13 @@ class _ProtectPlayerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rl10n = context.rewardsL10n;
     final p = player;
     final rawMotivo = p.motivoBloqueo?.trim() ?? '';
-    final bloqueo = _humanizeBlockedMotivo(p.motivoBloqueo);
+    final bloqueo = rl10n.humanizeBlockedReason(p.motivoBloqueo);
     final bloqueoVisual =
-        rawMotivo.isNotEmpty && bloqueo.isEmpty ? 'No disponible para proteger.' : bloqueo;
-    final estadoProt = _proteccionTitularLinea(p);
+        rawMotivo.isNotEmpty && bloqueo.isEmpty ? rl10n.notAvailableToProtect : bloqueo;
+    final estadoProt = rl10n.protectionOwnerLine(p);
     final puedeAccion = rawMotivo.isEmpty;
 
     return Card(
@@ -1076,18 +970,18 @@ class _ProtectPlayerCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                  if (_valoracionLinea(p.valoracionActual) != null)
+                  if (p.valoracionActual != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        _valoracionLinea(p.valoracionActual)!,
+                        rl10n.valuation(p.valoracionActual!.round()),
                         style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
                       ),
                     ),
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
-                      'Valor: ${_moneyFull(p.valorActual)}',
+                      rl10n.valueLabel(_moneyFull(p.valorActual)),
                       style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
                     ),
                   ),
@@ -1112,7 +1006,7 @@ class _ProtectPlayerCard extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: puedeAccion
                         ? _CompactActionButton(
-                            label: 'Proteger',
+                            label: rl10n.protect,
                             busy: controller.redeeming,
                             onPressed: controller.redeeming
                                 ? null
@@ -1120,13 +1014,12 @@ class _ProtectPlayerCard extends StatelessWidget {
                                       sheetContext: context,
                                       c: controller,
                                       idLigaJugadorObjetivo: p.idLigaJugador,
-                                      confirmTitle: 'Aplicar protección',
-                                      confirmBody: 'Se aplicará protección sobre ${p.nombreJugador}.\n'
-                                          'Esta acción no se puede deshacer.',
+                                      confirmTitle: rl10n.applyProtectionTitle,
+                                      confirmBody: rl10n.applyProtectionConfirm(p.nombreJugador),
                                     ),
                           )
                         : Text(
-                            'No disponible',
+                            rl10n.notAvailable,
                             style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white38),
                           ),
                   ),
@@ -1148,15 +1041,16 @@ class _RecoveryTargets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rl10n = context.rewardsL10n;
     final list = controller.targets?.objetivos ?? const [];
     if (list.isEmpty) {
-      return _emptyTargets('No tienes jugadores bajando de valor para usar esta carta.');
+      return _emptyTargets(rl10n.noRecoveryTargets);
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Elige jugador que esté bajando de valor',
+          rl10n.chooseDroppingPlayer,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 6),
@@ -1173,8 +1067,11 @@ class _RecoveryPlayerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rl10n = context.rewardsL10n;
     final p = player;
     final nExp = p.numeroJornadaExpiracionPreview;
+    final droppingLine = rl10n.recoveryDroppingLine(p);
+    final risingLine = rl10n.recoveryRisingLine(p);
     return Card(
       margin: const EdgeInsets.only(bottom: 4),
       color: const Color(0xFF1A2233),
@@ -1232,34 +1129,34 @@ class _RecoveryPlayerCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                  if (_valoracionLinea(p.valoracionActual) != null)
+                  if (p.valoracionActual != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        _valoracionLinea(p.valoracionActual)!,
+                        rl10n.valuation(p.valoracionActual!.round()),
                         style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
                       ),
                     ),
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
-                      'Valor actual: ${_moneyFull(p.valorActual)}',
+                      rl10n.currentValueLabel(_moneyFull(p.valorActual)),
                       style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
                     ),
                   ),
-                  if (_recoveryBajandoLinea(p) != null)
+                  if (droppingLine != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        _recoveryBajandoLinea(p)!,
+                        droppingLine,
                         style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
                       ),
                     ),
-                  if (_recoverySubeLinea(p) != null)
+                  if (risingLine != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        _recoverySubeLinea(p)!,
+                        risingLine,
                         style: const TextStyle(
                           color: Color(0xFF81C784),
                           fontSize: 10,
@@ -1272,7 +1169,7 @@ class _RecoveryPlayerCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        'Expira en la jornada $nExp',
+                        rl10n.expiresOnMatchday(nExp),
                         style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
                       ),
                     ),
@@ -1280,7 +1177,7 @@ class _RecoveryPlayerCard extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerRight,
                     child: _CompactActionButton(
-                      label: 'Aplicar',
+                      label: rl10n.apply,
                       busy: controller.redeeming,
                       onPressed: controller.redeeming
                           ? null
@@ -1288,9 +1185,8 @@ class _RecoveryPlayerCard extends StatelessWidget {
                                 sheetContext: context,
                                 c: controller,
                                 idLigaJugadorObjetivo: p.idLigaJugador,
-                                confirmTitle: 'Aplicar recuperación',
-                                confirmBody: 'Se aplicará recuperación temporal de valor a ${p.nombreJugador}.\n'
-                                    'Esta acción no se puede deshacer.',
+                                confirmTitle: rl10n.applyRecoveryTitle,
+                                confirmBody: rl10n.applyRecoveryConfirm(p.nombreJugador),
                               ),
                     ),
                   ),

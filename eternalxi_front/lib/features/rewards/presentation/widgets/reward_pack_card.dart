@@ -184,25 +184,11 @@ class _PackInfoButton extends StatelessWidget {
   }
 }
 
-String _packProbabilityRowLabel(String key) {
-  switch (key.trim().toUpperCase()) {
-    case 'BASIC':
-      return 'Básica';
-    case 'NORMAL':
-      return 'Normal';
-    case 'SPECIAL':
-      return 'Especial';
-    case 'SUPER_RARE':
-    case 'SUPERRARE':
-      return 'Súper rara';
-    case 'LEGENDARY':
-      return 'Legendaria';
-    default:
-      return key.replaceAll('_', ' ');
-  }
-}
+String _packProbabilityRowLabel(RewardsL10n rl10n, String key) =>
+    rl10n.rarityLabel(key);
 
 void _showPackProbabilities(BuildContext context, RewardPackModel pack) {
+  final rl10n = context.rewardsL10n;
   showModalBottomSheet<void>(
     context: context,
     backgroundColor: const Color(0xFF0E121C),
@@ -215,7 +201,7 @@ void _showPackProbabilities(BuildContext context, RewardPackModel pack) {
       final entries = pack.probabilidades.orderedEntries
           .map(
             (e) => _ProbEntry(
-              _packProbabilityRowLabel(e.key),
+              _packProbabilityRowLabel(rl10n, e.key),
               e.key,
               e.value,
             ),
@@ -233,7 +219,7 @@ void _showPackProbabilities(BuildContext context, RewardPackModel pack) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Probabilidades del sobre',
+              rl10n.packProbabilitiesTitle,
               style: theme.textTheme.titleLarge?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w800,
@@ -259,7 +245,7 @@ void _showPackProbabilities(BuildContext context, RewardPackModel pack) {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Coste: ${formatRewardPoints(pack.costePuntos)}',
+                    rl10n.packCost(formatRewardPoints(pack.costePuntos)),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: const Color(0xFFFFE082),
                       fontWeight: FontWeight.w600,
@@ -267,7 +253,10 @@ void _showPackProbabilities(BuildContext context, RewardPackModel pack) {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Presupuesto: ${formatRewardMoney(pack.presupuestoMin)} — ${formatRewardMoney(pack.presupuestoMax)}',
+                    rl10n.packBudget(
+                      formatRewardMoney(pack.presupuestoMin),
+                      formatRewardMoney(pack.presupuestoMax),
+                    ),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: Colors.white70,
                     ),
@@ -278,7 +267,7 @@ void _showPackProbabilities(BuildContext context, RewardPackModel pack) {
             const SizedBox(height: 16),
             if (entries.isEmpty)
               Text(
-                'Sin datos de probabilidades.',
+                rl10n.noProbabilityData,
                 style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white54),
               )
             else
@@ -292,7 +281,7 @@ void _showPackProbabilities(BuildContext context, RewardPackModel pack) {
                   backgroundColor: Colors.white.withValues(alpha: 0.1),
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Cerrar'),
+                child: Text(rl10n.close),
               ),
             ),
           ],

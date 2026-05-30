@@ -1,28 +1,9 @@
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/core/utils/league_asset_urls.dart';
 import 'package:eternal_xi/core/utils/league_coach_photo.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_coach_item.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
 import 'package:flutter/material.dart';
-
-String coachBonusExplanation(RewardCoachItem coach) {
-  final bonus = coach.bonusPuntos > 0 ? coach.bonusPuntos : 3;
-  final team = (coach.nombreEquipo ?? '').trim();
-  if (team.isEmpty) {
-    return 'Si lo activas y alineas jugadores de su equipo con minutos, '
-        'recibes +$bonus pts por cada uno en tu once.';
-  }
-  return 'Si lo activas y alineas jugadores de $team con minutos, '
-      'recibes +$bonus pts por cada uno en tu once.';
-}
-
-String coachBonusShortLine(RewardCoachItem coach) {
-  final bonus = coach.bonusPuntos > 0 ? coach.bonusPuntos : 3;
-  final team = (coach.nombreEquipo ?? '').trim();
-  if (team.isEmpty) {
-    return '+$bonus pts por jugador de su equipo alineado';
-  }
-  return '+$bonus pts por jugador de $team alineado';
-}
 
 class RewardCoachDetailCard extends StatelessWidget {
   const RewardCoachDetailCard({
@@ -37,6 +18,7 @@ class RewardCoachDetailCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final rl10n = context.rewardsL10n;
     final photoUrl = LeagueCoachPhoto.resolveUrl(
       idEntrenador: coach.idEntrenador,
       foto: coach.foto,
@@ -128,7 +110,7 @@ class RewardCoachDetailCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    coachBonusExplanation(coach),
+                    rl10n.coachBonusExplanation(coach),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: Colors.white.withValues(alpha: 0.92),
                       fontWeight: FontWeight.w600,
@@ -268,6 +250,7 @@ Future<void> showCoachRouletteInfoSheet(
     ),
     builder: (ctx) {
       final theme = Theme.of(ctx);
+      final rl10n = ctx.rewardsL10n;
       final bottom = MediaQuery.paddingOf(ctx).bottom;
       return Padding(
         padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + bottom),
@@ -276,7 +259,7 @@ Future<void> showCoachRouletteInfoSheet(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Ruleta de entrenador',
+              rl10n.coachRouletteTitle,
               style: theme.textTheme.titleLarge?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w800,
@@ -284,24 +267,20 @@ Future<void> showCoachRouletteInfoSheet(
             ),
             const SizedBox(height: 16),
             _InfoBlock(
-              title: 'Una sola tirada',
-              body:
-                  'Solo puedes girar la ruleta una vez por liga. Obtendrás un entrenador libre al azar.',
+              title: rl10n.rouletteSingleSpinTitle,
+              body: rl10n.rouletteSingleSpinBody,
             ),
             const SizedBox(height: 12),
             _InfoBlock(
-              title: 'Coste',
+              title: rl10n.rouletteCostTitle,
               body: costePuntos > 0
-                  ? 'Girar cuesta ${formatRewardPoints(costePuntos)}.'
-                  : 'Girar no tiene coste en puntos.',
+                  ? rl10n.rouletteCostBody(formatRewardPoints(costePuntos))
+                  : rl10n.rouletteFreeCostBody,
             ),
             const SizedBox(height: 12),
             _InfoBlock(
-              title: 'Bonus por alineación',
-              body: 'Cada entrenador otorga puntos extra por jugador de su club '
-                  'que alinees en tu once y que juegue minutos. El bonus concreto '
-                  'depende del entrenador que consigas (p. ej. +3 pts por jugador). '
-                  'Actívalo desde Alineación para aplicarlo en la jornada.',
+              title: rl10n.rouletteBonusTitle,
+              body: rl10n.rouletteBonusBody,
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -312,7 +291,7 @@ Future<void> showCoachRouletteInfoSheet(
                   backgroundColor: Colors.white.withValues(alpha: 0.1),
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Cerrar'),
+                child: Text(rl10n.close),
               ),
             ),
           ],
@@ -336,6 +315,7 @@ Future<void> showCoachWonSheet({
     ),
     builder: (ctx) {
       final theme = Theme.of(ctx);
+      final rl10n = ctx.rewardsL10n;
       final bottom = MediaQuery.paddingOf(ctx).bottom;
       return Padding(
         padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + bottom),
@@ -344,7 +324,7 @@ Future<void> showCoachWonSheet({
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '¡Entrenador conseguido!',
+              rl10n.coachWonTitle,
               style: theme.textTheme.titleLarge?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w800,
@@ -354,7 +334,7 @@ Future<void> showCoachWonSheet({
             RewardCoachDetailCard(coach: coach, onDarkGradient: false),
             const SizedBox(height: 12),
             Text(
-              'Equípalo y actívalo desde Alineación para sumar el bonus en cada jornada.',
+              rl10n.coachWonHint,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: Colors.white54,
                 height: 1.35,
@@ -365,7 +345,7 @@ Future<void> showCoachWonSheet({
               width: double.infinity,
               child: FilledButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('Continuar'),
+                child: Text(rl10n.continueLabel),
               ),
             ),
           ],

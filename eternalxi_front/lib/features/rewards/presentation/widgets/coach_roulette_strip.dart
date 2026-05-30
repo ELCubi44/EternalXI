@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/core/utils/league_coach_photo.dart';
 import 'package:eternal_xi/core/utils/league_asset_urls.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_coach_item.dart';
@@ -347,6 +348,7 @@ Future<void> showCoachRouletteDialog({
     barrierColor: Colors.black.withValues(alpha: 0.92),
     transitionDuration: const Duration(milliseconds: 280),
     pageBuilder: (ctx, animation, secondaryAnimation) {
+      final rl10n = RewardsL10n.of(ctx);
       return Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -359,7 +361,7 @@ Future<void> showCoachRouletteDialog({
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Ruleta de entrenador',
+                    rl10n.coachRouletteTitle,
                     style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w800,

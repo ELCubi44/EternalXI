@@ -1,6 +1,6 @@
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_card_model.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/rarity_badge.dart';
-import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_rarity_style.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +19,9 @@ class RewardCardTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final rl10n = context.rewardsL10n;
     final s = styleForRarity(card.rareza);
+    final effectShort = rl10n.tipoEfectoLabelShort(card.tipoEfecto);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -64,7 +66,7 @@ class RewardCardTile extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 5),
-              if (tipoEfectoLabelShort(card.tipoEfecto).isNotEmpty) ...[
+              if (effectShort.isNotEmpty) ...[
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
@@ -72,7 +74,7 @@ class RewardCardTile extends StatelessWidget {
                     color: Colors.black.withValues(alpha: 0.25),
                   ),
                   child: Text(
-                    tipoEfectoLabelShort(card.tipoEfecto),
+                    effectShort,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: Colors.white70,
                       fontWeight: FontWeight.w700,
@@ -111,7 +113,7 @@ class RewardCardTile extends StatelessWidget {
                   const SizedBox(width: 5),
                   Expanded(
                     child: Text(
-                      estadoLabel(card.estado),
+                      rl10n.estadoLabel(card.estado),
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: card.isAvailable
                             ? const Color(0xFF81C784)
@@ -135,7 +137,7 @@ class RewardCardTile extends StatelessWidget {
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        child: const Text('Usar'),
+                        child: Text(rl10n.use),
                       ),
                     ),
                 ],

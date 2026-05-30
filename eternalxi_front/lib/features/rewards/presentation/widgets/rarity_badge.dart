@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_rarity_style.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +11,7 @@ class RarityBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = styleForRarity(rarity);
+    final label = context.rewardsL10n.rarityLabel(rarity);
     final hPad = compact ? 5.0 : 8.0;
     final vPad = compact ? 2.0 : 3.0;
     final fontSize = compact ? 9.0 : null;
@@ -21,7 +23,7 @@ class RarityBadge extends StatelessWidget {
         border: Border.all(color: s.border.withValues(alpha: 0.65)),
       ),
       child: Text(
-        s.label,
+        label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
           color: s.badgeForeground,
           fontWeight: FontWeight.w800,
