@@ -457,7 +457,7 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
       ),
       ButtonSegment<int>(
         value: 1,
-        label: Text(context.l10n.create),
+        label: Text(context.leagueL10n.buy),
         icon: const Icon(Icons.shopping_bag_outlined),
       ),
     ];
