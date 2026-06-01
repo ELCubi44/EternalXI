@@ -137,20 +137,23 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) throws SQLException {
 
-        if (request.correo() == null || request.correo().isBlank()) {
-            return ResponseEntity.badRequest().body(new ApiMessageResponse("Correo no válido"));
+        String correo;
+        try {
+            correo = InputValidator.validateEmail(request.correo());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse(e.getMessage()));
         }
 
         if (request.contrasena() == null || request.contrasena().isBlank()) {
             return ResponseEntity.badRequest().body(new ApiMessageResponse("Contraseña no válida"));
         }
 
-        String sql = "SELECT id, correo, contrasena, nickname, nivel, foto FROM usuarios WHERE correo = ?";
+        String sql = "SELECT id, correo, contrasena, nickname, nivel, foto FROM usuarios WHERE LOWER(correo) = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, request.correo());
+            ps.setString(1, correo);
 
             try (ResultSet rs = ps.executeQuery()) {
 
@@ -288,14 +291,22 @@ public class AuthController {
     @PostMapping("/password-reset/request")
     public ResponseEntity<?> requestPasswordReset(@RequestBody EmailRequest request) throws SQLException {
 
-        String sqlSelect = "SELECT id FROM usuarios WHERE correo = ?";
-        String sqlUpdate = "UPDATE usuarios SET codigo_reinicio = ? WHERE correo = ?";
+        String correo;
+        try {
+            correo = InputValidator.validateEmail(request.correo());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse(e.getMessage()));
+        }
+
+        String sqlSelect = "SELECT id FROM usuarios WHERE LOWER(correo) = ?";
+        String sqlUpdate = "UPDATE usuarios SET codigo_reinicio = ? WHERE LOWER(correo) = ?";
+        String sqlClear = "UPDATE usuarios SET codigo_reinicio = NULL WHERE LOWER(correo) = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement psSelect = conn.prepareStatement(sqlSelect);
              PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate)) {
 
-            psSelect.setString(1, request.correo());
+            psSelect.setString(1, correo);
 
             try (ResultSet rs = psSelect.executeQuery()) {
                 if (!rs.next()) {
@@ -307,10 +318,18 @@ public class AuthController {
             String codigo = generarCodigo();
 
             psUpdate.setString(1, codigo);
-            psUpdate.setString(2, request.correo());
+            psUpdate.setString(2, correo);
             psUpdate.executeUpdate();
 
-            emailService.enviarCodigoReinicio(request.correo(), codigo);
+            try {
+                emailService.enviarCodigoReinicio(correo, codigo);
+            } catch (RuntimeException e) {
+                try (PreparedStatement psClear = conn.prepareStatement(sqlClear)) {
+                    psClear.setString(1, correo);
+                    psClear.executeUpdate();
+                }
+                throw e;
+            }
 
             return ResponseEntity.ok(new ApiMessageResponse("Se ha enviado un correo con el código de reinicio de contraseña"));
         }
@@ -319,14 +338,26 @@ public class AuthController {
     @PostMapping("/password-reset/confirm")
     public ResponseEntity<?> confirmPasswordReset(@RequestBody PasswordResetConfirmRequest request) throws SQLException {
 
-        String sqlSelect = "SELECT codigo_reinicio FROM usuarios WHERE correo = ?";
-        String sqlUpdate = "UPDATE usuarios SET contrasena = ?, codigo_reinicio = NULL WHERE correo = ?";
+        String correo;
+        try {
+            correo = InputValidator.validateEmail(request.correo());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse(e.getMessage()));
+        }
+
+        if (request.codigo() == null || request.codigo().isBlank()) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse("El código es obligatorio"));
+        }
+        final String codigoIngresado = request.codigo().trim().toUpperCase();
+
+        String sqlSelect = "SELECT codigo_reinicio FROM usuarios WHERE LOWER(correo) = ?";
+        String sqlUpdate = "UPDATE usuarios SET contrasena = ?, codigo_reinicio = NULL WHERE LOWER(correo) = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement psSelect = conn.prepareStatement(sqlSelect);
              PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate)) {
 
-            psSelect.setString(1, request.correo());
+            psSelect.setString(1, correo);
 
             try (ResultSet rs = psSelect.executeQuery()) {
 
@@ -337,12 +368,12 @@ public class AuthController {
 
                 String codigoBD = rs.getString("codigo_reinicio");
 
-                if (codigoBD == null) {
+                if (codigoBD == null || codigoBD.isBlank()) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(new ApiMessageResponse("No hay ningún código registrado para este usuario"));
+                            .body(new ApiMessageResponse("No hay ningún código registrado. Solicita uno nuevo."));
                 }
 
-                if (!codigoBD.equals(request.codigo())) {
+                if (!codigoBD.trim().equalsIgnoreCase(codigoIngresado)) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                             .body(new ApiMessageResponse("Código incorrecto"));
                 }
@@ -358,7 +389,7 @@ public class AuthController {
             }
 
             psUpdate.setString(1, contrasenaEnc);
-            psUpdate.setString(2, request.correo());
+            psUpdate.setString(2, correo);
 
             int filas = psUpdate.executeUpdate();
 

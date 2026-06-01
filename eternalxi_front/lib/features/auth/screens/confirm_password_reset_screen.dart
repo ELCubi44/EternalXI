@@ -106,7 +106,7 @@ class _ConfirmPasswordResetScreenState
                     }
                     final message = await auth.confirmPasswordReset(
                       correo: _correoController.text.trim(),
-                      codigo: _codigoController.text.trim(),
+                      codigo: _codigoController.text.trim().toUpperCase(),
                       nuevaContrasena: _passwordController.text,
                     );
                     if (!context.mounted) {

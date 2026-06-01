@@ -10,6 +10,8 @@
 *.env
 .local/deploy.env
 .local/tools/
+deploy/systemd/miapi-override.local.conf
+releases/*.apk
 *.jks
 *.keystore
 *.p12

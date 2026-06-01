@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/core/network/auth_interceptor.dart';
+import 'package:eternal_xi/core/network/token_refresh_interceptor.dart';
 import 'package:eternal_xi/core/storage/secure_storage_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -50,6 +51,24 @@ class ApiClient {
           onUnauthorized: onUnauthorized,
         ),
       );
+      dio.interceptors.add(
+        TokenRefreshInterceptor(
+          dio: dio,
+          secureStorage: secureStorage,
+          onSessionExpired: onUnauthorized,
+        ),
+      );
+    }
+  }
+
+  void attachSessionExpiredHandler(Future<void> Function() handler) {
+    for (final interceptor in dio.interceptors) {
+      if (interceptor is AuthInterceptor) {
+        interceptor.onUnauthorized = handler;
+      }
+      if (interceptor is TokenRefreshInterceptor) {
+        interceptor.onSessionExpired = handler;
+      }
     }
   }
 
@@ -104,6 +123,7 @@ class ApiClient {
       'INSUFFICIENT_FUNDS': l10n.apiInsufficientFunds,
       'FORBIDDEN': l10n.apiForbidden,
       'INTERNAL_ERROR': l10n.apiInternalError,
+      'EMAIL_UNAVAILABLE': l10n.apiEmailUnavailable,
     };
     final errorCode = data['error'];
     final rawMessage = data['message'] ?? data['mensaje'];

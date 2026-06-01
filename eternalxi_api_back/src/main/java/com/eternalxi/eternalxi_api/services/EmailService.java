@@ -1,11 +1,13 @@
 package com.eternalxi.eternalxi_api.services;
 
+import com.eternalxi.eternalxi_api.exception.EmailDeliveryException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -96,8 +98,8 @@ public class EmailService {
 
     private void enviarHtml(String destino, String subject, String html, String textFallback) {
         if (!mailEnabled) {
-            log.warn("Envío de correo omitido (SMTP no configurado). destino={} subject={}", destino, subject);
-            return;
+            log.error("SMTP no configurado: no se envió correo a {} ({})", destino, subject);
+            throw EmailDeliveryException.smtpNotConfigured();
         }
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -107,8 +109,18 @@ public class EmailService {
             helper.setSubject(subject);
             helper.setText(textFallback, html);
             mailSender.send(message);
+        } catch (MailException e) {
+            log.error("Fallo al enviar correo a {}: {}", destino, e.getMessage());
+            String detail = e.getMessage() == null ? "" : e.getMessage().toLowerCase();
+            if (detail.contains("authentication") || detail.contains("535")) {
+                throw new EmailDeliveryException(
+                        "No se pudo autenticar en el servidor de correo. Revisa en Nominalia el buzón no-reply@eternal.es y su contraseña."
+                );
+            }
+            throw EmailDeliveryException.sendFailed(destino);
         } catch (MessagingException e) {
-            throw new IllegalStateException("No se pudo enviar el correo a " + destino, e);
+            log.error("Fallo al preparar correo a {}: {}", destino, e.getMessage());
+            throw EmailDeliveryException.sendFailed(destino);
         }
     }
 }

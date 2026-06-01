@@ -1,5 +1,7 @@
 import 'package:eternal_xi/core/localization/app_locale_resolver.dart';
 import 'package:eternal_xi/app/app.dart';
+import 'package:eternal_xi/app/router.dart';
+import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/core/network/api_client.dart';
 import 'package:eternal_xi/core/storage/secure_storage_service.dart';
 import 'package:eternal_xi/data/services/auth_api_service.dart';
@@ -59,11 +61,18 @@ Future<void> main() async {
           create: (context) => RewardsApiService(context.read<ApiClient>()),
         ),
         ChangeNotifierProvider<AuthController>(
-          create: (context) => AuthController(
-            authApiService: context.read<AuthApiService>(),
-            secureStorageService: context.read<SecureStorageService>(),
-            userApiService: context.read<UserApiService>(),
-          ),
+          create: (context) {
+            final auth = AuthController(
+              authApiService: context.read<AuthApiService>(),
+              secureStorageService: context.read<SecureStorageService>(),
+              userApiService: context.read<UserApiService>(),
+            );
+            context.read<ApiClient>().attachSessionExpiredHandler(() async {
+              await auth.forceLogout();
+              appRouter.go(AppRoutes.login);
+            });
+            return auth;
+          },
         ),
         ChangeNotifierProvider<ProfileController>(
           create: (context) => ProfileController(

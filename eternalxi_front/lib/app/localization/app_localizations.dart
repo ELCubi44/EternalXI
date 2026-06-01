@@ -183,6 +183,8 @@ class AppLocalizations {
       'apiAmountMustBeInteger': 'El importe debe ser un número entero.',
       'apiInsufficientFunds': 'No tienes suficiente dinero.',
       'apiForbidden': 'No tienes permiso para hacer esta acción.',
+      'apiEmailUnavailable':
+          'No se puede enviar el correo ahora. Contacta con soporte o inténtalo más tarde.',
       'apiInternalError': 'Ha ocurrido un error. Inténtalo de nuevo.',
       'validatorRequiredEmail': 'El correo es obligatorio',
       'validatorEmailMaxLength': 'Máximo 190 caracteres',
@@ -356,6 +358,8 @@ class AppLocalizations {
       'apiAmountMustBeInteger': 'Amount must be an integer.',
       'apiInsufficientFunds': 'You do not have enough funds.',
       'apiForbidden': 'You do not have permission for this action.',
+      'apiEmailUnavailable':
+          'Email cannot be sent right now. Contact support or try again later.',
       'apiInternalError': 'An error occurred. Please try again.',
       'validatorRequiredEmail': 'Email is required',
       'validatorEmailMaxLength': 'Maximum 190 characters',
@@ -544,6 +548,7 @@ class AppLocalizations {
   String get apiAmountMustBeInteger => _t('apiAmountMustBeInteger');
   String get apiInsufficientFunds => _t('apiInsufficientFunds');
   String get apiForbidden => _t('apiForbidden');
+  String get apiEmailUnavailable => _t('apiEmailUnavailable');
   String get apiInternalError => _t('apiInternalError');
   String get validatorRequiredEmail => _t('validatorRequiredEmail');
   String get validatorEmailMaxLength => _t('validatorEmailMaxLength');

@@ -9,7 +9,7 @@ class AuthInterceptor extends Interceptor {
   }) : _secureStorage = secureStorage;
 
   final SecureStorageService _secureStorage;
-  final Future<void> Function()? onUnauthorized;
+  Future<void> Function()? onUnauthorized;
 
   static const _publicPathPrefixes = <String>[
     '/auth/login',
@@ -37,17 +37,7 @@ class AuthInterceptor extends Interceptor {
   }
 
   @override
-  Future<void> onError(
-    DioException err,
-    ErrorInterceptorHandler handler,
-  ) async {
-    if (err.response?.statusCode == 401) {
-      final path = err.requestOptions.uri.path;
-      final isPublic = _publicPathPrefixes.any(path.contains);
-      if (!isPublic && onUnauthorized != null) {
-        await onUnauthorized!();
-      }
-    }
+  void onError(DioException err, ErrorInterceptorHandler handler) {
     handler.next(err);
   }
 

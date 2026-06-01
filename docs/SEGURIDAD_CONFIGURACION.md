@@ -62,6 +62,25 @@ La app debe usar `https://api.eternalxi.com`. Ver `docs/GUIA_HTTPS_DOMINIO_Y_WEB
 
 ---
 
+## Recuperar contraseña (SMTP obligatorio)
+
+Sin `SPRING_MAIL_HOST` en el servicio `miapi`, la API **no enviará códigos** y responderá error claro (`EMAIL_UNAVAILABLE`).
+
+En `/etc/systemd/system/miapi.service.d/override.conf` añade (ejemplo con proveedor de correo de Nominalia u otro):
+
+```ini
+Environment=SPRING_MAIL_HOST=smtp.tudominio.com
+Environment=SPRING_MAIL_PORT=587
+Environment=SPRING_MAIL_USERNAME=eternalxi@eternalxi.com
+Environment=SPRING_MAIL_PASSWORD=tu_password_smtp
+```
+
+Plantilla local: `eternalxi_api_back/src/main/resources/application.properties.example`
+
+Tras cambiar: `sudo systemctl daemon-reload && sudo systemctl restart miapi`
+
+---
+
 ## Pendiente / recomendaciones futuras
 
 - **Certificado pinning** en Flutter (más fricción al renovar Let's Encrypt).

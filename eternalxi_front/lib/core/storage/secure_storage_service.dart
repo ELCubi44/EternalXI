@@ -34,6 +34,18 @@ class SecureStorageService {
 
   Future<String?> getAccessToken() => _storage.read(key: _accessTokenKey);
 
+  Future<String?> getRefreshToken() => _storage.read(key: _refreshTokenKey);
+
+  Future<void> updateTokens({
+    required String accessToken,
+    required String refreshToken,
+    String tokenType = 'Bearer',
+  }) async {
+    await _storage.write(key: _accessTokenKey, value: accessToken);
+    await _storage.write(key: _refreshTokenKey, value: refreshToken);
+    await _storage.write(key: _tokenTypeKey, value: tokenType);
+  }
+
   Future<String?> getUserId() => _storage.read(key: _userIdKey);
 
   Future<String?> getNickname() => _storage.read(key: _nicknameKey);
@@ -50,6 +62,20 @@ class SecureStorageService {
     await _storage.write(key: _correoKey, value: user.correo);
     await _storage.write(key: _nivelKey, value: user.nivel.toString());
     await _storage.write(key: _fotoKey, value: user.foto ?? '');
+  }
+
+  /// Borra solo datos de sesión; conserva tema, idioma y caché de progreso.
+  Future<void> clearAuthSession() async {
+    await Future.wait([
+      _storage.delete(key: _accessTokenKey),
+      _storage.delete(key: _refreshTokenKey),
+      _storage.delete(key: _tokenTypeKey),
+      _storage.delete(key: _userIdKey),
+      _storage.delete(key: _nicknameKey),
+      _storage.delete(key: _correoKey),
+      _storage.delete(key: _nivelKey),
+      _storage.delete(key: _fotoKey),
+    ]);
   }
 
   Future<void> clearSession() => _storage.deleteAll();

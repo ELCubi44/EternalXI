@@ -1,0 +1,15 @@
+[Service]
+Environment=ETERNALXI_JWT_SECRET=GENERAR_CON_openssl_rand_base64_48
+Environment=ETERNALXI_DB_URL=jdbc:mysql://localhost:3306/EternalXI
+Environment=ETERNALXI_DB_USER=userRoot
+Environment=ETERNALXI_DB_PASSWORD=TU_PASSWORD_MYSQL
+# Nominalia: authsmtp.securemail.pro puerto 465 SSL
+Environment=SPRING_MAIL_HOST=authsmtp.securemail.pro
+Environment=SPRING_MAIL_PORT=465
+Environment=SPRING_MAIL_USERNAME=no-reply@eternalxi.com
+Environment="SPRING_MAIL_PASSWORD=tu_password"
+Environment=SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
+Environment=SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_ENABLE=true
+Environment=SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=false
+ExecStart=
+ExecStart=/usr/bin/java -Duser.timezone=Europe/Madrid -Dapp.league.automation.enabled=true -jar /opt/miapi/eternalxi-api-0.0.1-SNAPSHOT.jar

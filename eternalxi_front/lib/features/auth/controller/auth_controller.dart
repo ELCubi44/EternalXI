@@ -119,8 +119,14 @@ class AuthController extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    await _secureStorageService.clearSession();
+    await forceLogout();
+  }
+
+  /// Cierra sesión local (tokens + usuario en memoria).
+  Future<void> forceLogout() async {
+    await _secureStorageService.clearAuthSession();
     currentUser = null;
+    errorMessage = null;
     notifyListeners();
   }
 

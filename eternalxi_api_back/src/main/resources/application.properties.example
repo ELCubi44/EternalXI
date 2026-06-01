@@ -1,0 +1,29 @@
+# Copia a application.properties (no se sube a Git) o define variables en el VPS.
+
+server.error.include-message=never
+server.error.include-stacktrace=never
+server.error.include-exception=false
+
+spring.servlet.multipart.max-file-size=6MB
+spring.servlet.multipart.max-request-size=6MB
+server.forward-headers-strategy=framework
+server.tomcat.max-http-form-post-size=2MB
+
+eternalxi.security.jwt-secret=${ETERNALXI_JWT_SECRET}
+eternalxi.security.jwt-access-ttl-minutes=120
+eternalxi.security.jwt-refresh-ttl-days=30
+eternalxi.security.auth-rate-limit-per-minute=25
+eternalxi.security.cors-allowed-origins=https://api.eternalxi.com
+
+eternalxi.db.url=${ETERNALXI_DB_URL:jdbc:mysql://localhost:3306/EternalXI}
+eternalxi.db.username=${ETERNALXI_DB_USER}
+eternalxi.db.password=${ETERNALXI_DB_PASSWORD}
+
+# SMTP obligatorio (Nominalia: authsmtp.securemail.pro:465 SSL)
+spring.mail.host=${SPRING_MAIL_HOST}
+spring.mail.port=${SPRING_MAIL_PORT:465}
+spring.mail.username=${SPRING_MAIL_USERNAME}
+spring.mail.password=${SPRING_MAIL_PASSWORD}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.ssl.enable=true
+spring.mail.properties.mail.smtp.starttls.enable=false

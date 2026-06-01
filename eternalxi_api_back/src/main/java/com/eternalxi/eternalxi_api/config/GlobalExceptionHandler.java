@@ -2,6 +2,7 @@ package com.eternalxi.eternalxi_api.config;
 
 import com.eternalxi.eternalxi_api.dto.error.ApiErrorResponse;
 import com.eternalxi.eternalxi_api.exception.BusinessException;
+import com.eternalxi.eternalxi_api.exception.EmailDeliveryException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -43,6 +44,18 @@ public class GlobalExceptionHandler {
                 req.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
+    @ExceptionHandler(EmailDeliveryException.class)
+    public ResponseEntity<ApiErrorResponse> handleEmailDelivery(EmailDeliveryException ex, HttpServletRequest req) {
+        log.warn("Correo no enviado en {}: {}", req.getRequestURI(), ex.getMessage());
+        ApiErrorResponse body = new ApiErrorResponse(
+                ex.getErrorCode(),
+                ex.getMessage(),
+                ex.getHttpStatus(),
+                req.getRequestURI()
+        );
+        return ResponseEntity.status(ex.getHttpStatus()).body(body);
     }
 
     @ExceptionHandler(BusinessException.class)
