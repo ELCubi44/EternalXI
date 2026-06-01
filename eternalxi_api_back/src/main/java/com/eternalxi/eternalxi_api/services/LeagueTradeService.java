@@ -28,6 +28,7 @@ public class LeagueTradeService {
     private final LeagueLineupService leagueLineupService;
     private final LeagueMarketHistoryService leagueMarketHistoryService;
     private final LeagueOfferNotificationService leagueOfferNotificationService;
+    private final LeagueClauseNotificationService leagueClauseNotificationService;
     private final LeagueStarterProbabilityService leagueStarterProbabilityService;
     private final LeaguePlayerMarketValueService leaguePlayerMarketValueService;
     private final AccountProgressService accountProgressService;
@@ -36,6 +37,7 @@ public class LeagueTradeService {
             LeagueLineupService leagueLineupService,
             LeagueMarketHistoryService leagueMarketHistoryService,
             LeagueOfferNotificationService leagueOfferNotificationService,
+            LeagueClauseNotificationService leagueClauseNotificationService,
             LeagueStarterProbabilityService leagueStarterProbabilityService,
             LeaguePlayerMarketValueService leaguePlayerMarketValueService,
             AccountProgressService accountProgressService
@@ -43,6 +45,7 @@ public class LeagueTradeService {
         this.leagueLineupService = leagueLineupService;
         this.leagueMarketHistoryService = leagueMarketHistoryService;
         this.leagueOfferNotificationService = leagueOfferNotificationService;
+        this.leagueClauseNotificationService = leagueClauseNotificationService;
         this.leagueStarterProbabilityService = leagueStarterProbabilityService;
         this.leaguePlayerMarketValueService = leaguePlayerMarketValueService;
         this.accountProgressService = accountProgressService;
@@ -89,11 +92,7 @@ public class LeagueTradeService {
                         cantidadVenta
                 );
 
-                try {
-                    leagueLineupService.ensureDefaultLineupForNextEditableRound(conn, idLiga, idUsuario);
-                } catch (IllegalArgumentException ignored) {
-                    // La venta no debe bloquearse por no poder recomponer una alineación editable completa.
-                }
+                refreshLineupsAfterParticipantLostPlayer(conn, idLiga, idUsuario, idLigaJugador);
 
                 long nuevoSaldo = loadParticipantMoneyForUpdate(conn, idLiga, idUsuario);
 
@@ -174,11 +173,7 @@ public class LeagueTradeService {
                 cantidadVenta
         );
 
-        try {
-            leagueLineupService.ensureDefaultLineupForNextEditableRound(conn, idLiga, idUsuario);
-        } catch (IllegalArgumentException ignored) {
-            // Igual que venta normal: no bloquear por alineación.
-        }
+        refreshLineupsAfterParticipantLostPlayer(conn, idLiga, idUsuario, idLigaJugador);
 
         return loadParticipantMoneyForUpdate(conn, idLiga, idUsuario);
     }
@@ -266,16 +261,10 @@ public class LeagueTradeService {
                 buyerPay
         );
 
-        try {
-            leagueLineupService.ensureDefaultLineupForNextEditableRound(conn, idLiga, sellerId);
-        } catch (IllegalArgumentException ignored) {
-            // no bloquear
-        }
-        try {
-            leagueLineupService.ensureDefaultLineupForNextEditableRound(conn, idLiga, buyerId);
-        } catch (IllegalArgumentException ignored) {
-            // no bloquear
-        }
+        refreshLineupsAfterParticipantLostPlayer(conn, idLiga, sellerId, idLigaJugador);
+        refreshLineupsAfterParticipantGainedPlayer(conn, idLiga, buyerId);
+
+        notifyClauseExecuted(conn, idLiga, idLigaJugador, buyerId, sellerId, buyerPay);
 
         long buyerNew = readParticipantMoney(conn, idLiga, buyerId);
         long ownerNew = readParticipantMoney(conn, idLiga, sellerId);
@@ -567,8 +556,8 @@ public class LeagueTradeService {
                         offer.cantidad()
                 );
 
-                leagueLineupService.ensureDefaultLineupForNextEditableRound(conn, idLiga, idUsuario);
-                leagueLineupService.ensureDefaultLineupForNextEditableRound(conn, idLiga, offer.idUsuarioComprador());
+                refreshLineupsAfterParticipantLostPlayer(conn, idLiga, idUsuario, offer.idLigaJugador());
+                refreshLineupsAfterParticipantGainedPlayer(conn, idLiga, offer.idUsuarioComprador());
 
                 conn.commit();
             } catch (Exception e) {
@@ -924,6 +913,29 @@ public class LeagueTradeService {
         }
     }
 
+    private void refreshLineupsAfterParticipantLostPlayer(
+            Connection conn,
+            Long idLiga,
+            Long idUsuario,
+            Long idLigaJugador
+    ) throws SQLException {
+        try {
+            leagueLineupService.removePlayerFromOpenSavedLineups(conn, idLiga, idUsuario, idLigaJugador);
+            leagueLineupService.ensureDefaultLineupForNextEditableRound(conn, idLiga, idUsuario);
+        } catch (IllegalArgumentException ignored) {
+            // La operación de mercado no debe bloquearse por no poder recomponer alineaciones.
+        }
+    }
+
+    private void refreshLineupsAfterParticipantGainedPlayer(Connection conn, Long idLiga, Long idUsuario)
+            throws SQLException {
+        try {
+            leagueLineupService.ensureDefaultLineupForNextEditableRound(conn, idLiga, idUsuario);
+        } catch (IllegalArgumentException ignored) {
+            // Igual que al perder jugador: no bloquear.
+        }
+    }
+
     private int sendPlayerToMarket(Connection conn, Long idLiga, Long idLigaJugador, Long idUsuarioDuenoActual) throws SQLException {
         String sql = """
                 UPDATE liga_jugadores
@@ -1164,6 +1176,76 @@ public class LeagueTradeService {
             return nombre;
         }
         return null;
+    }
+
+    private void notifyClauseExecuted(
+            Connection conn,
+            Long idLiga,
+            Long idLigaJugador,
+            Long buyerId,
+            Long sellerId,
+            long buyerPay
+    ) {
+        try {
+            ClauseNotificationContext context = loadClauseNotificationContext(conn, idLiga, idLigaJugador, buyerId);
+            leagueClauseNotificationService.notifyClauseExecuted(
+                    sellerId,
+                    buyerId,
+                    idLiga,
+                    idLigaJugador,
+                    context.playerName(),
+                    context.buyerNickname(),
+                    buyerPay
+            );
+        } catch (Exception e) {
+            // No revertir la cláusula si falla el push.
+        }
+    }
+
+    private ClauseNotificationContext loadClauseNotificationContext(
+            Connection conn,
+            Long idLiga,
+            Long idLigaJugador,
+            Long buyerId
+    ) throws SQLException {
+        String sql = """
+                SELECT j.nombre AS jugador_nombre,
+                       j.pila AS jugador_pila,
+                       u.nickname AS comprador_nombre
+                FROM liga_jugadores lj
+                INNER JOIN jugadores j ON j.id = lj.id_jugador
+                LEFT JOIN usuarios u ON u.id = ?
+                WHERE lj.id = ?
+                  AND lj.id_liga = ?
+                LIMIT 1
+                """;
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, buyerId);
+            ps.setLong(2, idLigaJugador);
+            ps.setLong(3, idLiga);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return new ClauseNotificationContext(
+                            buildOfferPlayerName(null, null, idLigaJugador),
+                            buildUserDisplayName(null, buyerId)
+                    );
+                }
+
+                return new ClauseNotificationContext(
+                        buildOfferPlayerName(
+                                rs.getString("jugador_nombre"),
+                                rs.getString("jugador_pila"),
+                                idLigaJugador
+                        ),
+                        buildUserDisplayName(rs.getString("comprador_nombre"), buyerId)
+                );
+            }
+        }
+    }
+
+    private record ClauseNotificationContext(String playerName, String buyerNickname) {
     }
 
     private LeagueOfferNotificationService.OfferNotificationPayload loadOfferNotificationPayload(

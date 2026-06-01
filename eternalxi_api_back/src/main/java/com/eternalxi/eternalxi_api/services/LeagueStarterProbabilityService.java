@@ -222,6 +222,75 @@ public class LeagueStarterProbabilityService {
     }
 
     /**
+     * Probabilidades para UI alineadas con la jornada “display” por equipo de catálogo
+     * (plantilla, mercado de compra y ficha de jugador).
+     */
+    public Map<Long, StarterProbabilityLite> loadDisplayProbabilityMapForPlayers(
+            Connection conn,
+            Long idLiga,
+            Long idJornadaExplicit,
+            Map<Long, Long> ligaJugadorToEquipo
+    ) throws SQLException {
+        if (idLiga == null || ligaJugadorToEquipo == null || ligaJugadorToEquipo.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        Map<Long, Long> displayRoundByEquipo = new HashMap<>();
+        for (Long eq : new LinkedHashSet<>(ligaJugadorToEquipo.values())) {
+            if (eq == null) {
+                continue;
+            }
+            displayRoundByEquipo.put(
+                    eq,
+                    resolveDisplayJornadaForTeamStarterProbability(conn, idLiga, idJornadaExplicit, eq));
+        }
+
+        Map<Long, List<Long>> jugadoresPorJornada = new HashMap<>();
+        for (Map.Entry<Long, Long> entry : ligaJugadorToEquipo.entrySet()) {
+            Long idLigaJugador = entry.getKey();
+            Long idEquipo = entry.getValue();
+            if (idLigaJugador == null || idEquipo == null) {
+                continue;
+            }
+            Long idJornadaDisplay = displayRoundByEquipo.get(idEquipo);
+            if (idJornadaDisplay == null) {
+                continue;
+            }
+            jugadoresPorJornada.computeIfAbsent(idJornadaDisplay, k -> new ArrayList<>()).add(idLigaJugador);
+        }
+
+        Map<Long, StarterProbabilityLite> prob = new HashMap<>();
+        for (Map.Entry<Long, List<Long>> batch : jugadoresPorJornada.entrySet()) {
+            prob.putAll(loadProbabilityMapForLeaguePlayers(conn, idLiga, batch.getKey(), batch.getValue()));
+        }
+
+        LinkedHashSet<CatalogTeamRound> equiposSinProb = new LinkedHashSet<>();
+        for (Map.Entry<Long, Long> entry : ligaJugadorToEquipo.entrySet()) {
+            Long idLigaJugador = entry.getKey();
+            Long idEquipo = entry.getValue();
+            if (idLigaJugador == null || idEquipo == null) {
+                continue;
+            }
+            Long idJornadaDisplay = displayRoundByEquipo.get(idEquipo);
+            if (idJornadaDisplay == null) {
+                continue;
+            }
+            if (!prob.containsKey(idLigaJugador)) {
+                equiposSinProb.add(new CatalogTeamRound(idJornadaDisplay, idEquipo));
+            }
+        }
+        if (!equiposSinProb.isEmpty()) {
+            ensureProbabilitiesForCatalogTeamRounds(idLiga, equiposSinProb);
+            prob.clear();
+            for (Map.Entry<Long, List<Long>> batch : jugadoresPorJornada.entrySet()) {
+                prob.putAll(loadProbabilityMapForLeaguePlayers(conn, idLiga, batch.getKey(), batch.getValue()));
+            }
+        }
+
+        return prob;
+    }
+
+    /**
      * Una sola lectura por lote de ids (varias consultas si el IN supera el tamaño máximo).
      * Si hay varias filas por jugador en la jornada, se conserva la de {@code calculado_en} más reciente
      * y desempate por {@code id} descendente.

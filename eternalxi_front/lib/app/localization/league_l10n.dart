@@ -369,8 +369,8 @@ class LeagueL10n {
       ? 'You cannot close the league while there are other participants. Delegate the administrator before leaving.'
       : 'No puedes cerrar la liga mientras haya más participantes. Delega el administrador antes de salir.';
   String get closeLeagueBody => _en
-      ? 'The league will be closed for all participants. This action is permanent.'
-      : 'La liga se cerrará para todos los participantes. Esta acción es definitiva.';
+      ? 'The league will be closed for everyone. All squads will be dissolved: players return to the market and coaches become available again. This cannot be undone.'
+      : 'La liga se cerrará para todos. Se disolverán las plantillas: los jugadores volverán al mercado y los entrenadores quedarán otra vez disponibles. Esta acción no se puede deshacer.';
   String get noParticipantsToDelegateAdmin => _en
       ? 'No participants available to delegate the administrator.'
       : 'No hay participantes disponibles para delegar el administrador.';

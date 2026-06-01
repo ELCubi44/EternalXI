@@ -213,7 +213,8 @@ class RewardsL10n {
       case 'ADD_LEAGUE_POINTS':
         return _t('Puntos de liga', 'League points');
       case 'TEMPORARY_VALUE_RECOVERY':
-        return _t('Recuperación de valor', 'Value recovery');
+      case 'PLAYER_VALUE_BOOST':
+        return _t('Subida de valor', 'Value boost');
       default:
         return '';
     }
@@ -230,6 +231,7 @@ class RewardsL10n {
       case 'ADD_LEAGUE_POINTS':
         return filterPoints;
       case 'TEMPORARY_VALUE_RECOVERY':
+      case 'PLAYER_VALUE_BOOST':
         return filterValue;
       default:
         return '';
@@ -291,8 +293,8 @@ class RewardsL10n {
       if (pct != null && pct > 0) {
         final display = pct <= 1 ? (pct * 100).round() : pct.round();
         lines.add(_t(
-          'Aumenta el valor temporalmente un $display%',
-          'Temporarily increases value by $display%',
+          'Sube el valor de mercado de un jugador propio un $display%',
+          'Increases a squad player\'s market value by $display%',
         ));
       }
 
@@ -355,7 +357,8 @@ class RewardsL10n {
       case 'LEAGUE_POINTS_BONUS_APPLIED':
         return _t('Bonus de puntos', 'Points bonus');
       case 'VALUE_RECOVERY_APPLIED':
-        return _t('Recuperación de valor', 'Value recovery');
+      case 'VALUE_BOOST_APPLIED':
+        return _t('Subida de valor', 'Value boost');
       default:
         return tipo;
     }
@@ -605,14 +608,30 @@ class RewardsL10n {
       );
 
   String get chooseDroppingPlayer => _t(
-        'Elige jugador que esté bajando de valor',
-        'Choose a player whose value is dropping',
+        'Elige un jugador de tu plantilla',
+        'Choose a player from your squad',
       );
 
   String get noRecoveryTargets => _t(
-        'No tienes jugadores bajando de valor para usar esta carta.',
-        'You have no dropping players for this card.',
+        'No tienes jugadores en plantilla para usar esta carta.',
+        'You have no squad players for this card.',
       );
+
+  String? valueBoostNewValueLine(RewardCardTargetPlayer p) {
+    final nuevo = p.valorTemporalEstimado;
+    if (nuevo == null || nuevo <= 0) return null;
+    return _t(
+      'Nuevo valor: ${formatRewardMoneyFull(nuevo)}',
+      'New value: ${formatRewardMoneyFull(nuevo)}',
+    );
+  }
+
+  String? valueBoostPercentLine(RewardCardTargetPlayer p) {
+    final pct = p.porcentajeRecuperacion;
+    if (pct == null || pct <= 0) return null;
+    final display = pct <= 1 ? (pct * 100).round() : pct.round();
+    return _t('+$display% sobre el valor actual', '+$display% on current value');
+  }
 
   String addPointsPreview(int preview) => _t(
         'Esta carta sumará +$preview puntos a tu clasificación de liga.',
@@ -647,11 +666,11 @@ class RewardsL10n {
       );
 
   String get applyRecoveryTitle =>
-      _t('Aplicar recuperación', 'Apply recovery');
+      _t('Subir valor de mercado', 'Increase market value');
 
   String applyRecoveryConfirm(String name) => _t(
-        'Se aplicará recuperación temporal de valor a $name.\nEsta acción no se puede deshacer.',
-        'Temporary value recovery will be applied to $name.\nThis action cannot be undone.',
+        'Se subirá de forma permanente el valor de mercado de $name según el porcentaje de la carta.\nEsta acción no se puede deshacer.',
+        'Market value for $name will be permanently increased by the card percentage.\nThis action cannot be undone.',
       );
 
   String get doneTitle => _t('Listo', 'Done');
@@ -692,10 +711,10 @@ class RewardsL10n {
   String newTotal(int n) => _t('Nuevo total: $n', 'New total: $n');
 
   String get valueRecoveryApplied =>
-      _t('Valor temporal aplicado', 'Temporary value applied');
+      _t('Valor de mercado aumentado', 'Market value increased');
 
   String newTemporaryValue(String amount) => _t(
-        'Nuevo valor temporal: $amount',
+        'Nuevo valor de mercado: $amount',
         'New temporary value: $amount',
       );
 
@@ -753,13 +772,11 @@ class RewardsL10n {
         }
         return RedeemSuccessMessage(title, lines);
       case 'TEMPORARY_VALUE_RECOVERY':
+      case 'PLAYER_VALUE_BOOST':
         var title = valueRecoveryApplied;
         if (r.nombreJugador != null) lines.add(r.nombreJugador!);
         if (r.valorTemporal != null) {
           lines.add(newTemporaryValue(formatRewardMoneyFull(r.valorTemporal!)));
-        }
-        if (r.numeroJornadaExpiracion != null) {
-          lines.add(expiresOnMatchday(r.numeroJornadaExpiracion!));
         }
         return RedeemSuccessMessage(title, lines);
       default:

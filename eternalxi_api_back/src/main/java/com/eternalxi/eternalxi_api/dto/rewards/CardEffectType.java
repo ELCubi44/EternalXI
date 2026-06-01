@@ -5,12 +5,17 @@ public enum CardEffectType {
     DIRECT_CLAUSE,
     PROTECT_PLAYER,
     ADD_LEAGUE_POINTS,
-    TEMPORARY_VALUE_RECOVERY;
+    /** Subida permanente del valor de mercado de un jugador propio. */
+    PLAYER_VALUE_BOOST;
 
     public static CardEffectType fromDb(String raw) {
         if (raw == null || raw.isBlank()) {
             throw new IllegalArgumentException("Tipo de efecto no válido");
         }
-        return CardEffectType.valueOf(raw.trim());
+        String normalized = raw.trim();
+        if ("TEMPORARY_VALUE_RECOVERY".equals(normalized)) {
+            return PLAYER_VALUE_BOOST;
+        }
+        return CardEffectType.valueOf(normalized);
     }
 }

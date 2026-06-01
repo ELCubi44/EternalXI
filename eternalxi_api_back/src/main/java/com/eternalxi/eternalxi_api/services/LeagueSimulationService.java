@@ -2662,12 +2662,12 @@ private static final double FANTASY_PERF_INDEX_CAP = 20.0;
 /**
  * Índice de rendimiento solo por fantasy: media de los últimos hasta 3 partidos del jugador en la liga
  * ({@link ProgressionSnapshot#recentAverage()}, AVG sobre las últimas jornadas con registro) frente al
- * par de puntos esperado por su precio actual ({@link #fantasyParMeanPointsFromMarket}). Escala ~10 = neutro.
+ * par de puntos esperado por su precio actual ({@link LeagueDynamicValuePolicy#fantasyParMeanPointsFromMarket}). Escala ~10 = neutro.
  * Si la media iguala el par, ratio=1 → índice 10; por encima del par el índice sube en curva convexa respecto a los puntos.
  */
 private double computeBasePerformanceIndex(ProgressionSnapshot snapshot) {
     double avgPts = snapshot.recentAverage();
-    double par = fantasyParMeanPointsFromMarket(snapshot.currentValue());
+    double par = LeagueDynamicValuePolicy.fantasyParMeanPointsFromMarket(snapshot.currentValue());
     if (par < 0.5) {
         par = 5.0;
     }
@@ -2732,21 +2732,34 @@ private boolean applyDynamicRatingCoreWithPerformanceIndex(
     performanceIndex = clampAvailabilityPerformanceIndex(performanceIndex, snapshot.estadoLiga());
 
     double expectedIndex = 10.0;
-    double sensitivity =
-            sensitivityByMarketProfile(snapshot.currentValue(), snapshot.currentRating());
-    double maxUp = maxPositiveDeltaRatingByOvr(snapshot.currentRating());
+    double sensitivity = LeagueDynamicValuePolicy.sensitivityByMarketProfile(
+            snapshot.currentValue(),
+            snapshot.currentRating()
+    );
+    double maxUp = LeagueDynamicValuePolicy.maxPositiveDeltaRatingByOvr(
+            snapshot.currentRating(),
+            snapshot.currentValue()
+    );
 
     double deltaRating =
             clamp((performanceIndex - expectedIndex) * sensitivity, -0.40, maxUp);
+    deltaRating = LeagueDynamicValuePolicy.boostPositiveDeltaRating(
+            deltaRating,
+            maxUp,
+            snapshot.currentValue()
+    );
     double fantasyRating = round2(clamp(snapshot.currentRating() + deltaRating, 60.0, 99.0));
 
     long theoreticalValue = pricingService.calculateValueFromDynamicRating(fantasyRating, snapshot.position());
-    long targetValue = Math.round(theoreticalValue * formMultiplier(performanceIndex));
+    long targetValue = Math.round(
+            theoreticalValue * LeagueDynamicValuePolicy.formMultiplier(performanceIndex, snapshot.currentValue())
+    );
 
-    long newValue = moveTowards(
+    boolean valueRising = targetValue > persistedPreviousValue;
+    long newValue = LeagueDynamicValuePolicy.moveTowards(
             persistedPreviousValue,
             targetValue,
-            movementLimitPercentage(persistedPreviousValue)
+            LeagueDynamicValuePolicy.movementLimitPercentage(persistedPreviousValue, valueRising)
     );
 
     boolean skipProtectiveGuards = skipValueProtectiveGuards(snapshot, latestPoints, latestMinutes);
@@ -3327,7 +3340,7 @@ private void updateDynamicRatingsAndValuesForMatch(Connection conn, Long idParti
                     MatchEventCommentary.shot(rng, buildPlayerName(shooter))
             ));
 
-            if (goalkeeper != null && rollChance(rng, MISSED_SHOT_SAVE_EVENT_CHANCE)) {
+            if (goalkeeper != null && rollChance(rng, saveEventChance(goalkeeper))) {
                 PlayerMatchAccumulator gkAcc = defending.ensureAccumulator(goalkeeper);
                 gkAcc.saves++;
 
@@ -3792,10 +3805,10 @@ private void updateDynamicRatingsAndValuesForMatch(Connection conn, Long idParti
         double attack = computeAttackStrength(attacking);
         double defense = computeDefenseStrength(defending);
         double attackVsDefense = (attack - defense) * 0.0065;
-        double shooterBonus = ((shooter.selectionScore() * QUALITY_IMPACT_MULTIPLIER) - 75.0) * 0.0055;
+        double shooterBonus = ((eventQualityScore(shooter) * QUALITY_IMPACT_MULTIPLIER) - 75.0) * 0.0060;
         double goalkeeperPenalty = goalkeeper == null
                 ? 0.0
-                : (((goalkeeper.selectionScore() * QUALITY_IMPACT_MULTIPLIER) - 75.0) * 0.0038);
+                : (((eventQualityScore(goalkeeper) * QUALITY_IMPACT_MULTIPLIER) - 75.0) * 0.0042);
         int playerDiff = attacking.activePlayers.size() - defending.activePlayers.size();
 
         double probability = 0.095
@@ -3831,6 +3844,17 @@ private void updateDynamicRatingsAndValuesForMatch(Connection conn, Long idParti
         return pickWeightedPlayer(state.activePlayers, rng, false);
     }
 
+    /**
+     * Puntuación para sortear quién protagoniza el evento: prioriza valoración (OVR) con un empujón suave.
+     */
+    private double eventQualityScore(TeamPlayerData player) {
+        return MatchEventWeighting.eventQualityScore(player.selectionScore(), player.valoracionActual());
+    }
+
+    private double saveEventChance(TeamPlayerData goalkeeper) {
+        return MatchEventWeighting.saveEventChance(goalkeeper.valoracionActual(), MISSED_SHOT_SAVE_EVENT_CHANCE);
+    }
+
     private TeamPlayerData pickWeightedPlayer(List<TeamPlayerData> players, Random rng, boolean attackerProfile) {
         if (players == null || players.isEmpty()) {
             return null;
@@ -3840,37 +3864,14 @@ private void updateDynamicRatingsAndValuesForMatch(Connection conn, Long idParti
         List<Double> weights = new ArrayList<>();
 
         for (TeamPlayerData player : players) {
-            if (attackerProfile) {
-                double positionWeight = switch (player.posicion()) {
-                    case "DEL" -> 1.00;
-                    case "MED" -> 0.45;
-                    case "DEF" -> 0.12;
-                    case "POR" -> 0.01;
-                    default -> 0.08;
-                };
-                double normalizedQuality = clamp(
-                        (player.selectionScore() * QUALITY_IMPACT_MULTIPLIER) / 100.0,
-                        0.35,
-                        1.30
-                );
-                // Curva no lineal: los atacantes de mayor calidad concentran más probabilidad.
-                double qualityCurve = Math.pow(normalizedQuality, 2.20);
-                double weight = Math.max(1.0, positionWeight * qualityCurve * 10000.0);
-                totalWeight += weight;
-                weights.add(weight);
-            } else {
-                int weight = (int) Math.round(player.selectionScore() * 10);
-                switch (player.posicion()) {
-                    case "DEF" -> weight += 180;
-                    case "MED" -> weight += 120;
-                    case "POR" -> weight += 100;
-                    default -> {
-                    }
-                }
-                weight = Math.max(weight, 1);
-                totalWeight += weight;
-                weights.add((double) weight);
-            }
+            double weight = MatchEventWeighting.pickWeight(
+                    player.selectionScore(),
+                    player.valoracionActual(),
+                    player.posicion(),
+                    attackerProfile
+            );
+            totalWeight += weight;
+            weights.add(weight);
         }
 
         double roll = rng.nextDouble() * totalWeight;
@@ -5025,101 +5026,6 @@ private int calculateFantasyPoints(PlayerMatchAccumulator acc, int newspaperNote
         Integer minutosJugados
 ) {}
 
-    /**
-     * Media de puntos fantasy por partido = rendimiento neutro ({@link #computeBasePerformanceIndex} ≈ 10).
-     * Curva continua por precio: baratos tienen par bajo (~4 pts ya “cumplen”). Entre 10–50 M€ el par sube poco a poco
-     * cada millón pero queda ~≤6 de media para que ~6 pts cuente como rendimiento sólido (neutro ~50 M€).
-     * Tramos 70–90 M€ mantienen con ~7-ish; desde ~100 M€ exige ~8–10 para ganar valor.
-     */
-    private double fantasyParMeanPointsFromMarket(long currentValue) {
-        double mMillions = Math.max(
-                LeaguePlayerPricingService.ABSOLUTE_MIN_MARKET_VALUE / 1_000_000.0,
-                currentValue / 1_000_000.0);
-        double par;
-        if (mMillions >= 120.0) {
-            par = 10.2;
-        } else if (mMillions >= 100.0) {
-            par = lerpFantasyParAcrossMillions(mMillions, 100.0, 8.35, 120.0, 10.2);
-        } else if (mMillions >= 90.0) {
-            par = lerpFantasyParAcrossMillions(mMillions, 90.0, 7.65, 100.0, 8.35);
-        } else if (mMillions >= 70.0) {
-            par = lerpFantasyParAcrossMillions(mMillions, 70.0, 7.35, 90.0, 7.65);
-        } else if (mMillions >= 50.0) {
-            par = lerpFantasyParAcrossMillions(mMillions, 50.0, 6.0, 70.0, 7.35);
-        } else if (mMillions >= 10.0) {
-            par = lerpFantasyParAcrossMillions(mMillions, 10.0, 5.35, 50.0, 6.0);
-        } else {
-            double mLo = LeaguePlayerPricingService.ABSOLUTE_MIN_MARKET_VALUE / 1_000_000.0;
-            par = lerpFantasyParAcrossMillions(mMillions, mLo, 3.55, 10.0, 5.35);
-        }
-        return clamp(par, 3.4, 10.35);
-    }
-
-    private static double lerpFantasyParAcrossMillions(
-            double mMillions, double m0, double par0, double m1, double par1) {
-        if (m1 <= m0) {
-            return par0;
-        }
-        double t = (mMillions - m0) / (m1 - m0);
-        t = Math.max(0.0, Math.min(1.0, t));
-        return par0 + t * (par1 - par0);
-    }
-
-    /** Baratos reaccionan más al fantasy; cracks (OVR alto) amortiguan subidas/bajadas por índice. */
-    private double sensitivityByMarketProfile(long currentValue, double ovrRating) {
-        double ovr = clamp(ovrRating, 55.0, 99.0);
-        double s;
-        if (currentValue < 2_000_000L) {
-            s = 0.20;
-        } else if (currentValue < 5_000_000L) {
-            s = 0.175;
-        } else if (currentValue < 10_000_000L) {
-            s = 0.145;
-        } else if (currentValue < 25_000_000L) {
-            s = 0.125;
-        } else if (currentValue < 60_000_000L) {
-            s = 0.105;
-        } else if (currentValue < 100_000_000L) {
-            s = 0.088;
-        } else {
-            s = 0.072;
-        }
-        if (ovr >= 95.0) {
-            s *= 0.42;
-        } else if (ovr >= 93.0) {
-            s *= 0.58;
-        } else if (ovr >= 91.0) {
-            s *= 0.72;
-        } else if (ovr >= 89.0) {
-            s *= 0.82;
-        }
-        return s;
-    }
-
-    /**
-     * Techo de subida de valoración “fantasy” por tick: tipos Axel (95+) apenas suben de una jugada;
-     * fichajes modestos pueden dispararse si rinden mucho por encima del par.
-     */
-    private double maxPositiveDeltaRatingByOvr(double ovrRating) {
-        double ovr = clamp(ovrRating, 55.0, 99.0);
-        if (ovr >= 95.0) {
-            return 0.055;
-        }
-        if (ovr >= 93.0) {
-            return 0.085;
-        }
-        if (ovr >= 91.0) {
-            return 0.12;
-        }
-        if (ovr >= 88.0) {
-            return 0.22;
-        }
-        if (ovr >= 84.0) {
-            return 0.32;
-        }
-        return 0.50;
-    }
-
     private boolean isInjuredOrSanctionedLeagueState(String estadoLiga) {
         if (estadoLiga == null || estadoLiga.isBlank()) {
             return false;
@@ -5160,94 +5066,6 @@ private int calculateFantasyPoints(PlayerMatchAccumulator acc, int newspaperNote
         long dailyCap = Math.min(1_000_000L, Math.max(125_000L, Math.round(previousValue * 0.019)));
         return Math.round(dailyCap * severity);
     }
-
-    /**
-     * Referencia neutra del índice = 10 ({@link #computeBasePerformanceIndex}). Por encima del par el índice
-     * puede superar 12–14 fácilmente; más bandas para que el objetivo de valoración escale con actuaciones grandes.
-     */
-    private double formMultiplier(double performanceIndex) {
-        if (performanceIndex <= 7.0) {
-            return 0.985;
-        }
-        if (performanceIndex <= 8.5) {
-            return 0.993;
-        }
-        if (performanceIndex <= 9.75) {
-            return 0.998;
-        }
-        if (performanceIndex <= 10.25) {
-            return 1.000;
-        }
-        if (performanceIndex <= 11.5) {
-            return 1.007;
-        }
-        if (performanceIndex <= 13.25) {
-            return 1.014;
-        }
-        if (performanceIndex <= 15.25) {
-            return 1.022;
-        }
-        if (performanceIndex <= 17.25) {
-            return 1.030;
-        }
-        if (performanceIndex <= 19.0) {
-            return 1.038;
-        }
-        return 1.048;
-    }
-
-    private double movementLimitPercentage(long currentValue) {
-    if (currentValue >= 150_000_000L) return 0.030;
-    if (currentValue >= 100_000_000L) return 0.028;
-    if (currentValue >= 70_000_000L) return 0.026;
-    if (currentValue >= 40_000_000L) return 0.024;
-    if (currentValue >= 25_000_000L) return 0.022;
-    if (currentValue >= 15_000_000L) return 0.020;
-    if (currentValue >= 10_000_000L) return 0.018;
-    if (currentValue >= 5_000_000L) return 0.022;
-    if (currentValue >= 2_000_000L) return 0.028;
-    return 0.038;
-}
-
-private long movementCapByValue(long currentValue) {
-    if (currentValue >= 150_000_000L) return 4_500_000L;
-    if (currentValue >= 100_000_000L) return 3_600_000L;
-    if (currentValue >= 70_000_000L) return 2_800_000L;
-    if (currentValue >= 40_000_000L) return 2_000_000L;
-    if (currentValue >= 25_000_000L) return 1_400_000L;
-    if (currentValue >= 15_000_000L) return 900_000L;
-    if (currentValue >= 10_000_000L) return 650_000L;
-    if (currentValue >= 5_000_000L) return 350_000L;
-    if (currentValue >= 2_000_000L) return 220_000L;
-    return 280_000L;
-}
-
-    
-
-    private long moveTowards(long currentValue, long targetValue, double limitPercentage) {
-    long minV = LeaguePlayerPricingService.ABSOLUTE_MIN_MARKET_VALUE;
-    if (currentValue <= 0) {
-        return Math.max(targetValue, minV);
-    }
-
-    long maxByPercent = Math.max(minV, Math.round(currentValue * limitPercentage));
-    long maxByCap = movementCapByValue(currentValue);
-    long maxDelta = Math.min(maxByPercent, maxByCap);
-
-    if (targetValue > currentValue) {
-        long delta = Math.min(targetValue - currentValue, maxDelta);
-        return currentValue + delta;
-    }
-
-    long delta = Math.min(currentValue - targetValue, maxDelta);
-    return Math.max(minV, currentValue - delta);
-}
-
-private long minMovementStep(long currentValue) {
-    if (currentValue >= 20_000_000L) return 100_000L;
-    if (currentValue >= 5_000_000L) return 50_000L;
-    return 25_000L;
-}
 
     private void applyAvailabilityChanges(Connection conn, List<PlayerAvailabilityChange> changes) throws SQLException {
         if (changes.isEmpty()) return;

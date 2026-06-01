@@ -2,6 +2,9 @@ package com.eternalxi.eternalxi_api.services;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -10,13 +13,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
 
+    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
+
     private final JavaMailSender mailSender;
+    private final String from;
+    private final boolean mailEnabled;
 
-    @Value("${spring.mail.username}")
-    private String from;
-
-    public EmailService(JavaMailSender mailSender) {
+    public EmailService(
+            @Autowired(required = false) JavaMailSender mailSender,
+            @Value("${spring.mail.username:eternalxi@noreply.local}") String from
+    ) {
         this.mailSender = mailSender;
+        this.from = from;
+        this.mailEnabled = mailSender != null;
+        if (!mailEnabled) {
+            log.warn("Correo SMTP no configurado (spring.mail.host). Códigos por email desactivados.");
+        }
     }
 
     public void enviarCodigoReinicio(String destino, String codigo) {
@@ -83,6 +95,10 @@ public class EmailService {
     }
 
     private void enviarHtml(String destino, String subject, String html, String textFallback) {
+        if (!mailEnabled) {
+            log.warn("Envío de correo omitido (SMTP no configurado). destino={} subject={}", destino, subject);
+            return;
+        }
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");

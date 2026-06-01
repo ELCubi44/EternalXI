@@ -1,0 +1,391 @@
+================================================================================
+  ETERNAL XI — PROMPT PARA GENERAR EL SQL (PEGAR AL FINAL DE CADA CHAT)
+================================================================================
+
+CUÁNDO USARLO
+─────────────
+En cada chat ya tienes definido UN equipo con TODOS sus jugadores (stats, bios,
+4 supertécnicas cada uno). No pegues datos otra vez: solo copia el bloque
+"COPIAR DESDE AQUÍ" hasta "FIN DEL PROMPT" y sustituye al final:
+
+  [NOMBRE CLUB ES]  → nombre del club en español de ESE chat
+  [N]               → número total de jugadores de ESE chat
+
+Ejemplo: "Furia Menuda" y 19.
+
+================================================================================
+  COPIAR DESDE AQUÍ ↓↓↓
+================================================================================
+
+INSTRUCCIÓN PRINCIPAL — LÉELA ENTERA ANTES DE ESCRIBIR UNA SOLA LÍNEA SQL
+
+Eres un generador experto de SQL MySQL 8 para el catálogo del juego fantasy
+"Eternal XI". Base de datos: **EternalXI**.
+
+En ESTA conversación ya definimos el equipo **[NOMBRE CLUB ES]** con **[N]
+jugadores**. Cada jugador tiene bio (español + inglés) y **exactamente 4
+supertécnicas** con clave interna, potencia, tipo, estilo y nombre visible ES/EN.
+
+Tu única tarea AHORA es generar el **script SQL COMPLETO y EJECUTABLE** usando
+**EXACTAMENTE** los mismos datos que aparecen en el historial de ESTE chat:
+
+  • Mismos jugadores (nombre, pila, dorsal, valoración, posición, país, altura,
+    estilo, género, bios)
+  • Mismas 4 supertécnicas por jugador (clave snake_case, potencia, tipo, estilo,
+    nombres visibles ES/EN)
+  • Mismo nombre de club en español: **[NOMBRE CLUB ES]**
+  • Misma traducción al inglés del club que ya propusiste en este chat
+
+**NO inventes jugadores nuevos. NO cambies stats. NO omitas ninguno.**
+**NO escribas explicaciones:** devuelve **SOLO** el SQL (puede ir en ```sql).
+
+────────────────────────────────────────────────────────────────────────────────
+A) FORMATO DE SALIDA
+────────────────────────────────────────────────────────────────────────────────
+
+1. Un único script continuo, ejecutable de arriba abajo.
+2. Primera línea: USE EternalXI;
+3. Comentarios SQL obligatorios:
+     -- === TEMPORADA: Eterno Campeon ===
+     -- === EQUIPO: [NOMBRE CLUB ES] ===
+     -- --- Jugador: Nombre Apellido ---
+4. Escapa comillas simples dentro de strings con '' (dos comillas).
+5. foto siempre NULL en temporadas, equipos y jugadores salvo que el chat diga lo contrario.
+6. jugadores.descripcion SIEMPRE NULL (la bio va en jugador_traduccion).
+7. Usa INSERT IGNORE donde indiquemos (traducciones, supertecnicas duplicadas).
+8. No incluyas DROP, TRUNCATE ni DELETE salvo que el chat lo pida explícitamente.
+
+────────────────────────────────────────────────────────────────────────────────
+B) ESQUEMA REAL DE TABLAS (MySQL 8 — NO INVENTES COLUMNAS)
+────────────────────────────────────────────────────────────────────────────────
+
+Regla de oro: la PRIMARY KEY de temporadas, equipos, jugadores y supertecnicas
+se llama **`id`**. Las FKs en tablas hijas sí se llaman id_temporada, id_equipo,
+id_jugador, id_supertecnica — pero **nunca** uses id_jugador ni id_supertecnica
+como nombre de columna al hacer SELECT sobre la tabla padre.
+
+--- temporadas ---
+  id              INT AUTO_INCREMENT PRIMARY KEY
+  nombre          VARCHAR          fallback español
+  foto            VARCHAR NULL
+
+--- temporada_traduccion ---
+  id_temporada    INT FK → temporadas.id
+  locale          VARCHAR(5)       'es' | 'en'
+  nombre          VARCHAR(100)
+  PRIMARY KEY (id_temporada, locale)
+
+--- equipos ---
+  id              INT AUTO_INCREMENT PRIMARY KEY
+  nombre          VARCHAR          fallback español
+  id_temporada    INT FK → temporadas.id
+  foto            VARCHAR NULL
+
+--- equipo_traduccion ---
+  id_equipo       INT FK → equipos.id
+  locale          VARCHAR(5)
+  nombre          VARCHAR(120)
+  PRIMARY KEY (id_equipo, locale)
+
+--- jugadores ---
+  id              INT AUTO_INCREMENT PRIMARY KEY
+  id_equipo       INT FK → equipos.id
+  nombre          VARCHAR          nombre completo — NO traducir
+  pila            VARCHAR          apodo — NO traducir
+  dorsal          INT
+  descripcion     TEXT NULL        → SIEMPRE NULL en INSERT
+  valoracion      INT
+  genero          ENUM('H','M','?')
+  posicion        ENUM('POR','DEF','MED','DEL')
+  pais            VARCHAR(64)      código ISO 2 letras: ES, FR, JP, BR...
+  altura          SMALLINT UNSIGNED   centímetros
+  estilo          ENUM('PICARO','PRECISO','POTENTE','VALIENTE','AGIL')
+  foto            VARCHAR NULL
+
+--- jugador_traduccion ---
+  id_jugador      INT FK → jugadores.id
+  locale          VARCHAR(5)
+  descripcion     TEXT             bio ES / bio EN
+  PRIMARY KEY (id_jugador, locale)
+
+--- supertecnicas --- (catálogo GLOBAL, reutilizable entre jugadores)
+  id              BIGINT AUTO_INCREMENT PRIMARY KEY
+  nombre          VARCHAR(128)     clave interna snake_case, SIN acentos
+  potencia        TINYINT UNSIGNED
+  tipo            ENUM('REGATE','DEFENSA','PARADA','TIRO')
+  estilo          ENUM('PICARO','PRECISO','POTENTE','VALIENTE','AGIL')
+  UNIQUE (nombre, potencia, tipo, estilo)
+
+--- supertecnica_traduccion ---
+  id_supertecnica BIGINT FK → supertecnicas.id
+  locale          VARCHAR(5)
+  nombre          VARCHAR(128)     nombre visible traducible
+  PRIMARY KEY (id_supertecnica, locale)
+
+--- jugador_supertecnica --- (exactamente 4 filas por jugador)
+  id              BIGINT AUTO_INCREMENT PRIMARY KEY
+  id_jugador      INT FK → jugadores.id
+  id_supertecnica BIGINT FK → supertecnicas.id
+  orden           TINYINT UNSIGNED   1, 2, 3 o 4
+  UNIQUE (id_jugador, orden)
+  UNIQUE (id_jugador, id_supertecnica)
+
+────────────────────────────────────────────────────────────────────────────────
+C) ERRORES PROHIBIDOS (causan 0 enlaces en jugador_supertecnica)
+────────────────────────────────────────────────────────────────────────────────
+
+  INCORRECTO                              CORRECTO
+  ─────────────────────────────────────   ─────────────────────────────────
+  SELECT id_jugador FROM jugadores        SELECT id FROM jugadores
+  SELECT id_supertecnica FROM supertecnicas   SELECT id FROM supertecnicas
+  j.id_jugador en JOIN jugadores          j.id
+  e.id_equipo como PK de equipos          e.id
+  JOIN equipos e ON e.id_equipo = ...     JOIN equipos e ON e.id = j.id_equipo
+  Olvidar SET @id_jugador = LAST_INSERT_ID()   Obligatorio tras cada INSERT jugador
+  Un solo SELECT para las 4 ST            Cuatro SELECT id INTO @st1..@st4
+  INSERT jugador_supertecnica sin @stN    @stN debe venir de SELECT id INTO
+
+Si @st1..@st4 quedan NULL, jugador_supertecnica inserta 0 filas útiles.
+Warning "Duplicate entry" (1062) con INSERT IGNORE es normal al re-ejecutar.
+
+────────────────────────────────────────────────────────────────────────────────
+D) QUÉ TRADUCIR Y QUÉ NO
+────────────────────────────────────────────────────────────────────────────────
+
+| Dato                              | ¿Traducir? | Tabla / columna              |
+|-----------------------------------|------------|------------------------------|
+| Nombre temporada                  | SÍ         | temporada_traduccion es+en   |
+| Nombre del club                   | SÍ         | equipo_traduccion es+en      |
+| Nombre y pila del jugador         | NO         | jugadores.nombre / .pila     |
+| Bio del jugador                   | SÍ         | jugador_traduccion es+en     |
+| Clave interna ST (campana_temeraria) | NO      | supertecnicas.nombre         |
+| Nombre visible ST ("Campana...")  | SÍ         | supertecnica_traduccion es+en|
+| genero, posicion, tipo, estilo ST | NO         | ENUMs / códigos              |
+| pais ISO, dorsal, potencia, altura| NO         | números / códigos            |
+
+Temporada compartida (todos los equipos del juego):
+  ES: Eterno Campeon
+  EN: Eternal Crown
+
+Claves internas ST: minúsculas, snake_case, sin tildes (ej. pared_de_tiza).
+
+────────────────────────────────────────────────────────────────────────────────
+E) ESTRUCTURA COMPLETA DEL SCRIPT — ORDEN OBLIGATORIO
+────────────────────────────────────────────────────────────────────────────────
+
+═══════════════════════════════════════════════════════════════════════════════
+SECCIÓN 1 — CABECERA
+═══════════════════════════════════════════════════════════════════════════════
+
+USE EternalXI;
+
+═══════════════════════════════════════════════════════════════════════════════
+SECCIÓN 2 — TEMPORADA (buscar o crear, idempotente)
+═══════════════════════════════════════════════════════════════════════════════
+
+-- === TEMPORADA: Eterno Campeon / Eternal Crown ===
+SET @id_temporada = NULL;
+
+SELECT tt.id_temporada INTO @id_temporada
+FROM temporada_traduccion tt
+WHERE tt.locale = 'es' AND tt.nombre = 'Eterno Campeon'
+LIMIT 1;
+
+INSERT INTO temporadas (nombre, foto)
+SELECT 'Eterno Campeon', NULL
+FROM DUAL
+WHERE @id_temporada IS NULL;
+
+SET @id_temporada = IFNULL(@id_temporada, LAST_INSERT_ID());
+
+INSERT IGNORE INTO temporada_traduccion (id_temporada, locale, nombre) VALUES
+(@id_temporada, 'es', 'Eterno Campeon'),
+(@id_temporada, 'en', 'Eternal Crown');
+
+═══════════════════════════════════════════════════════════════════════════════
+SECCIÓN 3 — EQUIPO (buscar o crear, idempotente)
+═══════════════════════════════════════════════════════════════════════════════
+
+-- === EQUIPO: [NOMBRE CLUB ES] ===
+SET @id_equipo = NULL;
+
+SELECT et.id_equipo INTO @id_equipo
+FROM equipo_traduccion et
+WHERE et.locale = 'es' AND et.nombre = '[NOMBRE CLUB ES]'
+LIMIT 1;
+
+INSERT INTO equipos (nombre, id_temporada, foto)
+SELECT '[NOMBRE CLUB ES]', @id_temporada, NULL
+FROM DUAL
+WHERE @id_equipo IS NULL;
+
+SET @id_equipo = IFNULL(@id_equipo, LAST_INSERT_ID());
+
+INSERT IGNORE INTO equipo_traduccion (id_equipo, locale, nombre) VALUES
+(@id_equipo, 'es', '[NOMBRE CLUB ES]'),
+(@id_equipo, 'en', '[nombre EN que ya usaste en este chat]');
+
+═══════════════════════════════════════════════════════════════════════════════
+SECCIÓN 4 — JUGADORES (repetir [N] veces, uno tras otro, mismo orden del chat)
+═══════════════════════════════════════════════════════════════════════════════
+
+Por CADA jugador del historial de este chat, ejecuta estos 7 pasos EN ORDEN:
+
+  PASO 4.1 — INSERT jugadores
+  PASO 4.2 — SET @id_jugador = LAST_INSERT_ID();
+  PASO 4.3 — INSERT jugador_traduccion (locale 'es' y 'en')
+  PASO 4.4 — INSERT IGNORE supertecnicas (4 filas, una por ST)
+  PASO 4.5 — Cuatro SELECT id INTO @st1, @st2, @st3, @st4
+  PASO 4.6 — INSERT IGNORE supertecnica_traduccion (es+en para cada @stN)
+  PASO 4.7 — INSERT jugador_supertecnica (4 filas, orden 1-4)
+
+Plantilla exacta por jugador (sustituir valores del chat):
+
+-- --- Jugador: [Nombre Apellido] ---
+INSERT INTO jugadores (
+  id_equipo, nombre, pila, dorsal, descripcion, valoracion,
+  genero, posicion, pais, altura, estilo, foto
+) VALUES (
+  @id_equipo,
+  'Nombre Apellido',
+  'Pila',
+  1,
+  NULL,
+  75,
+  'H',
+  'POR',
+  'JP',
+  170,
+  'VALIENTE',
+  NULL
+);
+SET @id_jugador = LAST_INSERT_ID();
+
+INSERT INTO jugador_traduccion (id_jugador, locale, descripcion) VALUES
+(@id_jugador, 'es', 'Bio en español tal como la definiste en este chat...'),
+(@id_jugador, 'en', 'Bio in English as you translated in this chat...');
+
+INSERT IGNORE INTO supertecnicas (nombre, potencia, tipo, estilo) VALUES
+('clave_st_1', 80, 'PARADA', 'VALIENTE'),
+('clave_st_2', 55, 'PARADA', 'AGIL'),
+('clave_st_3', 40, 'PARADA', 'PICARO'),
+('clave_st_4', 45, 'DEFENSA', 'PICARO');
+
+SELECT id INTO @st1 FROM supertecnicas WHERE nombre='clave_st_1' AND potencia=80 AND tipo='PARADA' AND estilo='VALIENTE' LIMIT 1;
+SELECT id INTO @st2 FROM supertecnicas WHERE nombre='clave_st_2' AND potencia=55 AND tipo='PARADA' AND estilo='AGIL' LIMIT 1;
+SELECT id INTO @st3 FROM supertecnicas WHERE nombre='clave_st_3' AND potencia=40 AND tipo='PARADA' AND estilo='PICARO' LIMIT 1;
+SELECT id INTO @st4 FROM supertecnicas WHERE nombre='clave_st_4' AND potencia=45 AND tipo='DEFENSA' AND estilo='PICARO' LIMIT 1;
+
+INSERT IGNORE INTO supertecnica_traduccion (id_supertecnica, locale, nombre) VALUES
+(@st1, 'es', 'Nombre visible ST1 ES'), (@st1, 'en', 'ST1 visible name EN'),
+(@st2, 'es', 'Nombre visible ST2 ES'), (@st2, 'en', 'ST2 visible name EN'),
+(@st3, 'es', 'Nombre visible ST3 ES'), (@st3, 'en', 'ST3 visible name EN'),
+(@st4, 'es', 'Nombre visible ST4 ES'), (@st4, 'en', 'ST4 visible name EN');
+
+INSERT INTO jugador_supertecnica (id_jugador, id_supertecnica, orden) VALUES
+(@id_jugador, @st1, 1),
+(@id_jugador, @st2, 2),
+(@id_jugador, @st3, 3),
+(@id_jugador, @st4, 4);
+
+═══════════════════════════════════════════════════════════════════════════════
+SECCIÓN 5 — REUTILIZAR SUPERTÉCNICAS YA EXISTENTES
+═══════════════════════════════════════════════════════════════════════════════
+
+Varios jugadores (incluso de otros equipos) pueden compartir la misma ST
+(ej. pared_de_tiza, rastro_de_chispa, chut_de_bolsillo).
+
+  • INSERT IGNORE INTO supertecnicas → si ya existe, no inserta (OK)
+  • SELECT id INTO @stN ... → sigue encontrando la fila existente (OK)
+  • INSERT IGNORE INTO supertecnica_traduccion → no dupliques si ya existe
+  • INSERT INTO jugador_supertecnica → SIEMPRE crea el enlace jugador↔ST
+
+El WHERE del SELECT id INTO debe incluir las 4 columnas del UNIQUE:
+  nombre + potencia + tipo + estilo
+
+═══════════════════════════════════════════════════════════════════════════════
+SECCIÓN 6 — VERIFICACIÓN OBLIGATORIA AL FINAL DEL SCRIPT
+═══════════════════════════════════════════════════════════════════════════════
+
+Incluye SIEMPRE estas dos queries al final (sustituye [NOMBRE CLUB ES]):
+
+-- === VERIFICACIÓN ===
+-- Jugadores con distinto de 4 supertécnicas (debe devolver 0 filas):
+SELECT j.nombre, COUNT(js.id) AS num_st
+FROM jugadores j
+JOIN equipos e ON e.id = j.id_equipo
+JOIN equipo_traduccion et ON et.id_equipo = e.id AND et.locale = 'es'
+LEFT JOIN jugador_supertecnica js ON js.id_jugador = j.id
+WHERE et.nombre = '[NOMBRE CLUB ES]'
+GROUP BY j.id, j.nombre
+HAVING COUNT(js.id) <> 4;
+
+-- Total enlaces jugador_supertecnica (debe ser [N] × 4):
+SELECT COUNT(*) AS total_enlaces
+FROM jugador_supertecnica js
+JOIN jugadores j ON j.id = js.id_jugador
+JOIN equipos e ON e.id = j.id_equipo
+JOIN equipo_traduccion et ON et.id_equipo = e.id AND et.locale = 'es'
+WHERE et.nombre = '[NOMBRE CLUB ES]';
+
+Resultado esperado:
+  • Primera query: **0 filas**
+  • total_enlaces = **[N] × 4** (ej. 19 jugadores → 76)
+
+────────────────────────────────────────────────────────────────────────────────
+F) VARIABLES DE SESIÓN — CÓMO USARLAS
+────────────────────────────────────────────────────────────────────────────────
+
+  @id_temporada   → se setea una vez al inicio (Sección 2)
+  @id_equipo      → se setea una vez por equipo (Sección 3)
+  @id_jugador     → se resetea con LAST_INSERT_ID() tras CADA INSERT jugadores
+  @st1, @st2, @st3, @st4 → se resetean con SELECT id INTO antes de cada enlace
+
+No reutilices @id_jugador de un jugador anterior sin haber hecho INSERT + LAST_INSERT_ID.
+
+────────────────────────────────────────────────────────────────────────────────
+G) CHECKLIST INTERNO (verifica antes de responder)
+────────────────────────────────────────────────────────────────────────────────
+
+[ ] USE EternalXI; al inicio
+[ ] Bloque temporada idempotente (Eterno Campeon / Eternal Crown)
+[ ] Bloque equipo idempotente ([NOMBRE CLUB ES] + traducción EN del chat)
+[ ] Exactamente [N] bloques de jugador (-- --- Jugador: ...)
+[ ] jugadores.descripcion = NULL en los [N] INSERT
+[ ] jugador_traduccion con 'es' y 'en' para cada uno de los [N] jugadores
+[ ] Cada jugador: 4 INSERT IGNORE supertecnicas + 4 SELECT id INTO @stN
+[ ] Ningún SELECT usa id_jugador ni id_supertecnica como columna de tabla padre
+[ ] Cada jugador: 4 filas INSERT jugador_supertecnica (orden 1,2,3,4)
+[ ] supertecnica_traduccion es+en para cada ST (INSERT IGNORE)
+[ ] Queries de verificación al final
+[ ] Cero texto explicativo fuera del SQL
+[ ] Comillas escapadas con '' dentro de bios y nombres visibles
+
+────────────────────────────────────────────────────────────────────────────────
+H) AHORA GENERA EL SCRIPT
+────────────────────────────────────────────────────────────────────────────────
+
+Recorre los [N] jugadores de **[NOMBRE CLUB ES]** en el orden en que los
+definimos en esta conversación. Recupera del historial de ESTE chat cada stat,
+bio y supertécnica. Genera el SQL entero en un solo bloque.
+
+=== FIN DEL PROMPT — NO COPIES ESTA LÍNEA ===
+
+================================================================================
+  DESPUÉS DE RECIBIR EL SQL (TÚ, EN EL VPS)
+================================================================================
+
+1. Guarda como: equipo_[nombre_snake].sql
+2. Busca en el archivo:
+     ✗ "SELECT id_jugador FROM jugadores"     → mal, pide regenerar
+     ✗ "SELECT id_supertecnica FROM supertecnicas" → mal
+     ✓ "SELECT id INTO @st1" repetido [N] veces
+3. Ejecuta:
+     mysql EternalXI < equipo_xxx.sql
+4. Comprueba en la salida:
+     • Query HAVING num_st <> 4 → 0 filas
+     • total_enlaces = [N] × 4
+
+Si total_enlaces = 0 pero hay jugadores → el SELECT id INTO falló (columnas mal).
+
+================================================================================

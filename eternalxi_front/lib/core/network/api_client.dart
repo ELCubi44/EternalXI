@@ -5,13 +5,18 @@ import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:dio/dio.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
+import 'package:eternal_xi/core/network/auth_interceptor.dart';
+import 'package:eternal_xi/core/storage/secure_storage_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 class ApiClient {
-  ApiClient({String acceptLanguage = 'es'})
-    : _acceptLanguage = _normalizeLanguage(acceptLanguage),
-      dio = Dio(
+  ApiClient({
+    String acceptLanguage = 'es',
+    SecureStorageService? secureStorage,
+    Future<void> Function()? onUnauthorized,
+  })  : _acceptLanguage = _normalizeLanguage(acceptLanguage),
+        dio = Dio(
         BaseOptions(
           baseUrl: ApiConstants.baseUrl,
           connectTimeout: const Duration(seconds: 15),
@@ -38,6 +43,14 @@ class ApiClient {
         },
       ),
     );
+    if (secureStorage != null) {
+      dio.interceptors.add(
+        AuthInterceptor(
+          secureStorage: secureStorage,
+          onUnauthorized: onUnauthorized,
+        ),
+      );
+    }
   }
 
   final Dio dio;

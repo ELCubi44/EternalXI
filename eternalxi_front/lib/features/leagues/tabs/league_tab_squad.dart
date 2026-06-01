@@ -59,10 +59,6 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
   bool _loadScheduled = false;
   LeagueShellData? _registeredShell;
 
-  /// Jornada de la alineación cargada (probabilidad titular en squad/detalle).
-  int? get _idJornadaActiva =>
-      (_lineup != null && _lineup!.idJornada > 0) ? _lineup!.idJornada : null;
-
   void _handleExternalSegmentRequest() {
     final request = LeagueTabSquad.externalSegmentRequest.value;
     if (!mounted || request == null) {
@@ -803,7 +799,6 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                       leagueId: s?.leagueId,
                       idLigaJugador: player.idLigaJugador,
                       idUsuario: s?.idUsuario,
-                      idJornada: _idJornadaActiva,
                       isOwnPlayerHint: true,
                       isMarketPlayerHint: false,
                     );
@@ -996,7 +991,6 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                                 leagueId: shell.leagueId,
                                 idLigaJugador: p.idLigaJugador,
                                 idUsuario: shell.idUsuario,
-                                idJornada: _idJornadaActiva,
                                 isOwnPlayerHint: true,
                                 isMarketPlayerHint: false,
                               );

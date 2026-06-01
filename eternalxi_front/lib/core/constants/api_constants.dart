@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseUrl = 'http://217.154.184.202:8080/api/v1';
+  static const String baseUrl = 'https://api.eternalxi.com/api/v1';
 
   static const auth = '/auth';
   static const users = '/users';

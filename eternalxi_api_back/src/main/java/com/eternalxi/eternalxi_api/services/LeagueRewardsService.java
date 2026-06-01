@@ -65,6 +65,7 @@ public class LeagueRewardsService {
     private final LeagueTradeService leagueTradeService;
     private final LeagueLineupService leagueLineupService;
     private final LeaguePlayerMarketValueService leaguePlayerMarketValueService;
+    private final LeaguePlayerPricingService leaguePlayerPricingService;
     private final LeagueActivityService leagueActivityService;
     private final AccountProgressService accountProgressService;
 
@@ -72,12 +73,14 @@ public class LeagueRewardsService {
             LeagueTradeService leagueTradeService,
             LeagueLineupService leagueLineupService,
             LeaguePlayerMarketValueService leaguePlayerMarketValueService,
+            LeaguePlayerPricingService leaguePlayerPricingService,
             LeagueActivityService leagueActivityService,
             AccountProgressService accountProgressService
     ) {
         this.leagueTradeService = leagueTradeService;
         this.leagueLineupService = leagueLineupService;
         this.leaguePlayerMarketValueService = leaguePlayerMarketValueService;
+        this.leaguePlayerPricingService = leaguePlayerPricingService;
         this.leagueActivityService = leagueActivityService;
         this.accountProgressService = accountProgressService;
     }
@@ -271,7 +274,7 @@ public class LeagueRewardsService {
                 case DIRECT_CLAUSE -> clauseTargets(conn, idLiga, idUsuario, p.idLigaParticipante(), params);
                 case PROTECT_PLAYER -> protectTargets(conn, idLiga, idUsuario, p.idLigaParticipante(), params);
                 case ADD_LEAGUE_POINTS -> leaguePointsTargets(effect, params);
-                case TEMPORARY_VALUE_RECOVERY -> valueRecoveryTargets(conn, idLiga, idUsuario, params);
+                case PLAYER_VALUE_BOOST -> valueBoostTargets(conn, idLiga, idUsuario, params);
             };
         }
     }
@@ -303,7 +306,7 @@ public class LeagueRewardsService {
                     case DIRECT_CLAUSE -> redeemClause(conn, idLiga, idUsuario, part, card, params, targetLj);
                     case PROTECT_PLAYER -> redeemProtect(conn, idLiga, idUsuario, part, card, params, targetLj);
                     case ADD_LEAGUE_POINTS -> redeemLeaguePoints(conn, idLiga, idUsuario, part, card, params);
-                    case TEMPORARY_VALUE_RECOVERY -> redeemValueRecovery(conn, idLiga, idUsuario, part, card, params, targetLj);
+                    case PLAYER_VALUE_BOOST -> redeemValueBoost(conn, idLiga, idUsuario, part, card, params, targetLj);
                 };
 
                 markCardUsed(conn, idCarta);
@@ -626,7 +629,7 @@ public class LeagueRewardsService {
         return LeagueCardRedeemResponse.leaguePoints(pts, bonus, fantasy, fantasy + bonus);
     }
 
-    private LeagueCardRedeemResponse redeemValueRecovery(
+    private LeagueCardRedeemResponse redeemValueBoost(
             Connection conn,
             Long idLiga,
             Long idUsuario,
@@ -647,51 +650,43 @@ public class LeagueRewardsService {
         if (!Objects.equals(lj.idUsuarioDueno(), idUsuario)) {
             throw new LeagueRewardForbiddenException("El jugador no te pertenece");
         }
-        if (lj.valor() >= lj.valorAnterior()) {
-            throw new LeagueRewardConflictException("El jugador no está bajando de valor");
-        }
-        ModifierActive mod = loadActiveValueModifier(conn, idLj);
-        if (mod != null && mod.porcentaje() >= pct) {
-            throw new LeagueRewardConflictException("Ya existe un modificador de valor activo igual o superior");
-        }
-        if (mod != null) {
-            deactivateValueModifier(conn, mod.id());
+        if (lj.idUsuarioDueno() == MARKET_USER_ID) {
+            throw new IllegalArgumentException("No puedes aplicar esta carta a jugadores del mercado");
         }
 
-        List<JornadaLite> jr = loadJornadas(conn, idLiga);
-        Long jExp = firstPendingJornadaId(jr);
-        if (jExp == null) {
-            jExp = lastJornadaId(jr);
-        }
+        deactivateAllValueModifiers(conn, idLj);
 
-        long valorTemp = (long) Math.floor(lj.valor() * (1.0d + pct));
-        long idMod = insertValueModifier(conn, idLiga, idLj, part.idLigaParticipante(), card.idCarta(), pct, jExp);
+        long valorAnterior = lj.valor();
+        long valorNuevo = (long) Math.floor(valorAnterior * (1.0d + pct));
+        valorNuevo = Math.max(LeaguePlayerPricingService.ABSOLUTE_MIN_MARKET_VALUE, valorNuevo);
+        double valoracionNueva = Math.round(
+                leaguePlayerPricingService.estimateRatingFromMarketValue(valorNuevo, lj.posicion()) * 100.0
+        ) / 100.0;
+
+        updateLeaguePlayerValueAndRating(conn, idLj, valorNuevo, valorAnterior, valoracionNueva);
 
         insertEvent(
                 conn,
                 idLiga,
                 part.idLigaParticipante(),
                 idUsuario,
-                LeagueRewardEventType.VALUE_RECOVERY_APPLIED,
+                LeagueRewardEventType.VALUE_BOOST_APPLIED,
                 card.idCarta(),
                 idLj,
                 null,
                 null,
-                idMod,
-                "Recuperación valor mercado",
+                valorNuevo,
+                "Subida de valor de mercado",
                 null
         );
 
-        return LeagueCardRedeemResponse.valueRecovery(
+        return LeagueCardRedeemResponse.valueBoost(
                 idLj,
                 lj.nombreJugador(),
-                lj.valor(),
-                lj.valorAnterior(),
+                valorAnterior,
+                valorNuevo,
                 pct,
-                valorTemp,
-                jExp,
-                valorTemp,
-                pct
+                valoracionNueva
         );
     }
 
@@ -706,8 +701,11 @@ public class LeagueRewardsService {
                     (out.idJornadaFinProteccion() != null ? " hasta la jornada " + out.idJornadaFinProteccion() : " toda la temporada") + ".";
             case ADD_LEAGUE_POINTS -> nick + " usó " + cartaNombre + " y sumó +" +
                     out.puntosAnadidos() + " puntos.";
-            case TEMPORARY_VALUE_RECOVERY -> nick + " aplicó recuperación de valor a " +
-                    out.nombreJugador() + ".";
+            case PLAYER_VALUE_BOOST -> {
+                double pctBoost = out.porcentajeRecuperacion() == null ? 0d : out.porcentajeRecuperacion();
+                yield nick + " subió el valor de mercado de " + out.nombreJugador()
+                        + " un " + Math.round(pctBoost * 100) + "%.";
+            }
         };
     }
 
@@ -732,7 +730,14 @@ public class LeagueRewardsService {
             String estado
     ) {}
 
-    private record LockedLj(long id, long idUsuarioDueno, long valor, long valorAnterior, String nombreJugador) {}
+    private record LockedLj(
+            long id,
+            long idUsuarioDueno,
+            long valor,
+            long valorAnterior,
+            String nombreJugador,
+            String posicion
+    ) {}
 
     private record JornadaLite(long id, int numero, String estado) {}
 
@@ -1555,58 +1560,51 @@ public class LeagueRewardsService {
         return new LeagueCardValidTargetsResponse(effect.name(), List.of(), List.of(), null, pts > 0 ? pts : null);
     }
 
-    private LeagueCardValidTargetsResponse valueRecoveryTargets(Connection conn, Long idLiga, Long idUsuario, JsonNode params) throws SQLException {
-        leaguePlayerMarketValueService.refreshExpiredValueModifiers(conn, idLiga);
+    private LeagueCardValidTargetsResponse valueBoostTargets(Connection conn, Long idLiga, Long idUsuario, JsonNode params)
+            throws SQLException {
         double pct = params.path("percentage").asDouble(0d);
+        if (pct <= 0) {
+            throw new IllegalArgumentException("Parámetros de carta inválidos");
+        }
         String sql = """
-                SELECT lj.id, lj.id_jugador, j.nombre, j.pila, j.posicion, lj.valor, lj.valor_anterior,
+                SELECT lj.id, lj.id_jugador, j.nombre, j.pila, j.posicion, lj.valor,
                        e.id AS id_equipo, e.nombre AS nombre_equipo,
                        lj.valoracion_actual
                 FROM liga_jugadores lj
                 INNER JOIN jugadores j ON j.id = lj.id_jugador
                 INNER JOIN equipos e ON e.id = j.id_equipo
-                WHERE lj.id_liga = ? AND lj.id_usuario_dueno = ? AND lj.valor < lj.valor_anterior
+                WHERE lj.id_liga = ? AND lj.id_usuario_dueno = ? AND lj.id_usuario_dueno <> ?
                 ORDER BY j.nombre ASC
                 """;
-        List<JornadaLite> jr = loadJornadas(conn, idLiga);
-        Map<Long, Long> numeroPorJornadaId = jornadaNumeroPorId(jr);
-        Long jExp = firstPendingJornadaId(jr);
-        if (jExp == null) { jExp = lastJornadaId(jr); }
-
         List<LeagueCardTargetResponse> list = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, idLiga);
             ps.setLong(2, idUsuario);
+            ps.setLong(3, MARKET_USER_ID);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    long idLj = rs.getLong("id");
                     long v = rs.getLong("valor");
-                    long va = rs.getLong("valor_anterior");
-                    ModifierActive mod = loadActiveValueModifier(conn, idLj);
-                    if (mod != null && mod.porcentaje() >= pct) {
-                        continue;
-                    }
-                    double pctAct = leaguePlayerMarketValueService.maxActiveModifierPercent(conn, idLiga, idLj);
-                    long effCur = leaguePlayerMarketValueService.effectiveValueFromBase(v, pctAct);
-                    long temp = (long) Math.floor(v * (1.0d + pct));
-                    long idJugador = rs.getLong("id_jugador");
-                    long idEquipo = rs.getLong("id_equipo");
-                    String nm = buildName(rs.getString("nombre"), rs.getString("pila"));
-                    long diferencia = Math.max(0L, va - v);
-                    long incDiario = (long) Math.floor(effCur * pct);
-                    Long numExp = jExp == null ? null : numeroPorJornadaId.get(jExp);
-                    list.add(LeagueCardTargetResponse.valueRecovery(
-                            idLj, nm,
-                            idEquipo, rs.getString("nombre_equipo"), ASSET_TEAM_URL + idEquipo,
-                            ASSET_PLAYER_URL + idJugador, rs.getString("posicion"),
+                    long valorNuevo = Math.max(
+                            LeaguePlayerPricingService.ABSOLUTE_MIN_MARKET_VALUE,
+                            (long) Math.floor(v * (1.0d + pct))
+                    );
+                    list.add(LeagueCardTargetResponse.valueBoost(
+                            rs.getLong("id"),
+                            buildName(rs.getString("nombre"), rs.getString("pila")),
+                            rs.getLong("id_equipo"),
+                            rs.getString("nombre_equipo"),
+                            ASSET_TEAM_URL + rs.getLong("id_equipo"),
+                            ASSET_PLAYER_URL + rs.getLong("id_jugador"),
+                            rs.getString("posicion"),
                             rs.getObject("valoracion_actual") != null ? rs.getDouble("valoracion_actual") : null,
-                            v, va,
-                            temp, pct, jExp, numExp, incDiario, diferencia
+                            v,
+                            valorNuevo,
+                            pct
                     ));
                 }
             }
         }
-        return new LeagueCardValidTargetsResponse(CardEffectType.TEMPORARY_VALUE_RECOVERY.name(), list);
+        return new LeagueCardValidTargetsResponse(CardEffectType.PLAYER_VALUE_BOOST.name(), list);
     }
 
     private boolean isPlayerProtected(Connection conn, long idLigaJugador) throws SQLException {
@@ -1754,7 +1752,8 @@ public class LeagueRewardsService {
     private LockedLj lockLeaguePlayerRow(Connection conn, Long idLiga, long idLj) throws SQLException {
         String sql = """
                 SELECT lj.id, lj.id_usuario_dueno, lj.valor, lj.valor_anterior,
-                       COALESCE(j.pila, j.nombre) AS nm
+                       COALESCE(j.pila, j.nombre) AS nm,
+                       j.posicion
                 FROM liga_jugadores lj
                 INNER JOIN jugadores j ON j.id = lj.id_jugador
                 WHERE lj.id = ? AND lj.id_liga = ?
@@ -1772,9 +1771,44 @@ public class LeagueRewardsService {
                         rs.getLong("id_usuario_dueno"),
                         rs.getLong("valor"),
                         rs.getLong("valor_anterior"),
-                        rs.getString("nm")
+                        rs.getString("nm"),
+                        rs.getString("posicion")
                 );
             }
+        }
+    }
+
+    private void updateLeaguePlayerValueAndRating(
+            Connection conn,
+            long idLj,
+            long valorNuevo,
+            long valorAnterior,
+            double valoracionNueva
+    ) throws SQLException {
+        String sql = """
+                UPDATE liga_jugadores
+                SET valor = ?,
+                    valor_anterior = ?,
+                    valoracion_actual = ?
+                WHERE id = ?
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, valorNuevo);
+            ps.setLong(2, valorAnterior);
+            ps.setDouble(3, valoracionNueva);
+            ps.setLong(4, idLj);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("No se pudo actualizar el valor del jugador " + idLj);
+            }
+        }
+    }
+
+    private void deactivateAllValueModifiers(Connection conn, long idLj) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "UPDATE liga_jugador_modificadores_valor SET activo = FALSE WHERE id_liga_jugador = ? AND activo = TRUE"
+        )) {
+            ps.setLong(1, idLj);
+            ps.executeUpdate();
         }
     }
 

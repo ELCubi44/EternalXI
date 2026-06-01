@@ -999,52 +999,14 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
         if (players.isEmpty()) {
             return players;
         }
-        Map<Long, Long> displayRoundByEquipo = new HashMap<>();
+        Map<Long, Long> ligaJugadorToEquipo = new HashMap<>();
         for (LeagueSquadPlayerResponse p : players) {
-            Long eq = p.idEquipo();
-            if (eq == null || displayRoundByEquipo.containsKey(eq)) {
-                continue;
-            }
-            Long jr = leagueStarterProbabilityService.resolveDisplayJornadaForTeamStarterProbability(
-                    conn, idLiga, idJornadaExplicit, eq);
-            displayRoundByEquipo.put(eq, jr);
-        }
-
-        Map<Long, List<Long>> jugadoresPorJornadaMostrada = new HashMap<>();
-        for (LeagueSquadPlayerResponse p : players) {
-            Long jr = p.idEquipo() == null ? null : displayRoundByEquipo.get(p.idEquipo());
-            if (jr == null || p.idLigaJugador() == null) {
-                continue;
-            }
-            jugadoresPorJornadaMostrada.computeIfAbsent(jr, k -> new ArrayList<>()).add(p.idLigaJugador());
-        }
-
-        Map<Long, StarterProbabilityLite> prob = new HashMap<>();
-        for (Map.Entry<Long, List<Long>> e : jugadoresPorJornadaMostrada.entrySet()) {
-            prob.putAll(
-                    leagueStarterProbabilityService.loadProbabilityMapForLeaguePlayers(
-                            conn, idLiga, e.getKey(), e.getValue()));
-        }
-
-        LinkedHashSet<LeagueStarterProbabilityService.CatalogTeamRound> equiposSinProb = new LinkedHashSet<>();
-        for (LeagueSquadPlayerResponse p : players) {
-            Long jr = p.idEquipo() == null ? null : displayRoundByEquipo.get(p.idEquipo());
-            if (jr == null || p.idLigaJugador() == null) {
-                continue;
-            }
-            if (!prob.containsKey(p.idLigaJugador())) {
-                equiposSinProb.add(new LeagueStarterProbabilityService.CatalogTeamRound(jr, p.idEquipo()));
+            if (p.idLigaJugador() != null && p.idEquipo() != null) {
+                ligaJugadorToEquipo.put(p.idLigaJugador(), p.idEquipo());
             }
         }
-        if (!equiposSinProb.isEmpty()) {
-            leagueStarterProbabilityService.ensureProbabilitiesForCatalogTeamRounds(idLiga, equiposSinProb);
-            prob.clear();
-            for (Map.Entry<Long, List<Long>> e : jugadoresPorJornadaMostrada.entrySet()) {
-                prob.putAll(
-                        leagueStarterProbabilityService.loadProbabilityMapForLeaguePlayers(
-                                conn, idLiga, e.getKey(), e.getValue()));
-            }
-        }
+        Map<Long, StarterProbabilityLite> prob = leagueStarterProbabilityService.loadDisplayProbabilityMapForPlayers(
+                conn, idLiga, idJornadaExplicit, ligaJugadorToEquipo);
 
         List<LeagueSquadPlayerResponse> out = new ArrayList<>();
         for (LeagueSquadPlayerResponse p : players) {
@@ -1350,13 +1312,7 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
                     updateLeagueAdmin(conn, idLiga, request.nuevoAdministradorId());
                 }
 
-                Long idLigaParticipante = loadLeagueParticipantId(conn, idLiga, request.idUsuario());
-                if (idLigaParticipante != null) {
-                    removeParticipantDependencies(conn, idLiga, request.idUsuario(), idLigaParticipante);
-                }
-
-                returnPlayersToMarket(conn, idLiga, request.idUsuario());
-                deleteParticipant(conn, idLiga, request.idUsuario());
+                dissolveParticipant(conn, idLiga, request.idUsuario());
 
                 conn.commit();
 
@@ -1395,6 +1351,11 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
 
                 if (!Objects.equals(league.idAdministrador(), idUsuario)) {
                     throw new IllegalArgumentException("Solo el administrador puede cerrar la liga");
+                }
+
+                List<Long> participantes = loadLeagueParticipantUserIds(conn, idLiga);
+                for (Long idParticipante : participantes) {
+                    dissolveParticipant(conn, idLiga, idParticipante);
                 }
 
                 String sql = """
@@ -1491,19 +1452,16 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
                 }
 
                 Long idLpExpulsado = loadLeagueParticipantId(conn, idLiga, request.idUsuarioExpulsado());
-                KickCleanupCounts cleanup = KickCleanupCounts.empty();
-                if (idLpExpulsado != null) {
-                    cleanup = removeParticipantDependencies(conn, idLiga, request.idUsuarioExpulsado(), idLpExpulsado);
-                } else {
+                DissolveParticipantResult dissolved = dissolveParticipant(conn, idLiga, request.idUsuarioExpulsado());
+                KickCleanupCounts cleanup = dissolved.cleanup();
+                int jugadoresLiberados = dissolved.jugadoresLiberados();
+                if (idLpExpulsado == null && dissolved.idLigaParticipante() == null) {
                     log.warn(
                             "kickParticipant: participante en liga pero sin id_liga_participante idLiga={} idUsuario={}",
                             idLiga,
                             request.idUsuarioExpulsado()
                     );
                 }
-
-                int jugadoresLiberados = returnPlayersToMarket(conn, idLiga, request.idUsuarioExpulsado());
-                deleteParticipant(conn, idLiga, request.idUsuarioExpulsado());
 
                 String nickExpulsado = loadNicknameById(conn, request.idUsuarioExpulsado());
                 String nickAdmin = loadNicknameById(conn, request.idAdminUsuario());
@@ -2160,6 +2118,87 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
             ps.setLong(1, nuevoAdministradorId);
             ps.setLong(2, idLiga);
             ps.executeUpdate();
+        }
+    }
+
+    /**
+     * Libera plantilla, entrenador y dependencias del participante; devuelve jugadores al mercado de la liga.
+     */
+    private DissolveParticipantResult dissolveParticipant(Connection conn, Long idLiga, Long idUsuario) throws SQLException {
+        Long idLigaParticipante = loadLeagueParticipantId(conn, idLiga, idUsuario);
+        KickCleanupCounts cleanup = KickCleanupCounts.empty();
+        if (idLigaParticipante != null) {
+            cleanup = removeParticipantDependencies(conn, idLiga, idUsuario, idLigaParticipante);
+            detachParticipantForeignKeys(conn, idLiga, idLigaParticipante);
+        }
+        int jugadoresLiberados = returnPlayersToMarket(conn, idLiga, idUsuario);
+        deleteParticipant(conn, idLiga, idUsuario);
+        return new DissolveParticipantResult(idLigaParticipante, cleanup, jugadoresLiberados);
+    }
+
+    private record DissolveParticipantResult(
+            Long idLigaParticipante,
+            KickCleanupCounts cleanup,
+            int jugadoresLiberados
+    ) {
+    }
+
+    private List<Long> loadLeagueParticipantUserIds(Connection conn, Long idLiga) throws SQLException {
+        String sql = """
+                SELECT id_usuario
+                FROM liga_participantes
+                WHERE id_liga = ?
+                ORDER BY id ASC
+                """;
+
+        List<Long> userIds = new ArrayList<>();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idLiga);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    userIds.add(rs.getLong("id_usuario"));
+                }
+            }
+        }
+
+        return userIds;
+    }
+
+    /**
+     * Evita violaciones de FK al borrar {@code liga_participantes} si en producción aún no hay ON DELETE SET NULL.
+     */
+    private void detachParticipantForeignKeys(Connection conn, Long idLiga, Long idLigaParticipante) throws SQLException {
+        String[] updates = {
+                """
+                UPDATE liga_recompensa_eventos
+                SET id_liga_participante = NULL
+                WHERE id_liga = ? AND id_liga_participante = ?
+                """,
+                """
+                UPDATE liga_recompensa_eventos
+                SET id_liga_participante_objetivo = NULL
+                WHERE id_liga = ? AND id_liga_participante_objetivo = ?
+                """,
+                """
+                UPDATE liga_actividad
+                SET id_liga_participante_actor = NULL
+                WHERE id_liga = ? AND id_liga_participante_actor = ?
+                """,
+                """
+                UPDATE liga_actividad
+                SET id_liga_participante_objetivo = NULL
+                WHERE id_liga = ? AND id_liga_participante_objetivo = ?
+                """
+        };
+
+        for (String sql : updates) {
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setLong(1, idLiga);
+                ps.setLong(2, idLigaParticipante);
+                ps.executeUpdate();
+            }
         }
     }
 

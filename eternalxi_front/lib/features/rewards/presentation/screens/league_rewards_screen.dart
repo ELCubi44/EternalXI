@@ -413,7 +413,7 @@ class _CardsTabBody extends StatelessWidget {
         case 'PTS':
           return t == 'ADD_LEAGUE_POINTS';
         case 'VAL':
-          return t == 'TEMPORARY_VALUE_RECOVERY';
+          return t == 'TEMPORARY_VALUE_RECOVERY' || t == 'PLAYER_VALUE_BOOST';
         default:
           return true;
       }

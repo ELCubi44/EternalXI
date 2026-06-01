@@ -340,14 +340,6 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
   }
 
   Future<void> _onCloseLeaguePressed() async {
-    final shell = LeagueShellData.maybeOf(context);
-    final detail = shell?.detail;
-    if (detail != null && detail.participantes > 1) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.leagueL10n.cannotCloseLeagueWithParticipants)),
-      );
-      return;
-    }
     final ll = context.leagueL10n;
     final ok = await showDialog<bool>(
       context: context,

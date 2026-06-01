@@ -25,10 +25,11 @@ Future<void> main() async {
   );
   tzdata.initializeTimeZones();
 
+  final secureStorageService = SecureStorageService();
   final apiClient = ApiClient(
     acceptLanguage: AppLocaleResolver.apiLanguageTag(),
+    secureStorage: secureStorageService,
   );
-  final secureStorageService = SecureStorageService();
   final savedThemeRaw = await secureStorageService.getThemeMode();
   final savedLanguageRaw = await secureStorageService.getLanguageCode();
   final initialThemePreference = UserPreferencesController.themeFromStorage(

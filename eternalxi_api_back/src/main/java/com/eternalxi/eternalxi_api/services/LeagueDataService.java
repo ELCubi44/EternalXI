@@ -213,8 +213,9 @@ Integer puntosFantasyTotales;
         String motivoTitularidad = null;
         Long idPartidoProbabilidad = null;
         Instant calculadoEnProbabilidad = null;
+        // Misma jornada display que plantilla/mercado: no usar idJornada de la petición (p. ej. alineación).
         Long idJornadaProb = leagueStarterProbabilityService.resolveDisplayJornadaForTeamStarterProbability(
-                conn, idLiga, idJornadaContext, idEquipo);
+                conn, idLiga, null, idEquipo);
         if (idJornadaProb != null) {
             Map<Long, StarterProbabilityLite> probMap = leagueStarterProbabilityService.loadProbabilityMapForLeaguePlayers(
                     conn,
@@ -1987,13 +1988,20 @@ private List<LeagueHomeTopPlayerResponse> loadTopCleanSheetGoalkeepers(Connectio
             }
         }
 
-        Long idJornadaProb = leagueStarterProbabilityService.resolveTargetJornadaForProbabilities(conn, idLiga, idJornadaContext);
-        if (idJornadaProb == null || rows.isEmpty()) {
+        if (rows.isEmpty()) {
             return rows;
         }
-        List<Long> ljIds = rows.stream().map(LeagueMarketPlayerResponse::idLigaJugador).toList();
-        Map<Long, StarterProbabilityLite> probMap =
-                leagueStarterProbabilityService.loadProbabilityMapForLeaguePlayers(conn, idLiga, idJornadaProb, ljIds);
+        Map<Long, Long> ligaJugadorToEquipo = new HashMap<>();
+        for (LeagueMarketPlayerResponse r : rows) {
+            if (r.idLigaJugador() != null && r.idEquipo() != null) {
+                ligaJugadorToEquipo.put(r.idLigaJugador(), r.idEquipo());
+            }
+        }
+        Map<Long, StarterProbabilityLite> probMap = leagueStarterProbabilityService.loadDisplayProbabilityMapForPlayers(
+                conn, idLiga, idJornadaContext, ligaJugadorToEquipo);
+        if (probMap.isEmpty()) {
+            return rows;
+        }
         List<LeagueMarketPlayerResponse> enriched = new ArrayList<>();
         for (LeagueMarketPlayerResponse r : rows) {
             StarterProbabilityLite l = probMap.get(r.idLigaJugador());

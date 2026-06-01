@@ -2,6 +2,7 @@ package com.eternalxi.eternalxi_api.controller.user;
 
 import com.eternalxi.eternalxi_api.dto.auth.ApiMessageResponse;
 import com.eternalxi.eternalxi_api.dto.user.RegisterPushTokenRequest;
+import com.eternalxi.eternalxi_api.security.AuthenticatedUser;
 import com.eternalxi.eternalxi_api.services.UserPushTokenService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,10 @@ public class UserPushController {
 
     @PostMapping("/push-token")
     public ResponseEntity<?> registerPushToken(@RequestBody RegisterPushTokenRequest request) throws SQLException {
+        if (request.idUsuario() == null || request.idUsuario() <= 0) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse("Usuario no válido"));
+        }
+        AuthenticatedUser.assertSameUser(request.idUsuario());
         userPushTokenService.saveOrUpdateToken(
                 request.idUsuario(),
                 request.token(),

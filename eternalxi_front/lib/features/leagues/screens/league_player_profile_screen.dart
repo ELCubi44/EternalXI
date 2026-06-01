@@ -101,36 +101,18 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
 
   int? _probTitularParaBloqueUi() {
     final d = _detail;
-    if (d == null) {
-      return widget.player.probabilidadTitular;
+    if (d?.probabilidadTitular != null) {
+      return d!.probabilidadTitular;
     }
-    final huboJornada =
-        _ultimaPeticionDetalleIdJornada != null &&
-        _ultimaPeticionDetalleIdJornada! > 0;
-    if (huboJornada) {
-      return d.probabilidadTitular;
-    }
-    if (d.probabilidadTitular != null) {
-      return d.probabilidadTitular;
-    }
-    return null;
+    return widget.player.probabilidadTitular;
   }
 
   String? _motivoTitularParaBloqueUi() {
     final d = _detail;
-    if (d == null) {
-      return widget.player.motivoTitularidad?.trim();
+    if (d?.motivoTitularidad != null && d!.motivoTitularidad!.trim().isNotEmpty) {
+      return d.motivoTitularidad!.trim();
     }
-    final huboJornada =
-        _ultimaPeticionDetalleIdJornada != null &&
-        _ultimaPeticionDetalleIdJornada! > 0;
-    if (huboJornada) {
-      return d.motivoTitularidad?.trim();
-    }
-    if (d.probabilidadTitular != null) {
-      return d.motivoTitularidad?.trim();
-    }
-    return null;
+    return widget.player.motivoTitularidad?.trim();
   }
 
   ({

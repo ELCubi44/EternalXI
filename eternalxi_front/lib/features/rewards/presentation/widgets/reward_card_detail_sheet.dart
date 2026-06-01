@@ -267,6 +267,7 @@ class _CardVisual extends StatelessWidget {
       case 'ADD_LEAGUE_POINTS':
         return Icons.stars_rounded;
       case 'TEMPORARY_VALUE_RECOVERY':
+      case 'PLAYER_VALUE_BOOST':
         return Icons.trending_up_rounded;
       default:
         return Icons.style_rounded;

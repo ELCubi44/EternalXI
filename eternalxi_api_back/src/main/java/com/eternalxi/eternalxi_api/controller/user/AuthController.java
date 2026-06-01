@@ -8,14 +8,19 @@ import com.eternalxi.eternalxi_api.dto.auth.EmailChangeConfirmRequest;
 import com.eternalxi.eternalxi_api.dto.auth.EmailChangeConfirmResponse;
 import com.eternalxi.eternalxi_api.dto.auth.EmailChangeRequest;
 import com.eternalxi.eternalxi_api.dto.auth.EmailRequest;
+import com.eternalxi.eternalxi_api.dto.auth.LoginRequest;
 import com.eternalxi.eternalxi_api.dto.auth.NicknameChangeConfirmRequest;
 import com.eternalxi.eternalxi_api.dto.auth.NicknameChangeRequest;
 import com.eternalxi.eternalxi_api.dto.auth.PasswordResetConfirmRequest;
 import com.eternalxi.eternalxi_api.dto.auth.RegisterRequest;
 import com.eternalxi.eternalxi_api.dto.auth.RegisterResponse;
 import com.eternalxi.eternalxi_api.dto.user.UserResponse;
-import com.eternalxi.eternalxi_api.model.Usuario;
+import com.eternalxi.eternalxi_api.dto.auth.RefreshTokenRequest;
+import com.eternalxi.eternalxi_api.security.AuthenticatedUser;
+import com.eternalxi.eternalxi_api.security.JwtTokenService;
+import com.eternalxi.eternalxi_api.security.PasswordHashService;
 import com.eternalxi.eternalxi_api.services.EmailService;
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,12 +38,20 @@ import java.sql.Statement;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
-    private static final long DEFAULT_TEMPORADA_ID = 1L;
+    private static final long[] DEFAULT_TEMPORADA_IDS = {1L, 2L};
 
     private final EmailService emailService;
+    private final PasswordHashService passwordHashService;
+    private final JwtTokenService jwtTokenService;
 
-    public AuthController(EmailService emailService) {
+    public AuthController(
+            EmailService emailService,
+            PasswordHashService passwordHashService,
+            JwtTokenService jwtTokenService
+    ) {
         this.emailService = emailService;
+        this.passwordHashService = passwordHashService;
+        this.jwtTokenService = jwtTokenService;
     }
 
     @PostMapping("/register")
@@ -63,7 +76,7 @@ public class AuthController {
                  PreparedStatement psUsuarioTemporada = conn.prepareStatement(sqlInsertUsuarioTemporada)) {
 
                 psUsuario.setString(1, correo);
-                psUsuario.setString(2, Usuario.encriptarContrasena(contrasena));
+                psUsuario.setString(2, passwordHashService.hashForStorage(contrasena));
                 psUsuario.setString(3, nickname);
                 psUsuario.setInt(4, 1);
 
@@ -88,15 +101,15 @@ public class AuthController {
                             .body(new ApiMessageResponse("No se ha podido obtener el id del usuario creado"));
                 }
 
-                psUsuarioTemporada.setLong(1, id);
-                psUsuarioTemporada.setLong(2, DEFAULT_TEMPORADA_ID);
-
-                int filasTemporada = psUsuarioTemporada.executeUpdate();
-
-                if (filasTemporada <= 0) {
-                    conn.rollback();
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body(new ApiMessageResponse("No se ha podido asignar la temporada inicial al usuario"));
+                for (long idTemporada : DEFAULT_TEMPORADA_IDS) {
+                    psUsuarioTemporada.setLong(1, id);
+                    psUsuarioTemporada.setLong(2, idTemporada);
+                    int filasTemporada = psUsuarioTemporada.executeUpdate();
+                    if (filasTemporada <= 0) {
+                        conn.rollback();
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(new ApiMessageResponse("No se ha podido asignar la temporada inicial al usuario"));
+                    }
                 }
 
                 conn.commit();
@@ -146,15 +159,20 @@ public class AuthController {
                             .body(new ApiMessageResponse("Correo o contraseña incorrectos"));
                 }
 
-                String contrasenaEnc = Usuario.encriptarContrasena(request.contrasena());
-
-                if (!contrasenaEnc.equals(rs.getString("contrasena"))) {
+                long userId = rs.getLong("id");
+                String storedHash = rs.getString("contrasena");
+                PasswordHashService.PasswordMatchResult match =
+                        passwordHashService.verifyAndMaybeUpgrade(request.contrasena(), storedHash);
+                if (!match.matches()) {
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                             .body(new ApiMessageResponse("Correo o contraseña incorrectos"));
                 }
+                if (match.upgradedHashIfAny() != null) {
+                    updateStoredPassword(conn, userId, match.upgradedHashIfAny());
+                }
 
                 UserResponse user = new UserResponse(
-                        rs.getLong("id"),
+                        userId,
                         rs.getString("correo"),
                         rs.getString("nickname"),
                         rs.getInt("nivel"),
@@ -162,14 +180,43 @@ public class AuthController {
                 );
 
                 AuthResponse response = new AuthResponse(
-                        "token-temporal",
-                        "refresh-temporal",
+                        jwtTokenService.createAccessToken(userId, user.correo()),
+                        jwtTokenService.createRefreshToken(userId, user.correo()),
                         "Bearer",
                         user
                 );
 
                 return ResponseEntity.ok(response);
             }
+        }
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody RefreshTokenRequest request) {
+        if (request == null || request.refreshToken() == null || request.refreshToken().isBlank()) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse("Refresh token obligatorio"));
+        }
+        try {
+            JwtTokenService.ParsedToken parsed =
+                    jwtTokenService.parse(request.refreshToken(), JwtTokenService.TYPE_REFRESH);
+            UserResponse user = loadUserByIdSimple(parsed.userId());
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ApiMessageResponse("Sesión no válida"));
+            }
+            AuthResponse response = new AuthResponse(
+                    jwtTokenService.createAccessToken(user.id(), user.correo()),
+                    jwtTokenService.createRefreshToken(user.id(), user.correo()),
+                    "Bearer",
+                    user
+            );
+            return ResponseEntity.ok(response);
+        } catch (JwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiMessageResponse("Sesión expirada. Vuelve a iniciar sesión."));
+        } catch (SQLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiMessageResponse("No se pudo renovar la sesión"));
         }
     }
 
@@ -303,7 +350,7 @@ public class AuthController {
 
             String contrasenaEnc;
             try {
-                contrasenaEnc = Usuario.encriptarContrasena(
+                contrasenaEnc = passwordHashService.hashForStorage(
                         InputValidator.validatePassword(request.nuevaContrasena())
                 );
             } catch (IllegalArgumentException e) {
@@ -329,6 +376,7 @@ public class AuthController {
         if (request.idUsuario() == null || request.idUsuario() <= 0) {
             return ResponseEntity.badRequest().body(new ApiMessageResponse("Usuario no válido"));
         }
+        AuthenticatedUser.assertSameUser(request.idUsuario());
 
         String nuevoCorreo;
         try {
@@ -359,8 +407,7 @@ public class AuthController {
                                 .body(new ApiMessageResponse("El nuevo correo debe ser distinto del actual"));
                     }
 
-                    String contrasenaEnc = Usuario.encriptarContrasena(request.contrasenaActual());
-                    if (!contrasenaEnc.equals(rs.getString("contrasena"))) {
+                    if (!verifyCurrentPassword(conn, request.idUsuario(), request.contrasenaActual())) {
                         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                 .body(new ApiMessageResponse("Contraseña actual incorrecta"));
                     }
@@ -413,6 +460,7 @@ public class AuthController {
         if (request.idUsuario() == null || request.idUsuario() <= 0) {
             return ResponseEntity.badRequest().body(new ApiMessageResponse("Usuario no válido"));
         }
+        AuthenticatedUser.assertSameUser(request.idUsuario());
 
         String nuevoCorreo;
         try {
@@ -528,6 +576,7 @@ public class AuthController {
         if (request.idUsuario() == null || request.idUsuario() <= 0) {
             return ResponseEntity.badRequest().body(new ApiMessageResponse("Usuario no válido"));
         }
+        AuthenticatedUser.assertSameUser(request.idUsuario());
         if (request.contrasenaActual() == null || request.contrasenaActual().isBlank()) {
             return ResponseEntity.badRequest().body(new ApiMessageResponse("La contraseña actual es obligatoria"));
         }
@@ -560,8 +609,7 @@ public class AuthController {
                                 .body(new ApiMessageResponse("El nuevo nickname debe ser distinto del actual"));
                     }
 
-                    String contrasenaEnc = Usuario.encriptarContrasena(request.contrasenaActual());
-                    if (!contrasenaEnc.equals(rs.getString("contrasena"))) {
+                    if (!verifyCurrentPassword(conn, request.idUsuario(), request.contrasenaActual())) {
                         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                 .body(new ApiMessageResponse("Contraseña actual incorrecta"));
                     }
@@ -614,6 +662,7 @@ public class AuthController {
         if (request.idUsuario() == null || request.idUsuario() <= 0) {
             return ResponseEntity.badRequest().body(new ApiMessageResponse("Usuario no válido"));
         }
+        AuthenticatedUser.assertSameUser(request.idUsuario());
 
         String nuevoNickname;
         try {
@@ -763,6 +812,55 @@ public class AuthController {
             ps.executeUpdate();
         } catch (SQLException ignored) {
             // MySQL antiguo puede no soportar IF NOT EXISTS en índices.
+        }
+    }
+
+    private void updateStoredPassword(Connection conn, long userId, String passwordHash) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("UPDATE usuarios SET contrasena = ? WHERE id = ?")) {
+            ps.setString(1, passwordHash);
+            ps.setLong(2, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    private boolean verifyCurrentPassword(Connection conn, long userId, String plainPassword) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("SELECT contrasena FROM usuarios WHERE id = ?")) {
+            ps.setLong(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return false;
+                }
+                PasswordHashService.PasswordMatchResult match =
+                        passwordHashService.verifyAndMaybeUpgrade(plainPassword, rs.getString("contrasena"));
+                if (!match.matches()) {
+                    return false;
+                }
+                if (match.upgradedHashIfAny() != null) {
+                    updateStoredPassword(conn, userId, match.upgradedHashIfAny());
+                }
+                return true;
+            }
+        }
+    }
+
+    private UserResponse loadUserByIdSimple(long idUsuario) throws SQLException {
+        try (Connection conn = DBConnection.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "SELECT id, correo, nickname, nivel, foto FROM usuarios WHERE id = ?")) {
+                ps.setLong(1, idUsuario);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        return null;
+                    }
+                    return new UserResponse(
+                            rs.getLong("id"),
+                            rs.getString("correo"),
+                            rs.getString("nickname"),
+                            rs.getInt("nivel"),
+                            rs.getString("foto")
+                    );
+                }
+            }
         }
     }
 

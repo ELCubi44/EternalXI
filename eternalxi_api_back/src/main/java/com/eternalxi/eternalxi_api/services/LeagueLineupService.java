@@ -388,17 +388,142 @@ public class LeagueLineupService {
             LineupSnapshot currentSnapshot,
             FormationSpec formationSpec
     ) throws SQLException {
+        return sanitizeSnapshotForCurrentSquad(conn, idLiga, idUsuario, currentSnapshot, formationSpec, null);
+    }
+
+    /**
+     * Deja la plantilla guardada solo con jugadores que siguen en el equipo del participante.
+     * Si tras quitar al jugador indicado (p. ej. cláusula) la alineación deja de ser válida, se reconstruye por defecto.
+     */
+    private LineupSnapshot sanitizeSnapshotForCurrentSquad(
+            Connection conn,
+            Long idLiga,
+            Long idUsuario,
+            LineupSnapshot currentSnapshot,
+            FormationSpec formationSpec,
+            Long excludeLigaJugadorId
+    ) throws SQLException {
         if (currentSnapshot == null) {
-            return null;
+            return buildDefaultSnapshot(conn, idLiga, idUsuario, formationSpec);
         }
 
-        LineupSnapshot rebuilt = buildDefaultSnapshot(conn, idLiga, idUsuario, formationSpec);
-        int currentMissing = countEmptySlots(currentSnapshot, formationSpec);
-        int rebuiltMissing = countEmptySlots(rebuilt, formationSpec);
-        if (rebuiltMissing < currentMissing) {
-            return rebuilt;
+        List<LineupEntry> titulares = new ArrayList<>();
+        for (LineupEntry entry : currentSnapshot.titulares()) {
+            if (excludeLigaJugadorId != null && Objects.equals(excludeLigaJugadorId, entry.idLigaJugador())) {
+                continue;
+            }
+            titulares.add(entry);
         }
-        return currentSnapshot;
+
+        List<LineupEntry> reservas = new ArrayList<>();
+        for (LineupEntry entry : currentSnapshot.reservas()) {
+            if (excludeLigaJugadorId != null && Objects.equals(excludeLigaJugadorId, entry.idLigaJugador())) {
+                continue;
+            }
+            reservas.add(entry);
+        }
+
+        Set<Long> ids = new HashSet<>();
+        ids.addAll(extractIds(titulares));
+        ids.addAll(extractIds(reservas));
+        Map<Long, OwnedPlayerRef> owned = loadOwnedPlayersByIds(conn, idLiga, idUsuario, ids);
+
+        List<LineupEntry> ownedTitulares = new ArrayList<>();
+        for (LineupEntry entry : titulares) {
+            if (owned.containsKey(entry.idLigaJugador())) {
+                ownedTitulares.add(entry);
+            }
+        }
+
+        List<LineupEntry> ownedReservas = new ArrayList<>();
+        for (LineupEntry entry : reservas) {
+            if (owned.containsKey(entry.idLigaJugador())) {
+                ownedReservas.add(entry);
+            }
+        }
+
+        Long capitan = currentSnapshot.idCapitan();
+        if (capitan != null
+                && (Objects.equals(capitan, excludeLigaJugadorId) || !owned.containsKey(capitan))) {
+            capitan = resolveDefaultCaptainId(ownedTitulares);
+        } else if (capitan != null && !extractIds(ownedTitulares).contains(capitan)) {
+            capitan = resolveDefaultCaptainId(ownedTitulares);
+        }
+
+        LineupSnapshot filtered = new LineupSnapshot(ownedTitulares, ownedReservas, capitan);
+        if (isSnapshotUsableForUser(conn, idLiga, idUsuario, filtered, formationSpec)) {
+            return filtered;
+        }
+        return buildDefaultSnapshot(conn, idLiga, idUsuario, formationSpec);
+    }
+
+    private boolean snapshotContainsLeaguePlayer(LineupSnapshot snapshot, Long idLigaJugador) {
+        if (snapshot == null || idLigaJugador == null) {
+            return false;
+        }
+        for (LineupEntry entry : snapshot.titulares()) {
+            if (Objects.equals(idLigaJugador, entry.idLigaJugador())) {
+                return true;
+            }
+        }
+        for (LineupEntry entry : snapshot.reservas()) {
+            if (Objects.equals(idLigaJugador, entry.idLigaJugador())) {
+                return true;
+            }
+        }
+        return Objects.equals(idLigaJugador, snapshot.idCapitan());
+    }
+
+    /**
+     * Quita un jugador de todas las alineaciones guardadas en jornadas cuyo kickoff aún no ha empezado.
+     * Debe invocarse tras una venta, cláusula u otra transferencia en la que el participante pierde al jugador.
+     */
+    public void removePlayerFromOpenSavedLineups(
+            Connection conn,
+            Long idLiga,
+            Long idUsuario,
+            Long idLigaJugadorRemoved
+    ) throws SQLException {
+        if (conn == null || idLiga == null || idUsuario == null || idLigaJugadorRemoved == null) {
+            return;
+        }
+
+        Long idLigaParticipante = findLeagueParticipantId(conn, idLiga, idUsuario);
+        if (idLigaParticipante == null) {
+            return;
+        }
+
+        FormationSpec formationSpec = resolveEffectiveFormationSpec(conn, idLigaParticipante);
+        Set<Long> savedRoundIds = loadSavedRoundIdsForParticipant(conn, idLigaParticipante);
+
+        for (Long idJornada : savedRoundIds) {
+            if (isRoundKickoffStarted(conn, idJornada)) {
+                continue;
+            }
+
+            LineupSnapshot exact = loadExactSavedLineupForRound(conn, idLigaParticipante, idJornada);
+            if (exact == null) {
+                continue;
+            }
+
+            boolean containsRemoved = snapshotContainsLeaguePlayer(exact, idLigaJugadorRemoved);
+            if (!containsRemoved
+                    && isSnapshotUsableForUser(conn, idLiga, idUsuario, exact, formationSpec)) {
+                continue;
+            }
+
+            LineupSnapshot sanitized = sanitizeSnapshotForCurrentSquad(
+                    conn,
+                    idLiga,
+                    idUsuario,
+                    exact,
+                    formationSpec,
+                    idLigaJugadorRemoved
+            );
+            if (!sameSnapshot(exact, sanitized)) {
+                persistLineup(conn, idLigaParticipante, idJornada, sanitized);
+            }
+        }
     }
 
     private boolean sameSnapshot(LineupSnapshot left, LineupSnapshot right) {
@@ -789,14 +914,23 @@ public class LeagueLineupService {
 
     FormationSpec formationSpec = resolveEffectiveFormationSpec(conn, idLigaParticipante);
     LineupSnapshot exact = loadExactSavedLineupForRound(conn, idLigaParticipante, editableRound.idJornada());
-    if (exact != null && isSnapshotUsableForUser(conn, idLiga, idUsuario, exact, formationSpec)) {
-        LineupSnapshot optimizedExact = optimizeSnapshotWithCurrentSquad(conn, idLiga, idUsuario, exact, formationSpec);
-        if (optimizedExact != exact) {
-            persistLineup(conn, idLigaParticipante, editableRound.idJornada(), optimizedExact);
-        } else {
-            syncLineupArtifactsForRound(conn, editableRound.idJornada(), idLigaParticipante, exact);
+    if (exact != null) {
+        LineupSnapshot sanitizedExact = sanitizeSnapshotForCurrentSquad(
+                conn,
+                idLiga,
+                idUsuario,
+                exact,
+                formationSpec,
+                null
+        );
+        if (isSnapshotUsableForUser(conn, idLiga, idUsuario, sanitizedExact, formationSpec)) {
+            if (!sameSnapshot(exact, sanitizedExact)) {
+                persistLineup(conn, idLigaParticipante, editableRound.idJornada(), sanitizedExact);
+            } else {
+                syncLineupArtifactsForRound(conn, editableRound.idJornada(), idLigaParticipante, sanitizedExact);
+            }
+            return;
         }
-        return;
     }
 
     LineupSnapshot snapshot = loadLastReusableLineupBeforeRound(

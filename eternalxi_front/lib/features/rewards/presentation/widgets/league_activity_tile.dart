@@ -111,6 +111,7 @@ class LeagueActivityTile extends StatelessWidget {
       case 'LEAGUE_POINTS_BONUS_APPLIED':
         return const _ActivityIcon(Icons.star_rounded, Color(0xFFFFD54F));
       case 'VALUE_RECOVERY_APPLIED':
+      case 'VALUE_BOOST_APPLIED':
         return const _ActivityIcon(Icons.trending_up_rounded, Color(0xFF80CBC4));
       default:
         return const _ActivityIcon(Icons.info_outline_rounded, Colors.white54);

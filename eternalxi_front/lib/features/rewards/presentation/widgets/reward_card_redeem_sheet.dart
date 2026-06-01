@@ -156,8 +156,8 @@ class _RedeemSheetBody extends StatelessWidget {
                 _ClauseTargets(controller: c)
               else if (tipo == 'PROTECT_PLAYER')
                 _ProtectTargets(controller: c)
-              else if (tipo == 'TEMPORARY_VALUE_RECOVERY')
-                _RecoveryTargets(controller: c)
+              else if (tipo == 'TEMPORARY_VALUE_RECOVERY' || tipo == 'PLAYER_VALUE_BOOST')
+                _ValueBoostTargets(controller: c)
               else
                 Text(
                   rl10n.unsupportedCardTypeWithCode(tipo),
@@ -1033,10 +1033,10 @@ class _ProtectPlayerCard extends StatelessWidget {
   }
 }
 
-// ─── TEMPORARY_VALUE_RECOVERY ───
+// ─── PLAYER_VALUE_BOOST (antes recuperación temporal) ───
 
-class _RecoveryTargets extends StatelessWidget {
-  const _RecoveryTargets({required this.controller});
+class _ValueBoostTargets extends StatelessWidget {
+  const _ValueBoostTargets({required this.controller});
   final _RedeemSheetController controller;
 
   @override
@@ -1054,14 +1054,14 @@ class _RecoveryTargets extends StatelessWidget {
           style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 6),
-        ...list.map((p) => _RecoveryPlayerCard(player: p, controller: controller)),
+        ...list.map((p) => _ValueBoostPlayerCard(player: p, controller: controller)),
       ],
     );
   }
 }
 
-class _RecoveryPlayerCard extends StatelessWidget {
-  const _RecoveryPlayerCard({required this.player, required this.controller});
+class _ValueBoostPlayerCard extends StatelessWidget {
+  const _ValueBoostPlayerCard({required this.player, required this.controller});
   final RewardCardTargetPlayer player;
   final _RedeemSheetController controller;
 
@@ -1069,9 +1069,8 @@ class _RecoveryPlayerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final rl10n = context.rewardsL10n;
     final p = player;
-    final nExp = p.numeroJornadaExpiracionPreview;
-    final droppingLine = rl10n.recoveryDroppingLine(p);
-    final risingLine = rl10n.recoveryRisingLine(p);
+    final pctLine = rl10n.valueBoostPercentLine(p);
+    final newValueLine = rl10n.valueBoostNewValueLine(p);
     return Card(
       margin: const EdgeInsets.only(bottom: 4),
       color: const Color(0xFF1A2233),
@@ -1144,33 +1143,25 @@ class _RecoveryPlayerCard extends StatelessWidget {
                       style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
                     ),
                   ),
-                  if (droppingLine != null)
+                  if (pctLine != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        droppingLine,
+                        pctLine,
                         style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
                       ),
                     ),
-                  if (risingLine != null)
+                  if (newValueLine != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        risingLine,
+                        newValueLine,
                         style: const TextStyle(
                           color: Color(0xFF81C784),
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
                           height: 1.2,
                         ),
-                      ),
-                    ),
-                  if (nExp != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 2),
-                      child: Text(
-                        rl10n.expiresOnMatchday(nExp),
-                        style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
                       ),
                     ),
                   const SizedBox(height: 2),

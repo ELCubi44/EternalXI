@@ -123,6 +123,7 @@ public class AccountProgressService {
         try (Connection conn = DBConnection.getConnection()) {
             ensureSchema(conn);
             processDailyLogin(conn, idUsuario);
+            repairDayPointAchievementTiers(conn, idUsuario);
             return buildProgressResponse(conn, idUsuario);
         }
     }
@@ -266,19 +267,44 @@ public class AccountProgressService {
 
     public int onRoundFantasyPoints(Connection conn, Long idLiga, Long idUsuario, int fantasyPoints)
             throws SQLException {
-        if (fantasyPoints >= 150) {
-            return tryUnlock(conn, idUsuario, AchievementCode.DAY_POINTS_150, idLiga);
-        }
-        if (fantasyPoints >= 100) {
-            return tryUnlock(conn, idUsuario, AchievementCode.DAY_POINTS_100, idLiga);
+        int xp = 0;
+        if (fantasyPoints >= 50) {
+            xp += tryUnlock(conn, idUsuario, AchievementCode.DAY_POINTS_50, idLiga);
         }
         if (fantasyPoints >= 75) {
-            return tryUnlock(conn, idUsuario, AchievementCode.DAY_POINTS_75, idLiga);
+            xp += tryUnlock(conn, idUsuario, AchievementCode.DAY_POINTS_75, idLiga);
         }
-        if (fantasyPoints >= 50) {
-            return tryUnlock(conn, idUsuario, AchievementCode.DAY_POINTS_50, idLiga);
+        if (fantasyPoints >= 100) {
+            xp += tryUnlock(conn, idUsuario, AchievementCode.DAY_POINTS_100, idLiga);
         }
-        return 0;
+        if (fantasyPoints >= 150) {
+            xp += tryUnlock(conn, idUsuario, AchievementCode.DAY_POINTS_150, idLiga);
+        }
+        return xp;
+    }
+
+    /**
+     * Si el usuario desbloqueó un umbral alto de puntos en jornada antes del fix en cascada,
+     * concede los logros de umbrales inferiores que falten.
+     */
+    void repairDayPointAchievementTiers(Connection conn, Long idUsuario) throws SQLException {
+        if (idUsuario == null) {
+            return;
+        }
+        if (hasAchievement(conn, idUsuario, AchievementCode.DAY_POINTS_150)) {
+            tryUnlock(conn, idUsuario, AchievementCode.DAY_POINTS_100, null);
+            tryUnlock(conn, idUsuario, AchievementCode.DAY_POINTS_75, null);
+            tryUnlock(conn, idUsuario, AchievementCode.DAY_POINTS_50, null);
+            return;
+        }
+        if (hasAchievement(conn, idUsuario, AchievementCode.DAY_POINTS_100)) {
+            tryUnlock(conn, idUsuario, AchievementCode.DAY_POINTS_75, null);
+            tryUnlock(conn, idUsuario, AchievementCode.DAY_POINTS_50, null);
+            return;
+        }
+        if (hasAchievement(conn, idUsuario, AchievementCode.DAY_POINTS_75)) {
+            tryUnlock(conn, idUsuario, AchievementCode.DAY_POINTS_50, null);
+        }
     }
 
     public void onPackOpened(Connection conn, Long idUsuario, Long idLiga, Long idLigaParticipante) throws SQLException {

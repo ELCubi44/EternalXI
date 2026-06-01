@@ -206,6 +206,56 @@ public record LeagueCardTargetResponse(
         );
     }
 
+    public static LeagueCardTargetResponse valueBoost(
+            long idLj,
+            String nombre,
+            Long idEquipo,
+            String nombreEquipo,
+            String fotoEquipo,
+            String fotoJugador,
+            String posicion,
+            Double valoracion,
+            long valorActual,
+            long valorNuevoPreview,
+            double porcentajeIncremento
+    ) {
+        return new LeagueCardTargetResponse(
+                idLj,
+                nombre,
+                idEquipo,
+                nombreEquipo,
+                fotoEquipo,
+                fotoJugador,
+                posicion,
+                valoracion,
+                null,
+                null,
+                valorActual,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                valorNuevoPreview,
+                porcentajeIncremento,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
+    @Deprecated
     public static LeagueCardTargetResponse valueRecovery(
             long idLj,
             String nombre,

@@ -100,8 +100,8 @@ public enum AchievementCode {
                     (incluye bonus de entrenador si aplica). Solo cuenta la jornada en la que \
                     se supera el umbral.""";
             case DAY_POINTS_75 -> """
-                    Igual que el logro anterior, pero necesitas 75+ puntos fantasy en una \
-                    sola jornada. Piensa en titulares en forma y capitán acertado.""";
+                    Necesitas 75+ puntos fantasy en una sola jornada. Si lo consigues, también \
+                    obtienes el logro de 50+ si aún no lo tenías.""";
             case DAY_POINTS_100 -> """
                     Marca 100 o más puntos fantasy en una jornada. Suele requerir varios \
                     jugadores con nota alta y buen multiplicador de entrenador.""";

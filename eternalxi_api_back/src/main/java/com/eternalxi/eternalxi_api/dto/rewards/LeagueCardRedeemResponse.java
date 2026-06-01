@@ -210,6 +210,49 @@ public record LeagueCardRedeemResponse(
         );
     }
 
+    public static LeagueCardRedeemResponse valueBoost(
+            long idLj,
+            String nombre,
+            long valorAnterior,
+            long valorNuevo,
+            double pct,
+            double valoracionNueva
+    ) {
+        return new LeagueCardRedeemResponse(
+                true,
+                CardEffectType.PLAYER_VALUE_BOOST.name(),
+                idLj,
+                nombre,
+                valorAnterior,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                valorAnterior,
+                pct,
+                valorNuevo,
+                null,
+                valorNuevo,
+                null
+        );
+    }
+
+    @Deprecated
     public static LeagueCardRedeemResponse valueRecovery(
             long idLj,
             String nombre,
@@ -223,7 +266,7 @@ public record LeagueCardRedeemResponse(
     ) {
         return new LeagueCardRedeemResponse(
                 true,
-                CardEffectType.TEMPORARY_VALUE_RECOVERY.name(),
+                CardEffectType.PLAYER_VALUE_BOOST.name(),
                 idLj,
                 nombre,
                 valor,

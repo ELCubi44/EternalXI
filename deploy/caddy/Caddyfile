@@ -1,0 +1,4 @@
+# Copia de referencia — en el VPS vive en /etc/caddy/Caddyfile
+api.eternalxi.com {
+    reverse_proxy 127.0.0.1:8080
+}
