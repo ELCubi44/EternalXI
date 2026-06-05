@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:eternal_xi/features/rewards/data/models/reward_card_model.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_card_target_model.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_coach_item.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_redeem_result_model.dart';
@@ -89,7 +90,7 @@ class RewardsL10n {
 
   String get filterPoints => _t('Puntos', 'Points');
 
-  String get filterValue => _t('Valor', 'Value');
+  String get filterValue => _t('Subida valor', 'Value boost');
 
   String get activityEmpty => _t(
         'Aún no hay actividad en esta liga.',
@@ -235,6 +236,80 @@ class RewardsL10n {
         return filterValue;
       default:
         return '';
+    }
+  }
+
+  /// Nombre visible; sustituye textos legacy de recuperación temporal.
+  String cardDisplayName(RewardCardModel card) {
+    if (!card.isValueBoost) {
+      return card.nombre;
+    }
+    return _valueBoostNameByCode(card.codigo) ?? card.nombre;
+  }
+
+  /// Descripción visible; sustituye textos legacy de recuperación temporal.
+  String cardDisplayDescription(RewardCardModel card) {
+    if (!card.isValueBoost) {
+      return card.descripcion;
+    }
+    final pct = _valueBoostPercentFromParams(card.parametrosJson) ??
+        _valueBoostPercentByCode(card.codigo);
+    if (pct != null) {
+      return _t(
+        'Elige un jugador de tu plantilla y sube su valor de mercado un $pct% de forma permanente.',
+        'Choose a squad player and permanently increase their market value by $pct%.',
+      );
+    }
+    return card.descripcion;
+  }
+
+  String? _valueBoostNameByCode(String codigo) {
+    switch (codigo.trim().toUpperCase()) {
+      case 'VALUE_RECOVERY_SMALL':
+        return _t('Impulso de mercado I', 'Market boost I');
+      case 'VALUE_RECOVERY_MEDIUM':
+        return _t('Impulso de mercado II', 'Market boost II');
+      case 'VALUE_RECOVERY_SPECIAL':
+        return _t('Impulso de mercado III', 'Market boost III');
+      case 'VALUE_RECOVERY_ELITE':
+        return _t('Impulso de mercado IV', 'Market boost IV');
+      case 'VALUE_RECOVERY_LEGENDARY':
+        return _t('Impulso de mercado V', 'Market boost V');
+      default:
+        return null;
+    }
+  }
+
+  int? _valueBoostPercentByCode(String codigo) {
+    switch (codigo.trim().toUpperCase()) {
+      case 'VALUE_RECOVERY_SMALL':
+        return 5;
+      case 'VALUE_RECOVERY_MEDIUM':
+        return 8;
+      case 'VALUE_RECOVERY_SPECIAL':
+        return 12;
+      case 'VALUE_RECOVERY_ELITE':
+        return 15;
+      case 'VALUE_RECOVERY_LEGENDARY':
+        return 20;
+      default:
+        return null;
+    }
+  }
+
+  int? _valueBoostPercentFromParams(String? parametrosJson) {
+    if (parametrosJson == null || parametrosJson.isEmpty) {
+      return null;
+    }
+    try {
+      final raw = json.decode(parametrosJson);
+      if (raw is! Map) return null;
+      final params = Map<String, dynamic>.from(raw);
+      final pct = _num(params['percentage'] ?? params['porcentaje']);
+      if (pct == null || pct <= 0) return null;
+      return pct <= 1 ? (pct * 100).round() : pct.round();
+    } catch (_) {
+      return null;
     }
   }
 
@@ -489,33 +564,6 @@ class RewardsL10n {
     return null;
   }
 
-  String? recoveryDroppingLine(RewardCardTargetPlayer p) {
-    final d = p.diferenciaValorPreview;
-    if (d != null) {
-      final negativo = d > 0 ? -d : d;
-      return _t(
-        'Bajando: ${formatRewardMoneyFull(negativo)}',
-        'Dropping: ${formatRewardMoneyFull(negativo)}',
-      );
-    }
-    final a = p.valorAnterior;
-    final b = p.valorActual;
-    if (a == null || b == null || a <= b) return null;
-    return _t(
-      'Bajando: ${formatRewardMoneyFull(-(a - b))}',
-      'Dropping: ${formatRewardMoneyFull(-(a - b))}',
-    );
-  }
-
-  String? recoveryRisingLine(RewardCardTargetPlayer p) {
-    final inc = p.incrementoValorDiarioPreview;
-    if (inc == null || inc <= 0) return null;
-    return _t(
-      'Subirá: +${formatRewardMoneyFull(inc)}/día',
-      'Will rise: +${formatRewardMoneyFull(inc)}/day',
-    );
-  }
-
   String valueLabel(String money) => _t('Valor: $money', 'Value: $money');
 
   String currentValueLabel(String money) =>
@@ -607,12 +655,12 @@ class RewardsL10n {
         'This card protects for $rounds matchdays',
       );
 
-  String get chooseDroppingPlayer => _t(
-        'Elige un jugador de tu plantilla',
-        'Choose a player from your squad',
+  String get chooseValueBoostPlayer => _t(
+        'Elige un jugador de tu plantilla para subir su valor de mercado',
+        'Choose a squad player to increase their market value',
       );
 
-  String get noRecoveryTargets => _t(
+  String get noValueBoostTargets => _t(
         'No tienes jugadores en plantilla para usar esta carta.',
         'You have no squad players for this card.',
       );
@@ -665,10 +713,10 @@ class RewardsL10n {
         'Protection will be applied to $name.\nThis action cannot be undone.',
       );
 
-  String get applyRecoveryTitle =>
+  String get applyValueBoostTitle =>
       _t('Subir valor de mercado', 'Increase market value');
 
-  String applyRecoveryConfirm(String name) => _t(
+  String applyValueBoostConfirm(String name) => _t(
         'Se subirá de forma permanente el valor de mercado de $name según el porcentaje de la carta.\nEsta acción no se puede deshacer.',
         'Market value for $name will be permanently increased by the card percentage.\nThis action cannot be undone.',
       );
@@ -710,12 +758,12 @@ class RewardsL10n {
 
   String newTotal(int n) => _t('Nuevo total: $n', 'New total: $n');
 
-  String get valueRecoveryApplied =>
+  String get valueBoostApplied =>
       _t('Valor de mercado aumentado', 'Market value increased');
 
-  String newTemporaryValue(String amount) => _t(
+  String newMarketValue(String amount) => _t(
         'Nuevo valor de mercado: $amount',
-        'New temporary value: $amount',
+        'New market value: $amount',
       );
 
   String get operationCompleted =>
@@ -773,10 +821,16 @@ class RewardsL10n {
         return RedeemSuccessMessage(title, lines);
       case 'TEMPORARY_VALUE_RECOVERY':
       case 'PLAYER_VALUE_BOOST':
-        var title = valueRecoveryApplied;
+        var title = valueBoostApplied;
         if (r.nombreJugador != null) lines.add(r.nombreJugador!);
         if (r.valorTemporal != null) {
-          lines.add(newTemporaryValue(formatRewardMoneyFull(r.valorTemporal!)));
+          lines.add(newMarketValue(formatRewardMoneyFull(r.valorTemporal!)));
+        }
+        if (r.porcentajeRecuperacion != null && r.porcentajeRecuperacion! > 0) {
+          final pct = r.porcentajeRecuperacion! <= 1
+              ? (r.porcentajeRecuperacion! * 100).round()
+              : r.porcentajeRecuperacion!.round();
+          lines.add(_t('+$pct% aplicado', '+$pct% applied'));
         }
         return RedeemSuccessMessage(title, lines);
       default:

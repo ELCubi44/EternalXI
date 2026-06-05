@@ -305,11 +305,11 @@ class LeagueParticipantLineupRoundDetail {
   bool get isJornadaFinalizada =>
       estadoJornada.toUpperCase() == 'FINALIZADA';
 
-  /// Burbujas de puntos en campo, banquillo y tarjetas: solo `EN_CURSO` / `FINALIZADA`,
-  /// nunca en `PENDIENTE` (no valoración previa al partido).
+  /// Burbujas de puntos en campo, banquillo y tarjetas: solo `FINALIZADA`
+  /// (en `EN_CURSO` aún no hay puntos concedidos).
   bool get shouldShowJornadaPitchBadges {
     final s = estadoJornada.trim().toUpperCase();
-    return s == 'EN_CURSO' || s == 'FINALIZADA';
+    return s == 'FINALIZADA';
   }
 
   /// Burbuja circular de puntos del entrenador en el campo (misma regla que jugadores).

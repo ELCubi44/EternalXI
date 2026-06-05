@@ -3,6 +3,7 @@ import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/core/network/api_client.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/update_user_preferences_request.dart';
+import 'package:eternal_xi/data/models/user_notification_item.dart';
 import 'package:eternal_xi/data/models/user_preferences_response.dart';
 import 'package:eternal_xi/data/models/user_resources_response.dart';
 import 'package:eternal_xi/data/models/user_model.dart';
@@ -99,6 +100,66 @@ class UserApiService {
       );
       return UserPreferencesResponse.fromJson(
         response.data as Map<String, dynamic>,
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<UserNotificationsListResponse> getNotifications({
+    required int idUsuario,
+    int? idLiga,
+    int? limit,
+  }) async {
+    try {
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.users}/$idUsuario/notifications',
+        queryParameters: <String, dynamic>{
+          if (idLiga != null) 'idLiga': idLiga,
+          if (limit != null) 'limit': limit,
+        },
+      );
+      return UserNotificationsListResponse.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<int> getUnreadNotificationsCount({
+    required int idUsuario,
+    int? idLiga,
+  }) async {
+    try {
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.users}/$idUsuario/notifications/unread-count',
+        queryParameters: <String, dynamic>{
+          if (idLiga != null) 'idLiga': idLiga,
+        },
+      );
+      final data = response.data as Map<String, dynamic>;
+      return (data['noLeidas'] as num?)?.toInt() ?? 0;
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<void> markNotificationsRead({
+    required int idUsuario,
+    List<int>? ids,
+    int? idLiga,
+    bool marcarTodas = false,
+  }) async {
+    try {
+      await _apiClient.dio.post(
+        '${ApiConstants.users}/notifications/mark-read',
+        data: <String, dynamic>{
+          'idUsuario': idUsuario,
+          if (ids != null && ids.isNotEmpty) 'ids': ids,
+          if (idLiga != null) 'idLiga': idLiga,
+          'marcarTodas': marcarTodas,
+        },
       );
     } catch (e) {
       throw ApiException(_apiClient.extractErrorMessage(e));

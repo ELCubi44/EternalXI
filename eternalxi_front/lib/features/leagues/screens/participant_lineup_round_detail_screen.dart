@@ -5,6 +5,7 @@ import 'package:eternal_xi/data/models/league_participant_lineup_history.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/utils/league_saves_stat_visibility.dart';
 import 'package:eternal_xi/features/leagues/utils/league_spanish_datetime.dart';
+import 'package:eternal_xi/features/leagues/utils/league_jornada_points_display.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_participant_lineup_round_pitch.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_player_avatar.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_round_fantasy_substitution_badge.dart';
@@ -156,6 +157,7 @@ class _DetailBody extends StatelessWidget {
         ? fallbackNickname!.trim()
         : ll.participantFallback;
     final status = data.estadoJornada.toUpperCase();
+    final showGrantedPoints = leagueJornadaShowsGrantedPoints(data.estadoJornada);
 
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -173,13 +175,19 @@ class _DetailBody extends StatelessWidget {
           runSpacing: 8,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            _MetaChip(label: ll.matchday(data.numeroJornada), icon: Icons.event),
-            _MetaChip(label: status, icon: Icons.flag_circle_outlined),
             _MetaChip(
-              label:
-                  '${data.puntosTotales.toStringAsFixed(data.puntosTotales % 1 == 0 ? 0 : 1)} pts',
-              icon: Icons.star_rounded,
+              label: leagueJornadaIsInProgress(data.estadoJornada)
+                  ? ll.roundInProgressMatchday
+                  : ll.matchday(data.numeroJornada),
+              icon: Icons.event,
             ),
+            _MetaChip(label: status, icon: Icons.flag_circle_outlined),
+            if (showGrantedPoints)
+              _MetaChip(
+                label:
+                    '${data.puntosTotales.toStringAsFixed(data.puntosTotales % 1 == 0 ? 0 : 1)} pts',
+                icon: Icons.star_rounded,
+              ),
           ],
         ),
         if (data.inicioJornada != null) ...[
@@ -201,7 +209,7 @@ class _DetailBody extends StatelessWidget {
           idCapitan: data.idCapitan,
           formacionEfectiva: data.formacionEfectiva,
           emptySlots: data.emptySlots,
-          showJornadaPitchBadges: data.shouldShowJornadaPitchBadges,
+          showJornadaPitchBadges: false,
           entrenadorAsignado: data.entrenadorAsignado,
         ),
         const SizedBox(height: 16),

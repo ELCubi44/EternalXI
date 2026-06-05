@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/v1/assets")
@@ -22,51 +23,55 @@ public class AssetController {
 
     @GetMapping("/players/{id}")
     public ResponseEntity<?> getPlayerPhoto(@PathVariable Long id) throws SQLException {
-        Resource resource = assetService.getPlayerPhoto(id);
-        if (resource == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiMessageResponse("No se ha encontrado la foto del jugador"));
-        }
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
+        return photoResponse(assetService.getPlayerPhoto(id), "No se ha encontrado la foto del jugador");
     }
 
     @GetMapping("/teams/{id}")
     public ResponseEntity<?> getTeamPhoto(@PathVariable Long id) throws SQLException {
-        Resource resource = assetService.getTeamPhoto(id);
-        if (resource == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiMessageResponse("No se ha encontrado la foto del equipo"));
-        }
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
+        return photoResponse(assetService.getTeamPhoto(id), "No se ha encontrado la foto del equipo");
     }
 
     @GetMapping("/seasons/{id}")
     public ResponseEntity<?> getSeasonPhoto(@PathVariable Long id) throws SQLException {
-        Resource resource = assetService.getSeasonPhoto(id);
-        if (resource == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiMessageResponse("No se ha encontrado la foto de la temporada"));
-        }
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
+        return photoResponse(assetService.getSeasonPhoto(id), "No se ha encontrado la foto de la temporada");
     }
 
     @GetMapping("/loan-players/{id}")
     public ResponseEntity<?> getLoanPlayerPhoto(@PathVariable Long id) throws SQLException {
-        Resource resource = assetService.getLoanPlayerPhoto(id);
-        if (resource == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiMessageResponse("No se ha encontrado la foto del jugador cedido"));
-        }
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
+        return photoResponse(assetService.getLoanPlayerPhoto(id), "No se ha encontrado la foto del jugador cedido");
     }
 
     @GetMapping("/managers/{id}")
     public ResponseEntity<?> getManagerPhoto(@PathVariable Long id) throws SQLException {
-        Resource resource = assetService.getManagerPhoto(id);
+        return photoResponse(assetService.getManagerPhoto(id), "No se ha encontrado la foto del entrenador");
+    }
+
+    private ResponseEntity<?> photoResponse(Resource resource, String notFoundMessage) {
         if (resource == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiMessageResponse("No se ha encontrado la foto del entrenador"));
+                    .body(new ApiMessageResponse(notFoundMessage));
         }
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
+        return ResponseEntity.ok().contentType(mediaTypeFor(resource)).body(resource);
+    }
+
+    private MediaType mediaTypeFor(Resource resource) {
+        try {
+            String filename = resource.getFilename();
+            if (filename != null) {
+                String lower = filename.toLowerCase(Locale.ROOT);
+                if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) {
+                    return MediaType.IMAGE_JPEG;
+                }
+                if (lower.endsWith(".webp")) {
+                    return MediaType.parseMediaType("image/webp");
+                }
+                if (lower.endsWith(".gif")) {
+                    return MediaType.IMAGE_GIF;
+                }
+            }
+        } catch (Exception ignored) {
+            // PNG por defecto
+        }
+        return MediaType.IMAGE_PNG;
     }
 }

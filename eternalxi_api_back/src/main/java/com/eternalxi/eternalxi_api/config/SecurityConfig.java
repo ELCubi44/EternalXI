@@ -68,6 +68,7 @@ public class SecurityConfig {
                                 "/api/v1/auth/email-verification/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/assets/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/*/photo").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

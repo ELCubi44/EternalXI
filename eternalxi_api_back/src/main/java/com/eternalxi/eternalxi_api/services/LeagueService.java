@@ -1339,6 +1339,8 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
             throw new IllegalArgumentException("Faltan datos obligatorios");
         }
 
+        log.info("closeLeague inicio idLiga={} idUsuario={}", idLiga, idUsuario);
+
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
 
@@ -1354,6 +1356,10 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
                 }
 
                 List<Long> participantes = loadLeagueParticipantUserIds(conn, idLiga);
+
+                // XP y logros antes de disolver participantes (necesitan clasificación en liga_participantes).
+                accountProgressService.onLeagueClosed(conn, idLiga);
+
                 for (Long idParticipante : participantes) {
                     dissolveParticipant(conn, idLiga, idParticipante);
                 }
@@ -1370,9 +1376,8 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
                     ps.executeUpdate();
                 }
 
-                accountProgressService.onLeagueClosed(conn, idLiga);
-
                 conn.commit();
+                log.info("closeLeague ok idLiga={} participantesDisueltos={}", idLiga, participantes.size());
 
             } catch (Exception e) {
                 conn.rollback();
@@ -2199,6 +2204,28 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
                 ps.setLong(2, idLigaParticipante);
                 ps.executeUpdate();
             }
+        }
+
+        try (PreparedStatement ps = conn.prepareStatement("""
+                UPDATE liga_recompensa_eventos e
+                INNER JOIN liga_participante_cartas c ON c.id = e.id_carta
+                SET e.id_carta = NULL
+                WHERE e.id_liga = ? AND c.id_liga_participante = ?
+                """)) {
+            ps.setLong(1, idLiga);
+            ps.setLong(2, idLigaParticipante);
+            ps.executeUpdate();
+        }
+
+        try (PreparedStatement ps = conn.prepareStatement("""
+                UPDATE liga_actividad a
+                INNER JOIN liga_participante_cartas c ON c.id = a.id_carta
+                SET a.id_carta = NULL
+                WHERE a.id_liga = ? AND c.id_liga_participante = ?
+                """)) {
+            ps.setLong(1, idLiga);
+            ps.setLong(2, idLigaParticipante);
+            ps.executeUpdate();
         }
     }
 

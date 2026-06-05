@@ -124,12 +124,27 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
   })
   _resolveOwnershipContext({LeaguePlayerDetail? detail, int? idUsuario}) {
     if (detail == null) {
+      final ownerId = widget.player.idUsuarioDueno;
+      final hintedMarket = widget.isMarketPlayerHint;
+      final hintedOwn = widget.isOwnPlayerHint;
+      final isMarket = hintedMarket ??
+          widget.player.esMercado ||
+          widget.player.enPoolMercado ||
+          ownerId == LeagueSquadPlayer.usuarioMercadoId;
+      final isOwn = hintedOwn ??
+          (idUsuario != null &&
+              idUsuario > 0 &&
+              ownerId > 0 &&
+              ownerId == idUsuario);
+      final isInNightMarketToday = widget.isNightMarketPlayerHint ?? false;
+      final ownershipResolved =
+          ownerId > 0 || isMarket || widget.player.enPoolMercado;
       return (
-        ownerId: 0,
-        isOwn: false,
-        isMarket: false,
-        isInNightMarketToday: false,
-        ownershipResolved: false,
+        ownerId: ownerId,
+        isOwn: isOwn,
+        isMarket: isMarket,
+        isInNightMarketToday: isInNightMarketToday,
+        ownershipResolved: ownershipResolved,
       );
     }
     final ownerId = detail.idUsuarioDueno;
@@ -138,7 +153,9 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
         idUsuario > 0 &&
         ownerId > 0 &&
         ownerId == idUsuario;
-    final isMarket = detail.esMercado || detail.enPoolMercado;
+    final isMarket = detail.esMercado ||
+        detail.enPoolMercado ||
+        ownerId == LeagueSquadPlayer.usuarioMercadoId;
     final isInNightMarketToday = detail.enMercadoHoy;
     final ownershipResolved = ownerId > 0 || isMarket;
     if (kDebugMode) {
@@ -846,6 +863,10 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                     : (widget.player.propietarioNick.trim().isNotEmpty
                           ? widget.player.propietarioNick.trim()
                           : '')));
+    final showOwnerRow = !isMarket &&
+        ownerLabel.isNotEmpty &&
+        ownership.ownerId != LeagueSquadPlayer.usuarioMercadoId;
+    final pointsLabel = LeagueMoneyFormat.points(puntosTotales);
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -909,52 +930,6 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                           size: 96,
                           circular: true,
                         ),
-                        Positioned(
-                          right: -4,
-                          bottom: -4,
-                          child: idEquipo > 0
-                              ? Semantics(
-                                  button: true,
-                                  label: nombreEquipo.isEmpty
-                                      ? ll.seeTeam
-                                      : ll.seeTeamColon(nombreEquipo),
-                                  child: Tooltip(
-                                    message: nombreEquipo.isEmpty
-                                        ? ll.seeTeam
-                                        : ll.seeTeamNamed(nombreEquipo),
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      shape: const CircleBorder(),
-                                      clipBehavior: Clip.antiAlias,
-                                      child: InkWell(
-                                        customBorder: const CircleBorder(),
-                                        onTap: () =>
-                                            _openCatalogTeamSquadFromProfile(
-                                              idEquipo: idEquipo,
-                                              nombreEquipo: nombreEquipo,
-                                              fotoEquipoUrl: fotoEquipoUrl,
-                                            ),
-                                        child: SizedBox(
-                                          width: 46,
-                                          height: 46,
-                                          child: Center(
-                                            child: LeagueTeamLogo(
-                                              idEquipo: idEquipo,
-                                              size: 34,
-                                              networkImageUrl: fotoEquipoUrl,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : LeagueTeamLogo(
-                                  idEquipo: idEquipo,
-                                  size: 34,
-                                  networkImageUrl: fotoEquipoUrl,
-                                ),
-                        ),
                         if (isInjured)
                           Positioned(
                             right: -2,
@@ -1008,44 +983,22 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(top: 14),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Text(
-                                      name,
-                                      maxLines: 1,
-                                      style: theme.textTheme.headlineSmall
-                                          ?.copyWith(
-                                        fontWeight: FontWeight.w900,
-                                        height: 1.05,
-                                        letterSpacing: -0.2,
-                                      ),
-                                    ),
-                                  ),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Text(
+                                name,
+                                maxLines: 1,
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  height: 1.05,
+                                  letterSpacing: -0.2,
                                 ),
-                                const SizedBox(width: 14),
-                                Text(
-                                  LeagueMoneyFormat.points(puntosTotales),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
-                                  style: theme.textTheme.headlineSmall?.copyWith(
-                                    fontWeight: FontWeight.w900,
-                                    color: const Color(0xFFFF6D00),
-                                    height: 1,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                           const SizedBox(height: 8),
                           _PlayerPointsTrendBadge(
-                            pointsLabel: LeagueMoneyFormat.points(
-                              puntosTotales,
-                            ),
+                            pointsLabel: pointsLabel,
                             currentValue: valor,
                             previousValue: valorAnterior,
                             showBottomPoints: false,
@@ -1144,37 +1097,89 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                               ),
                             ),
                           ],
-                          if (canOffer && ownerLabel.isNotEmpty) ...[
-                            const SizedBox(height: 10),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colorScheme.secondaryContainer
-                                    .withValues(alpha: 0.45),
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              child: Text(
-                                ll.ownerNamed(ownerLabel),
-                                style: theme.textTheme.labelMedium?.copyWith(
-                                  color: colorScheme.onSecondaryContainer,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ],
                         ],
                       ),
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 14),
+                          child: Text(
+                            pointsLabel,
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0xFFFF6D00),
+                              height: 1,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        _ProfileTeamShield(
+                          idEquipo: idEquipo,
+                          nombreEquipo: nombreEquipo,
+                          fotoEquipoUrl: fotoEquipoUrl,
+                          onTap: idEquipo > 0
+                              ? () => _openCatalogTeamSquadFromProfile(
+                                    idEquipo: idEquipo,
+                                    nombreEquipo: nombreEquipo,
+                                    fotoEquipoUrl: fotoEquipoUrl,
+                                  )
+                              : null,
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
           ),
+          if (showOwnerRow)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: colorScheme.secondaryContainer.withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.35),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.person_outline_rounded,
+                        size: 18,
+                        color: colorScheme.onSecondaryContainer,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          ll.ownerNamed(ownerLabel),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: colorScheme.onSecondaryContainer,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+            padding: EdgeInsets.fromLTRB(16, showOwnerRow ? 16 : 20, 16, 8),
             child: Text(
               ll.leagueDataTitle,
               style: theme.textTheme.titleSmall?.copyWith(
@@ -1272,6 +1277,55 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+class _ProfileTeamShield extends StatelessWidget {
+  const _ProfileTeamShield({
+    required this.idEquipo,
+    required this.nombreEquipo,
+    required this.fotoEquipoUrl,
+    this.onTap,
+  });
+
+  final int idEquipo;
+  final String nombreEquipo;
+  final String? fotoEquipoUrl;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
+    final logo = LeagueTeamLogo(
+      idEquipo: idEquipo,
+      size: 40,
+      networkImageUrl: fotoEquipoUrl,
+    );
+    if (onTap == null) {
+      return SizedBox(width: 46, height: 46, child: Center(child: logo));
+    }
+    return Semantics(
+      button: true,
+      label: nombreEquipo.isEmpty ? ll.seeTeam : ll.seeTeamColon(nombreEquipo),
+      child: Tooltip(
+        message:
+            nombreEquipo.isEmpty ? ll.seeTeam : ll.seeTeamNamed(nombreEquipo),
+        child: Material(
+          color: Colors.transparent,
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: onTap,
+            child: SizedBox(
+              width: 46,
+              height: 46,
+              child: Center(child: logo),
+            ),
+          ),
+        ),
       ),
     );
   }

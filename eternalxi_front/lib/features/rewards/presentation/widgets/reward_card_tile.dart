@@ -50,7 +50,7 @@ class RewardCardTile extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      card.nombre,
+                      rl10n.cardDisplayName(card),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleSmall?.copyWith(
@@ -87,7 +87,7 @@ class RewardCardTile extends StatelessWidget {
                 const SizedBox(height: 4),
               Expanded(
                 child: Text(
-                  card.descripcion,
+                  rl10n.cardDisplayDescription(card),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(

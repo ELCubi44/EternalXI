@@ -36,7 +36,6 @@ class TokenRefreshInterceptor extends QueuedInterceptor {
 
     final refreshToken = await _secureStorage.getRefreshToken();
     if (refreshToken == null || refreshToken.isEmpty) {
-      await onSessionExpired?.call();
       handler.next(err);
       return;
     }
@@ -65,7 +64,7 @@ class TokenRefreshInterceptor extends QueuedInterceptor {
       final response = await _dio.fetch(retryOptions);
       handler.resolve(response);
     } catch (_) {
-      await onSessionExpired?.call();
+      // No cerrar sesión automáticamente: el usuario solo sale con logout manual.
       handler.next(err);
     }
   }
@@ -77,4 +76,5 @@ class TokenRefreshInterceptor extends QueuedInterceptor {
         path.contains('/auth/password-reset/') ||
         path.contains('/auth/email-verification/');
   }
+
 }

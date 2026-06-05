@@ -1,11 +1,47 @@
 import 'package:eternal_xi/app/router.dart';
+import 'package:eternal_xi/core/notifications/push_notification_handler.dart';
 import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/profile/controller/user_preferences_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class EternalXiApp extends StatelessWidget {
+class EternalXiApp extends StatefulWidget {
   const EternalXiApp({super.key});
+
+  @override
+  State<EternalXiApp> createState() => _EternalXiAppState();
+}
+
+class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _lockPortraitOrientation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      PushNotificationHandler.instance.initialize(appRouter);
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _lockPortraitOrientation();
+    }
+  }
+
+  Future<void> _lockPortraitOrientation() {
+    return SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+  }
 
   ThemeData _buildTheme(ColorScheme scheme) {
     return ThemeData(

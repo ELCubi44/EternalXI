@@ -1,10 +1,10 @@
 package com.eternalxi.eternalxi_api.services;
 
+import com.eternalxi.eternalxi_api.util.LeagueAssetUrls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -13,10 +13,10 @@ public class LeagueOfferNotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(LeagueOfferNotificationService.class);
 
-    private final PushNotificationService pushNotificationService;
+    private final UserNotificationService userNotificationService;
 
-    public LeagueOfferNotificationService(PushNotificationService pushNotificationService) {
-        this.pushNotificationService = pushNotificationService;
+    public LeagueOfferNotificationService(UserNotificationService userNotificationService) {
+        this.userNotificationService = userNotificationService;
     }
 
     public void notifyOfferReceived(OfferNotificationPayload payload) {
@@ -29,7 +29,7 @@ public class LeagueOfferNotificationService {
                 + payload.jugadorNombre()
                 + " de "
                 + formatEuro(payload.precio());
-        send(payload.idUsuarioVendedor(), title, body, buildData("offer_received", payload));
+        dispatch(payload.idUsuarioVendedor(), "offer_received", title, body, payload, "market", 0);
     }
 
     public void notifyOfferAccepted(OfferNotificationPayload payload) {
@@ -42,7 +42,7 @@ public class LeagueOfferNotificationService {
                 + payload.jugadorNombre()
                 + " de "
                 + formatEuro(payload.precio());
-        send(payload.idUsuarioComprador(), title, body, buildData("offer_accepted", payload));
+        dispatch(payload.idUsuarioComprador(), "offer_accepted", title, body, payload, "squad", 0);
     }
 
     public void notifyOfferRejected(OfferNotificationPayload payload) {
@@ -55,27 +55,54 @@ public class LeagueOfferNotificationService {
                 + payload.jugadorNombre()
                 + " de "
                 + formatEuro(payload.precio());
-        send(payload.idUsuarioComprador(), title, body, buildData("offer_rejected", payload));
+        dispatch(payload.idUsuarioComprador(), "offer_rejected", title, body, payload, "market", 0);
     }
 
-    private Map<String, String> buildData(String type, OfferNotificationPayload payload) {
-        Map<String, String> data = new HashMap<>();
-        data.put("type", type);
-        data.put("idLiga", String.valueOf(payload.idLiga()));
-        data.put("idLigaJugador", String.valueOf(payload.idLigaJugador()));
-        data.put("idOferta", String.valueOf(payload.idOferta()));
-        data.put("precio", String.valueOf(payload.precio()));
-        data.put("playerName", payload.jugadorNombre());
-        data.put("buyerId", String.valueOf(payload.idUsuarioComprador()));
-        data.put("sellerId", String.valueOf(payload.idUsuarioVendedor()));
-        return data;
-    }
-
-    private void send(Long idUsuario, String title, String body, Map<String, String> data) {
+    private void dispatch(
+            Long idUsuario,
+            String tipo,
+            String title,
+            String body,
+            OfferNotificationPayload payload,
+            String actionTab,
+            int actionSegment
+    ) {
         try {
-            pushNotificationService.sendToUser(idUsuario, title, body, data);
+            Map<String, Object> datos = userNotificationService.datosBase(
+                    payload.idLigaJugador(),
+                    payload.idJugador(),
+                    payload.jugadorNombre(),
+                    LeagueAssetUrls.player(payload.idJugador()),
+                    payload.idUsuarioComprador(),
+                    payload.compradorNombre(),
+                    LeagueAssetUrls.userPhoto(payload.idUsuarioComprador()),
+                    payload.idOferta(),
+                    payload.precio(),
+                    actionTab,
+                    actionSegment
+            );
+            if ("offer_received".equals(tipo)) {
+                datos.put("idUsuarioActor", payload.idUsuarioComprador());
+                datos.put("actorName", payload.compradorNombre());
+                datos.put("actorPhotoUrl", LeagueAssetUrls.userPhoto(payload.idUsuarioComprador()));
+            }
+            String key = userNotificationService.idempotencyKey(
+                    tipo,
+                    String.valueOf(payload.idOferta()),
+                    String.valueOf(idUsuario)
+            );
+            userNotificationService.notifyUser(
+                    idUsuario,
+                    payload.idLiga(),
+                    tipo,
+                    title,
+                    body,
+                    datos,
+                    key,
+                    userNotificationService.pushDataFromDatos(datos, tipo, payload.idLiga())
+            );
         } catch (Exception e) {
-            log.error("Error enviando push de oferta. usuario={}, title={}", idUsuario, title, e);
+            log.error("Error enviando notificación de oferta. usuario={}, title={}", idUsuario, title, e);
         }
     }
 
@@ -87,6 +114,7 @@ public class LeagueOfferNotificationService {
             Long idOferta,
             Long idLiga,
             Long idLigaJugador,
+            Long idJugador,
             Long idUsuarioComprador,
             Long idUsuarioVendedor,
             String compradorNombre,

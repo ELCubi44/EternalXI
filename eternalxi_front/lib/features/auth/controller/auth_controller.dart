@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:eternal_xi/core/storage/secure_storage_service.dart';
 import 'package:eternal_xi/data/models/email_change_confirm_response.dart';
 import 'package:eternal_xi/data/models/user_model.dart';
@@ -56,26 +57,40 @@ class AuthController extends ChangeNotifier {
     _setLoading(true);
     errorMessage = null;
     try {
-      final accessToken = await _secureStorageService.getAccessToken();
       final userId = await _secureStorageService.getUserId();
-      final nickname = await _secureStorageService.getNickname();
-      final correo = await _secureStorageService.getCorreo();
-      final nivel = await _secureStorageService.getNivel();
-      final fotoRaw = await _secureStorageService.getFoto();
+      final accessToken = await _secureStorageService.getAccessToken();
+      final refreshToken = await _secureStorageService.getRefreshToken();
 
-      if (accessToken == null || userId == null) {
+      if (userId == null) {
         currentUser = null;
         return false;
       }
 
-      final fotoTrim = fotoRaw?.trim();
-      currentUser = UserModel(
-        id: int.tryParse(userId) ?? 0,
-        correo: correo ?? '',
-        nickname: nickname ?? '',
-        nivel: int.tryParse(nivel ?? '1') ?? 1,
-        foto: (fotoTrim == null || fotoTrim.isEmpty) ? null : fotoTrim,
-      );
+      final hasAccess = accessToken != null && accessToken.isNotEmpty;
+      final hasRefresh = refreshToken != null && refreshToken.isNotEmpty;
+      if (!hasAccess && !hasRefresh) {
+        currentUser = null;
+        return false;
+      }
+
+      if (hasRefresh) {
+        await _tryRefreshSession(refreshToken!);
+      }
+
+      if (currentUser == null) {
+        final nickname = await _secureStorageService.getNickname();
+        final correo = await _secureStorageService.getCorreo();
+        final nivel = await _secureStorageService.getNivel();
+        final fotoRaw = await _secureStorageService.getFoto();
+        final fotoTrim = fotoRaw?.trim();
+        currentUser = UserModel(
+          id: int.tryParse(userId) ?? 0,
+          correo: correo ?? '',
+          nickname: nickname ?? '',
+          nivel: int.tryParse(nivel ?? '1') ?? 1,
+          foto: (fotoTrim == null || fotoTrim.isEmpty) ? null : fotoTrim,
+        );
+      }
 
       await _syncPushTokenForCurrentUser();
       return true;
@@ -84,6 +99,30 @@ class AuthController extends ChangeNotifier {
       return false;
     } finally {
       _setLoading(false);
+    }
+  }
+
+  Future<_SessionRefreshResult> _tryRefreshSession(String refreshToken) async {
+    try {
+      final result = await _authApiService.refreshSession(
+        refreshToken: refreshToken,
+      );
+      await _secureStorageService.updateTokens(
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+        tokenType: result.tokenType,
+      );
+      await _secureStorageService.saveUser(result.user);
+      currentUser = result.user;
+      return _SessionRefreshResult.success;
+    } on DioException catch (e) {
+      final status = e.response?.statusCode ?? 0;
+      if (status == 401 || status == 403) {
+        return _SessionRefreshResult.invalid;
+      }
+      return _SessionRefreshResult.offline;
+    } catch (_) {
+      return _SessionRefreshResult.offline;
     }
   }
 
@@ -375,3 +414,5 @@ class AuthController extends ChangeNotifier {
     super.dispose();
   }
 }
+
+enum _SessionRefreshResult { success, invalid, offline }

@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.eternalxi.eternalxi_api.validation.InputValidator;
+import com.eternalxi.eternalxi_api.util.LeagueAssetUrls;
 
 import java.security.SecureRandom;
 import java.sql.Connection;
@@ -179,7 +180,7 @@ public class AuthController {
                         rs.getString("correo"),
                         rs.getString("nickname"),
                         rs.getInt("nivel"),
-                        rs.getString("foto")
+                        LeagueAssetUrls.userPhotoIfStored(userId, rs.getString("foto"))
                 );
 
                 AuthResponse response = new AuthResponse(
@@ -888,7 +889,7 @@ public class AuthController {
                             rs.getString("correo"),
                             rs.getString("nickname"),
                             rs.getInt("nivel"),
-                            rs.getString("foto")
+                            LeagueAssetUrls.userPhotoIfStored(rs.getLong("id"), rs.getString("foto"))
                     );
                 }
             }
@@ -915,7 +916,7 @@ public class AuthController {
                         rs.getString("correo"),
                         rs.getString("nickname"),
                         rs.getInt("nivel"),
-                        rs.getString("foto")
+                        LeagueAssetUrls.userPhotoIfStored(rs.getLong("id"), rs.getString("foto"))
                 );
             }
         }

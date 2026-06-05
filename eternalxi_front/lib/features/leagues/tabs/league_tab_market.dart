@@ -19,6 +19,10 @@ import 'package:provider/provider.dart';
 class LeagueTabMarket extends StatefulWidget {
   const LeagueTabMarket({super.key});
 
+  static final ValueNotifier<int?> externalSegmentRequest = ValueNotifier<int?>(
+    null,
+  );
+
   @override
   State<LeagueTabMarket> createState() => _LeagueTabMarketState();
 }
@@ -66,10 +70,35 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
   List<LeagueMarketTeamSummary>? _buyTeams;
   List<LeagueOfferItem> _pendingSentOffers = const [];
 
+  void _handleExternalSegmentRequest() {
+    final request = LeagueTabMarket.externalSegmentRequest.value;
+    if (!mounted || request == null) {
+      return;
+    }
+    LeagueTabMarket.externalSegmentRequest.value = null;
+    if (request < 0 || request > 2) {
+      return;
+    }
+    if (_segment != request) {
+      setState(() => _segment = request);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    LeagueTabMarket.externalSegmentRequest.addListener(
+      _handleExternalSegmentRequest,
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadBuyMarket());
+  }
+
+  @override
+  void dispose() {
+    LeagueTabMarket.externalSegmentRequest.removeListener(
+      _handleExternalSegmentRequest,
+    );
+    super.dispose();
   }
 
   @override

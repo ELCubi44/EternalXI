@@ -41,10 +41,11 @@ public class CatalogService {
                 ps.setString(1, resolvedLocale);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
+                        long seasonId = rs.getLong("id");
                         seasons.add(new SeasonResponse(
-                                rs.getLong("id"),
+                                seasonId,
                                 rs.getString("nombre"),
-                                rs.getString("foto")
+                                LeagueAssetUrls.season(seasonId)
                         ));
                     }
                 }

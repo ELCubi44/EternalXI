@@ -13,9 +13,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 @Service
 public class AssetService {
+
+    private static final Path ETERNALXI_ROOT = Paths.get("/opt/eternalxi");
+
+    private static final Map<String, String> TABLE_ASSET_DIRS = Map.of(
+            "jugadores", "players",
+            "equipos", "teams",
+            "temporadas", "season",
+            "jugadores_cedidos_temporada", "players",
+            "entrenadores", "managers"
+    );
 
     public Resource getPlayerPhoto(Long id) throws SQLException {
         return getPhotoResource("jugadores", id);
@@ -51,23 +62,12 @@ public class AssetService {
                 }
 
                 String foto = rs.getString("foto");
-
                 if (foto == null || foto.isBlank()) {
                     return null;
                 }
 
-                Path filePath;
-                try {
-                    filePath = Paths.get(foto).normalize();
-                } catch (InvalidPathException | SecurityException e) {
-                    return null;
-                }
-
-                if (!Files.exists(filePath)) {
-                    return null;
-                }
-
-                if (!Files.isReadable(filePath) || Files.isDirectory(filePath)) {
+                Path filePath = resolveAssetPath(tableName, foto);
+                if (filePath == null) {
                     return null;
                 }
 
@@ -85,5 +85,44 @@ public class AssetService {
                 return resource;
             }
         }
+    }
+
+    private Path resolveAssetPath(String tableName, String foto) {
+        Path primary = toExistingFile(foto);
+        if (primary != null) {
+            return primary;
+        }
+
+        String assetDir = TABLE_ASSET_DIRS.get(tableName);
+        if (assetDir == null) {
+            return null;
+        }
+
+        String normalized = foto.trim().replace('\\', '/');
+        String fileName = Paths.get(normalized).getFileName().toString();
+        if (fileName.isBlank()) {
+            return null;
+        }
+
+        return toExistingFile(ETERNALXI_ROOT.resolve(assetDir).resolve(fileName).toString());
+    }
+
+    private Path toExistingFile(String pathValue) {
+        if (pathValue == null || pathValue.isBlank()) {
+            return null;
+        }
+
+        Path filePath;
+        try {
+            filePath = Paths.get(pathValue.trim()).normalize();
+        } catch (InvalidPathException | SecurityException e) {
+            return null;
+        }
+
+        if (!Files.exists(filePath) || !Files.isReadable(filePath) || Files.isDirectory(filePath)) {
+            return null;
+        }
+
+        return filePath;
     }
 }

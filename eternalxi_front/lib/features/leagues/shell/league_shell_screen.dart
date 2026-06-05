@@ -1,5 +1,6 @@
 import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/data/models/league_detail.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
@@ -10,6 +11,10 @@ import 'package:eternal_xi/features/leagues/tabs/league_tab_market.dart';
 import 'package:eternal_xi/features/leagues/tabs/league_tab_settings.dart';
 import 'package:eternal_xi/features/leagues/tabs/league_tab_squad.dart';
 import 'package:eternal_xi/features/leagues/tabs/league_tab_standings.dart';
+import 'package:eternal_xi/data/services/user_api_service.dart';
+import 'package:eternal_xi/features/leagues/controller/league_notifications_controller.dart';
+import 'package:eternal_xi/features/leagues/widgets/league_notifications_panel.dart';
+import 'package:eternal_xi/core/notifications/push_notification_handler.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_shell_budget_bar.dart';
 import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.dart';
 import 'package:eternal_xi/shared/widgets/user_tokens_action.dart';
@@ -38,7 +43,11 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
   String? _error;
   int _tabIndex = 0;
   int? _rewardPoints;
+  LeagueNotificationsController? _notificationsController;
   Future<bool> Function()? _lineupLeaveGuard;
+
+  bool _showsBudgetAndNotifications(int tabIndex) =>
+      tabIndex == 0 || tabIndex == 1 || tabIndex == 3;
 
   void _registerLineupLeaveGuard(Future<bool> Function()? guard) {
     _lineupLeaveGuard = guard;
@@ -58,8 +67,13 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
         return;
       }
     }
-    if (mounted) {
+    if (!mounted) {
+      return;
+    }
+    if (context.canPop()) {
       context.pop();
+    } else {
+      context.go(AppRoutes.leagues);
     }
   }
 
@@ -94,7 +108,61 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _load();
+      _initNotifications();
+    });
+  }
+
+  void _initNotifications() {
+    final idUsuario = _effectiveIdUsuario();
+    if (idUsuario == null || widget.leagueId <= 0) {
+      return;
+    }
+    _notificationsController?.dispose();
+    final controller = LeagueNotificationsController(
+      userApiService: context.read<UserApiService>(),
+      idUsuario: idUsuario,
+      idLiga: widget.leagueId,
+    );
+    controller.addListener(_onNotificationsChanged);
+    _notificationsController = controller;
+    PushNotificationHandler.instance.onForegroundMessage =
+        controller.refreshUnreadCount;
+    controller.refreshUnreadCount();
+  }
+
+  void _onNotificationsChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    _notificationsController?.removeListener(_onNotificationsChanged);
+    if (PushNotificationHandler.instance.onForegroundMessage ==
+        _notificationsController?.refreshUnreadCount) {
+      PushNotificationHandler.instance.onForegroundMessage = null;
+    }
+    _notificationsController?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _openNotifications() async {
+    final idUsuario = _effectiveIdUsuario();
+    if (idUsuario == null) {
+      return;
+    }
+    await LeagueNotificationsPanel.show(
+      context,
+      leagueId: widget.leagueId,
+      idUsuario: idUsuario,
+    );
+    await _notificationsController?.refreshUnreadCount();
+    if (_notificationsController != null && mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> _load() async {
@@ -299,10 +367,14 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    LeagueShellBudgetBar(
-                      miDinero: _detail!.miDinero,
-                      onOpenHistory: _openMarketHistory,
-                    ),
+                    if (_showsBudgetAndNotifications(_tabIndex))
+                      LeagueShellBudgetBar(
+                        miDinero: _detail!.miDinero,
+                        onOpenHistory: _openMarketHistory,
+                        onOpenNotifications: _openNotifications,
+                        unreadNotifications:
+                            _notificationsController?.unreadCount ?? 0,
+                      ),
                     if (_refreshing)
                       LinearProgressIndicator(
                         minHeight: 2,

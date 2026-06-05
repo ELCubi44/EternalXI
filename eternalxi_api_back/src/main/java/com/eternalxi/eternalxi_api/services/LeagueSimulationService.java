@@ -45,8 +45,9 @@ public class LeagueSimulationService {
      * jugadores propios disponibles a este número ({@link #buildPreparedLineupWithLoans}).
      */
     private static final int MATCH_MIN_CONVOCATORIA_PLAYERS = MATCH_STARTERS + 3;
-    /** Descenso diario de cansancio para todos los jugadores de liga (cron medianoche). */
-    private static final int DAILY_MIDNIGHT_FATIGUE_DECAY = 2;
+    /** Descenso diario de cansancio (cron medianoche): 2 en ligas solo fin de semana, 4 si hay entresemana. */
+    private static final int DAILY_MIDNIGHT_FATIGUE_DECAY_WEEKEND_ONLY = 2;
+    private static final int DAILY_MIDNIGHT_FATIGUE_DECAY_MIDWEEK_LEAGUE = 4;
     private static final double ATTACK_SEQUENCE_CHANCE = 0.23;
     /** Recuperaciones fuera de jugadas de ataque (no afecta goles/asistencias). */
     private static final double RECOVERY_EVENT_CHANCE = 0.27;
@@ -65,6 +66,9 @@ public class LeagueSimulationService {
 
     @Autowired
     private LeagueLineupService leagueLineupService;
+
+    @Autowired
+    private LeagueLineupAvailabilityNotificationService lineupAvailabilityNotificationService;
 
     public LeagueSimulationService(
             LeaguePlayerPricingService pricingService,
@@ -493,12 +497,17 @@ private void deleteByMatch(Connection conn, String tableName, Long idPartido) th
     public int applyMidnightFatigueDecayAllLeaguePlayers() throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
             String sql = """
-                    UPDATE liga_jugadores
-                    SET cansancio = GREATEST(0, cansancio - ?)
-                    WHERE cansancio > 0
+                    UPDATE liga_jugadores lj
+                    INNER JOIN ligas l ON l.id = lj.id_liga
+                    SET lj.cansancio = GREATEST(
+                        0,
+                        lj.cansancio - CASE WHEN l.permite_entresemana = 1 THEN ? ELSE ? END
+                    )
+                    WHERE lj.cansancio > 0
                     """;
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setInt(1, DAILY_MIDNIGHT_FATIGUE_DECAY);
+                ps.setInt(1, DAILY_MIDNIGHT_FATIGUE_DECAY_MIDWEEK_LEAGUE);
+                ps.setInt(2, DAILY_MIDNIGHT_FATIGUE_DECAY_WEEKEND_ONLY);
                 return ps.executeUpdate();
             }
         }
@@ -2373,6 +2382,8 @@ private void collectPendingFatigueEffects(Map<Long, PendingPlayerEffect> effects
 }
 
 private void applyPendingPlayerEffects(Connection conn, Long idPartido) throws SQLException {
+    Long idLiga = loadLeagueIdForMatch(conn, idPartido);
+
     String sql = """
             SELECT id_liga_jugador,
                    cansancio_final,
@@ -2459,10 +2470,35 @@ private void applyPendingPlayerEffects(Connection conn, Long idPartido) throws S
                 ps.setLong(5, effect.idLigaJugador());
                 ps.executeUpdate();
             }
+            if (idLiga != null && lineupAvailabilityNotificationService != null) {
+                lineupAvailabilityNotificationService.notifyLineupOwnersAfterFinalization(
+                        conn,
+                        idLiga,
+                        idPartido,
+                        effect.idLigaJugador(),
+                        effect.estadoFinal()
+                );
+            }
         }
     }
 
     deletePendingPlayerEffects(conn, idPartido);
+}
+
+private Long loadLeagueIdForMatch(Connection conn, Long idPartido) throws SQLException {
+    String sql = """
+            SELECT jo.id_liga
+            FROM partidos_jornada pj
+            INNER JOIN jornadas jo ON jo.id = pj.id_jornada
+            WHERE pj.id = ?
+            LIMIT 1
+            """;
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setLong(1, idPartido);
+        try (ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getLong("id_liga") : null;
+        }
+    }
 }
 
 private void deletePendingPlayerEffects(Connection conn, Long idPartido) throws SQLException {

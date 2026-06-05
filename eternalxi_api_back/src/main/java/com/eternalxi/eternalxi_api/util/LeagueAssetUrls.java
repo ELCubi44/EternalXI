@@ -10,6 +10,8 @@ public final class LeagueAssetUrls {
     public static final String PLAYERS = "/api/v1/assets/players/";
     public static final String MANAGERS = "/api/v1/assets/managers/";
     public static final String LOAN_PLAYERS = "/api/v1/assets/loan-players/";
+    public static final String SEASONS = "/api/v1/assets/seasons/";
+    public static final String USERS = "/api/v1/users/";
 
     private LeagueAssetUrls() {
     }
@@ -44,6 +46,28 @@ public final class LeagueAssetUrls {
             return null;
         }
         return LOAN_PLAYERS + idJugadorCedidoTemporada;
+    }
+
+    public static String season(Long idTemporada) {
+        if (idTemporada == null || idTemporada <= 0) {
+            return null;
+        }
+        return SEASONS + idTemporada;
+    }
+
+    public static String userPhoto(Long idUsuario) {
+        if (idUsuario == null || idUsuario <= 0) {
+            return null;
+        }
+        return USERS + idUsuario + "/photo";
+    }
+
+    /** URL pública de perfil si el usuario tiene fichero guardado (no el nombre en disco). */
+    public static String userPhotoIfStored(Long idUsuario, String storedFoto) {
+        if (storedFoto == null || storedFoto.isBlank()) {
+            return null;
+        }
+        return userPhoto(idUsuario);
     }
 
     public static String playerOrLoan(Long idJugador, Integer idJugadorCedidoTemporada) {

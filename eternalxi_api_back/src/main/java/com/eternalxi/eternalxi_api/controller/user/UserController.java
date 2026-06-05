@@ -8,6 +8,7 @@ import com.eternalxi.eternalxi_api.dto.user.UpdateUserRequest;
 import com.eternalxi.eternalxi_api.dto.user.UserPreferencesResponse;
 import com.eternalxi.eternalxi_api.dto.user.UserResourcesResponse;
 import com.eternalxi.eternalxi_api.dto.user.UserResponse;
+import com.eternalxi.eternalxi_api.util.LeagueAssetUrls;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -59,7 +60,7 @@ public class UserController {
                         rs.getString("correo"),
                         rs.getString("nickname"),
                         rs.getInt("nivel"),
-                        rs.getString("foto")
+                        LeagueAssetUrls.userPhotoIfStored(rs.getLong("id"), rs.getString("foto"))
                 );
 
                 return ResponseEntity.ok(user);

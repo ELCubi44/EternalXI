@@ -1,6 +1,7 @@
 import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:eternal_xi/data/models/league_player_round_stats.dart';
+import 'package:eternal_xi/features/leagues/utils/league_jornada_points_display.dart';
 import 'package:eternal_xi/features/leagues/utils/league_round_stat_display.dart';
 import 'package:eternal_xi/features/leagues/utils/league_saves_stat_visibility.dart';
 import 'package:flutter/foundation.dart';
@@ -317,9 +318,11 @@ class _LeaguePlayerProfileRoundsSectionState
                   itemBuilder: (context, i) {
                     final rr = _rounds[i];
                     final sel = i == _selected;
-                    final chipLabel = rr.numeroJornada > 0
-                        ? 'J${rr.numeroJornada}'
-                        : 'J';
+                    final chipLabel = leagueJornadaChipLabel(
+                      estadoJornada: rr.estadoJornada,
+                      numeroJornada: rr.numeroJornada,
+                      ll: ll,
+                    );
                     return ChoiceChip(
                       label: Text(chipLabel),
                       selected: sel,
@@ -367,7 +370,9 @@ class _LeaguePlayerProfileRoundsSectionState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        stat.numeroJornada > 0
+                        leagueJornadaIsInProgress(stat.estadoJornada)
+                            ? ll.roundInProgressMatchday
+                            : stat.numeroJornada > 0
                             ? ll.matchday(stat.numeroJornada)
                             : '—',
                         style: theme.textTheme.titleMedium?.copyWith(
@@ -384,13 +389,15 @@ class _LeaguePlayerProfileRoundsSectionState
                           ),
                         ),
                       ],
-                      const SizedBox(height: 12),
-                      _StatLine(
-                        icon: Icons.stars_rounded,
-                        label: ll.statPoints,
-                        value: LeagueMoneyFormat.points(stat.puntos),
-                        emphasized: true,
-                      ),
+                      if (leagueJornadaShowsGrantedPoints(stat.estadoJornada)) ...[
+                        const SizedBox(height: 12),
+                        _StatLine(
+                          icon: Icons.stars_rounded,
+                          label: ll.statPoints,
+                          value: LeagueMoneyFormat.points(stat.puntos),
+                          emphasized: true,
+                        ),
+                      ],
                       for (final row in statRows)
                         _StatLine(
                           icon: row.icon,

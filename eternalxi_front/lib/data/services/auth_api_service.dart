@@ -66,6 +66,16 @@ class AuthApiService {
     });
   }
 
+  Future<AuthResponseModel> refreshSession({
+    required String refreshToken,
+  }) async {
+    final response = await _apiClient.dio.post(
+      '${ApiConstants.auth}/refresh',
+      data: {'refreshToken': refreshToken},
+    );
+    return AuthResponseModel.fromJson(response.data as Map<String, dynamic>);
+  }
+
   Future<ApiMessageModel> requestPasswordReset({required String correo}) async {
     return _postMessage('${ApiConstants.auth}/password-reset/request', {
       'correo': correo,

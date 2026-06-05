@@ -945,7 +945,7 @@ public class AccountProgressService {
         }
         List<Long> finalized = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(
-                "SELECT id FROM jornadas WHERE id_liga = ? AND estado = 'FINALIZADA' ORDER BY numero_jornada ASC")) {
+                "SELECT id FROM jornadas WHERE id_liga = ? AND estado = 'FINALIZADA' ORDER BY numero ASC")) {
             ps.setLong(1, idLiga);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

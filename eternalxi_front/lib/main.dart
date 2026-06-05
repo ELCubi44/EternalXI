@@ -17,11 +17,19 @@ import 'package:eternal_xi/features/profile/controller/user_preferences_controll
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest_all.dart' as tzdata;
 
+Future<void> _lockPortraitOrientation() {
+  return SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await _lockPortraitOrientation();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -67,10 +75,7 @@ Future<void> main() async {
               secureStorageService: context.read<SecureStorageService>(),
               userApiService: context.read<UserApiService>(),
             );
-            context.read<ApiClient>().attachSessionExpiredHandler(() async {
-              await auth.forceLogout();
-              appRouter.go(AppRoutes.login);
-            });
+            // Sesión persistente: no expulsar al login automáticamente.
             return auth;
           },
         ),

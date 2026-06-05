@@ -10,8 +10,8 @@ server.forward-headers-strategy=framework
 server.tomcat.max-http-form-post-size=2MB
 
 eternalxi.security.jwt-secret=${ETERNALXI_JWT_SECRET}
-eternalxi.security.jwt-access-ttl-minutes=120
-eternalxi.security.jwt-refresh-ttl-days=30
+eternalxi.security.jwt-access-ttl-minutes=43200
+eternalxi.security.jwt-refresh-ttl-days=365
 eternalxi.security.auth-rate-limit-per-minute=25
 eternalxi.security.cors-allowed-origins=https://api.eternalxi.com
 

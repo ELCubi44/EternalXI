@@ -7,62 +7,55 @@ import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 @Service
-public class LeagueClauseNotificationService {
+public class LeagueMarketPurchaseNotificationService {
 
-    private static final Logger log = LoggerFactory.getLogger(LeagueClauseNotificationService.class);
+    private static final Logger log = LoggerFactory.getLogger(LeagueMarketPurchaseNotificationService.class);
 
     private final UserNotificationService userNotificationService;
 
-    public LeagueClauseNotificationService(UserNotificationService userNotificationService) {
+    public LeagueMarketPurchaseNotificationService(UserNotificationService userNotificationService) {
         this.userNotificationService = userNotificationService;
     }
 
-    public void notifyClauseExecuted(
-            Long idUsuarioVendedor,
-            Long idUsuarioComprador,
+    public void notifyInstantMarketPurchase(
+            Long idUsuario,
             Long idLiga,
             Long idLigaJugador,
             Long idJugador,
-            String nombreJugador,
-            String nicknameComprador,
+            String playerName,
             long importePagado
     ) {
-        if (idUsuarioVendedor == null || Objects.equals(idUsuarioVendedor, idUsuarioComprador)) {
+        if (idUsuario == null || idLiga == null || idLigaJugador == null) {
             return;
         }
-        String comprador = nicknameComprador != null && !nicknameComprador.isBlank()
-                ? nicknameComprador
-                : "Un rival";
-        String jugador = nombreJugador != null && !nombreJugador.isBlank() ? nombreJugador : "tu jugador";
-        String title = "Te han clausulado un jugador";
-        String body = comprador + " ha fichado a " + jugador + " por " + formatEuro(importePagado);
+        String nombre = playerName == null || playerName.isBlank() ? "tu nuevo jugador" : playerName;
+        String title = "Fichaje del mercado";
+        String body = "Has fichado a " + nombre + " por " + formatEuro(importePagado);
         Map<String, Object> datos = userNotificationService.datosBase(
                 idLigaJugador,
                 idJugador,
-                jugador,
+                nombre,
                 LeagueAssetUrls.player(idJugador),
-                idUsuarioComprador,
-                comprador,
-                LeagueAssetUrls.userPhoto(idUsuarioComprador),
+                null,
+                null,
+                null,
                 null,
                 importePagado,
                 "squad",
                 0
         );
-        String tipo = "CLAUSE_EXECUTED";
+        String tipo = "MARKET_PURCHASE";
         String key = userNotificationService.idempotencyKey(
                 tipo,
                 String.valueOf(idLiga),
                 String.valueOf(idLigaJugador),
-                String.valueOf(idUsuarioVendedor),
-                String.valueOf(idUsuarioComprador)
+                String.valueOf(idUsuario)
         );
         try {
             userNotificationService.notifyUser(
-                    idUsuarioVendedor,
+                    idUsuario,
                     idLiga,
                     tipo,
                     title,
@@ -72,7 +65,13 @@ public class LeagueClauseNotificationService {
                     userNotificationService.pushDataFromDatos(datos, tipo, idLiga)
             );
         } catch (Exception e) {
-            log.warn("No se pudo enviar notificación de cláusula a usuario {}: {}", idUsuarioVendedor, e.getMessage());
+            log.warn(
+                    "No se pudo notificar compra de mercado. liga={}, usuario={}, jugador={}: {}",
+                    idLiga,
+                    idUsuario,
+                    idLigaJugador,
+                    e.getMessage()
+            );
         }
     }
 

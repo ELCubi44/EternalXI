@@ -571,6 +571,16 @@ class LeagueL10n {
       ? 'This team has no players in the catalog.'
       : 'Este equipo no tiene jugadores en catálogo.';
 
+  String get notificationsTitle =>
+      _en ? 'Notifications' : 'Notificaciones';
+  String get markAllNotificationsRead =>
+      _en ? 'Mark all read' : 'Marcar todas leídas';
+  String get notificationsEmpty => _en
+      ? 'You have no notifications yet.'
+      : 'Aún no tienes notificaciones.';
+  String get notificationViewAction =>
+      _en ? 'View' : 'Ver';
+
   String get receivedOffersTitle =>
       _en ? 'Received offers' : 'Ofertas recibidas';
   String get leagueDataTitle =>
@@ -593,6 +603,9 @@ class LeagueL10n {
   String get benchLabel => _en ? 'Bench' : 'Banquillo';
   String get roundPending => _en ? 'Pending' : 'Pendiente';
   String get roundInProgress => _en ? 'In progress' : 'En curso';
+
+  String get roundInProgressMatchday =>
+      _en ? 'Matchday in progress' : 'Jornada en curso';
   String get roundFinished => _en ? 'Finished' : 'Finalizada';
   String get serverBreakdownReference => _en
       ? 'Breakdown (server reference)'

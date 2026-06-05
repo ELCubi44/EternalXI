@@ -33,15 +33,18 @@ public class NightMarketService {
 private final NightMarketNotificationService nightMarketNotificationService;
 private final LeagueMarketHistoryService leagueMarketHistoryService;
 private final AccountProgressService accountProgressService;
+private final LeagueMarketPurchaseNotificationService marketPurchaseNotificationService;
 
 public NightMarketService(
         NightMarketNotificationService nightMarketNotificationService,
         LeagueMarketHistoryService leagueMarketHistoryService,
-        AccountProgressService accountProgressService
+        AccountProgressService accountProgressService,
+        LeagueMarketPurchaseNotificationService marketPurchaseNotificationService
 ) {
     this.nightMarketNotificationService = nightMarketNotificationService;
     this.leagueMarketHistoryService = leagueMarketHistoryService;
     this.accountProgressService = accountProgressService;
+    this.marketPurchaseNotificationService = marketPurchaseNotificationService;
 }
 
     public NightMarketResponse getNightMarket(Long idLiga, Long idUsuario) throws SQLException {
@@ -117,8 +120,20 @@ public NightMarketService(
             );
 
             long nuevoSaldo = saldoActual - cantidadCompra;
+            MarketPurchasePlayerRef purchasePlayer = loadMarketPurchasePlayerRef(conn, idLigaJugador);
 
             conn.commit();
+
+            if (purchasePlayer != null) {
+                marketPurchaseNotificationService.notifyInstantMarketPurchase(
+                        idUsuario,
+                        idLiga,
+                        idLigaJugador,
+                        purchasePlayer.idJugador(),
+                        purchasePlayer.playerName(),
+                        cantidadCompra
+                );
+            }
 
             return new LeagueInstantBuyResponse(
                     idLiga,
@@ -1368,5 +1383,29 @@ private record MarketAwardInfo(
         Long valorActual
 ) {
 }
+
+    private MarketPurchasePlayerRef loadMarketPurchasePlayerRef(Connection conn, Long idLigaJugador)
+            throws SQLException {
+        String sql = """
+                SELECT lj.id_jugador,
+                       COALESCE(NULLIF(j.pila, ''), j.nombre) AS nombre_jugador
+                FROM liga_jugadores lj
+                INNER JOIN jugadores j ON j.id = lj.id_jugador
+                WHERE lj.id = ?
+                LIMIT 1
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idLigaJugador);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                return new MarketPurchasePlayerRef(rs.getLong("id_jugador"), rs.getString("nombre_jugador"));
+            }
+        }
+    }
+
+    private record MarketPurchasePlayerRef(Long idJugador, String playerName) {
+    }
 
 }

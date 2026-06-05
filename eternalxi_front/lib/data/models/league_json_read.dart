@@ -157,7 +157,10 @@ int? readLeagueOptionalProbabilityTitular(Map<String, dynamic> json) {
       double() => v.round(),
       _ => int.tryParse(v.toString().trim()) ?? 0,
     };
-    return n.clamp(0, 95);
+    if (n <= 0) {
+      return 7;
+    }
+    return n.clamp(7, 95);
   }
   return null;
 }

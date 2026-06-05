@@ -7,6 +7,7 @@ import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
 import 'package:eternal_xi/features/leagues/tabs/league_tab_squad.dart';
+import 'package:eternal_xi/features/leagues/utils/league_jornada_points_display.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_standing_row_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -68,9 +69,29 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
       }
       final rounds = results[1] as List<LeagueRoundSummary>;
       final played = rounds
-          .where((LeagueRoundSummary r) => r.finalizada || r.estado == 'FINALIZADA')
+          .where(
+            (LeagueRoundSummary r) => leagueRoundSummaryIsSelectableInStandings(
+              finalizada: r.finalizada,
+              estado: r.estado,
+              actual: r.actual,
+            ),
+          )
           .toList()
-        ..sort((a, b) => b.numero.compareTo(a.numero));
+        ..sort(
+          (a, b) => leagueRoundSummarySortWeight(
+            finalizada: b.finalizada,
+            estado: b.estado,
+            actual: b.actual,
+            numero: b.numero,
+          ).compareTo(
+            leagueRoundSummarySortWeight(
+              finalizada: a.finalizada,
+              estado: a.estado,
+              actual: a.actual,
+              numero: a.numero,
+            ),
+          ),
+        );
 
       setState(() {
         _globalRows = results[0] as List<LeagueStandingRow>;
@@ -229,7 +250,10 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
                           DropdownMenuItem<int?>(
                             value: round.id,
                             child: Text(
-                              round.numero > 0
+                              leagueJornadaIsInProgress(round.estado) ||
+                                      round.actual
+                                  ? ll.roundInProgressMatchday
+                                  : round.numero > 0
                                   ? ll.matchday(round.numero)
                                   : round.nombre,
                             ),
@@ -322,12 +346,21 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
                   final row = _roundAsGlobalRow(roundRow);
                   final isMe =
                       shell != null && row.idUsuario == shell.idUsuario;
+                  final selectedIdx = _playedRounds.indexWhere(
+                    (r) => r.id == _selectedJornadaId,
+                  );
+                  final selectedRound = selectedIdx >= 0
+                      ? _playedRounds[selectedIdx]
+                      : null;
+                  final showRoundPts = selectedRound == null ||
+                      leagueJornadaShowsGrantedPoints(selectedRound.estado);
                   return LeagueStandingRowCard(
                     row: row,
                     isFirstPlace: roundRow.posicion == 1,
                     isCurrentUser: isMe,
                     puntosFantasyJornada: roundRow.puntosFantasyJornada,
                     puntosRecompensaJornada: roundRow.puntosRecompensaJornada,
+                    showRoundFantasyPoints: showRoundPts,
                     onPeerTap: shell == null || row.idUsuario <= 0
                         ? null
                         : () => _openPeer(

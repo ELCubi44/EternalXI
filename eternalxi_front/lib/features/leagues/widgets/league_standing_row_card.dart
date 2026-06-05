@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:eternal_xi/data/models/league_standing_row.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class LeagueStandingRowCard extends StatelessWidget {
   final VoidCallback? onPeerTap;
   final int? puntosFantasyJornada;
   final int? puntosRecompensaJornada;
+  final bool showRoundFantasyPoints;
 
   const LeagueStandingRowCard({
     super.key,
@@ -19,6 +21,7 @@ class LeagueStandingRowCard extends StatelessWidget {
     this.onPeerTap,
     this.puntosFantasyJornada,
     this.puntosRecompensaJornada,
+    this.showRoundFantasyPoints = true,
   });
 
   @override
@@ -57,8 +60,10 @@ class LeagueStandingRowCard extends StatelessWidget {
     final decoration = firstDecoration ?? userTint;
     final ptsLabel = LeagueMoneyFormat.points(row.puntosTotales);
     final valorLabel = LeagueMoneyFormat.teamValue(row.valorTotalEquipo);
+    final ll = context.leagueL10n;
     final showRoundBreakdown =
         puntosFantasyJornada != null && puntosRecompensaJornada != null;
+    final showFantasyPts = showRoundBreakdown && showRoundFantasyPoints;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -105,13 +110,16 @@ class LeagueStandingRowCard extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 6),
-                              if (showRoundBreakdown) ...[
-                                Text(
-                                  'Equipo: ${LeagueMoneyFormat.points(puntosFantasyJornada!.toDouble())}',
-                                  style: theme.textTheme.labelLarge?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                              Text(
+                                valorLabel,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              if (showRoundBreakdown &&
+                                  puntosRecompensaJornada! > 0) ...[
                                 const SizedBox(height: 2),
                                 Text(
                                   'Recompensa: +${LeagueMoneyFormat.points(puntosRecompensaJornada!.toDouble())}',
@@ -120,30 +128,29 @@ class LeagueStandingRowCard extends StatelessWidget {
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                              ] else
-                                Text(
-                                  valorLabel,
-                                  style: theme.textTheme.titleSmall?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                              ],
                             ],
                           ),
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          showRoundBreakdown
+                          showFantasyPts
                               ? LeagueMoneyFormat.points(
                                   puntosFantasyJornada!.toDouble(),
                                 )
+                              : showRoundBreakdown && !showRoundFantasyPoints
+                              ? ll.roundInProgress
                               : ptsLabel,
                           textAlign: TextAlign.end,
-                          style: theme.textTheme.headlineMedium?.copyWith(
+                          style: (showRoundBreakdown && !showFantasyPts
+                                  ? theme.textTheme.titleSmall
+                                  : theme.textTheme.headlineMedium)
+                              ?.copyWith(
                             fontWeight: FontWeight.w900,
                             height: 1.0,
-                            color: isFirstPlace
+                            color: showRoundBreakdown && !showFantasyPts
+                                ? colorScheme.onSurfaceVariant
+                                : isFirstPlace
                                 ? colorScheme.onTertiaryContainer
                                 : colorScheme.onSurface,
                           ),

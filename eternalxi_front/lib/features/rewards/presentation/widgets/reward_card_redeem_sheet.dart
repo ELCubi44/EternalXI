@@ -134,7 +134,7 @@ class _RedeemSheetBody extends StatelessWidget {
             controller: scroll,
             children: [
               Text(
-                c.card.nombre,
+                rl10n.cardDisplayName(c.card),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w800,
@@ -142,7 +142,7 @@ class _RedeemSheetBody extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                c.card.descripcion,
+                rl10n.cardDisplayDescription(c.card),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.white70,
                 ),
@@ -156,7 +156,7 @@ class _RedeemSheetBody extends StatelessWidget {
                 _ClauseTargets(controller: c)
               else if (tipo == 'PROTECT_PLAYER')
                 _ProtectTargets(controller: c)
-              else if (tipo == 'TEMPORARY_VALUE_RECOVERY' || tipo == 'PLAYER_VALUE_BOOST')
+              else if (c.card.isValueBoost)
                 _ValueBoostTargets(controller: c)
               else
                 Text(
@@ -1044,13 +1044,13 @@ class _ValueBoostTargets extends StatelessWidget {
     final rl10n = context.rewardsL10n;
     final list = controller.targets?.objetivos ?? const [];
     if (list.isEmpty) {
-      return _emptyTargets(rl10n.noRecoveryTargets);
+      return _emptyTargets(rl10n.noValueBoostTargets);
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          rl10n.chooseDroppingPlayer,
+          rl10n.chooseValueBoostPlayer,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 6),
@@ -1176,8 +1176,8 @@ class _ValueBoostPlayerCard extends StatelessWidget {
                                 sheetContext: context,
                                 c: controller,
                                 idLigaJugadorObjetivo: p.idLigaJugador,
-                                confirmTitle: rl10n.applyRecoveryTitle,
-                                confirmBody: rl10n.applyRecoveryConfirm(p.nombreJugador),
+                                confirmTitle: rl10n.applyValueBoostTitle,
+                                confirmBody: rl10n.applyValueBoostConfirm(p.nombreJugador),
                               ),
                     ),
                   ),

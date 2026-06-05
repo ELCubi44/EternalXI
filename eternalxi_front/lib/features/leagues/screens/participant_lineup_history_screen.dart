@@ -5,6 +5,7 @@ import 'package:eternal_xi/data/models/league_participant_lineup_history.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.dart';
 import 'package:eternal_xi/features/leagues/utils/league_spanish_datetime.dart';
+import 'package:eternal_xi/features/leagues/utils/league_jornada_points_display.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_participant_lineup_round_pitch.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_player_avatar.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_round_fantasy_substitution_badge.dart';
@@ -292,7 +293,11 @@ class _ParticipantLineupHistoryScreenState
                       itemBuilder: (context, i) {
                         final row = _data!.jornadas[i];
                         final selected = _selectedJornadaId == row.idJornada;
-                        final label = 'J${row.numeroJornada > 0 ? row.numeroJornada : '?'}';
+                        final label = leagueJornadaChipLabel(
+                          estadoJornada: row.estadoJornada,
+                          numeroJornada: row.numeroJornada,
+                          ll: ll,
+                        );
                         return ChoiceChip(
                           label: Text(label),
                           selected: selected,
@@ -376,6 +381,7 @@ class _RoundHeader extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final ll = context.leagueL10n;
     final style = _RoundStatusStyle.fromRound(row, colorScheme, ll);
+    final showPoints = leagueJornadaShowsGrantedPoints(row.estadoJornada);
     final points = detail?.puntosTotales ?? row.puntosTotales;
 
     return Card(
@@ -390,7 +396,9 @@ class _RoundHeader extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                ll.matchdayShort(row.numeroJornada),
+                row.isInProgress
+                    ? ll.roundInProgressMatchday
+                    : ll.matchdayShort(row.numeroJornada),
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: style.foreground,
                   fontWeight: FontWeight.w800,
@@ -403,7 +411,9 @@ class _RoundHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    ll.matchday(row.numeroJornada),
+                    row.isInProgress
+                        ? ll.roundInProgressMatchday
+                        : ll.matchday(row.numeroJornada),
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -428,12 +438,21 @@ class _RoundHeader extends StatelessWidget {
                 ],
               ),
             ),
-            Text(
-              '${points.toStringAsFixed(points % 1 == 0 ? 0 : 1)} pts',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
+            if (showPoints)
+              Text(
+                '${points.toStringAsFixed(points % 1 == 0 ? 0 : 1)} pts',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              )
+            else if (row.isInProgress)
+              Text(
+                ll.roundInProgress,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
-            ),
           ],
         ),
       ),

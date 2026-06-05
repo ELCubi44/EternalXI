@@ -48,7 +48,7 @@ class _CardDetailContent extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    card.nombre,
+                    rl10n.cardDisplayName(card),
                     style: theme.textTheme.headlineSmall?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w800,
@@ -78,7 +78,7 @@ class _CardDetailContent extends StatelessWidget {
             if (effectLabel.isNotEmpty)
               const SizedBox(height: 16),
             Text(
-              card.descripcion,
+              rl10n.cardDisplayDescription(card),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: Colors.white.withValues(alpha: 0.92),
                 height: 1.4,

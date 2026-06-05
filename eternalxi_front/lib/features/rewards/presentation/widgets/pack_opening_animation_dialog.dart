@@ -221,6 +221,8 @@ class _PackOpeningAnimationDialogState extends State<PackOpeningAnimationDialog>
     required RewardsL10n rl10n,
   }) {
     final effectLabel = rl10n.tipoEfectoLabel(card.tipoEfecto);
+    final displayName = rl10n.cardDisplayName(card).trim();
+    final cardTitle = displayName.isNotEmpty ? displayName : card.codigo;
     return Container(
       width: 260,
       height: 360,
@@ -255,7 +257,7 @@ class _PackOpeningAnimationDialogState extends State<PackOpeningAnimationDialog>
                   RarityBadge(rarity: card.rareza),
                   const SizedBox(height: 12),
                   Text(
-                    card.nombre.trim().isNotEmpty ? card.nombre : card.codigo,
+                    cardTitle,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w800,
@@ -284,7 +286,7 @@ class _PackOpeningAnimationDialogState extends State<PackOpeningAnimationDialog>
                     const SizedBox(height: 8),
                   Expanded(
                     child: Text(
-                      card.descripcion,
+                      rl10n.cardDisplayDescription(card),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.white.withValues(alpha: 0.9),
                         height: 1.3,

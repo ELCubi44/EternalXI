@@ -720,7 +720,10 @@ public class LeagueTradeService {
                 rs.getLong("id_usuario_dueno_actual"),
                 rs.getString("nickname_dueno_actual"),
                 rs.getString("nickname_comprador"),
-                rs.getString("foto_usuario_comprador"),
+                LeagueAssetUrls.userPhotoIfStored(
+                        rs.getLong("id_usuario_comprador"),
+                        rs.getString("foto_usuario_comprador")
+                ),
                 null,
                 null,
                 null,
@@ -1193,6 +1196,7 @@ public class LeagueTradeService {
                     buyerId,
                     idLiga,
                     idLigaJugador,
+                    context.idJugador(),
                     context.playerName(),
                     context.buyerNickname(),
                     buyerPay
@@ -1209,7 +1213,8 @@ public class LeagueTradeService {
             Long buyerId
     ) throws SQLException {
         String sql = """
-                SELECT j.nombre AS jugador_nombre,
+                SELECT lj.id_jugador,
+                       j.nombre AS jugador_nombre,
                        j.pila AS jugador_pila,
                        u.nickname AS comprador_nombre
                 FROM liga_jugadores lj
@@ -1228,12 +1233,14 @@ public class LeagueTradeService {
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) {
                     return new ClauseNotificationContext(
+                            null,
                             buildOfferPlayerName(null, null, idLigaJugador),
                             buildUserDisplayName(null, buyerId)
                     );
                 }
 
                 return new ClauseNotificationContext(
+                        rs.getLong("id_jugador"),
                         buildOfferPlayerName(
                                 rs.getString("jugador_nombre"),
                                 rs.getString("jugador_pila"),
@@ -1245,7 +1252,7 @@ public class LeagueTradeService {
         }
     }
 
-    private record ClauseNotificationContext(String playerName, String buyerNickname) {
+    private record ClauseNotificationContext(Long idJugador, String playerName, String buyerNickname) {
     }
 
     private LeagueOfferNotificationService.OfferNotificationPayload loadOfferNotificationPayload(
@@ -1258,7 +1265,8 @@ public class LeagueTradeService {
             Long precio
     ) throws SQLException {
         String sql = """
-                SELECT j.nombre AS jugador_nombre,
+                SELECT lj.id_jugador,
+                       j.nombre AS jugador_nombre,
                        j.pila AS jugador_pila,
                        uc.nickname AS comprador_nombre,
                        uv.nickname AS vendedor_nombre
@@ -1294,6 +1302,7 @@ public class LeagueTradeService {
                         idOferta,
                         idLiga,
                         idLigaJugador,
+                        rs.getLong("id_jugador"),
                         idUsuarioComprador,
                         idUsuarioVendedor,
                         compradorNombre,

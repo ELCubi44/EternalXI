@@ -31,6 +31,12 @@ class RewardCardModel {
 
   bool get isAvailable => estado.trim().toUpperCase() == 'AVAILABLE';
 
+  /// Cartas de subida permanente de valor (incluye alias legacy en BD).
+  bool get isValueBoost {
+    final t = tipoEfecto.trim().toUpperCase();
+    return t == 'PLAYER_VALUE_BOOST' || t == 'TEMPORARY_VALUE_RECOVERY';
+  }
+
   factory RewardCardModel.fromJson(Map<String, dynamic> json) {
     return RewardCardModel(
       idCarta: readLeagueInt(json, const ['idCarta', 'id_carta']),

@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,13 +13,13 @@ public class NightMarketNotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(NightMarketNotificationService.class);
 
-    private final PushNotificationService pushNotificationService;
+    private final UserNotificationService userNotificationService;
 
     @Value("${app.push.market-awards.enabled:true}")
     private boolean enabled;
 
-    public NightMarketNotificationService(PushNotificationService pushNotificationService) {
-        this.pushNotificationService = pushNotificationService;
+    public NightMarketNotificationService(UserNotificationService userNotificationService) {
+        this.userNotificationService = userNotificationService;
     }
 
     public void notifyAwards(List<NightMarketService.MarketAward> awards) {
@@ -48,22 +47,39 @@ public class NightMarketNotificationService {
                 body = "Te has llevado a " + playerName + ". Entra a alinearlo.";
             }
 
-            Map<String, String> data = new HashMap<>();
-            data.put("type", "market_award");
-            data.put("idLiga", String.valueOf(award.idLiga()));
-            data.put("idLigaJugador", String.valueOf(award.idLigaJugador()));
-            data.put("playerName", playerName);
-
+            Map<String, Object> datos = userNotificationService.datosBase(
+                    award.idLigaJugador(),
+                    null,
+                    playerName,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    "squad",
+                    1
+            );
             if (teamName != null && !teamName.isBlank()) {
-                data.put("teamName", teamName);
+                datos.put("teamName", teamName);
             }
-
+            String tipo = "market_award";
+            String key = userNotificationService.idempotencyKey(
+                    tipo,
+                    String.valueOf(award.idLiga()),
+                    String.valueOf(award.idLigaJugador()),
+                    String.valueOf(award.idUsuario())
+            );
             try {
-                pushNotificationService.sendToUser(
+                userNotificationService.notifyUser(
                         award.idUsuario(),
+                        award.idLiga(),
+                        tipo,
                         title,
                         body,
-                        data
+                        datos,
+                        key,
+                        userNotificationService.pushDataFromDatos(datos, tipo, award.idLiga())
                 );
             } catch (Exception e) {
                 log.error(
