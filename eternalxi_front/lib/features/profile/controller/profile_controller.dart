@@ -90,21 +90,4 @@ class ProfileController extends ChangeNotifier {
     }
   }
 
-  Future<bool> deleteAccount(int id) async {
-    _setLoading(true);
-    errorMessage = null;
-    successMessage = null;
-    try {
-      await _userApiService.deleteUser(id);
-      await _secureStorageService.clearSession();
-      user = null;
-      successMessage = 'Cuenta eliminada correctamente';
-      return true;
-    } catch (e) {
-      errorMessage = e.toString().replaceFirst('Exception: ', '');
-      return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
 }

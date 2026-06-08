@@ -142,6 +142,16 @@ class AuthApiService {
     });
   }
 
+  Future<ApiMessageModel> requestAccountDeletion() async {
+    return _postMessage('${ApiConstants.accountDeletion}/request', {});
+  }
+
+  Future<ApiMessageModel> confirmAccountDeletion({required String codigo}) async {
+    return _postMessage('${ApiConstants.accountDeletion}/confirm', {
+      'codigo': codigo,
+    });
+  }
+
   Future<EmailChangeConfirmResponse> confirmNicknameChange({
     required int idUsuario,
     required String nuevoNickname,

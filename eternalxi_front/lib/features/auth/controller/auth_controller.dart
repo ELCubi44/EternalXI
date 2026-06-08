@@ -331,6 +331,28 @@ class AuthController extends ChangeNotifier {
     }
   }
 
+  Future<String?> requestAccountDeletion() async {
+    return _runMessageAction(() => _authApiService.requestAccountDeletion());
+  }
+
+  Future<String?> confirmAccountDeletion({required String codigo}) async {
+    _setLoading(true);
+    errorMessage = null;
+    try {
+      final result = await _authApiService.confirmAccountDeletion(codigo: codigo);
+      await _secureStorageService.clearSession();
+      currentUser = null;
+      notifyListeners();
+      return result.message;
+    } catch (e) {
+      errorMessage = e.toString().replaceFirst('Exception: ', '');
+      notifyListeners();
+      return null;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   Future<String?> _runMessageAction(Future<dynamic> Function() action) async {
     _setLoading(true);
     errorMessage = null;

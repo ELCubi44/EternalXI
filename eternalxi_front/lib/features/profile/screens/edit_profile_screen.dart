@@ -513,7 +513,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(context.l10n.delete),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: Text(context.l10n.deleteAccountRequestEmail),
           ),
         ],
       ),
@@ -522,21 +525,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return;
     }
     final auth = context.read<AuthController>();
-    final ok = await context.read<ProfileController>().deleteAccount(id);
+    final message = await auth.requestAccountDeletion();
     if (!context.mounted) {
       return;
     }
-    if (ok) {
-      await auth.logout();
-      if (context.mounted) {
-        context.go(AppRoutes.login);
-      }
-    } else {
-      final msg = context.read<ProfileController>().errorMessage;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(msg ?? 'No se pudo borrar la cuenta')),
-      );
+    if (message != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      context.push(AppRoutes.deleteAccountConfirm);
+      return;
     }
+    final error = auth.errorMessage;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(error ?? context.l10n.accountDeletionRequestFailed)),
+    );
   }
 }
 

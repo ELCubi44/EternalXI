@@ -15,6 +15,13 @@ eternalxi.security.jwt-refresh-ttl-days=365
 eternalxi.security.auth-rate-limit-per-minute=25
 eternalxi.security.cors-allowed-origins=https://api.eternalxi.com
 
+# Origen público de la API (sin path duplicado). El código añade /api/v1 si la URL no termina ya en /api/v1.
+# Ejemplos válidos:
+#   http://217.154.184.202:8080  → enlace .../api/v1/account/deletion/confirm?token=...
+#   https://api.eternalxi.com/api/v1  → mismo path (no duplica /api/v1)
+# VPS actual:
+eternalxi.app.public-api-base-url=http://217.154.184.202:8080
+
 eternalxi.db.url=${ETERNALXI_DB_URL:jdbc:mysql://localhost:3306/EternalXI}
 eternalxi.db.username=${ETERNALXI_DB_USER}
 eternalxi.db.password=${ETERNALXI_DB_PASSWORD}

@@ -2778,6 +2778,134 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
             LocalDate finLigaEn
     ) {}
 
+    /**
+     * Quita al usuario de todas sus ligas antes de eliminar la cuenta.
+     * Transfiere administración o cierra la liga si es el único participante.
+     */
+    public void removeUserFromAllLeaguesForAccountDeletion(long userId) throws SQLException {
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                removeUserFromAllLeaguesForAccountDeletion(conn, userId);
+                conn.commit();
+            } catch (Exception e) {
+                conn.rollback();
+                if (e instanceof IllegalArgumentException illegal) {
+                    throw illegal;
+                }
+                if (e instanceof SQLException sql) {
+                    throw sql;
+                }
+                throw new SQLException("Error limpiando ligas del usuario: " + e.getMessage(), e);
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        }
+    }
+
+    private void removeUserFromAllLeaguesForAccountDeletion(Connection conn, long userId) throws SQLException {
+        List<Long> leagueIds = loadLeagueIdsForUser(conn, userId);
+        for (Long idLiga : leagueIds) {
+            LeagueData league = findLeagueByIdForUpdate(conn, idLiga);
+            if (league == null) {
+                continue;
+            }
+            boolean isAdmin = Objects.equals(league.idAdministrador(), userId);
+            int otherParticipants = countParticipantsExcludingUser(conn, idLiga, userId);
+
+            if (isAdmin && otherParticipants == 0) {
+                List<Long> participantes = loadLeagueParticipantUserIds(conn, idLiga);
+                accountProgressService.onLeagueClosed(conn, idLiga);
+                for (Long idParticipante : participantes) {
+                    dissolveParticipant(conn, idLiga, idParticipante);
+                }
+                try (PreparedStatement ps = conn.prepareStatement("""
+                        UPDATE ligas SET cerrada_en = CURDATE(), codigo_invitacion = NULL WHERE id = ?
+                        """)) {
+                    ps.setLong(1, idLiga);
+                    ps.executeUpdate();
+                }
+                continue;
+            }
+
+            if (isAdmin && otherParticipants > 0) {
+                Long newAdmin = findFirstOtherParticipantUserId(conn, idLiga, userId);
+                if (newAdmin != null) {
+                    updateLeagueAdmin(conn, idLiga, newAdmin);
+                }
+            }
+
+            dissolveParticipant(conn, idLiga, userId);
+        }
+
+        reassignOrCloseLeaguesStillAdministeredBy(conn, userId);
+    }
+
+    private List<Long> loadLeagueIdsForUser(Connection conn, long userId) throws SQLException {
+        String sql = """
+                SELECT DISTINCT lp.id_liga
+                FROM liga_participantes lp
+                WHERE lp.id_usuario = ?
+                ORDER BY lp.id_liga ASC
+                """;
+        List<Long> ids = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ids.add(rs.getLong("id_liga"));
+                }
+            }
+        }
+        return ids;
+    }
+
+    private Long findFirstOtherParticipantUserId(Connection conn, Long idLiga, long excludeUserId)
+            throws SQLException {
+        String sql = """
+                SELECT id_usuario
+                FROM liga_participantes
+                WHERE id_liga = ? AND id_usuario <> ?
+                ORDER BY id ASC
+                LIMIT 1
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idLiga);
+            ps.setLong(2, excludeUserId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getLong("id_usuario") : null;
+            }
+        }
+    }
+
+    private void reassignOrCloseLeaguesStillAdministeredBy(Connection conn, long userId) throws SQLException {
+        String sql = "SELECT id FROM ligas WHERE id_administrador = ?";
+        List<Long> leagueIds = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    leagueIds.add(rs.getLong("id"));
+                }
+            }
+        }
+
+        for (Long idLiga : leagueIds) {
+            Long replacement = findFirstOtherParticipantUserId(conn, idLiga, userId);
+            if (replacement != null) {
+                updateLeagueAdmin(conn, idLiga, replacement);
+            } else {
+                try (PreparedStatement ps = conn.prepareStatement("""
+                        UPDATE ligas SET cerrada_en = COALESCE(cerrada_en, CURDATE()), codigo_invitacion = NULL
+                        WHERE id = ?
+                        """)) {
+                    ps.setLong(1, idLiga);
+                    ps.executeUpdate();
+                }
+            }
+        }
+    }
+
     private record CandidateLeaguePlayer(
             Long leaguePlayerId,
             Long playerId,

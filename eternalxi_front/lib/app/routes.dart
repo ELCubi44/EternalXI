@@ -12,6 +12,7 @@ class AppRoutes {
   static const changeEmailConfirm = '/profile/change-email/confirm';
   static const changeNicknameRequest = '/profile/change-nickname';
   static const changeNicknameConfirm = '/profile/change-nickname/confirm';
+  static const deleteAccountConfirm = '/profile/delete-account/confirm';
   static const tokensShop = '/profile/tokens-shop';
 
   /// Recompensas; opcionalmente abre una liga concreta (`GET summary` al entrar).

@@ -12,6 +12,7 @@ import 'package:eternal_xi/features/leagues/screens/join_league_screen.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_screen.dart';
 import 'package:eternal_xi/features/leagues/screens/my_leagues_screen.dart';
 import 'package:eternal_xi/features/profile/screens/confirm_change_email_screen.dart';
+import 'package:eternal_xi/features/profile/screens/confirm_account_deletion_screen.dart';
 import 'package:eternal_xi/features/profile/screens/confirm_change_nickname_screen.dart';
 import 'package:eternal_xi/features/profile/screens/edit_profile_screen.dart';
 import 'package:eternal_xi/features/profile/screens/request_change_email_screen.dart';
@@ -104,6 +105,10 @@ final GoRouter appRouter = GoRouter(
               ),
             ),
           ],
+        ),
+        GoRoute(
+          path: 'delete-account/confirm',
+          builder: (context, state) => const ConfirmAccountDeletionScreen(),
         ),
         GoRoute(
           path: 'change-nickname',

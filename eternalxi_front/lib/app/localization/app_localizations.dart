@@ -141,9 +141,19 @@ class AppLocalizations {
       'accountData': 'Datos de la cuenta',
       'profileTokens': 'Recompensas',
       'logout': 'Cerrar sesión',
-      'deleteAccount': 'Borrar cuenta',
-      'deleteAccountConfirmTitle': 'Confirmar borrado',
-      'deleteAccountConfirmBody': 'Esta acción eliminará tu cuenta definitivamente.',
+      'deleteAccount': 'Eliminar cuenta',
+      'deleteAccountConfirmTitle': 'Eliminar cuenta',
+      'deleteAccountConfirmBody':
+          'Esta acción eliminará tu cuenta y los datos asociados (perfil, ligas fantasy, plantillas, mercado y progreso). No podrás recuperarla.\n\nTe enviaremos un correo con un código para confirmar tu identidad.',
+      'deleteAccountRequestEmail': 'Enviar correo de confirmación',
+      'confirmAccountDeletionTitle': 'Confirmar eliminación',
+      'confirmAccountDeletionHint':
+          'Introduce el código que te hemos enviado por correo. También puedes usar el enlace del email.',
+      'accountDeletionCodeLabel': 'Código de confirmación',
+      'accountDeletionCodeInvalid': 'Introduce el código recibido por correo',
+      'confirmAccountDeletionAction': 'Eliminar mi cuenta',
+      'accountDeletedSuccess': 'Cuenta eliminada correctamente',
+      'accountDeletionRequestFailed': 'No se pudo solicitar la eliminación de la cuenta',
       'changeEmailHint': 'Por seguridad confirmamos tu identidad y enviamos un código al correo actual y otro al nuevo antes de aplicar el cambio.',
       'sendVerificationCodes': 'Enviar códigos de verificación',
       'confirmEmailChangeHint': 'Introduce el código recibido en cada correo para confirmar el cambio.',
@@ -317,8 +327,18 @@ class AppLocalizations {
       'profileTokens': 'Rewards',
       'logout': 'Log out',
       'deleteAccount': 'Delete account',
-      'deleteAccountConfirmTitle': 'Confirm deletion',
-      'deleteAccountConfirmBody': 'This action will permanently delete your account.',
+      'deleteAccountConfirmTitle': 'Delete account',
+      'deleteAccountConfirmBody':
+          'This will delete your account and associated data (profile, fantasy leagues, squads, market and progress). You cannot undo this.\n\nWe will email you a code to confirm your identity.',
+      'deleteAccountRequestEmail': 'Send confirmation email',
+      'confirmAccountDeletionTitle': 'Confirm deletion',
+      'confirmAccountDeletionHint':
+          'Enter the code we sent to your email. You can also use the link in that email.',
+      'accountDeletionCodeLabel': 'Confirmation code',
+      'accountDeletionCodeInvalid': 'Enter the code from your email',
+      'confirmAccountDeletionAction': 'Delete my account',
+      'accountDeletedSuccess': 'Account deleted successfully',
+      'accountDeletionRequestFailed': 'Could not request account deletion',
       'changeEmailHint': 'For security, we verify your identity and send a code to your current email and another to the new one before applying the change.',
       'sendVerificationCodes': 'Send verification codes',
       'confirmEmailChangeHint': 'Enter the code received at each email address to confirm the change.',
@@ -500,6 +520,14 @@ class AppLocalizations {
   String get deleteAccount => _t('deleteAccount');
   String get deleteAccountConfirmTitle => _t('deleteAccountConfirmTitle');
   String get deleteAccountConfirmBody => _t('deleteAccountConfirmBody');
+  String get deleteAccountRequestEmail => _t('deleteAccountRequestEmail');
+  String get confirmAccountDeletionTitle => _t('confirmAccountDeletionTitle');
+  String get confirmAccountDeletionHint => _t('confirmAccountDeletionHint');
+  String get accountDeletionCodeLabel => _t('accountDeletionCodeLabel');
+  String get accountDeletionCodeInvalid => _t('accountDeletionCodeInvalid');
+  String get confirmAccountDeletionAction => _t('confirmAccountDeletionAction');
+  String get accountDeletedSuccess => _t('accountDeletedSuccess');
+  String get accountDeletionRequestFailed => _t('accountDeletionRequestFailed');
   String get changeEmailHint => _t('changeEmailHint');
   String get sendVerificationCodes => _t('sendVerificationCodes');
   String get confirmEmailChangeHint => _t('confirmEmailChangeHint');

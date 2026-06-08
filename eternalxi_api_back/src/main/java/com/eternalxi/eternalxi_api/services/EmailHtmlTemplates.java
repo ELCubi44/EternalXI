@@ -87,6 +87,32 @@ final class EmailHtmlTemplates {
         );
     }
 
+    static String accountDeletionConfirmation(String code, String confirmUrl) {
+        return layout(
+                "Confirmar eliminación de cuenta",
+                "Confirma la eliminación de tu cuenta en Eternal XI",
+                """
+                <p style="margin:0 0 16px;font-size:16px;line-height:1.5;color:#E8EAED;">
+                  Has solicitado eliminar tu cuenta de <strong>Eternal XI</strong> y los datos asociados.
+                  Esta acción es <strong>definitiva</strong>.
+                </p>
+                <p style="margin:0 0 12px;font-size:15px;line-height:1.5;color:#E8EAED;">
+                  Introduce este código en la app:
+                </p>
+                %s
+                <p style="margin:20px 0 12px;font-size:15px;line-height:1.5;color:#E8EAED;">
+                  O confirma desde este enlace (válido una sola vez y durante 30 minutos):
+                </p>
+                <p style="margin:0 0 16px;word-break:break-all;">
+                  <a href="%s" style="color:#5B8CFF;">Confirmar eliminación de cuenta</a>
+                </p>
+                <p style="margin:16px 0 0;font-size:14px;line-height:1.5;color:#9AA0A6;">
+                  Si no solicitaste eliminar tu cuenta, ignora este correo. Tu cuenta seguirá activa.
+                </p>
+                """.formatted(codeBlock(code), escapeHtml(confirmUrl))
+        );
+    }
+
     static String emailChangeOldAddressAlert(String nuevoCorreo) {
         return layout(
                 "Aviso de cambio de correo",

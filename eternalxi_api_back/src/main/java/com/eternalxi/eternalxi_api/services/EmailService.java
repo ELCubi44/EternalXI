@@ -87,6 +87,16 @@ public class EmailService {
         );
     }
 
+    public void enviarConfirmacionEliminacionCuenta(String destino, String codigo, String confirmUrl) {
+        enviarHtml(
+                destino,
+                "Confirmar eliminación de cuenta — Eternal XI",
+                EmailHtmlTemplates.accountDeletionConfirmation(codigo, confirmUrl),
+                "Tu código para confirmar la eliminación de cuenta es: " + codigo
+                        + ". Enlace: " + confirmUrl
+        );
+    }
+
     public void enviarCodigoCambioNickname(String destino, String codigo, String nuevoNickname) {
         enviarHtml(
                 destino,

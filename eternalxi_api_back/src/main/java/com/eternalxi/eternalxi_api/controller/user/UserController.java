@@ -363,47 +363,12 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) throws SQLException {
-
-        String sqlSelect = "SELECT foto FROM usuarios WHERE id = ?";
-        String sqlDelete = "DELETE FROM usuarios WHERE id = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement psSelect = conn.prepareStatement(sqlSelect);
-             PreparedStatement psDelete = conn.prepareStatement(sqlDelete)) {
-
-            psSelect.setLong(1, id);
-
-            String fotoActual;
-
-            try (ResultSet rs = psSelect.executeQuery()) {
-                if (!rs.next()) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                            .body(new ApiMessageResponse("Usuario no encontrado"));
-                }
-
-                fotoActual = rs.getString("foto");
-            }
-
-            psDelete.setLong(1, id);
-
-            int filas = psDelete.executeUpdate();
-
-            if (filas <= 0) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ApiMessageResponse("Usuario no encontrado"));
-            }
-
-            if (fotoActual != null && !fotoActual.isBlank()) {
-                try {
-                    Path filePath = Paths.get(userPhotosDir).resolve(fotoActual).normalize();
-                    Files.deleteIfExists(filePath);
-                } catch (IOException ignored) {
-                }
-            }
-
-            return ResponseEntity.noContent().build();
-        }
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.GONE)
+                .body(new ApiMessageResponse(
+                        "La eliminación directa ya no está disponible. "
+                                + "Usa Perfil > Eliminar cuenta en la app o POST /api/v1/account/deletion/request."
+                ));
     }
 
     private boolean userExists(Connection conn, Long id) throws SQLException {
