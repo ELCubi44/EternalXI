@@ -10,6 +10,7 @@ import 'package:eternal_xi/data/models/catalog_team_summary.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.dart';
+import 'package:eternal_xi/features/leagues/utils/league_nav_refresh.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_player_avatar.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
@@ -96,14 +97,21 @@ class _CatalogTeamPlayersScreenState extends State<CatalogTeamPlayersScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final lang = context.watch<UserPreferencesController>().resolvedLanguageTag;
-    if (_loadedForLanguage == lang) {
+    if (_loadedForLanguage != null && _loadedForLanguage != lang) {
+      _loadedForLanguage = lang;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _load());
       return;
     }
     _loadedForLanguage = lang;
-    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
 
   String _title(CatalogTeamSummary? equipo) {
@@ -236,7 +244,7 @@ class _CatalogTeamPlayersScreenState extends State<CatalogTeamPlayersScreen> {
     return 'OTR';
   }
 
-  void _openFantasyPlayer(BuildContext context, CatalogTeamPlayer p) {
+  Future<void> _openFantasyPlayer(BuildContext context, CatalogTeamPlayer p) async {
     final idLiga = _resolvedLeagueId();
     final idUsuario = _resolvedUserId();
     if ((idLiga ?? 0) <= 0 || (idUsuario ?? 0) <= 0 || p.idLigaJugador <= 0) {
@@ -265,15 +273,19 @@ class _CatalogTeamPlayersScreenState extends State<CatalogTeamPlayersScreen> {
       idUsuarioDueno: p.idUsuarioDueno ?? 0,
       puntosTotales: 0,
     );
-    LeagueInnerNavigation.openPlayerProfile(
-      context: context,
-      player: player,
-      leagueId: idLiga,
-      idLigaJugador: p.idLigaJugador,
-      idUsuario: idUsuario,
-      isOwnPlayerHint: null,
-      isMarketPlayerHint: null,
-      isNightMarketPlayerHint: null,
+    await leagueAfterPush(
+      context,
+      LeagueInnerNavigation.openPlayerProfile(
+        context: context,
+        player: player,
+        leagueId: idLiga,
+        idLigaJugador: p.idLigaJugador,
+        idUsuario: idUsuario,
+        isOwnPlayerHint: null,
+        isMarketPlayerHint: null,
+        isNightMarketPlayerHint: null,
+      ),
+      _load,
     );
   }
 }

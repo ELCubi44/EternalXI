@@ -5,6 +5,7 @@ import 'package:eternal_xi/data/models/league_market_team_summary.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/screens/league_market_team_detail_screen.dart';
+import 'package:eternal_xi/features/leagues/utils/league_nav_refresh.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -160,15 +161,19 @@ class _LeagueMarketTeamListScreenState
                   return _TeamListTile(
                     summary: t,
                     mediaLabel: _formatMedia(t.averageValoracion),
-                    onTap: () {
-                      Navigator.of(context).push<void>(
-                        MaterialPageRoute<void>(
-                          builder: (ctx) => LeagueMarketTeamDetailScreen(
-                            summary: t,
-                            leagueId: widget.idLiga,
-                            idUsuarioViewer: widget.idUsuarioViewer,
+                    onTap: () async {
+                      await leagueAfterPush(
+                        context,
+                        Navigator.of(context).push<void>(
+                          MaterialPageRoute<void>(
+                            builder: (ctx) => LeagueMarketTeamDetailScreen(
+                              summary: t,
+                              leagueId: widget.idLiga,
+                              idUsuarioViewer: widget.idUsuarioViewer,
+                            ),
                           ),
                         ),
+                        _load,
                       );
                     },
                   );

@@ -44,6 +44,7 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
   int _tabIndex = 0;
   int? _rewardPoints;
   LeagueNotificationsController? _notificationsController;
+  int _refreshGeneration = 0;
   Future<bool> Function()? _lineupLeaveGuard;
 
   bool _showsBudgetAndNotifications(int tabIndex) =>
@@ -70,11 +71,9 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
     if (!mounted) {
       return;
     }
-    if (context.canPop()) {
-      context.pop();
-    } else {
-      context.go(AppRoutes.leagues);
-    }
+    // Siempre ir a la lista de ligas: context.pop() deja pantalla negra en
+    // varios flujos (atrás del sistema, crear/unirse liga, push desde FCM).
+    context.go(AppRoutes.leagues);
   }
 
   Future<void> _selectTab(int index) async {
@@ -242,9 +241,15 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
         idUsuario: idUsuario,
       );
       if (mounted) {
-        setState(() => _detail = d);
+        setState(() {
+          _detail = d;
+          _refreshGeneration++;
+        });
       }
-      _loadRewardPoints(idUsuario);
+      await Future.wait([
+        _loadRewardPoints(idUsuario),
+        _notificationsController?.refreshUnreadCount() ?? Future.value(),
+      ]);
     } catch (e) {
       if (mounted) {
         final msg = e.toString().replaceFirst('Exception: ', '');
@@ -354,6 +359,7 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
               idUsuario: idUsuario,
               detail: _detail,
               isRefreshing: _refreshing,
+              refreshGeneration: _refreshGeneration,
               reload: _reload,
               selectTab: _selectTab,
               currentTabIndex: _tabIndex,

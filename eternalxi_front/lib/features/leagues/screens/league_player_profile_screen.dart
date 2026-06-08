@@ -11,12 +11,12 @@ import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
 import 'package:eternal_xi/features/leagues/utils/league_display_strings.dart';
+import 'package:eternal_xi/features/leagues/utils/league_offer_flow.dart';
 import 'package:eternal_xi/features/leagues/utils/league_player_availability_icons.dart';
 import 'package:eternal_xi/features/leagues/utils/league_player_estado_titularidad.dart';
 import 'package:eternal_xi/features/leagues/utils/league_player_visible_estado.dart';
 import 'package:eternal_xi/features/leagues/utils/league_starter_probability_ui.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_player_avatar.dart';
-import 'package:eternal_xi/features/leagues/widgets/league_player_offer_sheet.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_player_profile_rounds_section.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
 import 'package:flutter/foundation.dart';
@@ -490,16 +490,13 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
       }
       return;
     }
-    await LeaguePlayerOfferSheet.show(
+    await openLeaguePlayerOfferFlow(
       context: context,
       idLiga: leagueId,
       idUsuario: idUsuario,
       player: _detail?.toSquadPlayer(fallback: widget.player) ?? widget.player,
       miDinero: LeagueShellData.maybeOf(context)?.detail?.miDinero.floor(),
-      onAfterSuccess: () async {
-        final shell = LeagueShellData.maybeOf(context);
-        await Future.wait([_loadDetail(), shell?.reload() ?? Future.value()]);
-      },
+      onAfterSuccess: _loadDetail,
     );
   }
 

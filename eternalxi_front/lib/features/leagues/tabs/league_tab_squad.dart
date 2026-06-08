@@ -9,6 +9,7 @@ import 'package:eternal_xi/data/models/league_squad_player.dart';
 import 'package:eternal_xi/data/models/league_squad_response.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.dart';
+import 'package:eternal_xi/features/leagues/utils/league_nav_refresh.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
 import 'package:eternal_xi/features/leagues/squad/league_squad_lineup_panel.dart';
 import 'package:eternal_xi/features/leagues/squad/league_squad_position_bucket.dart';
@@ -55,6 +56,8 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
 
   int _segment = 0;
   Object? _lastShellDetailRef;
+  int? _handledRefreshGeneration;
+  int? _lastSquadTabIndex;
   bool _hasLoadedAtLeastOnce = false;
   bool _loadScheduled = false;
   LeagueShellData? _registeredShell;
@@ -120,7 +123,21 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
     final detailRef = shell?.detail;
     final detailChanged = !identical(_lastShellDetailRef, detailRef);
     _lastShellDetailRef = detailRef;
-    if (!_hasLoadedAtLeastOnce || detailChanged) {
+    final gen = shell?.refreshGeneration;
+    final refreshChanged = gen != null &&
+        _handledRefreshGeneration != null &&
+        gen != _handledRefreshGeneration;
+    if (gen != null) {
+      _handledRefreshGeneration = gen;
+    }
+    final tabIndex = shell?.currentTabIndex;
+    final squadTabActivated =
+        tabIndex == 2 && _lastSquadTabIndex != null && _lastSquadTabIndex != 2;
+    _lastSquadTabIndex = tabIndex;
+    if (!_hasLoadedAtLeastOnce ||
+        detailChanged ||
+        refreshChanged ||
+        squadTabActivated) {
       _hasLoadedAtLeastOnce = true;
       _scheduleLoad();
     }
@@ -791,16 +808,20 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                 player: player,
                 child: LeagueSquadPlayerTile(
                   player: player,
-                  onTap: () {
+                  onTap: () async {
                     final s = LeagueShellData.maybeOf(context);
-                    LeagueInnerNavigation.openPlayerProfile(
-                      context: context,
-                      player: player,
-                      leagueId: s?.leagueId,
-                      idLigaJugador: player.idLigaJugador,
-                      idUsuario: s?.idUsuario,
-                      isOwnPlayerHint: true,
-                      isMarketPlayerHint: false,
+                    await leagueAfterPush(
+                      context,
+                      LeagueInnerNavigation.openPlayerProfile(
+                        context: context,
+                        player: player,
+                        leagueId: s?.leagueId,
+                        idLigaJugador: player.idLigaJugador,
+                        idUsuario: s?.idUsuario,
+                        isOwnPlayerHint: true,
+                        isMarketPlayerHint: false,
+                      ),
+                      _load,
                     );
                   },
                 ),
@@ -835,7 +856,13 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
         }
       },
       child: RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: () async {
+        final shell = LeagueShellData.maybeOf(context);
+        if (shell != null) {
+          await shell.reload();
+        }
+        await _load();
+      },
       child: CustomScrollView(
         key: const PageStorageKey<String>('league_tab_squad'),
         physics: const AlwaysScrollableScrollPhysics(),
@@ -895,6 +922,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                     return;
                   }
                   setState(() => _segment = next);
+                  _scheduleLoad();
                 },
               ),
             ),
@@ -985,14 +1013,18 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                               if (!context.mounted) {
                                 return;
                               }
-                              LeagueInnerNavigation.openPlayerProfile(
-                                context: context,
-                                player: p,
-                                leagueId: shell.leagueId,
-                                idLigaJugador: p.idLigaJugador,
-                                idUsuario: shell.idUsuario,
-                                isOwnPlayerHint: true,
-                                isMarketPlayerHint: false,
+                              await leagueAfterPush(
+                                context,
+                                LeagueInnerNavigation.openPlayerProfile(
+                                  context: context,
+                                  player: p,
+                                  leagueId: shell.leagueId,
+                                  idLigaJugador: p.idLigaJugador,
+                                  idUsuario: shell.idUsuario,
+                                  isOwnPlayerHint: true,
+                                  isMarketPlayerHint: false,
+                                ),
+                                _load,
                               );
                             },
                           ),

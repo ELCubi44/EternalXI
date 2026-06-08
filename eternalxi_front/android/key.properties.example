@@ -1,0 +1,10 @@
+# Copia este archivo a key.properties y rellena los valores reales.
+# key.properties está en .gitignore: no lo subas al repositorio.
+#
+# storeFile: ruta al .jks/.keystore (absoluta o relativa a eternalxi_front/android/).
+# Recomendado: guardar el keystore fuera del repo, p. ej. C:/Users/TU_USUARIO/.local/eternalxi/upload-keystore.jks
+
+storePassword=CAMBIAR_storePassword
+keyPassword=CAMBIAR_keyPassword
+keyAlias=upload
+storeFile=C:/ruta/al/upload-keystore.jks

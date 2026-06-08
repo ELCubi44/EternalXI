@@ -7,8 +7,9 @@ import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
 import 'package:eternal_xi/features/leagues/utils/league_display_strings.dart';
+import 'package:eternal_xi/features/leagues/utils/league_offer_flow.dart';
+import 'package:eternal_xi/features/leagues/utils/league_shell_money_refresh.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_player_avatar.dart';
-import 'package:eternal_xi/features/leagues/widgets/league_player_offer_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -85,7 +86,10 @@ class _LeagueMarketPlayerBuyCardState extends State<LeagueMarketPlayerBuyCard> {
         idLigaJugador: widget.player.idLigaJugador,
         idUsuario: widget.idUsuario,
       );
-      await Future.wait([shell?.reload() ?? Future.value(), widget.onAfterAction()]);
+      await Future.wait([
+        reloadLeagueShellAfterMoney(context),
+        widget.onAfterAction(),
+      ]);
       if (!mounted) {
         return;
       }
@@ -126,18 +130,13 @@ class _LeagueMarketPlayerBuyCardState extends State<LeagueMarketPlayerBuyCard> {
     final miDinero = shell?.detail?.miDinero.floor();
     setState(() => _busy = true);
     try {
-      await LeaguePlayerOfferSheet.show(
+      await openLeaguePlayerOfferFlow(
         context: context,
         idLiga: widget.idLiga,
         idUsuario: widget.idUsuario,
         player: widget.player,
         miDinero: miDinero,
-        onAfterSuccess: () async {
-          await Future.wait([
-            shell?.reload() ?? Future.value(),
-            widget.onAfterAction(),
-          ]);
-        },
+        onAfterSuccess: widget.onAfterAction,
       );
     } finally {
       if (mounted) {

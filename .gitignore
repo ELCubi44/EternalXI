@@ -1,4 +1,7 @@
 # General
+.cursor/
+NUL
+.local/tmp/
 .idea/
 .vscode/
 *.iml
@@ -6,6 +9,13 @@
 *.log
 
 # Secrets / claves
+eternalxi_front/android/key.properties
+eternalxi_front/android/*.jks
+eternalxi_front/android/*.keystore
+eternalxi_front/android/fastlane/*.json
+eternalxi_front/android/vendor/
+**/google-play-service-account.json
+.local/eternalxi/
 .env
 *.env
 .local/deploy.env

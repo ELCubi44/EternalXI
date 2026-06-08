@@ -33,6 +33,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
   List<LeagueParticipant>? _participants;
   bool _loadingParticipants = false;
   String? _participantsError;
+  int? _handledRefreshGeneration;
 
   @override
   void initState() {
@@ -47,6 +48,26 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
 
   static String _shareMessage(String code) {
     return 'Eternal XI: $code';
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final shell = LeagueShellData.maybeOf(context);
+    if (shell == null) {
+      return;
+    }
+    final gen = shell.refreshGeneration;
+    if (_handledRefreshGeneration == null) {
+      _handledRefreshGeneration = gen;
+      return;
+    }
+    if (gen != _handledRefreshGeneration) {
+      _handledRefreshGeneration = gen;
+      if (shell.detail?.soyAdmin == true) {
+        _loadParticipants();
+      }
+    }
   }
 
   Future<void> _loadParticipants() async {

@@ -72,7 +72,7 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
       }
       final notice = response.postJoinNotice;
       final messenger = ScaffoldMessenger.of(context);
-      context.pushReplacement(AppRoutes.leagueDetail(response.idLiga));
+      context.go(AppRoutes.leagueDetail(response.idLiga));
       if (notice != null) {
         messenger.showSnackBar(
           SnackBar(

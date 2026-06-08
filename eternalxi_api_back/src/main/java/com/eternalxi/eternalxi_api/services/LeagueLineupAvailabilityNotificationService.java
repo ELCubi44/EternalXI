@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,11 +30,25 @@ public class LeagueLineupAvailabilityNotificationService {
         int sent = 0;
         try (Connection conn = DBConnection.getConnection()) {
             List<LiveAvailabilityEvent> events = loadNewlyVisibleAvailabilityEvents(conn);
+            Map<Long, Long> editableJornadaByLiga = new HashMap<>();
             for (LiveAvailabilityEvent event : events) {
+                Long idJornadaEditable = editableJornadaByLiga.computeIfAbsent(
+                        event.idLiga(),
+                        idLiga -> {
+                            try {
+                                return findEditableJornadaId(conn, idLiga);
+                            } catch (SQLException e) {
+                                return null;
+                            }
+                        }
+                );
+                if (idJornadaEditable == null) {
+                    continue;
+                }
                 sent += notifyLineupOwners(
                         conn,
                         event.idLiga(),
-                        event.idJornadaEditable(),
+                        idJornadaEditable,
                         event.idPartido(),
                         event.idLigaJugador(),
                         event.idJugador(),
@@ -160,27 +175,12 @@ public class LeagueLineupAvailabilityNotificationService {
                        lj.id_jugador,
                        COALESCE(NULLIF(j.pila, ''), j.nombre) AS nombre_jugador,
                        pe.estado_final,
-                       pj.id AS id_partido,
-                       j_edit.id AS id_jornada_editable
+                       pj.id AS id_partido
                 FROM partido_efectos_jugador pe
                 INNER JOIN partidos_jornada pj ON pj.id = pe.id_partido_jornada
                 INNER JOIN jornadas jo ON jo.id = pj.id_jornada
                 INNER JOIN liga_jugadores lj ON lj.id = pe.id_liga_jugador AND lj.id_liga = jo.id_liga
                 INNER JOIN jugadores j ON j.id = lj.id_jugador
-                INNER JOIN jornadas j_edit ON j_edit.id_liga = jo.id_liga
-                    AND j_edit.editable_hasta IS NOT NULL
-                    AND j_edit.editable_hasta > NOW()
-                    AND j_edit.inicio_en IS NOT NULL
-                    AND j_edit.inicio_en > NOW()
-                INNER JOIN (
-                    SELECT id_liga, MIN(inicio_en) AS prox_inicio
-                    FROM jornadas
-                    WHERE editable_hasta IS NOT NULL
-                      AND editable_hasta > NOW()
-                      AND inicio_en IS NOT NULL
-                      AND inicio_en > NOW()
-                    GROUP BY id_liga
-                ) nxt ON nxt.id_liga = j_edit.id_liga AND j_edit.inicio_en = nxt.prox_inicio
                 WHERE pj.estado = 'EN_JUEGO'
                   AND pe.estado_final IN ('LESIONADO', 'SANCIONADO')
                   AND pj.inicio_en IS NOT NULL
@@ -206,7 +206,6 @@ public class LeagueLineupAvailabilityNotificationService {
             while (rs.next()) {
                 out.add(new LiveAvailabilityEvent(
                         rs.getLong("id_liga"),
-                        rs.getLong("id_jornada_editable"),
                         rs.getLong("id_partido"),
                         rs.getLong("id_liga_jugador"),
                         rs.getLong("id_jugador"),
@@ -244,22 +243,20 @@ public class LeagueLineupAvailabilityNotificationService {
         String sql = """
                 SELECT j.id
                 FROM jornadas j
-                INNER JOIN (
-                    SELECT id_liga, MIN(inicio_en) AS prox_inicio
-                    FROM jornadas
-                    WHERE id_liga = ?
-                      AND editable_hasta IS NOT NULL
-                      AND editable_hasta > NOW()
-                      AND inicio_en IS NOT NULL
-                      AND inicio_en > NOW()
-                    GROUP BY id_liga
-                ) nxt ON nxt.id_liga = j.id_liga AND j.inicio_en = nxt.prox_inicio
+                INNER JOIN partidos_jornada pj ON pj.id_jornada = j.id
                 WHERE j.id_liga = ?
+                  AND j.estado NOT IN ('EN_CURSO', 'FINALIZADA')
+                GROUP BY j.id, j.numero
+                HAVING COALESCE(MAX(CASE
+                           WHEN pj.estado IN ('EN_JUEGO', 'FINALIZADO') THEN 1
+                           ELSE 0
+                       END), 0) = 0
+                   AND MIN(pj.inicio_en) > NOW()
+                ORDER BY j.numero ASC
                 LIMIT 1
                 """;
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, idLiga);
-            ps.setLong(2, idLiga);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? rs.getLong("id") : null;
             }
@@ -288,7 +285,6 @@ public class LeagueLineupAvailabilityNotificationService {
 
     private record LiveAvailabilityEvent(
             Long idLiga,
-            Long idJornadaEditable,
             Long idPartido,
             Long idLigaJugador,
             Long idJugador,

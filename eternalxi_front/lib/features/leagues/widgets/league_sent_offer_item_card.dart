@@ -6,6 +6,7 @@ import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
 import 'package:eternal_xi/features/leagues/utils/league_display_strings.dart';
+import 'package:eternal_xi/features/leagues/utils/league_shell_money_refresh.dart';
 import 'package:eternal_xi/features/leagues/utils/league_player_photo.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_player_offer_sheet.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
@@ -61,9 +62,8 @@ class _LeagueSentOfferItemCardState extends State<LeagueSentOfferItemCard> {
         idOferta: _offer.idOferta,
         cantidadActual: _offer.cantidad,
         onAfterSuccess: () async {
-          final shell = LeagueShellData.maybeOf(context);
           await Future.wait([
-            shell?.reload() ?? Future.value(),
+            reloadLeagueShellAfterMoney(context),
             widget.onAfterAction(),
           ]);
         },

@@ -1,0 +1,60 @@
+# Publicación SOLO en Prueba cerrada - Alpha (API track: alpha). Nunca en Production.
+CLOSED_TESTING_TRACK = "alpha"
+ALLOWED_TRACKS = ["alpha"].freeze
+
+default_platform(:android)
+
+platform :android do
+  desc "Sube el AAB firmado a Google Play Prueba cerrada - Alpha (track: alpha)"
+  lane :closed_testing do |options|
+    requested_track = (options[:track] || CLOSED_TESTING_TRACK).to_s
+    unless ALLOWED_TRACKS.include?(requested_track)
+      UI.user_error!(
+        "Track no permitido: #{requested_track}. " \
+        "Este proyecto solo publica en Prueba cerrada - Alpha (#{CLOSED_TESTING_TRACK})."
+      )
+    end
+
+    aab_path = options[:aab_path] ||
+      File.expand_path(
+        "../../build/app/outputs/bundle/release/app-release.aab",
+        __dir__
+      )
+
+    json_key_file = ENV["GOOGLE_PLAY_JSON_KEY"] ||
+      File.expand_path("~/.local/eternalxi/google-play-service-account.json")
+
+    unless File.exist?(aab_path)
+      UI.user_error!("No existe el AAB: #{aab_path}")
+    end
+
+    unless File.exist?(json_key_file)
+      UI.user_error!(
+        "No existe el JSON de service account: #{json_key_file}. " \
+        "Define GOOGLE_PLAY_JSON_KEY o colócalo en ~/.local/eternalxi/google-play-service-account.json"
+      )
+    end
+
+    UI.message("Package: es.eternalxi.app")
+    UI.message("Track: #{requested_track} (Prueba cerrada - Alpha)")
+    UI.message("AAB: #{aab_path}")
+    UI.message("Credenciales: #{json_key_file}")
+
+    # release_status: "draft" → obligatorio mientras la app esté en borrador en Play Console.
+    # Cuando la app salga de borrador, cambiar a "completed" para rollout automático a testers.
+    upload_to_play_store(
+      package_name: "es.eternalxi.app",
+      track: requested_track,
+      release_status: "draft",
+      aab: aab_path,
+      json_key: json_key_file,
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true
+    )
+
+    UI.success("AAB subido a Prueba cerrada - Alpha (track: #{requested_track}, status: draft)")
+  end
+end

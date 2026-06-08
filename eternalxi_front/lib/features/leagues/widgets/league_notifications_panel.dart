@@ -1,4 +1,5 @@
 import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:eternal_xi/data/models/user_notification_item.dart';
 import 'package:eternal_xi/features/leagues/controller/league_notifications_controller.dart';
@@ -76,7 +77,28 @@ class LeagueNotificationsPanel extends StatelessWidget {
               child: controller.loading && controller.items.isEmpty
                   ? const Center(child: CircularProgressIndicator())
                   : controller.error != null && controller.items.isEmpty
-                  ? Center(child: Text(controller.error!))
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              controller.error!,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            FilledButton.tonalIcon(
+                              onPressed: controller.loading
+                                  ? null
+                                  : controller.load,
+                              icon: const Icon(Icons.refresh),
+                              label: Text(context.l10n.retry),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
                   : controller.items.isEmpty
                   ? Center(
                       child: Text(

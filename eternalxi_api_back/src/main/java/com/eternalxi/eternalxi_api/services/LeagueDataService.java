@@ -114,6 +114,11 @@ public class LeagueDataService {
                COALESCE(lj.valor_anterior, 0) AS valor_anterior,
                lj.id_usuario_dueno AS id_usuario_dueno,
                CASE
+                   WHEN lj.id_usuario_dueno = ? THEN 'Mercado'
+                   ELSE COALESCE(u.nickname, '')
+               END AS nombre_dueno_visible,
+               COALESCE(u.nickname, '') AS propietario_nickname,
+               CASE
                    WHEN lj.id_usuario_dueno = ? THEN TRUE
                    ELSE FALSE
                END AS es_mercado,
@@ -147,6 +152,7 @@ public class LeagueDataService {
         FROM liga_jugadores lj
         INNER JOIN jugadores j ON j.id = lj.id_jugador
         INNER JOIN equipos e ON e.id = lj.id_equipo
+        LEFT JOIN usuarios u ON u.id = lj.id_usuario_dueno
         WHERE lj.id = ?
           AND lj.id_liga = ?
         LIMIT 1
@@ -164,6 +170,8 @@ Integer cansancio;
 Long valor;
 Long valorAnterior;
 Long idUsuarioDueno;
+String nombreDuenoVisible;
+String propietarioNickname;
 Boolean esMercado;
 Boolean enPoolMercado;
 Boolean enMercadoHoy;
@@ -174,9 +182,10 @@ Integer puntosFantasyTotales;
         try (PreparedStatement ps = conn.prepareStatement(playerSql)) {
             ps.setLong(1, MERCADO_USER_ID);
             ps.setLong(2, MERCADO_USER_ID);
-            ps.setLong(3, idUsuario);
-            ps.setLong(4, idLigaJugador);
-            ps.setLong(5, idLiga);
+            ps.setLong(3, MERCADO_USER_ID);
+            ps.setLong(4, idUsuario);
+            ps.setLong(5, idLigaJugador);
+            ps.setLong(6, idLiga);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) {
@@ -195,6 +204,8 @@ Integer puntosFantasyTotales;
                 valor = rs.getLong("valor");
                 valorAnterior = rs.getLong("valor_anterior");
                 idUsuarioDueno = rs.getLong("id_usuario_dueno");
+                nombreDuenoVisible = rs.getString("nombre_dueno_visible");
+                propietarioNickname = rs.getString("propietario_nickname");
                 esMercado = rs.getBoolean("es_mercado");
                 enPoolMercado = rs.getBoolean("en_pool_mercado");
                 enMercadoHoy = rs.getBoolean("en_mercado_hoy");
@@ -263,6 +274,8 @@ Integer puntosFantasyTotales;
                 valor,
                 valorAnterior,
                 idUsuarioDueno,
+                nombreDuenoVisible,
+                propietarioNickname,
                 esMercado,
                 enPoolMercado,
                 enMercadoHoy,

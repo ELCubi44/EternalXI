@@ -33,11 +33,30 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
   bool _roundLoading = false;
   String? _error;
   String? _roundError;
+  int? _handledRefreshGeneration;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final shell = LeagueShellData.maybeOf(context);
+    if (shell == null) {
+      return;
+    }
+    final gen = shell.refreshGeneration;
+    if (_handledRefreshGeneration == null) {
+      _handledRefreshGeneration = gen;
+      return;
+    }
+    if (gen != _handledRefreshGeneration) {
+      _handledRefreshGeneration = gen;
+      _load();
+    }
   }
 
   Future<void> _load() async {
@@ -209,7 +228,12 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
     final listLoading = _loading || (viewingRound && _roundLoading);
 
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: () async {
+        final s = LeagueShellData.maybeOf(context);
+        if (s != null) {
+          await s.reload();
+        }
+      },
       child: CustomScrollView(
         key: const PageStorageKey<String>('league_tab_standings'),
         physics: const AlwaysScrollableScrollPhysics(),

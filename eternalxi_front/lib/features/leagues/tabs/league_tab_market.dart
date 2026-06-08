@@ -8,6 +8,7 @@ import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/controller/league_night_market_controller.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
 import 'package:eternal_xi/features/leagues/utils/league_player_market_sort.dart';
+import 'package:eternal_xi/features/leagues/utils/league_shell_money_refresh.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_market_player_buy_card.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_night_market_item_card.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_night_market_summary_header.dart';
@@ -63,7 +64,7 @@ class _LeagueMarketView extends StatefulWidget {
 
 class _LeagueMarketViewState extends State<_LeagueMarketView> {
   int _segment = 0;
-  Object? _lastShellDetailRef;
+  int? _handledRefreshGeneration;
 
   bool _buyLoading = true;
   String? _buyError;
@@ -104,21 +105,29 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final detailRef = widget.shell.detail;
-    if (_lastShellDetailRef == null) {
-      _lastShellDetailRef = detailRef;
+    final shell = LeagueShellData.maybeOf(context);
+    if (shell == null) {
       return;
     }
-    if (!identical(_lastShellDetailRef, detailRef)) {
-      _lastShellDetailRef = detailRef;
+    final gen = shell.refreshGeneration;
+    if (_handledRefreshGeneration == null) {
+      _handledRefreshGeneration = gen;
+      return;
+    }
+    if (gen != _handledRefreshGeneration) {
+      _handledRefreshGeneration = gen;
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (!mounted) {
           return;
         }
-        await context.read<LeagueNightMarketController>().refresh();
-        await _loadBuyMarket();
+        await _reloadMarketTabData();
       });
     }
+  }
+
+  Future<void> _reloadMarketTabData() async {
+    await context.read<LeagueNightMarketController>().refresh();
+    await _loadBuyMarket();
   }
 
   Future<void> _loadBuyMarket() async {
@@ -167,16 +176,7 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
   }
 
   Future<void> _refreshAll(BuildContext context) async {
-    final marketErr = await context
-        .read<LeagueNightMarketController>()
-        .refresh();
-    await _loadBuyMarket();
-    await widget.shell.reload();
-    if (marketErr != null && context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(marketErr)));
-    }
+    await reloadLeagueShellAfterMoney(context);
   }
 
   List<Widget> _buildNightMarketSlivers(

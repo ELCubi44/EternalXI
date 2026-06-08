@@ -188,6 +188,12 @@ class LeagueL10n {
       ? 'You cannot send an offer for your own player.'
       : 'No puedes enviar oferta por un jugador tuyo.';
   String get updateOffer => _en ? 'Update offer' : 'Actualizar oferta';
+  String get activeOfferExistsTitle => _en
+      ? 'You already have an active offer'
+      : 'Ya tienes una oferta activa';
+  String activeOfferExistsBody(String amount) => _en
+      ? 'You already have a pending offer of $amount for this player. You can only update or cancel it.'
+      : 'Ya tienes una oferta pendiente de $amount por este jugador. Solo puedes actualizarla o anularla.';
   String sellInstantBody(String amount) => _en
       ? 'This sells instantly at 90% of current value.\n\nEstimated payout: $amount'
       : 'Esta operación vende instantáneamente al 90% del valor actual.\n\nCobro estimado: $amount';

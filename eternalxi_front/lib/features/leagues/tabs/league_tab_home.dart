@@ -188,6 +188,7 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
   bool _loading = true;
   String? _error;
   int? _scheduleLoadedForLeagueId;
+  int? _handledRefreshGeneration;
 
   @override
   void initState() {
@@ -202,6 +203,24 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => _loadSchedule(force: false),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final shell = LeagueShellData.maybeOf(context);
+    if (shell == null) {
+      return;
+    }
+    final gen = shell.refreshGeneration;
+    if (_handledRefreshGeneration == null) {
+      _handledRefreshGeneration = gen;
+      return;
+    }
+    if (gen != _handledRefreshGeneration) {
+      _handledRefreshGeneration = gen;
+      _loadSchedule(force: true);
+    }
   }
 
   @override
@@ -662,9 +681,9 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
 
     return RefreshIndicator(
       onRefresh: () async {
-        await _loadSchedule(force: true);
-        if (shell != null) {
-          await shell.reload();
+        final s = LeagueShellData.maybeOf(context);
+        if (s != null) {
+          await s.reload();
         }
       },
       child: CustomScrollView(

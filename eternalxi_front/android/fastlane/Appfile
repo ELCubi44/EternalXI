@@ -1,0 +1,9 @@
+# Configuración compartida de Fastlane para Eternal XI (Android).
+# Credenciales: nunca en el repo. Usa GOOGLE_PLAY_JSON_KEY o ruta local por defecto.
+
+json_key_file(
+  ENV["GOOGLE_PLAY_JSON_KEY"] ||
+    File.expand_path("~/.local/eternalxi/google-play-service-account.json")
+)
+
+package_name("es.eternalxi.app")

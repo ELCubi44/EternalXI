@@ -17,6 +17,8 @@ public record LeaguePlayerDetailResponse(
         Long valor,
         Long valorAnterior,
         Long idUsuarioDueno,
+        String nombreDuenoVisible,
+        String propietarioNickname,
         Boolean esMercado,
         Boolean enPoolMercado,
         Boolean enMercadoHoy,

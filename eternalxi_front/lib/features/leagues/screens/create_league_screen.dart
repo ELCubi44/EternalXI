@@ -167,7 +167,7 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
       if (!mounted) {
         return;
       }
-      context.pushReplacement(AppRoutes.leagueDetail(response.idLiga));
+      context.go(AppRoutes.leagueDetail(response.idLiga));
     } catch (e) {
       if (mounted) {
         setState(() {

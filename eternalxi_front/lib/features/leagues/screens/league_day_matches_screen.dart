@@ -217,12 +217,14 @@ class _LeagueDayMatchesScreenState extends State<LeagueDayMatchesScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Row(
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 6,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           _StatusChip(phase: phase, compact: true),
                           if (todayChip != null &&
-                              phase != LeagueMatchDisplayPhase.finished) ...[
-                            const SizedBox(width: 8),
+                              phase != LeagueMatchDisplayPhase.finished)
                             Chip(
                               label: Text(todayChip),
                               padding: const EdgeInsets.symmetric(
@@ -233,7 +235,6 @@ class _LeagueDayMatchesScreenState extends State<LeagueDayMatchesScreen> {
                               backgroundColor: colorScheme.tertiaryContainer
                                   .withValues(alpha: 0.7),
                             ),
-                          ],
                         ],
                       ),
                       const SizedBox(height: 14),
@@ -250,13 +251,17 @@ class _LeagueDayMatchesScreenState extends State<LeagueDayMatchesScreen> {
                             ),
                           ),
                           Expanded(
-                            flex: 4,
-                            child: _MatchCenterBadge(
-                              phase: phase,
-                              golesLocal: effectiveGolesLocal,
-                              golesVisitante: effectiveGolesVisitante,
-                              kickoff: kick,
-                              minuteLabel: minuteLabel,
+                            flex: 3,
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: _MatchCenterBadge(
+                                phase: phase,
+                                golesLocal: effectiveGolesLocal,
+                                golesVisitante: effectiveGolesVisitante,
+                                kickoff: kick,
+                                minuteLabel: minuteLabel,
+                                compact: true,
+                              ),
                             ),
                           ),
                           Expanded(
@@ -345,6 +350,7 @@ class _MatchCenterBadge extends StatelessWidget {
     required this.golesVisitante,
     required this.kickoff,
     this.minuteLabel,
+    this.compact = false,
   });
 
   final LeagueMatchDisplayPhase phase;
@@ -352,6 +358,7 @@ class _MatchCenterBadge extends StatelessWidget {
   final int golesVisitante;
   final DateTime? kickoff;
   final String? minuteLabel;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -389,37 +396,13 @@ class _MatchCenterBadge extends StatelessWidget {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: colorScheme.error.withValues(alpha: 0.14),
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.fiber_manual_record,
-                    size: 10,
-                    color: colorScheme.error,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'EN JUEGO',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: colorScheme.error,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.6,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
             Text(
               '$golesLocal - $golesVisitante',
               textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: (compact
+                      ? theme.textTheme.titleLarge
+                      : theme.textTheme.headlineSmall)
+                  ?.copyWith(
                 fontWeight: FontWeight.w900,
               ),
             ),

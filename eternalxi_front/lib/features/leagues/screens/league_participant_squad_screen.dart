@@ -5,6 +5,7 @@ import 'package:eternal_xi/data/models/league_participant_squad_payload.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.dart';
+import 'package:eternal_xi/features/leagues/utils/league_nav_refresh.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
 import 'package:eternal_xi/features/leagues/squad/league_squad_lineup_panel.dart';
 import 'package:eternal_xi/features/leagues/squad/league_squad_position_bucket.dart';
@@ -288,16 +289,20 @@ class _LeagueParticipantSquadScreenState
                 player: player,
                 child: LeagueSquadPlayerTile(
                   player: player,
-                  onTap: () {
-                    LeagueInnerNavigation.openPlayerProfile(
-                      context: context,
-                      player: player,
-                      leagueId: widget.leagueId,
-                      idLigaJugador: player.idLigaJugador,
-                      idUsuario: widget.idUsuarioViewer,
-                      idJornada: _idJornadaParaPerfilPlantilla(_payload!),
-                      isOwnPlayerHint: false,
-                      isMarketPlayerHint: false,
+                  onTap: () async {
+                    await leagueAfterPush(
+                      context,
+                      LeagueInnerNavigation.openPlayerProfile(
+                        context: context,
+                        player: player,
+                        leagueId: widget.leagueId,
+                        idLigaJugador: player.idLigaJugador,
+                        idUsuario: widget.idUsuarioViewer,
+                        idJornada: _idJornadaParaPerfilPlantilla(_payload!),
+                        isOwnPlayerHint: false,
+                        isMarketPlayerHint: false,
+                      ),
+                      _load,
                     );
                   },
                 ),
@@ -375,7 +380,12 @@ class _LeagueParticipantSquadScreenState
                         ],
                         selected: {_segment},
                         onSelectionChanged: (s) {
-                          setState(() => _segment = s.first);
+                          final next = s.first;
+                          if (next == _segment) {
+                            return;
+                          }
+                          setState(() => _segment = next);
+                          _load();
                         },
                       ),
                     ),
@@ -503,16 +513,20 @@ class _LeagueParticipantSquadScreenState
               nickname: p.nickname,
             );
           },
-          onReadOnlyPlayerTap: (player) {
-            LeagueInnerNavigation.openPlayerProfile(
-              context: context,
-              player: player,
-              leagueId: widget.leagueId,
-              idLigaJugador: player.idLigaJugador,
-              idUsuario: widget.idUsuarioViewer,
-              idJornada: _idJornadaParaPerfilLineupAjeno(),
-              isOwnPlayerHint: false,
-              isMarketPlayerHint: false,
+          onReadOnlyPlayerTap: (player) async {
+            await leagueAfterPush(
+              context,
+              LeagueInnerNavigation.openPlayerProfile(
+                context: context,
+                player: player,
+                leagueId: widget.leagueId,
+                idLigaJugador: player.idLigaJugador,
+                idUsuario: widget.idUsuarioViewer,
+                idJornada: _idJornadaParaPerfilLineupAjeno(),
+                isOwnPlayerHint: false,
+                isMarketPlayerHint: false,
+              ),
+              _load,
             );
           },
           onLineupReloaded: () async {},

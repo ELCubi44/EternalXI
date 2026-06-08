@@ -9,6 +9,7 @@ class LeagueShellData extends InheritedWidget {
     required this.idUsuario,
     required this.detail,
     required this.isRefreshing,
+    required this.refreshGeneration,
     required this.reload,
     required this.selectTab,
     required this.currentTabIndex,
@@ -21,6 +22,10 @@ class LeagueShellData extends InheritedWidget {
   final int idUsuario;
   final LeagueDetail? detail;
   final bool isRefreshing;
+
+  /// Incrementa en cada recarga global (botón superior); las pestañas recargan sus datos.
+  final int refreshGeneration;
+
   final Future<void> Function() reload;
   final void Function(int tabIndex) selectTab;
   final int currentTabIndex;
@@ -41,6 +46,7 @@ class LeagueShellData extends InheritedWidget {
   bool updateShouldNotify(LeagueShellData oldWidget) {
     return detail != oldWidget.detail ||
         isRefreshing != oldWidget.isRefreshing ||
+        refreshGeneration != oldWidget.refreshGeneration ||
         leagueId != oldWidget.leagueId ||
         idUsuario != oldWidget.idUsuario ||
         currentTabIndex != oldWidget.currentTabIndex;
