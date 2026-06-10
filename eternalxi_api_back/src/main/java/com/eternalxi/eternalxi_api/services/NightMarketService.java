@@ -28,6 +28,7 @@ public class NightMarketService {
     
     private static final long MARKET_USER_ID = 1L;
     private static final int ITEMS_PER_DAY = 8;
+    private static final int MAX_PLAYERS_PER_SQUAD = 23;
     private static final Logger log = LoggerFactory.getLogger(NightMarketService.class);
 
 private final NightMarketNotificationService nightMarketNotificationService;
@@ -100,6 +101,13 @@ public NightMarketService(
 
             if (saldoActual < cantidadCompra) {
                 throw new IllegalArgumentException("No tienes saldo suficiente para comprar a este jugador");
+            }
+
+            int playerCount = countOwnedPlayers(conn, idLiga, idUsuario);
+            if (playerCount >= MAX_PLAYERS_PER_SQUAD) {
+                throw new IllegalArgumentException(
+                        "Has alcanzado el límite máximo de " + MAX_PLAYERS_PER_SQUAD + " jugadores en tu plantilla"
+                );
             }
 
             int updated = movePlayerFromMarketToUser(conn, idLigaJugador, idLiga, idUsuario);
@@ -244,6 +252,12 @@ public NightMarketService(
                 }
 
                 if (existingBid == null) {
+                    int bidderCount = countOwnedPlayers(conn, idLiga, request.idUsuario());
+                    if (bidderCount >= MAX_PLAYERS_PER_SQUAD) {
+                        throw new IllegalArgumentException(
+                                "Has alcanzado el límite máximo de " + MAX_PLAYERS_PER_SQUAD + " jugadores en tu plantilla"
+                        );
+                    }
                     insertBid(conn, idMercadoDiario, request.idUsuario(), request.cantidad());
                 } else {
                     updateBid(conn, existingBid.id(), request.cantidad());
@@ -1406,6 +1420,23 @@ private record MarketAwardInfo(
     }
 
     private record MarketPurchasePlayerRef(Long idJugador, String playerName) {
+    }
+
+    private int countOwnedPlayers(Connection conn, Long idLiga, Long idUsuario) throws SQLException {
+        String sql = """
+                SELECT COUNT(*) AS total
+                FROM liga_jugadores
+                WHERE id_liga = ?
+                  AND id_usuario_dueno = ?
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idLiga);
+            ps.setLong(2, idUsuario);
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getInt("total");
+            }
+        }
     }
 
 }

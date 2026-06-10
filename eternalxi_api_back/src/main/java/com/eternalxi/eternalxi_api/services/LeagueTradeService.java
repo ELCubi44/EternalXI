@@ -24,6 +24,7 @@ import java.util.Objects;
 public class LeagueTradeService {
 
     private static final long MARKET_USER_ID = 1L;
+    private static final int MAX_PLAYERS_PER_SQUAD = 23;
 
     private final LeagueLineupService leagueLineupService;
     private final LeagueMarketHistoryService leagueMarketHistoryService;
@@ -238,6 +239,13 @@ public class LeagueTradeService {
         long buyerMoney = readParticipantMoney(conn, idLiga, buyerId);
         if (buyerMoney < buyerPay) {
             throw new IllegalArgumentException("No tienes saldo suficiente para ejecutar la cláusula");
+        }
+
+        int buyerCount = countOwnedPlayers(conn, idLiga, buyerId);
+        if (buyerCount >= MAX_PLAYERS_PER_SQUAD) {
+            throw new IllegalArgumentException(
+                    "Has alcanzado el límite máximo de " + MAX_PLAYERS_PER_SQUAD + " jugadores en tu plantilla"
+            );
         }
 
         int moved = transferPlayerToBuyer(conn, idLiga, idLigaJugador, sellerId, buyerId);
@@ -520,6 +528,13 @@ public class LeagueTradeService {
                 }
 
                 ensureParticipant(conn, idLiga, offer.idUsuarioComprador());
+
+                int buyerPlayerCount = countOwnedPlayers(conn, idLiga, offer.idUsuarioComprador());
+                if (buyerPlayerCount >= MAX_PLAYERS_PER_SQUAD) {
+                    throw new IllegalArgumentException(
+                            "El comprador ha alcanzado el límite máximo de " + MAX_PLAYERS_PER_SQUAD + " jugadores en su plantilla"
+                    );
+                }
 
                 int moved = transferPlayerToBuyer(
                         conn,
