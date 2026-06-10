@@ -18,6 +18,8 @@ import 'package:eternal_xi/core/notifications/push_notification_handler.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_shell_budget_bar.dart';
 import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.dart';
 import 'package:eternal_xi/shared/widgets/user_tokens_action.dart';
+import 'package:eternal_xi/app/icons/xi_icons.dart';
+import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -414,28 +416,28 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
               },
               destinations: [
                 NavigationDestination(
-                  icon: const Icon(Icons.home_outlined),
-                  selectedIcon: const Icon(Icons.home_rounded),
+                  icon: const XiIcon(XiIconType.stadium),
+                  selectedIcon: const XiIcon(XiIconType.stadium, color: XiColors.techCyan, filled: true),
                   label: l10n.home,
                 ),
                 NavigationDestination(
-                  icon: const Icon(Icons.format_list_numbered_outlined),
-                  selectedIcon: const Icon(Icons.leaderboard_rounded),
+                  icon: const XiIcon(XiIconType.podium),
+                  selectedIcon: const XiIcon(XiIconType.podium, color: XiColors.techCyan, filled: true),
                   label: l10n.standings,
                 ),
                 NavigationDestination(
-                  icon: const Icon(Icons.sports_soccer_outlined),
-                  selectedIcon: const Icon(Icons.sports_soccer),
+                  icon: const XiIcon(XiIconType.tacticalBoard),
+                  selectedIcon: const XiIcon(XiIconType.tacticalBoard, color: XiColors.techCyan, filled: true),
                   label: l10n.squad,
                 ),
                 NavigationDestination(
-                  icon: const Icon(Icons.storefront_outlined),
-                  selectedIcon: const Icon(Icons.storefront),
+                  icon: const XiIcon(XiIconType.transfer),
+                  selectedIcon: const XiIcon(XiIconType.transfer, color: XiColors.techCyan, filled: true),
                   label: l10n.market,
                 ),
                 NavigationDestination(
-                  icon: const Icon(Icons.settings_outlined),
-                  selectedIcon: const Icon(Icons.settings),
+                  icon: const XiIcon(XiIconType.leagueSettings),
+                  selectedIcon: const XiIcon(XiIconType.leagueSettings, color: XiColors.techCyan, filled: true),
                   label: l10n.settings,
                 ),
               ],

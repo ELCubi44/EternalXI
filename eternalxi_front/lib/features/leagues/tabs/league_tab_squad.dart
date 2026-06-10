@@ -855,185 +855,190 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
           Navigator.of(context).pop();
         }
       },
-      child: RefreshIndicator(
-      onRefresh: () async {
-        final shell = LeagueShellData.maybeOf(context);
-        if (shell != null) {
-          await shell.reload();
-        }
-        await _load();
-      },
-      child: CustomScrollView(
-        key: const PageStorageKey<String>('league_tab_squad'),
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          SliverPadding(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header fijo: título + botón historial (no se desplaza)
+          Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            sliver: SliverToBoxAdapter(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      l10n.squad,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.squad,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                OutlinedButton.icon(
+                  onPressed: _openOwnHistory,
+                  icon: const Icon(Icons.history_rounded, size: 18),
+                  label: Text(l10n.history),
+                ),
+              ],
+            ),
+          ),
+          // Selector Alineación/Plantilla fijo (siempre visible)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: SegmentedButton<int>(
+              segments: [
+                ButtonSegment<int>(
+                  value: 0,
+                  label: Text(l10n.lineup),
+                  icon: const Icon(Icons.grid_on_outlined),
+                ),
+                ButtonSegment<int>(
+                  value: 1,
+                  label: Text(l10n.squad),
+                  icon: const Icon(Icons.groups_2_outlined),
+                ),
+              ],
+              key: ValueKey<int>(_segment),
+              selected: {_segment},
+              onSelectionChanged: (s) async {
+                final next = s.first;
+                if (next == _segment) {
+                  return;
+                }
+                if (_segment == 0 && next != 0) {
+                  final leave = await _confirmLeaveLineupEditor();
+                  if (!leave) {
+                    return;
+                  }
+                }
+                if (!mounted) {
+                  return;
+                }
+                setState(() => _segment = next);
+                _scheduleLoad();
+              },
+            ),
+          ),
+          // Contenido desplazable
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                final shell = LeagueShellData.maybeOf(context);
+                if (shell != null) {
+                  await shell.reload();
+                }
+                await _load();
+              },
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  if (_loading)
+                    const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else if (_error != null)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _SquadError(
+                        message: _error!,
+                        onRetry: _load,
+                        colorScheme: colorScheme,
+                        theme: theme,
                       ),
-                    ),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: _openOwnHistory,
-                    icon: const Icon(Icons.history_rounded, size: 18),
-                    label: Text(l10n.history),
-                  ),
+                    )
+                  else if (_players == null || _players!.isEmpty)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _SquadEmpty(colorScheme: colorScheme, theme: theme),
+                    )
+                  else if (_segment == 0)
+                    _lineupError != null
+                        ? SliverFillRemaining(
+                            hasScrollBody: false,
+                            child: _LineupFetchError(
+                              message: _lineupError!,
+                              onRetry: _reloadLineup,
+                              colorScheme: colorScheme,
+                              theme: theme,
+                            ),
+                          )
+                        : SliverFillRemaining(
+                            hasScrollBody: true,
+                            child: shell == null || _lineup == null
+                                ? const Center(child: CircularProgressIndicator())
+                                : LeagueSquadLineupPanel(
+                                    key: _lineupPanelKey,
+                                    squad: _players!,
+                                    lineup: _lineup!,
+                                    lineupRevision: _lineupRevision,
+                                    idLiga: shell.leagueId,
+                                    idUsuario: shell.idUsuario,
+                                    onLineupReloaded:
+                                        _reloadSquadAndLineupAfterCoachToggle,
+                                    entrenadorAsignado: _selectedCoachVisual(),
+                                    entrenadoresDisponibles: _availableCoaches(),
+                                    entrenadorActivo: _entrenadorActivoVisual(),
+                                    formacionEfectiva: _formacionEfectivaVisual(),
+                                    coachToggleLoading: _coachToggleLoading,
+                                    fetchCoachInventory: _fetchCoachInventoryForPicker,
+                                    onCoachSelectionChanged: _onCoachSelectionChanged,
+                                    coachDirty: _coachDirty,
+                                    implicitLineupDirty: _implicitLineupDirty,
+                                    onSaveCoachChanges: _persistCoachIfDirty,
+                                    onLineupSaveSuccess: () {
+                                      setState(() => _implicitLineupDirty = false);
+                                    },
+                                    onDiscardPendingCoachChanges: () {
+                                      setState(() {
+                                        _pendingCoachActive = null;
+                                        _pendingCoachId = null;
+                                        _pendingCoachSnapshot = null;
+                                        _implicitLineupDirty = false;
+                                      });
+                                    },
+                                    onUnsavedStateChanged: (dirty) {
+                                      if (_lineupPanelReportsUnsaved == dirty) {
+                                        return;
+                                      }
+                                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                                        if (!mounted ||
+                                            _lineupPanelReportsUnsaved == dirty) {
+                                          return;
+                                        }
+                                        setState(
+                                          () => _lineupPanelReportsUnsaved = dirty,
+                                        );
+                                      });
+                                    },
+                                    onProfileLongPress: (p) async {
+                                      if (!await _confirmLeaveLineupEditor()) {
+                                        return;
+                                      }
+                                      if (!context.mounted) {
+                                        return;
+                                      }
+                                      await leagueAfterPush(
+                                        context,
+                                        LeagueInnerNavigation.openPlayerProfile(
+                                          context: context,
+                                          player: p,
+                                          leagueId: shell.leagueId,
+                                          idLigaJugador: p.idLigaJugador,
+                                          idUsuario: shell.idUsuario,
+                                          isOwnPlayerHint: true,
+                                          isMarketPlayerHint: false,
+                                        ),
+                                        _load,
+                                      );
+                                    },
+                                  ),
+                          )
+                  else
+                    ..._buildRosterSlivers(theme, colorScheme),
                 ],
               ),
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            sliver: SliverToBoxAdapter(
-              child: SegmentedButton<int>(
-                segments: [
-                  ButtonSegment<int>(
-                    value: 0,
-                    label: Text(l10n.lineup),
-                    icon: const Icon(Icons.grid_on_outlined),
-                  ),
-                  ButtonSegment<int>(
-                    value: 1,
-                    label: Text(l10n.squad),
-                    icon: const Icon(Icons.groups_2_outlined),
-                  ),
-                ],
-                key: ValueKey<int>(_segment),
-                selected: {_segment},
-                onSelectionChanged: (s) async {
-                  final next = s.first;
-                  if (next == _segment) {
-                    return;
-                  }
-                  if (_segment == 0 && next != 0) {
-                    final leave = await _confirmLeaveLineupEditor();
-                    if (!leave) {
-                      return;
-                    }
-                  }
-                  if (!mounted) {
-                    return;
-                  }
-                  setState(() => _segment = next);
-                  _scheduleLoad();
-                },
-              ),
-            ),
-          ),
-          if (_loading)
-            const SliverFillRemaining(
-              hasScrollBody: false,
-              child: Center(child: CircularProgressIndicator()),
-            )
-          else if (_error != null)
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: _SquadError(
-                message: _error!,
-                onRetry: _load,
-                colorScheme: colorScheme,
-                theme: theme,
-              ),
-            )
-          else if (_players == null || _players!.isEmpty)
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: _SquadEmpty(colorScheme: colorScheme, theme: theme),
-            )
-          else if (_segment == 0)
-            _lineupError != null
-                ? SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: _LineupFetchError(
-                      message: _lineupError!,
-                      onRetry: _reloadLineup,
-                      colorScheme: colorScheme,
-                      theme: theme,
-                    ),
-                  )
-                : SliverFillRemaining(
-                    hasScrollBody: true,
-                    child: shell == null || _lineup == null
-                        ? const Center(child: CircularProgressIndicator())
-                        : LeagueSquadLineupPanel(
-                            key: _lineupPanelKey,
-                            squad: _players!,
-                            lineup: _lineup!,
-                            lineupRevision: _lineupRevision,
-                            idLiga: shell.leagueId,
-                            idUsuario: shell.idUsuario,
-                            onLineupReloaded:
-                                _reloadSquadAndLineupAfterCoachToggle,
-                            entrenadorAsignado: _selectedCoachVisual(),
-                            entrenadoresDisponibles: _availableCoaches(),
-                            entrenadorActivo: _entrenadorActivoVisual(),
-                            formacionEfectiva: _formacionEfectivaVisual(),
-                            coachToggleLoading: _coachToggleLoading,
-                            fetchCoachInventory: _fetchCoachInventoryForPicker,
-                            onCoachSelectionChanged: _onCoachSelectionChanged,
-                            coachDirty: _coachDirty,
-                            implicitLineupDirty: _implicitLineupDirty,
-                            onSaveCoachChanges: _persistCoachIfDirty,
-                            onLineupSaveSuccess: () {
-                              setState(() => _implicitLineupDirty = false);
-                            },
-                            onDiscardPendingCoachChanges: () {
-                              setState(() {
-                                _pendingCoachActive = null;
-                                _pendingCoachId = null;
-                                _pendingCoachSnapshot = null;
-                                _implicitLineupDirty = false;
-                              });
-                            },
-                            onUnsavedStateChanged: (dirty) {
-                              if (_lineupPanelReportsUnsaved == dirty) {
-                                return;
-                              }
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                if (!mounted ||
-                                    _lineupPanelReportsUnsaved == dirty) {
-                                  return;
-                                }
-                                setState(
-                                  () => _lineupPanelReportsUnsaved = dirty,
-                                );
-                              });
-                            },
-                            onProfileLongPress: (p) async {
-                              if (!await _confirmLeaveLineupEditor()) {
-                                return;
-                              }
-                              if (!context.mounted) {
-                                return;
-                              }
-                              await leagueAfterPush(
-                                context,
-                                LeagueInnerNavigation.openPlayerProfile(
-                                  context: context,
-                                  player: p,
-                                  leagueId: shell.leagueId,
-                                  idLigaJugador: p.idLigaJugador,
-                                  idUsuario: shell.idUsuario,
-                                  isOwnPlayerHint: true,
-                                  isMarketPlayerHint: false,
-                                ),
-                                _load,
-                              );
-                            },
-                          ),
-                  )
-          else
-            ..._buildRosterSlivers(theme, colorScheme),
         ],
       ),
-    ),
     );
   }
 }

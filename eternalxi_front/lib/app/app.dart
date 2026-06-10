@@ -1,4 +1,5 @@
 import 'package:eternal_xi/app/router.dart';
+import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/core/notifications/push_notification_handler.dart';
 import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/profile/controller/user_preferences_controller.dart';
@@ -43,13 +44,16 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
     ]);
   }
 
-  ThemeData _buildTheme(ColorScheme scheme) {
+  static ThemeData get _theme {
+    const scheme = XiColors.colorScheme;
+    const lumiare = 'Lumiare';
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
-      scaffoldBackgroundColor: scheme.surface,
-      cardColor: scheme.surfaceContainerHighest,
-      dividerColor: scheme.outlineVariant.withValues(alpha: 0.45),
+      fontFamily: lumiare,
+      scaffoldBackgroundColor: XiColors.background,
+      cardColor: scheme.surfaceContainer,
+      dividerColor: XiColors.divider,
       appBarTheme: AppBarTheme(
         centerTitle: false,
         elevation: 0,
@@ -57,150 +61,265 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         backgroundColor: Colors.transparent,
         foregroundColor: scheme.onSurface,
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: TextStyle(
-          color: scheme.onSurface,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        titleTextStyle: const TextStyle(
+          fontFamily: lumiare,
+          color: XiColors.warmWhite,
           fontSize: 20,
-          fontWeight: FontWeight.w800,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.5,
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: scheme.surfaceContainer,
-        indicatorColor: scheme.secondaryContainer,
+        backgroundColor: XiColors.surfaceContainer,
+        indicatorColor: XiColors.royalBlue.withValues(alpha: 0.35),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return TextStyle(
-              fontSize: 12,
+            return const TextStyle(
+              fontFamily: lumiare,
+              fontSize: 11,
               fontWeight: FontWeight.w700,
-              color: scheme.onSurface,
+              color: XiColors.techCyan,
+              letterSpacing: 0.3,
             );
           }
-          return TextStyle(
-            fontSize: 12,
+          return const TextStyle(
+            fontFamily: lumiare,
+            fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: scheme.onSurfaceVariant,
+            color: XiColors.steelGray,
           );
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return IconThemeData(color: scheme.onSecondaryContainer);
+            return const IconThemeData(color: XiColors.techCyan, size: 24);
           }
-          return IconThemeData(color: scheme.onSurfaceVariant);
+          return const IconThemeData(color: XiColors.steelGray, size: 22);
         }),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: scheme.brightness == Brightness.dark
-            ? scheme.surfaceContainerHigh
-            : scheme.surface,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+        fillColor: XiColors.surfaceElevated,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(
-            color: scheme.outlineVariant.withValues(alpha: 0.65),
-          ),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: XiColors.divider),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: scheme.primary, width: 2),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: XiColors.royalBlue, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: scheme.error),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: XiColors.heroRed),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: XiColors.heroRed, width: 2),
         ),
+        hintStyle: const TextStyle(
+          fontFamily: lumiare,
+          color: XiColors.steelGray,
+          fontSize: 14,
+        ),
+        labelStyle: const TextStyle(
+          fontFamily: lumiare,
+          color: XiColors.techLightGray,
+          fontSize: 14,
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
+          backgroundColor: XiColors.royalBlue,
+          foregroundColor: XiColors.warmWhite,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           textStyle: const TextStyle(
-            fontSize: 16,
+            fontFamily: lumiare,
+            fontSize: 15,
             fontWeight: FontWeight.w700,
+            letterSpacing: 0.5,
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: XiColors.techCyan,
+          side: const BorderSide(color: XiColors.techCyan),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          textStyle: const TextStyle(
+            fontFamily: lumiare,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: scheme.primary,
-          textStyle: const TextStyle(fontWeight: FontWeight.w600),
+          foregroundColor: XiColors.techCyan,
+          textStyle: const TextStyle(
+            fontFamily: lumiare,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
-      snackBarTheme: SnackBarThemeData(
+      snackBarTheme: const SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: scheme.inverseSurface,
-        contentTextStyle: TextStyle(color: scheme.onInverseSurface),
+        backgroundColor: XiColors.surfaceElevated,
+        contentTextStyle: TextStyle(
+          fontFamily: lumiare,
+          color: XiColors.warmWhite,
+          fontSize: 14,
+        ),
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: scheme.surfaceContainerHigh,
+        backgroundColor: XiColors.surfaceElevated,
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: TextStyle(
-          color: scheme.onSurface,
-          fontSize: 20,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        titleTextStyle: const TextStyle(
+          fontFamily: lumiare,
+          color: XiColors.warmWhite,
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
+        ),
+        contentTextStyle: const TextStyle(
+          fontFamily: lumiare,
+          color: XiColors.techLightGray,
+          fontSize: 14,
+          height: 1.5,
+        ),
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: XiColors.surfaceElevated,
+        surfaceTintColor: Colors.transparent,
+        modalBackgroundColor: XiColors.surfaceElevated,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+      ),
+      tabBarTheme: const TabBarThemeData(
+        labelColor: XiColors.techCyan,
+        unselectedLabelColor: XiColors.steelGray,
+        indicatorColor: XiColors.techCyan,
+        labelStyle: TextStyle(
+          fontFamily: lumiare,
+          fontSize: 13,
           fontWeight: FontWeight.w700,
         ),
-        contentTextStyle: TextStyle(color: scheme.onSurfaceVariant, height: 1.4),
+        unselectedLabelStyle: TextStyle(
+          fontFamily: lumiare,
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+        ),
+        dividerColor: XiColors.divider,
       ),
-      bottomSheetTheme: BottomSheetThemeData(
-        backgroundColor: scheme.surfaceContainerHigh,
-        surfaceTintColor: Colors.transparent,
-        modalBackgroundColor: scheme.surfaceContainerHigh,
-      ),
-      tabBarTheme: TabBarThemeData(
-        labelColor: scheme.primary,
-        unselectedLabelColor: scheme.onSurfaceVariant,
-        indicatorColor: scheme.primary,
-        dividerColor: scheme.outlineVariant.withValues(alpha: 0.35),
-      ),
-      listTileTheme: ListTileThemeData(
-        iconColor: scheme.onSurfaceVariant,
-        textColor: scheme.onSurface,
+      listTileTheme: const ListTileThemeData(
+        iconColor: XiColors.steelGray,
+        textColor: XiColors.warmWhite,
+        tileColor: Colors.transparent,
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: scheme.surfaceContainerHigh,
-        selectedColor: scheme.secondaryContainer,
-        checkmarkColor: scheme.onSecondaryContainer,
-        labelStyle: TextStyle(
-          color: scheme.onSurfaceVariant,
+        backgroundColor: XiColors.surfaceElevated,
+        selectedColor: XiColors.royalBlue.withValues(alpha: 0.35),
+        checkmarkColor: XiColors.techCyan,
+        labelStyle: const TextStyle(
+          fontFamily: lumiare,
+          color: XiColors.techLightGray,
+          fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
-        secondaryLabelStyle: TextStyle(
-          color: scheme.onSecondaryContainer,
+        secondaryLabelStyle: const TextStyle(
+          fontFamily: lumiare,
+          color: XiColors.techCyan,
+          fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
-        side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.5)),
+        side: const BorderSide(color: XiColors.divider),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        color: scheme.surfaceContainerHighest,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        color: XiColors.surfaceCard,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: XiColors.divider, width: 0.5),
+        ),
       ),
       segmentedButtonTheme: SegmentedButtonThemeData(
         style: ButtonStyle(
           visualDensity: VisualDensity.compact,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return XiColors.royalBlue;
+            }
+            return XiColors.surfaceElevated;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return XiColors.warmWhite;
+            }
+            return XiColors.steelGray;
+          }),
+          textStyle: WidgetStateProperty.all(
+            const TextStyle(fontFamily: lumiare, fontSize: 12, fontWeight: FontWeight.w600),
+          ),
+          side: WidgetStateProperty.all(const BorderSide(color: XiColors.divider)),
         ),
+      ),
+      textTheme: const TextTheme(
+        displayLarge: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700),
+        displayMedium: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700),
+        displaySmall: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700),
+        headlineLarge: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700),
+        headlineMedium: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700),
+        headlineSmall: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w600),
+        titleLarge: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700, fontSize: 20),
+        titleMedium: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w600, fontSize: 16),
+        titleSmall: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w600, fontSize: 14),
+        bodyLarge: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontSize: 16),
+        bodyMedium: TextStyle(fontFamily: lumiare, color: XiColors.techLightGray, fontSize: 14),
+        bodySmall: TextStyle(fontFamily: lumiare, color: XiColors.steelGray, fontSize: 12),
+        labelLarge: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700, fontSize: 14),
+        labelMedium: TextStyle(fontFamily: lumiare, color: XiColors.techLightGray, fontWeight: FontWeight.w600, fontSize: 12),
+        labelSmall: TextStyle(fontFamily: lumiare, color: XiColors.steelGray, fontWeight: FontWeight.w500, fontSize: 11),
+      ),
+      iconTheme: const IconThemeData(color: XiColors.techLightGray, size: 22),
+      primaryIconTheme: const IconThemeData(color: XiColors.warmWhite, size: 22),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: XiColors.royalBlue,
+        foregroundColor: XiColors.warmWhite,
+        elevation: 4,
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return XiColors.techCyan;
+          return XiColors.steelGray;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return XiColors.techCyan.withValues(alpha: 0.3);
+          }
+          return XiColors.divider;
+        }),
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: XiColors.techCyan,
+        circularTrackColor: XiColors.divider,
+        linearTrackColor: XiColors.divider,
+      ),
+      dividerTheme: const DividerThemeData(
+        color: XiColors.divider,
+        thickness: 0.5,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    const seed = Color(0xFF1E3A5F);
-    final lightScheme = ColorScheme.fromSeed(
-      seedColor: seed,
-      brightness: Brightness.light,
-    );
-    final darkScheme = ColorScheme.fromSeed(
-      seedColor: seed,
-      brightness: Brightness.dark,
-    );
     final preferences = context.watch<UserPreferencesController>();
 
     return MaterialApp.router(
@@ -210,9 +329,9 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       localeResolutionCallback: AppLocalizations.localeResolutionCallback,
-      themeMode: preferences.appThemeMode,
-      theme: _buildTheme(lightScheme),
-      darkTheme: _buildTheme(darkScheme),
+      themeMode: ThemeMode.dark,
+      theme: _theme,
+      darkTheme: _theme,
       routerConfig: appRouter,
     );
   }

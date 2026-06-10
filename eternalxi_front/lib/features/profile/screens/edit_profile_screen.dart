@@ -375,39 +375,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        l10n.themeModeLabel,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      SegmentedButton<UserThemePreference>(
-                        segments: [
-                          ButtonSegment(
-                            value: UserThemePreference.light,
-                            label: Text(l10n.lightOption),
-                            icon: const Icon(Icons.light_mode_outlined),
-                          ),
-                          ButtonSegment(
-                            value: UserThemePreference.dark,
-                            label: Text(l10n.darkOption),
-                            icon: const Icon(Icons.dark_mode_outlined),
-                          ),
-                        ],
-                        selected: {preferencesController.uiThemeSelection},
-                        emptySelectionAllowed: false,
-                        onSelectionChanged: preferencesController.isSaving
-                            ? null
-                            : (selection) {
-                                final value = selection.first;
-                                if (value !=
-                                    preferencesController.storedThemePreference) {
-                                  _saveTheme(value);
-                                }
-                              },
-                      ),
                       const SizedBox(height: 20),
                       Text(
                         l10n.languageLabel,
