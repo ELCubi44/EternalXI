@@ -1065,35 +1065,49 @@ class _LineupActionBar extends StatelessWidget {
     final ll = context.leagueL10n;
     final colorScheme = Theme.of(context).colorScheme;
 
+    final btnStyle = OutlinedButton.styleFrom(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      minimumSize: const Size(0, 38),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+    );
+    final saveStyle = FilledButton.styleFrom(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      minimumSize: const Size(0, 38),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+      backgroundColor: canSave ? colorScheme.primary : colorScheme.surfaceContainerHighest,
+      foregroundColor: canSave ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
+    );
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       child: Row(
         children: [
           Expanded(
             child: OutlinedButton.icon(
-              icon: const Icon(Icons.verified_outlined, size: 16),
+              style: btnStyle,
+              icon: const Icon(Icons.verified_outlined, size: 15),
               onPressed: (blocked || saving) ? null : () => panel?.triggerCaptainPicker(),
               label: Text(l10n.captain, overflow: TextOverflow.ellipsis),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
           Expanded(
             child: OutlinedButton.icon(
-              icon: const Icon(Icons.auto_fix_high_rounded, size: 16),
+              style: btnStyle,
+              icon: const Icon(Icons.auto_fix_high_rounded, size: 15),
               onPressed: blocked ? null : () => panel?.triggerAutofill(),
               label: Text(ll.autoFill, overflow: TextOverflow.ellipsis),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
           Expanded(
             child: FilledButton.icon(
+              style: saveStyle,
               icon: Icon(
                 saving ? Icons.hourglass_top_rounded : Icons.save_rounded,
-                size: 16,
-              ),
-              style: FilledButton.styleFrom(
-                backgroundColor: canSave ? colorScheme.primary : colorScheme.surfaceContainerHighest,
-                foregroundColor: canSave ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
+                size: 15,
               ),
               onPressed: (saving || !canSave) ? null : () => panel?.triggerSave(),
               label: Text(saving ? l10n.saving : l10n.save, overflow: TextOverflow.ellipsis),
