@@ -28,7 +28,7 @@ abstract final class XiColors {
   static const surfaceCard = Color(0xFF152240); // navyBlue ligeramente más oscuro
   static const surfaceElevated = Color(0xFF1C2E52);
   static const surfaceContainer = Color(0xFF0D1628);
-  static const divider = Color(0xFF253B63);
+  static const divider = Color(0xFF4A6490); // visible sobre fondos oscuros
 
   // --- Texto ---
   static const textPrimary = warmWhite;
@@ -72,8 +72,8 @@ abstract final class XiColors {
     surfaceContainerHigh: Color(0xFF1C2E52),
     surfaceContainerHighest: Color(0xFF233565),
     onSurfaceVariant: techLightGray,
-    outline: Color(0xFF3A5280),
-    outlineVariant: Color(0xFF253B63),
+    outline: Color(0xFF6B8EC4),       // visible sobre todos los fondos oscuros
+    outlineVariant: Color(0xFF4A6490), // mismo que divider
     shadow: Colors.black,
     scrim: Colors.black,
     inverseSurface: ivoryUniform,

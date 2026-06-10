@@ -916,6 +916,9 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
               },
             ),
           ),
+          // Barra de acciones fija: capitán, autocompletar, guardar (solo tab alineación)
+          if (_segment == 0 && !_loading && _error == null && _players != null && _players!.isNotEmpty)
+            _LineupActionBar(panelKey: _lineupPanelKey, unsaved: _lineupPanelReportsUnsaved),
           // Contenido desplazable
           Expanded(
             child: RefreshIndicator(
@@ -1035,6 +1038,65 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                     ..._buildRosterSlivers(theme, colorScheme),
                 ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LineupActionBar extends StatelessWidget {
+  const _LineupActionBar({
+    required this.panelKey,
+    required this.unsaved,
+  });
+
+  final GlobalKey<LeagueSquadLineupPanelState> panelKey;
+  final bool unsaved;
+
+  @override
+  Widget build(BuildContext context) {
+    final panel = panelKey.currentState;
+    final blocked = panel?.isLineupBlocked ?? false;
+    final saving = panel?.isSavingForParent ?? false;
+    final canSave = panel?.canSaveForParent ?? false;
+    final l10n = context.l10n;
+    final ll = context.leagueL10n;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.verified_outlined, size: 16),
+              onPressed: (blocked || saving) ? null : () => panel?.triggerCaptainPicker(),
+              label: Text(l10n.captain, overflow: TextOverflow.ellipsis),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.auto_fix_high_rounded, size: 16),
+              onPressed: blocked ? null : () => panel?.triggerAutofill(),
+              label: Text(ll.autoFill, overflow: TextOverflow.ellipsis),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: FilledButton.icon(
+              icon: Icon(
+                saving ? Icons.hourglass_top_rounded : Icons.save_rounded,
+                size: 16,
+              ),
+              style: FilledButton.styleFrom(
+                backgroundColor: canSave ? colorScheme.primary : colorScheme.surfaceContainerHighest,
+                foregroundColor: canSave ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
+              ),
+              onPressed: (saving || !canSave) ? null : () => panel?.triggerSave(),
+              label: Text(saving ? l10n.saving : l10n.save, overflow: TextOverflow.ellipsis),
             ),
           ),
         ],

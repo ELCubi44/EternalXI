@@ -56,6 +56,7 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
   static final _amountFormatter = LeagueThousandsInputFormatter();
   late final TextEditingController _amountController;
   String? _fieldError;
+  String? _apiError;
   bool _submitting = false;
 
   NightMarketItem get _item => widget.item;
@@ -109,7 +110,10 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
       return;
     }
 
-    setState(() => _submitting = true);
+    setState(() {
+      _submitting = true;
+      _apiError = null;
+    });
     try {
       final result = await widget.controller.submitBid(
         idMercadoDiario: _item.idMercadoDiario,
@@ -130,9 +134,7 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
           context,
         ).showSnackBar(SnackBar(content: Text(result.message)));
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(result.message)));
+        setState(() => _apiError = result.message);
       }
     } finally {
       if (mounted) {
@@ -339,6 +341,31 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
               }
             },
           ),
+          if (_apiError != null) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: colorScheme.errorContainer,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.error_outline_rounded, size: 18, color: colorScheme.onErrorContainer),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      _apiError!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onErrorContainer,
+                        height: 1.35,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 20),
           Row(
             children: [

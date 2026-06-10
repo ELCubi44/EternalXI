@@ -240,6 +240,7 @@ class LeagueL10n {
   String get noCoach => _en ? 'No coach' : 'Sin entrenador';
   String get coach => _en ? 'Coach' : 'Entrenador';
   String get starterLabel => _en ? 'Starter' : 'Titular';
+  String get autoFill => _en ? 'Auto-fill' : 'Completar';
   String get loadingCoaches =>
       _en ? 'Loading coaches…' : 'Cargando entrenadores…';
   String get equipped => _en ? 'Equipped' : 'Equipado';

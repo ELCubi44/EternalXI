@@ -367,6 +367,24 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
   bool get hasUnsavedChanges =>
       !widget.readOnly && (_isLineupDirty() || _allowSaveAfterCoachLayout);
 
+  bool get canSaveForParent => _canSaveIncludingCoach;
+  bool get isLineupBlocked => _blocked;
+  bool get isSavingForParent => _saving;
+
+  Future<void> triggerSave() => _save();
+
+  void triggerCaptainPicker() {
+    if (!_blocked && !_saving) {
+      _openCaptainPicker();
+    }
+  }
+
+  void triggerAutofill() {
+    if (!_blocked) {
+      _mutateLineup(() => _autofillLineupSlots());
+    }
+  }
+
   /// Tras cambiar entrenador en servidor: permite guardar la alineación reorganizada.
   void markCoachLayoutApplied() {
     _allowSaveAfterCoachLayout = true;
@@ -1507,48 +1525,14 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
           ),
         ),
         const Spacer(),
-        if (historyButton != null) ...[
-          historyButton,
-          const SizedBox(width: 10),
-        ],
-        OutlinedButton.icon(
-          icon: const Icon(Icons.verified_outlined, size: 18),
-          onPressed: (_blocked || _saving) ? null : _openCaptainPicker,
-          label: Text(l10n.captain),
-        ),
-        const SizedBox(width: 10),
-        if (kDebugMode) ...[
+        if (historyButton != null) historyButton,
+        if (kDebugMode)
           Builder(
             builder: (_) {
-              final blocked = _blocked;
-              final lineupComplete = _lineupComplete;
-              final dirty = _isLineupDirty();
-              final canSave = !blocked && lineupComplete && dirty;
-              debugPrint('[save-debug] blocked=$blocked');
-              debugPrint('[save-debug] lineupComplete=$lineupComplete');
-              debugPrint('[save-debug] dirty=$dirty');
-              debugPrint('[save-debug] canSave=$canSave');
+              debugPrint('[save-debug] blocked=$_blocked lineupComplete=$_lineupComplete dirty=${_isLineupDirty()}');
               return const SizedBox.shrink();
             },
           ),
-        ],
-        ElevatedButton.icon(
-          icon: Icon(
-            _saving ? Icons.hourglass_top_rounded : Icons.save_rounded,
-            size: 18,
-          ),
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size(126, 44),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            textStyle: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
-            disabledBackgroundColor: theme.colorScheme.surfaceContainerHighest,
-            disabledForegroundColor: theme.colorScheme.onSurfaceVariant,
-          ),
-          onPressed: _saving ? null : (_canSaveIncludingCoach ? _save : null),
-          label: _saving ? Text(l10n.saving) : Text(l10n.save),
-        ),
       ],
     );
   }

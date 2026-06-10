@@ -313,7 +313,7 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       ),
       dividerTheme: const DividerThemeData(
         color: XiColors.divider,
-        thickness: 0.5,
+        thickness: 1,
       ),
     );
   }
