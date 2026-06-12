@@ -5,6 +5,8 @@ import com.eternalxi.eternalxi_api.dto.league.CreateLeagueRequest;
 import com.eternalxi.eternalxi_api.dto.league.CreateLeagueResponse;
 import com.eternalxi.eternalxi_api.dto.league.JoinLeagueRequest;
 import com.eternalxi.eternalxi_api.dto.league.KickParticipantRequest;
+import com.eternalxi.eternalxi_api.dto.league.LeagueChatMessageResponse;
+import com.eternalxi.eternalxi_api.dto.league.PostLeagueChatMessageRequest;
 import com.eternalxi.eternalxi_api.dto.league.LeagueDetailResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueParticipantResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueParticipantSquadResponse;
@@ -17,6 +19,7 @@ import com.eternalxi.eternalxi_api.dto.league.LeaveLeagueRequest;
 import com.eternalxi.eternalxi_api.dto.league.TransferLeagueAdminRequest;
 import com.eternalxi.eternalxi_api.dto.league.SaveLeagueLineupRequest;
 import com.eternalxi.eternalxi_api.services.LeagueActivityService;
+import com.eternalxi.eternalxi_api.services.LeagueChatService;
 import com.eternalxi.eternalxi_api.services.LeagueLineupService;
 import com.eternalxi.eternalxi_api.services.LeagueStarterProbabilityService;
 import com.eternalxi.eternalxi_api.services.LeagueService;
@@ -36,17 +39,20 @@ public class LeagueController {
     private final LeagueLineupService leagueLineupService;
     private final LeagueStarterProbabilityService leagueStarterProbabilityService;
     private final LeagueActivityService leagueActivityService;
+    private final LeagueChatService leagueChatService;
 
     public LeagueController(
             LeagueService leagueService,
             LeagueLineupService leagueLineupService,
             LeagueStarterProbabilityService leagueStarterProbabilityService,
-            LeagueActivityService leagueActivityService
+            LeagueActivityService leagueActivityService,
+            LeagueChatService leagueChatService
     ) {
         this.leagueService = leagueService;
         this.leagueLineupService = leagueLineupService;
         this.leagueStarterProbabilityService = leagueStarterProbabilityService;
         this.leagueActivityService = leagueActivityService;
+        this.leagueChatService = leagueChatService;
     }
 
     @PostMapping
@@ -202,5 +208,31 @@ public class LeagueController {
     ) throws SQLException {
         var events = leagueActivityService.listActivity(idLiga, idUsuario, limit, offset);
         return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/{idLiga}/chat")
+    public ResponseEntity<List<LeagueChatMessageResponse>> getChatMessages(
+            @PathVariable Long idLiga,
+            @RequestParam Long idUsuario,
+            @RequestParam(required = false) Long afterId,
+            @RequestParam(defaultValue = "100") int limit,
+            @RequestParam(defaultValue = "false") boolean recent
+    ) throws SQLException {
+        List<LeagueChatMessageResponse> messages =
+                leagueChatService.listMessages(idLiga, idUsuario, afterId, limit, recent);
+        return ResponseEntity.ok(messages);
+    }
+
+    @PostMapping("/{idLiga}/chat")
+    public ResponseEntity<LeagueChatMessageResponse> postChatMessage(
+            @PathVariable Long idLiga,
+            @RequestBody PostLeagueChatMessageRequest request
+    ) throws SQLException {
+        LeagueChatMessageResponse message = leagueChatService.postMessage(
+                idLiga,
+                request.idUsuario(),
+                request.texto()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(message);
     }
 }

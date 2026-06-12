@@ -1,16 +1,19 @@
+import 'dart:async';
+
 import 'package:eternal_xi/app/icons/xi_icons.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
-import 'package:eternal_xi/core/constants/api_constants.dart';
-import 'package:eternal_xi/core/storage/league_chat_storage.dart';
-import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/core/network/api_exception.dart';
+import 'package:eternal_xi/data/models/league_chat_message.dart';
+import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class _ChatMessage {
   const _ChatMessage({
+    required this.id,
     required this.author,
     required this.text,
     required this.isMine,
@@ -19,6 +22,7 @@ class _ChatMessage {
     this.avatarInitial,
   });
 
+  final int id;
   final String author;
   final String text;
   final bool isMine;
@@ -26,23 +30,16 @@ class _ChatMessage {
   final String? photoUrl;
   final String? avatarInitial;
 
-  StoredLeagueChatMessage toStored() => StoredLeagueChatMessage(
-        author: author,
-        text: text,
-        isMine: isMine,
-        sentAtIso: sentAt.toUtc().toIso8601String(),
-        photoUrl: photoUrl,
-        avatarInitial: avatarInitial,
-      );
-
-  factory _ChatMessage.fromStored(StoredLeagueChatMessage stored) {
+  factory _ChatMessage.fromApi(LeagueChatMessage msg, int myUserId) {
+    final nick = msg.nickname.trim();
     return _ChatMessage(
-      author: stored.author,
-      text: stored.text,
-      isMine: stored.isMine,
-      sentAt: DateTime.tryParse(stored.sentAtIso)?.toLocal() ?? DateTime.now(),
-      photoUrl: stored.photoUrl,
-      avatarInitial: stored.avatarInitial,
+      id: msg.id,
+      author: nick.isEmpty ? '—' : nick,
+      text: msg.texto,
+      isMine: msg.idUsuario == myUserId,
+      sentAt: msg.creadoEn ?? DateTime.now(),
+      photoUrl: msg.resolvedPhotoUrl(),
+      avatarInitial: nick.isNotEmpty ? nick[0].toUpperCase() : '?',
     );
   }
 }
@@ -63,8 +60,10 @@ class _LeagueTabChatState extends State<LeagueTabChat>
   final _scrollCtrl = ScrollController();
   final _inputFocus = FocusNode();
   final List<_ChatMessage> _messages = [];
-  LeagueChatStorage? _storage;
+  Timer? _pollTimer;
   bool _loading = true;
+  bool _sending = false;
+  String? _error;
   int? _loadedLeagueId;
 
   @override
@@ -75,10 +74,23 @@ class _LeagueTabChatState extends State<LeagueTabChat>
 
   @override
   void dispose() {
+    _pollTimer?.cancel();
     _inputCtrl.dispose();
     _scrollCtrl.dispose();
     _inputFocus.dispose();
     super.dispose();
+  }
+
+  int _maxMessageId() {
+    if (_messages.isEmpty) return 0;
+    return _messages.map((m) => m.id).reduce((a, b) => a > b ? a : b);
+  }
+
+  void _startPolling(LeagueShellData shell) {
+    _pollTimer?.cancel();
+    _pollTimer = Timer.periodic(const Duration(seconds: 8), (_) {
+      _fetchNewMessages(shell, scrollIfNearBottom: true);
+    });
   }
 
   Future<void> _bootstrap() async {
@@ -87,86 +99,91 @@ class _LeagueTabChatState extends State<LeagueTabChat>
       if (mounted) setState(() => _loading = false);
       return;
     }
-    _storage ??= await LeagueChatStorage.create();
-    await _loadForLeague(shell);
+    await _loadRecent(shell, showSpinner: true);
+    _startPolling(shell);
   }
 
-  Future<void> _loadForLeague(LeagueShellData shell) async {
-    final leagueId = shell.leagueId;
-    if (_loadedLeagueId == leagueId && _messages.isNotEmpty) {
-      if (mounted) setState(() => _loading = false);
-      return;
+  Future<void> _loadRecent(LeagueShellData shell, {required bool showSpinner}) async {
+    if (showSpinner) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
     }
 
-    setState(() {
-      _loading = true;
-      _messages.clear();
-    });
-
-    final storage = _storage ?? await LeagueChatStorage.create();
-    _storage = storage;
-    final stored = storage.readMessages(leagueId);
-
-    if (!mounted) return;
-
-    if (stored.isNotEmpty) {
+    try {
+      final api = context.read<LeaguesApiService>();
+      final rows = await api.getLeagueChatMessages(
+        idLiga: shell.leagueId,
+        idUsuario: shell.idUsuario,
+        recent: true,
+        limit: 100,
+      );
+      if (!mounted) return;
       setState(() {
-        _messages.addAll(stored.map(_ChatMessage.fromStored));
-        _loadedLeagueId = leagueId;
+        _messages
+          ..clear()
+          ..addAll(
+            rows.map((m) => _ChatMessage.fromApi(m, shell.idUsuario)),
+          );
+        _loadedLeagueId = shell.leagueId;
         _loading = false;
+        _error = null;
       });
       _scrollToBottom(animated: false);
-      return;
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.message;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString().replaceFirst('Exception: ', '');
+        _loading = false;
+      });
     }
-
-    final l10n = context.l10n;
-    final leagueName = shell.detail?.nombre.trim() ?? l10n.chatLeagueFallback;
-    final seeded = [
-      _ChatMessage(
-        author: l10n.chatSystemAuthor,
-        text: l10n.chatWelcomeMessage(leagueName),
-        isMine: false,
-        sentAt: DateTime.now().subtract(const Duration(hours: 2)),
-        avatarInitial: 'S',
-      ),
-      _ChatMessage(
-        author: l10n.chatSeedRivalAuthor,
-        text: l10n.chatSeedRivalMessage,
-        isMine: false,
-        sentAt: DateTime.now().subtract(const Duration(minutes: 48)),
-        avatarInitial: 'R',
-      ),
-    ];
-
-    setState(() {
-      _messages.addAll(seeded);
-      _loadedLeagueId = leagueId;
-      _loading = false;
-    });
-    await _persist(leagueId);
   }
 
-  Future<void> _persist(int leagueId) async {
-    final storage = _storage;
-    if (storage == null) return;
-    await storage.writeMessages(
-      leagueId,
-      _messages.map((m) => m.toStored()).toList(),
-    );
+  Future<void> _fetchNewMessages(
+    LeagueShellData shell, {
+    required bool scrollIfNearBottom,
+  }) async {
+    if (_loading || _loadedLeagueId != shell.leagueId) return;
+    final afterId = _maxMessageId();
+    if (afterId <= 0) return;
+
+    try {
+      final api = context.read<LeaguesApiService>();
+      final rows = await api.getLeagueChatMessages(
+        idLiga: shell.leagueId,
+        idUsuario: shell.idUsuario,
+        afterId: afterId,
+        limit: 50,
+      );
+      if (!mounted || rows.isEmpty) return;
+
+      final shouldScroll = scrollIfNearBottom && _isNearBottom();
+      setState(() {
+        final existing = _messages.map((m) => m.id).toSet();
+        for (final row in rows) {
+          if (existing.contains(row.id)) continue;
+          _messages.add(_ChatMessage.fromApi(row, shell.idUsuario));
+        }
+      });
+      if (shouldScroll) {
+        _scrollToBottom(animated: true);
+      }
+    } catch (_) {
+      // Polling silencioso: no interrumpe la lectura.
+    }
   }
 
-  String? _myPhotoUrl() {
-    final user = context.read<AuthController>().currentUser;
-    if (user == null || !user.hasProfilePhoto) return null;
-    return ApiConstants.userProfilePhotoUrl(
-      user.id,
-      cacheBuster: user.foto.hashCode,
-    );
-  }
-
-  String _myNickname() {
-    final nick = context.read<AuthController>().currentUser?.nickname ?? '';
-    return nick.trim().isEmpty ? context.l10n.chatYou : nick.trim();
+  bool _isNearBottom() {
+    if (!_scrollCtrl.hasClients) return true;
+    final max = _scrollCtrl.position.maxScrollExtent;
+    return max - _scrollCtrl.offset < 120;
   }
 
   void _dismissKeyboard() {
@@ -176,7 +193,7 @@ class _LeagueTabChatState extends State<LeagueTabChat>
   Future<void> _onRefresh() async {
     final shell = LeagueShellData.maybeOf(context);
     if (shell == null) return;
-    await _loadForLeague(shell);
+    await _loadRecent(shell, showSpinner: false);
   }
 
   void _scrollToBottom({required bool animated}) {
@@ -197,23 +214,42 @@ class _LeagueTabChatState extends State<LeagueTabChat>
 
   Future<void> _send(LeagueShellData shell) async {
     final text = _inputCtrl.text.trim();
-    if (text.isEmpty) return;
-    final nick = _myNickname();
-    setState(() {
-      _messages.add(
-        _ChatMessage(
-          author: nick,
-          text: text,
-          isMine: true,
-          sentAt: DateTime.now(),
-          photoUrl: _myPhotoUrl(),
-          avatarInitial: nick.isNotEmpty ? nick[0].toUpperCase() : '?',
-        ),
+    if (text.isEmpty || _sending) return;
+
+    setState(() => _sending = true);
+    try {
+      final api = context.read<LeaguesApiService>();
+      final posted = await api.postLeagueChatMessage(
+        idLiga: shell.leagueId,
+        idUsuario: shell.idUsuario,
+        texto: text,
       );
-      _inputCtrl.clear();
-    });
-    await _persist(shell.leagueId);
-    _scrollToBottom(animated: true);
+      if (!mounted) return;
+      setState(() {
+        _inputCtrl.clear();
+        _sending = false;
+        if (!_messages.any((m) => m.id == posted.id)) {
+          _messages.add(_ChatMessage.fromApi(posted, shell.idUsuario));
+        }
+        _error = null;
+      });
+      _scrollToBottom(animated: true);
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _sending = false;
+        _error = e.message;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _sending = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+      );
+    }
   }
 
   @override
@@ -231,13 +267,41 @@ class _LeagueTabChatState extends State<LeagueTabChat>
     }
 
     if (_loadedLeagueId != shell.leagueId && !_loading) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _loadForLeague(shell));
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await _loadRecent(shell, showSpinner: true);
+        _startPolling(shell);
+      });
     }
 
     return ColoredBox(
       color: context.xiBackground,
       child: Column(
         children: [
+          if (_error != null && !_loading)
+            Material(
+              color: XiColors.error.withValues(alpha: 0.12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _error!,
+                        style: const TextStyle(
+                          fontFamily: 'Lumiare',
+                          fontSize: 12,
+                          color: XiColors.error,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => _loadRecent(shell, showSpinner: false),
+                      child: Text(l10n.retry),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           Expanded(
             child: GestureDetector(
               onTap: _dismissKeyboard,
@@ -301,6 +365,7 @@ class _LeagueTabChatState extends State<LeagueTabChat>
             focusNode: _inputFocus,
             hint: l10n.chatHint,
             dismissLabel: l10n.chatDismissKeyboard,
+            sending: _sending,
             onSend: () => _send(shell),
             onDismissKeyboard: _dismissKeyboard,
           ),
@@ -468,6 +533,7 @@ class _ChatComposer extends StatelessWidget {
     required this.focusNode,
     required this.hint,
     required this.dismissLabel,
+    required this.sending,
     required this.onSend,
     required this.onDismissKeyboard,
   });
@@ -476,6 +542,7 @@ class _ChatComposer extends StatelessWidget {
   final FocusNode focusNode;
   final String hint;
   final String dismissLabel;
+  final bool sending;
   final VoidCallback onSend;
   final VoidCallback onDismissKeyboard;
 
@@ -505,6 +572,7 @@ class _ChatComposer extends StatelessWidget {
             child: TextField(
               controller: controller,
               focusNode: focusNode,
+              enabled: !sending,
               minLines: 1,
               maxLines: 4,
               style: TextStyle(
@@ -548,14 +616,19 @@ class _ChatComposer extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           GestureDetector(
-            onTap: onSend,
+            onTap: sending ? null : onSend,
             child: Container(
               width: 44,
               height: 44,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [XiColors.royalBlue, XiColors.navyBlue],
+                gradient: LinearGradient(
+                  colors: sending
+                      ? [
+                          XiColors.royalBlue.withValues(alpha: 0.45),
+                          XiColors.navyBlue.withValues(alpha: 0.45),
+                        ]
+                      : const [XiColors.royalBlue, XiColors.navyBlue],
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -564,12 +637,21 @@ class _ChatComposer extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Center(
-                child: XiIcon(
-                  XiIconType.chat,
-                  size: 20,
-                  color: XiColors.warmWhite,
-                ),
+              child: Center(
+                child: sending
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: XiColors.warmWhite,
+                        ),
+                      )
+                    : const XiIcon(
+                        XiIconType.chat,
+                        size: 20,
+                        color: XiColors.warmWhite,
+                      ),
               ),
             ),
           ),

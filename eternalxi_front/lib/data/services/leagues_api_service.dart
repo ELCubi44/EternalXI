@@ -2,6 +2,7 @@ import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/core/network/api_client.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/league_activity_event.dart';
+import 'package:eternal_xi/data/models/league_chat_message.dart';
 import 'package:eternal_xi/data/models/league_calendar_models.dart';
 import 'package:eternal_xi/data/models/catalog_team_player.dart';
 import 'package:eternal_xi/data/models/catalog_team_squad.dart';
@@ -1175,6 +1176,61 @@ class LeaguesApiService {
         },
       );
       return LeagueActivityEvent.listFrom(response.data);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  /// GET /leagues/{idLiga}/chat?idUsuario=&recent=true|afterId=
+  Future<List<LeagueChatMessage>> getLeagueChatMessages({
+    required int idLiga,
+    required int idUsuario,
+    int? afterId,
+    bool recent = false,
+    int limit = 100,
+  }) async {
+    try {
+      final params = <String, dynamic>{
+        'idUsuario': idUsuario,
+        'limit': limit,
+      };
+      if (recent) {
+        params['recent'] = true;
+      } else if (afterId != null) {
+        params['afterId'] = afterId;
+      }
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.leagues}/$idLiga/chat',
+        queryParameters: params,
+      );
+      return LeagueChatMessage.listFrom(response.data);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  /// POST /leagues/{idLiga}/chat
+  Future<LeagueChatMessage> postLeagueChatMessage({
+    required int idLiga,
+    required int idUsuario,
+    required String texto,
+  }) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '${ApiConstants.leagues}/$idLiga/chat',
+        data: <String, dynamic>{
+          'idUsuario': idUsuario,
+          'texto': texto,
+        },
+      );
+      final data = response.data;
+      if (data is! Map) {
+        throw ApiException('Respuesta de chat inválida');
+      }
+      final m = data is Map<String, dynamic>
+          ? data
+          : Map<String, dynamic>.from(data);
+      return LeagueChatMessage.fromJson(m);
     } catch (e) {
       throw ApiException(_apiClient.extractErrorMessage(e));
     }
