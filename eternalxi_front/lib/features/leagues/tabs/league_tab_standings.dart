@@ -374,15 +374,15 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
                   final selectedRound = selectedIdx >= 0
                       ? _playedRounds[selectedIdx]
                       : null;
-                  final showRoundPts = selectedRound == null ||
-                      leagueJornadaShowsGrantedPoints(selectedRound.estado);
                   return LeagueStandingRowCard(
                     row: row,
                     isFirstPlace: roundRow.posicion == 1,
                     isCurrentUser: isMe,
                     puntosFantasyJornada: roundRow.puntosFantasyJornada,
                     puntosRecompensaJornada: roundRow.puntosRecompensaJornada,
-                    showRoundFantasyPoints: showRoundPts,
+                    showRoundFantasyPoints: true,
+                    showRoundRewardPoints: selectedRound != null &&
+                        leagueJornadaShowsGrantedPoints(selectedRound.estado),
                     onPeerTap: shell == null || row.idUsuario <= 0
                         ? null
                         : () => _openPeer(

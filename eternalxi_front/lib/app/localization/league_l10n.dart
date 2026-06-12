@@ -23,8 +23,8 @@ class LeagueL10n {
   String matchday(int n) => _en ? 'Matchday $n' : 'Jornada $n';
   String matchdayShort(int n) => 'J${n > 0 ? n : '?'}';
   String get roundStandingsHint => _en
-      ? 'Team fantasy points and reward chips received in that matchday.'
-      : 'Puntos del equipo y fichas de recompensa recibidas en esa jornada.';
+      ? 'Fantasy points for that matchday. Reward chips appear only after it ends.'
+      : 'Puntos fantasy de esa jornada. Las fichas de recompensa solo al finalizar.';
   String get noRoundStandingsData =>
       _en ? 'No data for this matchday.' : 'Sin datos para esta jornada.';
   String get noStandingsYet =>

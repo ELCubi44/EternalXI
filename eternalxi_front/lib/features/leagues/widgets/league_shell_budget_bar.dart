@@ -1,9 +1,9 @@
-import 'package:eternal_xi/app/icons/xi_icons.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:eternal_xi/shared/widgets/market_history_icon.dart';
+import 'package:eternal_xi/shared/widgets/money_coins_icon.dart';
 import 'package:flutter/material.dart';
 
 class LeagueShellBudgetBar extends StatelessWidget {
@@ -52,7 +52,7 @@ class LeagueShellBudgetBar extends StatelessWidget {
                 ),
               ),
               child: const Center(
-                child: XiIcon(XiIconType.coins, size: 16, color: XiColors.classicGold),
+                child: MoneyCoinsIcon(size: 24),
               ),
             ),
             const SizedBox(width: 10),

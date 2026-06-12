@@ -18,6 +18,7 @@ class LeagueStandingRowCard extends StatefulWidget {
     this.puntosFantasyJornada,
     this.puntosRecompensaJornada,
     this.showRoundFantasyPoints = true,
+    this.showRoundRewardPoints = true,
   });
 
   final LeagueStandingRow row;
@@ -27,6 +28,7 @@ class LeagueStandingRowCard extends StatefulWidget {
   final int? puntosFantasyJornada;
   final int? puntosRecompensaJornada;
   final bool showRoundFantasyPoints;
+  final bool showRoundRewardPoints;
 
   @override
   State<LeagueStandingRowCard> createState() => _LeagueStandingRowCardState();
@@ -150,6 +152,7 @@ class _LeagueStandingRowCardState extends State<LeagueStandingRowCard>
                           ),
                         ),
                         if (showRoundBreakdown &&
+                            widget.showRoundRewardPoints &&
                             (widget.puntosRecompensaJornada ?? 0) > 0) ...[
                           const SizedBox(height: 2),
                           Text(

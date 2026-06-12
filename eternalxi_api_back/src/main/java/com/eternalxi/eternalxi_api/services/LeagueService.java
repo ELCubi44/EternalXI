@@ -502,8 +502,10 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
             if (estadoJornada == null) {
                 throw new IllegalArgumentException("Jornada no encontrada");
             }
-            if (!"FINALIZADA".equals(estadoJornada)) {
-                throw new IllegalArgumentException("La jornada aún no está finalizada");
+            String estadoNorm = estadoJornada.trim().toUpperCase();
+            boolean finalizada = "FINALIZADA".equals(estadoNorm);
+            if (!finalizada && !"EN_CURSO".equals(estadoNorm)) {
+                throw new IllegalArgumentException("La jornada aún no está disponible");
             }
 
             int recompensaMinima = loadLeagueRecompensaMinima(conn, idLiga);
@@ -512,7 +514,9 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
                     idLiga,
                     idJornada
             );
-            Map<Long, Integer> grantedRewards = loadRoundGrantedRewards(conn, idLiga, idJornada);
+            Map<Long, Integer> grantedRewards = finalizada
+                    ? loadRoundGrantedRewards(conn, idLiga, idJornada)
+                    : Map.of();
 
             String participantsSql = """
                     SELECT lp.id AS id_liga_participante,
@@ -567,7 +571,7 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
                         item.idUsuario(),
                         item.nickname(),
                         item.puntosFantasyJornada(),
-                        item.puntosRecompensaJornada(),
+                        finalizada ? item.puntosRecompensaJornada() : 0,
                         valorByUser.getOrDefault(item.idUsuario(), 0L),
                         adminByUser.getOrDefault(item.idUsuario(), false)
                 ));

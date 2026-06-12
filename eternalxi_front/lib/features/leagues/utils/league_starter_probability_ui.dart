@@ -170,17 +170,13 @@ class LeagueMarketPlayerCornerStats extends StatelessWidget {
               if (isInjured)
                 Tooltip(
                   message: ll.injured,
-                  child: LeaguePlayerAvailabilityIcons.injured(size: 16),
+                  child: LeaguePlayerAvailabilityIcons.injured(size: 28),
                 ),
-              if (isInjured && isSanctioned) const SizedBox(width: 4),
+              if (isInjured && isSanctioned) const SizedBox(width: 6),
               if (isSanctioned)
                 Tooltip(
                   message: ll.suspended,
-                  child: Icon(
-                    LeaguePlayerAvailabilityIcons.sanctioned,
-                    size: 16,
-                    color: cs.tertiary,
-                  ),
+                  child: LeaguePlayerAvailabilityIcons.sanctioned(size: 28),
                 ),
             ],
           ),

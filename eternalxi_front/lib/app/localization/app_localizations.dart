@@ -233,6 +233,7 @@ class AppLocalizations {
       'chat': 'Chat',
       'chatComingSoon': 'El chat de liga llegará pronto. Habla con tus rivales y celebra tus goles.',
       'chatHint': 'Escribe un mensaje a la liga...',
+      'chatDismissKeyboard': 'Ocultar teclado',
       'chatEmpty': 'Sé el primero en escribir en el chat de la liga.',
       'chatYou': 'Tú',
       'chatSystemAuthor': 'Sistema',
@@ -428,6 +429,7 @@ class AppLocalizations {
       'chat': 'Chat',
       'chatComingSoon': 'League chat is coming soon. Talk to your rivals and celebrate your goals.',
       'chatHint': 'Write a message to the league...',
+      'chatDismissKeyboard': 'Hide keyboard',
       'chatEmpty': 'Be the first to write in the league chat.',
       'chatYou': 'You',
       'chatSystemAuthor': 'System',
@@ -478,6 +480,7 @@ class AppLocalizations {
   String get chat => _t('chat');
   String get chatComingSoon => _t('chatComingSoon');
   String get chatHint => _t('chatHint');
+  String get chatDismissKeyboard => _t('chatDismissKeyboard');
   String get chatEmpty => _t('chatEmpty');
   String get chatYou => _t('chatYou');
   String get chatSystemAuthor => _t('chatSystemAuthor');

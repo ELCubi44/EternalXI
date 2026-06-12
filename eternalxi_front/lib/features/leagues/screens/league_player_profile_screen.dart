@@ -965,10 +965,10 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                                   width: 1.4,
                                 ),
                               ),
-                              child: Icon(
-                                LeaguePlayerAvailabilityIcons.sanctioned,
-                                size: 14,
-                                color: colorScheme.tertiary,
+                              child: Center(
+                                child: LeaguePlayerAvailabilityIcons.sanctioned(
+                                  size: 14,
+                                ),
                               ),
                             ),
                           ),
@@ -1035,10 +1035,8 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                             Row(
                               children: [
                                 if (isSuspended)
-                                  Icon(
-                                    LeaguePlayerAvailabilityIcons.sanctioned,
+                                  LeaguePlayerAvailabilityIcons.sanctioned(
                                     size: 16,
-                                    color: colorScheme.tertiary,
                                   )
                                 else
                                   LeaguePlayerAvailabilityIcons.injured(

@@ -213,11 +213,7 @@ class LeagueSquadPlayerTile extends StatelessWidget {
                       if (isInjured && isSanctioned)
                         const SizedBox(width: 6),
                       if (isSanctioned)
-                        Icon(
-                          LeaguePlayerAvailabilityIcons.sanctioned,
-                          size: 20,
-                          color: colorScheme.tertiary,
-                        ),
+                        LeaguePlayerAvailabilityIcons.sanctioned(size: 20),
                     ],
                   ),
               ],

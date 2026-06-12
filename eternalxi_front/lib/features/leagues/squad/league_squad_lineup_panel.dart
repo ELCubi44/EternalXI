@@ -1387,11 +1387,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      LeaguePlayerAvailabilityIcons.sanctioned,
-                      size: 16,
-                      color: colorScheme.onTertiaryContainer,
-                    ),
+                    LeaguePlayerAvailabilityIcons.sanctioned(size: 16),
                     const SizedBox(width: 6),
                     Text(
                       context.leagueL10n.suspended,
@@ -2749,10 +2745,8 @@ class _PitchPlayerBubble extends StatelessWidget {
                                   width: 1.1,
                                 ),
                               ),
-                              child: Icon(
-                                LeaguePlayerAvailabilityIcons.sanctioned,
+                              child: LeaguePlayerAvailabilityIcons.sanctioned(
                                 size: 11,
-                                color: colorScheme.onTertiaryContainer,
                               ),
                             ),
                         ],

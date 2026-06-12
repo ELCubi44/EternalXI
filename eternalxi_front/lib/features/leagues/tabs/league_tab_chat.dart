@@ -3,6 +3,7 @@ import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
+import 'package:eternal_xi/core/storage/league_chat_storage.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,26 @@ class _ChatMessage {
   final DateTime sentAt;
   final String? photoUrl;
   final String? avatarInitial;
+
+  StoredLeagueChatMessage toStored() => StoredLeagueChatMessage(
+        author: author,
+        text: text,
+        isMine: isMine,
+        sentAtIso: sentAt.toUtc().toIso8601String(),
+        photoUrl: photoUrl,
+        avatarInitial: avatarInitial,
+      );
+
+  factory _ChatMessage.fromStored(StoredLeagueChatMessage stored) {
+    return _ChatMessage(
+      author: stored.author,
+      text: stored.text,
+      isMine: stored.isMine,
+      sentAt: DateTime.tryParse(stored.sentAtIso)?.toLocal() ?? DateTime.now(),
+      photoUrl: stored.photoUrl,
+      avatarInitial: stored.avatarInitial,
+    );
+  }
 }
 
 class LeagueTabChat extends StatefulWidget {
@@ -40,23 +61,67 @@ class _LeagueTabChatState extends State<LeagueTabChat>
 
   final _inputCtrl = TextEditingController();
   final _scrollCtrl = ScrollController();
+  final _inputFocus = FocusNode();
   final List<_ChatMessage> _messages = [];
-  bool _seeded = false;
+  LeagueChatStorage? _storage;
+  bool _loading = true;
+  int? _loadedLeagueId;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap());
+  }
 
   @override
   void dispose() {
     _inputCtrl.dispose();
     _scrollCtrl.dispose();
+    _inputFocus.dispose();
     super.dispose();
   }
 
-  void _seedIfNeeded(LeagueShellData shell) {
-    if (_seeded) return;
-    _seeded = true;
+  Future<void> _bootstrap() async {
+    final shell = LeagueShellData.maybeOf(context);
+    if (shell == null) {
+      if (mounted) setState(() => _loading = false);
+      return;
+    }
+    _storage ??= await LeagueChatStorage.create();
+    await _loadForLeague(shell);
+  }
+
+  Future<void> _loadForLeague(LeagueShellData shell) async {
+    final leagueId = shell.leagueId;
+    if (_loadedLeagueId == leagueId && _messages.isNotEmpty) {
+      if (mounted) setState(() => _loading = false);
+      return;
+    }
+
+    setState(() {
+      _loading = true;
+      _messages.clear();
+    });
+
+    final storage = _storage ?? await LeagueChatStorage.create();
+    _storage = storage;
+    final stored = storage.readMessages(leagueId);
+
+    if (!mounted) return;
+
+    if (stored.isNotEmpty) {
+      setState(() {
+        _messages.addAll(stored.map(_ChatMessage.fromStored));
+        _loadedLeagueId = leagueId;
+        _loading = false;
+      });
+      _scrollToBottom(animated: false);
+      return;
+    }
+
     final l10n = context.l10n;
-    final leagueName =
-        shell.detail?.nombre.trim() ?? l10n.chatLeagueFallback;
-    _messages.addAll([
+    final leagueName = shell.detail?.nombre.trim() ?? l10n.chatLeagueFallback;
+    final seeded = [
       _ChatMessage(
         author: l10n.chatSystemAuthor,
         text: l10n.chatWelcomeMessage(leagueName),
@@ -71,7 +136,23 @@ class _LeagueTabChatState extends State<LeagueTabChat>
         sentAt: DateTime.now().subtract(const Duration(minutes: 48)),
         avatarInitial: 'R',
       ),
-    ]);
+    ];
+
+    setState(() {
+      _messages.addAll(seeded);
+      _loadedLeagueId = leagueId;
+      _loading = false;
+    });
+    await _persist(leagueId);
+  }
+
+  Future<void> _persist(int leagueId) async {
+    final storage = _storage;
+    if (storage == null) return;
+    await storage.writeMessages(
+      leagueId,
+      _messages.map((m) => m.toStored()).toList(),
+    );
   }
 
   String? _myPhotoUrl() {
@@ -88,13 +169,33 @@ class _LeagueTabChatState extends State<LeagueTabChat>
     return nick.trim().isEmpty ? context.l10n.chatYou : nick.trim();
   }
 
-  Future<void> _onRefresh() async {
-    await Future<void>.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-    setState(() {});
+  void _dismissKeyboard() {
+    FocusManager.instance.primaryFocus?.unfocus();
   }
 
-  void _send(LeagueShellData shell) {
+  Future<void> _onRefresh() async {
+    final shell = LeagueShellData.maybeOf(context);
+    if (shell == null) return;
+    await _loadForLeague(shell);
+  }
+
+  void _scrollToBottom({required bool animated}) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_scrollCtrl.hasClients) return;
+      final target = _scrollCtrl.position.maxScrollExtent;
+      if (animated) {
+        _scrollCtrl.animateTo(
+          target,
+          duration: const Duration(milliseconds: 280),
+          curve: Curves.easeOut,
+        );
+      } else {
+        _scrollCtrl.jumpTo(target);
+      }
+    });
+  }
+
+  Future<void> _send(LeagueShellData shell) async {
     final text = _inputCtrl.text.trim();
     if (text.isEmpty) return;
     final nick = _myNickname();
@@ -111,15 +212,8 @@ class _LeagueTabChatState extends State<LeagueTabChat>
       );
       _inputCtrl.clear();
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollCtrl.hasClients) {
-        _scrollCtrl.animateTo(
-          _scrollCtrl.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 280),
-          curve: Curves.easeOut,
-        );
-      }
-    });
+    await _persist(shell.leagueId);
+    _scrollToBottom(animated: true);
   }
 
   @override
@@ -135,56 +229,80 @@ class _LeagueTabChatState extends State<LeagueTabChat>
         ),
       );
     }
-    _seedIfNeeded(shell);
+
+    if (_loadedLeagueId != shell.leagueId && !_loading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _loadForLeague(shell));
+    }
 
     return ColoredBox(
       color: context.xiBackground,
       child: Column(
         children: [
           Expanded(
-            child: RefreshIndicator(
-              color: XiColors.royalBlue,
-              backgroundColor: context.xiCardElevated,
-              onRefresh: _onRefresh,
-              child: _messages.isEmpty
-                  ? ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: [
-                        SizedBox(
-                          height: MediaQuery.sizeOf(context).height * 0.35,
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(32),
-                              child: Text(
-                                l10n.chatEmpty,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontFamily: 'Lumiare',
-                                  fontSize: 14,
-                                  color: context.xiTextSecondary,
-                                  height: 1.5,
+            child: GestureDetector(
+              onTap: _dismissKeyboard,
+              behavior: HitTestBehavior.translucent,
+              child: RefreshIndicator(
+                color: XiColors.royalBlue,
+                backgroundColor: context.xiCardElevated,
+                onRefresh: _onRefresh,
+                child: _loading
+                    ? ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: const [
+                          SizedBox(height: 240),
+                          Center(child: CircularProgressIndicator()),
+                        ],
+                      )
+                    : _messages.isEmpty
+                    ? ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.sizeOf(context).height * 0.35,
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(32),
+                                child: Text(
+                                  l10n.chatEmpty,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'Lumiare',
+                                    fontSize: 14,
+                                    color: context.xiTextSecondary,
+                                    height: 1.5,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    )
-                  : ListView.builder(
-                      controller: _scrollCtrl,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
-                      itemCount: _messages.length,
-                      itemBuilder: (context, index) {
-                        return _WhatsAppMessageRow(message: _messages[index]);
-                      },
-                    ),
+                        ],
+                      )
+                    : ListView.builder(
+                        controller: _scrollCtrl,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+                        itemCount: _messages.length,
+                        itemBuilder: (context, index) {
+                          return _WhatsAppMessageRow(
+                            message: _messages[index],
+                          );
+                        },
+                      ),
+              ),
             ),
           ),
           _ChatComposer(
             controller: _inputCtrl,
+            focusNode: _inputFocus,
             hint: l10n.chatHint,
+            dismissLabel: l10n.chatDismissKeyboard,
             onSend: () => _send(shell),
+            onDismissKeyboard: _dismissKeyboard,
           ),
         ],
       ),
@@ -347,13 +465,19 @@ class _ChatAvatar extends StatelessWidget {
 class _ChatComposer extends StatelessWidget {
   const _ChatComposer({
     required this.controller,
+    required this.focusNode,
     required this.hint,
+    required this.dismissLabel,
     required this.onSend,
+    required this.onDismissKeyboard,
   });
 
   final TextEditingController controller;
+  final FocusNode focusNode;
   final String hint;
+  final String dismissLabel;
   final VoidCallback onSend;
+  final VoidCallback onDismissKeyboard;
 
   @override
   Widget build(BuildContext context) {
@@ -368,9 +492,19 @@ class _ChatComposer extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          IconButton(
+            tooltip: dismissLabel,
+            onPressed: onDismissKeyboard,
+            visualDensity: VisualDensity.compact,
+            icon: Icon(
+              Icons.keyboard_hide_rounded,
+              color: context.xiTextSecondary,
+            ),
+          ),
           Expanded(
             child: TextField(
               controller: controller,
+              focusNode: focusNode,
               minLines: 1,
               maxLines: 4,
               style: TextStyle(
@@ -408,7 +542,7 @@ class _ChatComposer extends StatelessWidget {
                   ),
                 ),
               ),
-              textInputAction: TextInputAction.send,
+              textInputAction: TextInputAction.newline,
               onSubmitted: (_) => onSend(),
             ),
           ),
