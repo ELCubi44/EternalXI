@@ -1,5 +1,9 @@
 import 'package:eternal_xi/app/localization/rewards_l10n.dart';
+import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/data/models/league_activity_event.dart';
+import 'package:eternal_xi/shared/widgets/coach_roulette_icon.dart';
+import 'package:eternal_xi/shared/widgets/pack_envelope_icon.dart';
+import 'package:eternal_xi/shared/widgets/reward_cards_icon.dart';
 import 'package:flutter/material.dart';
 
 class LeagueActivityTile extends StatelessWidget {
@@ -10,16 +14,26 @@ class LeagueActivityTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final rl10n = context.rewardsL10n;
     final dateStr = _formatDate(context, event.creadoEn);
-    final icon = _iconForType(event.tipo);
+    final tipo = event.tipo.trim().toUpperCase();
+    final icon = _iconForType(tipo);
+    final isPackOpened = tipo == 'PACK_OPENED';
+    final isCoachRoulette =
+        tipo == 'COACH_ROULETTE' || tipo == 'COACH_ROULETTE_SPIN';
+    final isCardRedeemed = tipo == 'CARD_REDEEMED';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: const Color(0xFF151A28).withValues(alpha: 0.95),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: context.xiCompactCardGradient,
+        ),
+        border: Border.all(color: context.xiBorderSubtle),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,7 +46,13 @@ class LeagueActivityTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.center,
-            child: Icon(icon.icon, size: 18, color: icon.color),
+            child: isPackOpened
+                ? const PackEnvelopeIcon(size: 22)
+                : isCoachRoulette
+                    ? const CoachRouletteIcon(size: 22)
+                    : isCardRedeemed
+                        ? const RewardCardsIcon(size: 22)
+                        : Icon(icon.icon, size: 18, color: icon.color),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -45,7 +65,7 @@ class LeagueActivityTile extends StatelessWidget {
                       Text(
                         event.actorNickname,
                         style: theme.textTheme.labelMedium?.copyWith(
-                          color: const Color(0xFFFFD54F),
+                          color: context.xiTextPrimary,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -56,7 +76,7 @@ class LeagueActivityTile extends StatelessWidget {
                         dateStr,
                         textAlign: TextAlign.end,
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: Colors.white38,
+                          color: context.xiTextPrimary,
                         ),
                       ),
                     ),
@@ -64,9 +84,9 @@ class LeagueActivityTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  event.mensaje,
+                  rl10n.activityMessage(event),
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: Colors.white70,
+                    color: context.xiTextPrimary,
                     height: 1.35,
                   ),
                 ),
@@ -114,7 +134,7 @@ class LeagueActivityTile extends StatelessWidget {
       case 'VALUE_BOOST_APPLIED':
         return const _ActivityIcon(Icons.trending_up_rounded, Color(0xFF80CBC4));
       default:
-        return const _ActivityIcon(Icons.info_outline_rounded, Colors.white54);
+        return const _ActivityIcon(Icons.info_outline_rounded, Color(0xFF90A4AE));
     }
   }
 }

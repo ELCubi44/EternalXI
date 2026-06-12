@@ -124,15 +124,15 @@ class _LeagueMarketHistoryScreenState extends State<LeagueMarketHistoryScreen> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  for (final entry in LeagueMarketHistoryFilters.labels.entries)
+                  for (final key in LeagueMarketHistoryFilters.filterKeys)
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: FilterChip(
-                        label: Text(entry.value),
-                        selected: _filter == entry.key,
+                        label: Text(ll.marketHistoryFilterLabel(key)),
+                        selected: _filter == key,
                         onSelected: _loading
                             ? null
-                            : (_) => setState(() => _filter = entry.key),
+                            : (_) => setState(() => _filter = key),
                       ),
                     ),
                 ],

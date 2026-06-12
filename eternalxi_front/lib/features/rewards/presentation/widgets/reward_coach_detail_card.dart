@@ -1,4 +1,5 @@
 import 'package:eternal_xi/app/localization/rewards_l10n.dart';
+import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/core/utils/league_asset_urls.dart';
 import 'package:eternal_xi/core/utils/league_coach_photo.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_coach_item.dart';
@@ -30,10 +31,11 @@ class RewardCoachDetailCard extends StatelessWidget {
     final teamName = (coach.nombreEquipo ?? '').trim();
     final panelColor = onDarkGradient
         ? Colors.black.withValues(alpha: 0.22)
-        : const Color(0xFF1A2233);
+        : context.xiSurfaceInset;
     final panelBorder = onDarkGradient
         ? Colors.white.withValues(alpha: 0.12)
-        : Colors.white.withValues(alpha: 0.08);
+        : context.xiBorderSubtle;
+    final textColor = onDarkGradient ? Colors.white : context.xiTextPrimary;
 
     return Container(
       width: double.infinity,
@@ -58,7 +60,7 @@ class RewardCoachDetailCard extends StatelessWidget {
                     Text(
                       coach.displayName,
                       style: theme.textTheme.titleMedium?.copyWith(
-                        color: Colors.white,
+                        color: textColor,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -73,7 +75,7 @@ class RewardCoachDetailCard extends StatelessWidget {
                             child: Text(
                               teamName,
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: Colors.white.withValues(alpha: 0.85),
+                                color: textColor,
                                 fontWeight: FontWeight.w600,
                               ),
                               maxLines: 2,
@@ -112,7 +114,7 @@ class RewardCoachDetailCard extends StatelessWidget {
                   child: Text(
                     rl10n.coachBonusExplanation(coach),
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.92),
+                      color: textColor,
                       fontWeight: FontWeight.w600,
                       height: 1.35,
                     ),
@@ -274,7 +276,12 @@ Future<void> showCoachRouletteInfoSheet(
             _InfoBlock(
               title: rl10n.rouletteCostTitle,
               body: costePuntos > 0
-                  ? rl10n.rouletteCostBody(formatRewardPoints(costePuntos))
+                  ? rl10n.rouletteCostBody(
+                      formatRewardPoints(
+                        costePuntos,
+                        unit: rl10n.fichasUnit,
+                      ),
+                    )
                   : rl10n.rouletteFreeCostBody,
             ),
             const SizedBox(height: 12),

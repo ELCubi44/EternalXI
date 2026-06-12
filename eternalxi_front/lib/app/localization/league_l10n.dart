@@ -1,4 +1,5 @@
 import 'package:eternal_xi/app/localization/app_localizations.dart';
+import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:flutter/widgets.dart';
 
 /// Textos de la feature de ligas (es/en).
@@ -8,6 +9,8 @@ class LeagueL10n {
   final Locale locale;
 
   bool get _en => locale.languageCode.toLowerCase().startsWith('en');
+
+  bool get isEnglish => _en;
 
   static LeagueL10n of(BuildContext context) =>
       LeagueL10n(AppLocalizations.of(context).locale);
@@ -20,8 +23,8 @@ class LeagueL10n {
   String matchday(int n) => _en ? 'Matchday $n' : 'Jornada $n';
   String matchdayShort(int n) => 'J${n > 0 ? n : '?'}';
   String get roundStandingsHint => _en
-      ? 'Team fantasy points and reward received in that matchday.'
-      : 'Puntos del equipo y recompensa recibida en esa jornada.';
+      ? 'Team fantasy points and reward chips received in that matchday.'
+      : 'Puntos del equipo y fichas de recompensa recibidas en esa jornada.';
   String get noRoundStandingsData =>
       _en ? 'No data for this matchday.' : 'Sin datos para esta jornada.';
   String get noStandingsYet =>
@@ -50,6 +53,7 @@ class LeagueL10n {
       ? 'Goalkeepers with the most clean sheets.'
       : 'Porteros con más porterías a cero.';
   String get injuredPlayers => _en ? 'Injured' : 'Lesionados';
+  String get seeAll => _en ? 'See all' : 'Ver todo';
   String get injuredPlayersSubtitle => _en
       ? 'Active injured players sorted by return date.'
       : 'Jugadores lesionados activos ordenados por vuelta.';
@@ -96,6 +100,33 @@ class LeagueL10n {
   String get homeTeam => _en ? 'Home' : 'Local';
   String get awayTeam => _en ? 'Away' : 'Visitante';
   String get kickoffLabel => _en ? 'Kickoff' : 'Inicio';
+  String get scheduledKickoffLabel =>
+      _en ? 'Scheduled kickoff' : 'Inicio previsto';
+  String get liveBadge => _en ? 'LIVE' : 'EN JUEGO';
+  String get inPlayLabel => _en ? 'In play' : 'En juego';
+  String get finishedLabel => _en ? 'Finished' : 'Finalizado';
+  String get matchTitle => _en ? 'Match' : 'Partido';
+  String get coachLabel => _en ? 'Coach' : 'Entrenador';
+  String get noMatchEventsYet => _en
+      ? 'No events for this match yet.'
+      : 'Aun no hay eventos para este partido.';
+  String get halfTime => _en ? 'Half-time' : 'Descanso';
+  String get secondHalfStart =>
+      _en ? 'Second half begins' : 'Empieza la segunda parte';
+  String get matchEnd => _en ? 'Full time' : 'Final del partido';
+  String get matchStart => _en ? 'Kick-off' : 'Inicio del partido';
+  String get genericEvent => _en ? 'Event' : 'Evento';
+  String get noPriceChange => _en ? 'No change' : 'Sin cambio';
+  String get todayChip => _en ? 'Today' : 'Hoy';
+  String get matchPhaseScheduled => _en ? 'Scheduled' : 'Programado';
+  String get matchPhaseLive => _en ? 'In play' : 'En juego';
+  String get matchPhaseFinished => _en ? 'Finished' : 'Finalizado';
+  String get starterProbUnknown => _en ? 'Not calculated' : 'Sin calcular';
+  String get starterProbVeryLikely => _en ? 'Very likely' : 'Muy probable';
+  String get starterProbLikely => _en ? 'Likely' : 'Probable';
+  String get starterProbDoubt => _en ? 'Doubtful' : 'Duda';
+  String get starterProbUnlikely => _en ? 'Unlikely' : 'Poco probable';
+  String get starterProbUnavailable => _en ? 'Unavailable' : 'No disponible';
   String matchesOnDate(String date) => _en ? 'Matches · $date' : 'Partidos · $date';
 
   // —— Estadísticas jugador ——
@@ -289,6 +320,129 @@ class LeagueL10n {
       _en ? 'Team list' : 'Listado de equipos';
   String get marketHistoryTitle =>
       _en ? 'League history' : 'Historial de liga';
+  String get marketPoolName => _en ? 'Market' : 'Mercado';
+
+  String marketHistoryFilterLabel(String key) {
+    switch (key.trim().toUpperCase()) {
+      case 'ALL':
+        return _en ? 'All' : 'Todo';
+      case 'ADJUDICACION_MERCADO':
+        return _en ? 'Auction' : 'Subasta';
+      case 'COMPRA_DIRECTA_DOBLE':
+        return _en ? 'Buy x2' : 'Compra x2';
+      case 'ACUERDO_USUARIOS':
+        return _en ? 'Transfers' : 'Traspasos';
+      case 'VENTA_MERCADO':
+        return _en ? 'Sales' : 'Ventas';
+      case 'ADMIN_KICK':
+        return _en ? 'Expulsions' : 'Expulsiones';
+      default:
+        return key;
+    }
+  }
+
+  String marketHistoryTypeTitle(String rawType) {
+    switch (rawType.trim().toUpperCase()) {
+      case 'ADJUDICACION_MERCADO':
+        return _en ? 'Awarded bid' : 'Adjudicación';
+      case 'COMPRA_DIRECTA_DOBLE':
+        return _en ? 'Direct buy' : 'Compra directa';
+      case 'ACUERDO_USUARIOS':
+        return _en ? 'Deal' : 'Acuerdo';
+      case 'VENTA_MERCADO':
+        return _en ? 'Sold to market' : 'Venta al mercado';
+      case 'ADMIN_KICK':
+        return _en ? 'Expulsion' : 'Expulsión';
+      default:
+        return _en ? 'Market activity' : 'Movimiento de mercado';
+    }
+  }
+
+  String marketHistoryDescription({
+    required String tipo,
+    required int idUsuarioComprador,
+    required String compradorNombre,
+    required int? idUsuarioVendedor,
+    required String? vendedorNombre,
+    required String jugadorNombre,
+    required int precio,
+  }) {
+    final buyer = _marketHistoryParticipantName(
+      idUsuarioComprador,
+      compradorNombre,
+    );
+    final seller = vendedorNombre == null
+        ? null
+        : _marketHistoryParticipantName(
+            idUsuarioVendedor ?? 0,
+            vendedorNombre,
+          );
+    final player = jugadorNombre.trim().isEmpty
+        ? (_en ? 'Player' : 'Jugador')
+        : jugadorNombre.trim();
+    final price = LeagueMoneyFormat.money(precio.toDouble());
+
+    switch (tipo.trim().toUpperCase()) {
+      case 'ADJUDICACION_MERCADO':
+        return _en
+            ? '$buyer won $player from the market for $price'
+            : '$buyer se ha llevado del mercado a $player por $price';
+      case 'COMPRA_DIRECTA_DOBLE':
+        return _en
+            ? '$buyer bought $player from the market at double price for $price'
+            : '$buyer se ha llevado a $player del mercado pagando el doble por $price';
+      case 'ACUERDO_USUARIOS':
+        final s = seller ?? (_en ? 'another manager' : 'otro manager');
+        return _en
+            ? '$buyer reached a deal with $s for $player for $price'
+            : '$buyer ha llegado a un acuerdo con $s por $player por $price';
+      case 'VENTA_MERCADO':
+        final v = seller ?? marketPoolName;
+        return _en
+            ? '$v sold $player to the market for $price'
+            : '$v ha vendido a $player al mercado por $price';
+      default:
+        return _en
+            ? '$buyer · $player · $price'
+            : '$buyer · $player · $price';
+    }
+  }
+
+  String marketHistoryTimestamp(DateTime? value) {
+    if (value == null) {
+      return _en ? 'Date unavailable' : 'Fecha no disponible';
+    }
+    final d = value.toLocal();
+    final now = DateTime.now();
+    final day = DateTime(d.year, d.month, d.day);
+    final today = DateTime(now.year, now.month, now.day);
+    final diff = today.difference(day).inDays;
+    final hh = d.hour.toString().padLeft(2, '0');
+    final mm = d.minute.toString().padLeft(2, '0');
+    if (diff == 0) {
+      return _en ? 'Today · $hh:$mm' : 'Hoy · $hh:$mm';
+    }
+    if (diff == 1) {
+      return _en ? 'Yesterday · $hh:$mm' : 'Ayer · $hh:$mm';
+    }
+    final dd = d.day.toString().padLeft(2, '0');
+    final mo = d.month.toString().padLeft(2, '0');
+    return '$dd/$mo/${d.year} · $hh:$mm';
+  }
+
+  String _marketHistoryParticipantName(int id, String name) {
+    final trimmed = name.trim();
+    if (id == 1 ||
+        trimmed.toLowerCase() == 'mercado' ||
+        trimmed.toLowerCase() == 'market') {
+      return marketPoolName;
+    }
+    if (trimmed.isEmpty) {
+      return _en ? 'User $id' : 'Usuario $id';
+    }
+    return trimmed;
+  }
+
   String get deleteBid => _en ? 'Remove bid' : 'Eliminar puja';
   String get totalBids => _en ? 'Total bids' : 'Pujas totales';
   String get offersTab => _en ? 'Offers' : 'Ofertas';
@@ -330,15 +484,14 @@ class LeagueL10n {
       ? 'weekends + Tue/Wed'
       : 'fines de semana + martes/miércoles';
   String minRewardPts(int pts) => _en
-      ? 'Min. $pts pts (last place)'
-      : 'Mín. $pts pts (último puesto)';
+      ? 'Min. $pts chips (last place)'
+      : 'Mín. $pts fichas (último puesto)';
   String rewardDistributionPreview(String first, String second, int min) =>
       _en
-          ? '$first, $second, …, $min pts/matchday'
-          : '$first, $second, …, $min pts/jornada';
+          ? '$first, $second, …, $min chips/matchday'
+          : '$first, $second, …, $min fichas/jornada';
   String perPoint(String amount) => _en ? '$amount/point' : '$amount/punto';
-  String leagueStartAt(String dateTime) =>
-      _en ? '$dateTime' : '$dateTime';
+  String leagueStartAt(String dateTime) => dateTime;
   String get yesWord => _en ? 'Yes' : 'Sí';
   String get noWord => _en ? 'No' : 'No';
 
@@ -451,7 +604,7 @@ class LeagueL10n {
       ? 'The global listing returned no rows for this league.'
       : 'El listado global no devolvió filas para esta liga.';
   String get youAreOwnerAlready =>
-      _en ? 'You already own this player' : 'Eres el dueño y ya';
+      _en ? 'You already own this player' : 'Eres el dueño';
   String get deleteAction => _en ? 'Delete' : 'Eliminar';
   String get deleteBidConfirmBody => _en
       ? 'Are you sure you want to remove your bid? The held funds will return to your available balance.'
@@ -550,9 +703,9 @@ class LeagueL10n {
       : 'La liga siempre jugará los fines de semana. Si activas esta opción, '
           'también habrá jornadas martes y miércoles para que termine antes.';
   String minRewardSliderSubtitle(int step, int min, int max) => _en
-      ? 'Last place receives this minimum; +$step pts for each rank above ($min–$max pts).'
-      : 'Último puesto recibe este mínimo; +$step pts por cada puesto que subes '
-          '($min–$max pts).';
+      ? 'Last place receives this minimum; +$step chips for each rank above ($min–$max chips).'
+      : 'Último puesto recibe este mínimo; +$step fichas por cada puesto que subes '
+          '($min–$max fichas).';
   String rewardDistributionWithParticipants(int count, String preview) =>
       _en ? 'With $count participants: $preview' : 'Con $count participantes: $preview';
   String createLeagueParticipantsSummary(int count, String calendar, String format) =>
@@ -628,6 +781,25 @@ class LeagueL10n {
       ? 'Bench points that count in fantasy when replacing the starter.'
       : 'Puntos del banquillo que sí cuentan en el fantasy por sustituir '
           'al titular.';
+
+  String starterProbabilityBandLabel(int? p) {
+    if (p == null) {
+      return starterProbUnknown;
+    }
+    if (p >= 80) {
+      return starterProbVeryLikely;
+    }
+    if (p >= 50) {
+      return starterProbLikely;
+    }
+    if (p >= 25) {
+      return starterProbDoubt;
+    }
+    if (p >= 1) {
+      return starterProbUnlikely;
+    }
+    return starterProbUnavailable;
+  }
 
   String statLabel(String key) {
     switch (key) {

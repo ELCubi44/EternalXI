@@ -9,13 +9,14 @@ import 'package:eternal_xi/data/models/league_squad_player.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/squad/league_squad_position_bucket.dart';
 import 'package:eternal_xi/features/leagues/utils/league_display_strings.dart';
-import 'package:eternal_xi/features/leagues/utils/league_player_availability_icons.dart';
 import 'package:eternal_xi/features/leagues/utils/league_player_estado_titularidad.dart';
+import 'package:eternal_xi/features/leagues/utils/league_player_availability_icons.dart';
 import 'package:eternal_xi/features/leagues/utils/league_player_visible_estado.dart';
 import 'package:eternal_xi/features/leagues/utils/league_starter_probability_ui.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_player_avatar.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
 import 'package:eternal_xi/features/leagues/widgets/unsaved_lineup_dialog.dart';
+import 'package:eternal_xi/shared/widgets/lineup_history_icon.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -70,9 +71,12 @@ List<Alignment> _pitchRowAlignments(
   });
 }
 
-const double _pitchDefY = -0.52;
-const double _pitchMidY = 0.02;
+const double _pitchGkY = -0.88;
 const double _pitchFwdY = 0.65;
+/// Misma separación vertical entre POR→DEF, DEF→MED y MED→DEL.
+const double _pitchRowGap = (_pitchFwdY - _pitchGkY) / 3;
+const double _pitchDefY = _pitchGkY + _pitchRowGap;
+const double _pitchMidY = _pitchDefY + _pitchRowGap;
 
 bool _emptySlotLineMatches(LeagueSquadLine line, String rawPosicion) {
   var bucket = LeagueSquadPositionBucket.forPosition(rawPosicion);
@@ -381,8 +385,89 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
 
   void triggerAutofill() {
     if (!_blocked) {
-      _mutateLineup(() => _autofillLineupSlots());
+      _mutateLineup(() {
+        _optimizeLineupByPlayProbability();
+        _autofillLineupSlots();
+      });
     }
+  }
+
+  bool _isPlayerEligibleForLineup(LeagueSquadPlayer player) =>
+      !leaguePlayerEstadoIsLesionado(player.estado) &&
+      !leaguePlayerEstadoIsSancionado(player.estado);
+
+  int _compareByPlayProbability(LeagueSquadPlayer a, LeagueSquadPlayer b) {
+    final pa = a.probabilidadTitular ?? -1;
+    final pb = b.probabilidadTitular ?? -1;
+    if (pa != pb) {
+      return pb.compareTo(pa);
+    }
+    return b.valor.compareTo(a.valor);
+  }
+
+  void _optimizeLineupByPlayProbability() {
+    if (widget.readOnly || _blocked) {
+      return;
+    }
+    final assignedStarterIds = <int>{};
+    var changed = false;
+    for (final line in [
+      _model.gk,
+      _model.defLine,
+      _model.midLine,
+      _model.fwdLine,
+    ]) {
+      changed |= _optimizeLineByPlayProbability(line, assignedStarterIds);
+    }
+    if (changed) {
+      _ensureCaptainStillValid();
+    }
+  }
+
+  bool _optimizeLineByPlayProbability(
+    _LineState line,
+    Set<int> assignedStarterIds,
+  ) {
+    final lineType = _lineForState(line);
+    final pool = _squadPoolForUserLineup()
+        .where(
+          (p) =>
+              _isPlayerEligibleForLineup(p) &&
+              LeagueSquadPositionBucket.forPosition(p.posicion) == lineType,
+        )
+        .toList()
+      ..sort(_compareByPlayProbability);
+
+    final picked = <LeagueSquadPlayer>[];
+    for (final player in pool) {
+      if (assignedStarterIds.contains(player.idLigaJugador)) {
+        continue;
+      }
+      picked.add(player);
+      if (picked.length >= line.slotCount + 1) {
+        break;
+      }
+    }
+
+    var changed = false;
+    for (var i = 0; i < line.slotCount; i++) {
+      final next = i < picked.length ? picked[i] : null;
+      if (line.slots[i]?.idLigaJugador != next?.idLigaJugador) {
+        line.slots[i] = next;
+        changed = true;
+      }
+      if (next != null) {
+        assignedStarterIds.add(next.idLigaJugador);
+      }
+    }
+
+    final nextReserve =
+        picked.length > line.slotCount ? picked[line.slotCount] : null;
+    if (line.reserve?.idLigaJugador != nextReserve?.idLigaJugador) {
+      line.reserve = nextReserve;
+      changed = true;
+    }
+    return changed;
   }
 
   /// Tras cambiar entrenador en servidor: permite guardar la alineación reorganizada.
@@ -777,7 +862,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       }
       out.add(p);
     }
-    out.sort((a, b) => b.valor.compareTo(a.valor));
+    out.sort(_compareByPlayProbability);
     return out;
   }
 
@@ -918,6 +1003,9 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
 
     final out = <LeagueSquadPlayer>[];
     for (final p in _squadPoolForUserLineup()) {
+      if (!_isPlayerEligibleForLineup(p)) {
+        continue;
+      }
       final sameLine =
           LeagueSquadPositionBucket.forPosition(p.posicion) ==
           _lineForState(line);
@@ -936,7 +1024,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       }
       out.add(p);
     }
-    out.sort((a, b) => b.valor.compareTo(a.valor));
+    out.sort(_compareByPlayProbability);
     return out;
   }
 
@@ -1267,11 +1355,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      LeaguePlayerAvailabilityIcons.injured,
-                      size: 16,
-                      color: colorScheme.onErrorContainer,
-                    ),
+                    LeaguePlayerAvailabilityIcons.injured(size: 16),
                     const SizedBox(width: 6),
                     Text(
                       context.leagueL10n.injured,
@@ -1491,52 +1575,6 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
     }
   }
 
-  Widget _headerRow(ThemeData theme) {
-    final l10n = context.l10n;
-    final historyButton = widget.onHistoryTap == null
-        ? null
-        : OutlinedButton.icon(
-            icon: const Icon(Icons.history_rounded, size: 18),
-            onPressed: widget.onHistoryTap,
-            label: Text(l10n.history),
-          );
-    if (widget.readOnly) {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            _headerFormationLabel(),
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const Spacer(),
-          historyButton ?? const SizedBox.shrink(),
-        ],
-      );
-    }
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          _headerFormationLabel(),
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const Spacer(),
-        if (historyButton != null) historyButton,
-        if (kDebugMode)
-          Builder(
-            builder: (_) {
-              debugPrint('[save-debug] blocked=$_blocked lineupComplete=$_lineupComplete dirty=${_isLineupDirty()}');
-              return const SizedBox.shrink();
-            },
-          ),
-      ],
-    );
-  }
-
   Widget _benchHorizontalBar() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1670,11 +1708,6 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       penalizacion: -5,
       emptySlot: true,
     );
-  }
-
-  String _headerFormationLabel() {
-    final s = widget.formacionEfectiva.trim();
-    return s.isEmpty ? '4-3-3' : s;
   }
 
   String _effectiveFormationForCoachBubble() {
@@ -1952,6 +1985,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = context.l10n;
     final defAlignments = _pitchRowAlignments(
       _model.defLine.slotCount,
       _pitchDefY,
@@ -1977,8 +2011,29 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _headerRow(theme),
-          const SizedBox(height: 14),
+          if (widget.readOnly && widget.onHistoryTap != null) ...[
+            Align(
+              alignment: Alignment.centerRight,
+              child: Tooltip(
+                message: l10n.history,
+                child: InkWell(
+                  onTap: widget.onHistoryTap,
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                      ),
+                    ),
+                    child: const LineupHistoryIcon(size: 28),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
           AspectRatio(
             aspectRatio: 0.72,
             child: DecoratedBox(
@@ -2010,7 +2065,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                   children: [
                     const CustomPaint(painter: _PitchMarkingsPainter()),
                     Align(
-                      alignment: const Alignment(0, -0.88),
+                      alignment: Alignment(0, _pitchGkY),
                       child: _PitchPlayerBubble(
                         player: gkPlayer,
                         penalizedEmpty: _penalizedEmptyMeta(
@@ -2661,10 +2716,8 @@ class _PitchPlayerBubble extends StatelessWidget {
                                   width: 1.1,
                                 ),
                               ),
-                              child: Icon(
-                                LeaguePlayerAvailabilityIcons.injured,
+                              child: LeaguePlayerAvailabilityIcons.injured(
                                 size: 11,
-                                color: colorScheme.onErrorContainer,
                               ),
                             ),
                           if (leaguePlayerEstadoIsLesionado(

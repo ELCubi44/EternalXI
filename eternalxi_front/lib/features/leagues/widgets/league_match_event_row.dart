@@ -9,6 +9,7 @@ class LeagueMatchEventRow extends StatelessWidget {
     super.key,
     required this.minuteLabel,
     required this.text,
+    this.fallbackText = 'Evento',
     required this.side,
     this.player,
     this.playerOut,
@@ -21,10 +22,12 @@ class LeagueMatchEventRow extends StatelessWidget {
     this.substitutionPhotoOutUri,
     this.eventTypeIcon,
     this.eventTypeIconColor,
+    this.eventTypeLeading,
   });
 
   final String minuteLabel;
   final String text;
+  final String fallbackText;
   final LeagueMatchEventSide side;
 
   /// Jugador principal del evento (p. ej. entra en un CAMBIO).
@@ -49,13 +52,14 @@ class LeagueMatchEventRow extends StatelessWidget {
   /// Icono por tipo de evento (gol, tarjeta, lesión…); no se usa en CAMBIO (usa icono entre fotos).
   final IconData? eventTypeIcon;
   final Color? eventTypeIconColor;
+  final Widget? eventTypeLeading;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final minText = minuteLabel.trim();
-    final bodyText = text.trim().isEmpty ? 'Evento' : text.trim();
+    final bodyText = text.trim().isEmpty ? fallbackText : text.trim();
     String withMinutePrefix(String message) {
       if (minText.isEmpty) {
         return message;
@@ -119,12 +123,8 @@ class LeagueMatchEventRow extends StatelessWidget {
         children: [
           lead,
           const SizedBox(width: 6),
-          if (eventTypeIcon != null) ...[
-            Icon(
-              eventTypeIcon,
-              size: 22,
-              color: _resolveTypeIconColor(colorScheme),
-            ),
+          if (_hasEventTypeIcon) ...[
+            _eventTypeIcon(typeIconColor: _resolveTypeIconColor(colorScheme)),
             const SizedBox(width: 6),
           ],
           Expanded(
@@ -166,13 +166,9 @@ class LeagueMatchEventRow extends StatelessWidget {
                 ),
               ),
             ),
-            if (eventTypeIcon != null) ...[
+            if (_hasEventTypeIcon) ...[
               const SizedBox(width: 6),
-              Icon(
-                eventTypeIcon,
-                size: 22,
-                color: typeIconColor,
-              ),
+              _eventTypeIcon(typeIconColor: typeIconColor),
             ],
             if (loanEventPhotoUri != null) ...[
               const SizedBox(width: 6),
@@ -253,12 +249,8 @@ class LeagueMatchEventRow extends StatelessWidget {
           LeaguePlayerAvatar(player: player!, size: 34, circular: true),
           const SizedBox(width: 6),
         ],
-        if (eventTypeIcon != null) ...[
-          Icon(
-            eventTypeIcon,
-            size: 22,
-            color: typeIconColor,
-          ),
+        if (_hasEventTypeIcon) ...[
+          _eventTypeIcon(typeIconColor: typeIconColor),
           const SizedBox(width: 6),
         ],
         Expanded(
@@ -275,11 +267,25 @@ class LeagueMatchEventRow extends StatelessWidget {
     );
   }
 
+  bool get _hasEventTypeIcon =>
+      eventTypeLeading != null || eventTypeIcon != null;
+
+  Widget _eventTypeIcon({required Color typeIconColor}) {
+    if (eventTypeLeading != null) {
+      return eventTypeLeading!;
+    }
+    return Icon(
+      eventTypeIcon,
+      size: 22,
+      color: typeIconColor,
+    );
+  }
+
   Color _resolveTypeIconColor(ColorScheme colorScheme) {
     if (eventTypeIconColor != null) {
       return eventTypeIconColor!;
     }
-    if (eventTypeIcon == Icons.report_rounded) {
+    if (eventTypeLeading != null || eventTypeIcon == Icons.report_rounded) {
       return colorScheme.error;
     }
     return colorScheme.primary;

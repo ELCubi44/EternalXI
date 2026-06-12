@@ -1,8 +1,8 @@
-/// Formato de fecha/hora legible para usuario español (sin dependencia `intl`).
+/// Formato de fecha/hora legible (es/en, sin dependencia `intl`).
 abstract final class LeagueSpanishDateTime {
   LeagueSpanishDateTime._();
 
-  static const _monthsShort = <String>[
+  static const _monthsShortEs = <String>[
     'ene',
     'feb',
     'mar',
@@ -17,13 +17,31 @@ abstract final class LeagueSpanishDateTime {
     'dic',
   ];
 
-  /// Ej.: `25 abr 2026`
-  static String formatDateLong(DateTime? utcOrLocal) {
+  static const _monthsShortEn = <String>[
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  static List<String> _monthsShort(bool english) =>
+      english ? _monthsShortEn : _monthsShortEs;
+
+  /// Ej.: `25 abr 2026` / `25 Apr 2026`
+  static String formatDateLong(DateTime? utcOrLocal, {bool english = false}) {
     if (utcOrLocal == null) {
       return '—';
     }
     final d = utcOrLocal.toLocal();
-    final m = _monthsShort[d.month - 1];
+    final m = _monthsShort(english)[d.month - 1];
     return '${d.day} $m ${d.year}';
   }
 
@@ -50,14 +68,14 @@ abstract final class LeagueSpanishDateTime {
   }
 
   /// Etiqueta corta si el día coincide con hoy (fecha local).
-  static String? todayChipIfSameDay(DateTime? kickoff) {
+  static String? todayChipIfSameDay(DateTime? kickoff, {bool english = false}) {
     if (kickoff == null) {
       return null;
     }
     final k = kickoff.toLocal();
     final n = DateTime.now();
     if (k.year == n.year && k.month == n.month && k.day == n.day) {
-      return 'Hoy';
+      return english ? 'Today' : 'Hoy';
     }
     return null;
   }

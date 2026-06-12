@@ -44,6 +44,118 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
     ]);
   }
 
+  static ThemeData get _lightTheme {
+    const lumiare = 'Lumiare';
+    const bg = XiColors.ivoryUniform;
+    const surface = XiColors.warmWhite;
+    const text = XiColors.nightBlue;
+    final scheme = ColorScheme.fromSeed(
+      seedColor: XiColors.royalBlue,
+      brightness: Brightness.light,
+    ).copyWith(
+      surface: surface,
+      onSurface: text,
+      primary: XiColors.royalBlue,
+      onPrimary: XiColors.warmWhite,
+      secondary: XiColors.royalBlue,
+      onSecondary: XiColors.nightBlue,
+      error: XiColors.heroRed,
+    );
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: scheme,
+      fontFamily: lumiare,
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: bg,
+      cardColor: surface,
+      dividerColor: const Color(0xFFD8CEBC),
+      appBarTheme: const AppBarTheme(
+        centerTitle: false,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: text,
+        surfaceTintColor: Colors.transparent,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        titleTextStyle: TextStyle(
+          fontFamily: lumiare,
+          color: text,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.5,
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: surface,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFD8CEBC)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: XiColors.royalBlue, width: 2),
+        ),
+        hintStyle: const TextStyle(fontFamily: lumiare, color: text, fontSize: 14),
+        labelStyle: const TextStyle(fontFamily: lumiare, color: text, fontSize: 14),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: XiColors.royalBlue,
+          foregroundColor: XiColors.warmWhite,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          textStyle: const TextStyle(fontFamily: lumiare, fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: 0.5),
+        ),
+      ),
+      snackBarTheme: const SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: XiColors.nightBlue,
+        contentTextStyle: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontSize: 14),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: surface,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        titleTextStyle: const TextStyle(fontFamily: lumiare, color: text, fontSize: 18, fontWeight: FontWeight.w700),
+        contentTextStyle: const TextStyle(fontFamily: lumiare, color: text, fontSize: 14, height: 1.5),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return XiColors.royalBlue;
+          return XiColors.steelGray;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return XiColors.royalBlue.withValues(alpha: 0.3);
+          return const Color(0xFFD8CEBC);
+        }),
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(color: XiColors.royalBlue),
+      dividerTheme: const DividerThemeData(color: Color(0xFFD8CEBC), thickness: 1),
+      textTheme: const TextTheme(
+        displayLarge: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w700),
+        displayMedium: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w700),
+        displaySmall: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w700),
+        headlineLarge: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w700),
+        headlineMedium: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w700),
+        headlineSmall: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w600),
+        titleLarge: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w700, fontSize: 20),
+        titleMedium: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w600, fontSize: 16),
+        titleSmall: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w600, fontSize: 14),
+        bodyLarge: TextStyle(fontFamily: lumiare, color: text, fontSize: 16),
+        bodyMedium: TextStyle(fontFamily: lumiare, color: text, fontSize: 14),
+        bodySmall: TextStyle(fontFamily: lumiare, color: text, fontSize: 12),
+        labelLarge: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w700, fontSize: 14),
+        labelMedium: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w600, fontSize: 12),
+        labelSmall: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w500, fontSize: 11),
+      ),
+      iconTheme: const IconThemeData(color: text, size: 22),
+    );
+  }
+
   static ThemeData get _theme {
     const scheme = XiColors.colorScheme;
     const lumiare = 'Lumiare';
@@ -79,7 +191,7 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
               fontFamily: lumiare,
               fontSize: 11,
               fontWeight: FontWeight.w700,
-              color: XiColors.techCyan,
+              color: XiColors.royalBlue,
               letterSpacing: 0.3,
             );
           }
@@ -87,14 +199,14 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
             fontFamily: lumiare,
             fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: XiColors.steelGray,
+            color: XiColors.warmWhite,
           );
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const IconThemeData(color: XiColors.techCyan, size: 24);
+            return const IconThemeData(color: XiColors.royalBlue, size: 24);
           }
-          return const IconThemeData(color: XiColors.steelGray, size: 22);
+          return const IconThemeData(color: XiColors.warmWhite, size: 22);
         }),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -119,12 +231,12 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         ),
         hintStyle: const TextStyle(
           fontFamily: lumiare,
-          color: XiColors.steelGray,
+          color: XiColors.warmWhite,
           fontSize: 14,
         ),
         labelStyle: const TextStyle(
           fontFamily: lumiare,
-          color: XiColors.techLightGray,
+          color: XiColors.warmWhite,
           fontSize: 14,
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -146,8 +258,8 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: XiColors.techCyan,
-          side: const BorderSide(color: XiColors.techCyan),
+          foregroundColor: XiColors.royalBlue,
+          side: const BorderSide(color: XiColors.royalBlue),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           textStyle: const TextStyle(
             fontFamily: lumiare,
@@ -158,7 +270,7 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: XiColors.techCyan,
+          foregroundColor: XiColors.royalBlue,
           textStyle: const TextStyle(
             fontFamily: lumiare,
             fontWeight: FontWeight.w600,
@@ -187,7 +299,7 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         ),
         contentTextStyle: const TextStyle(
           fontFamily: lumiare,
-          color: XiColors.techLightGray,
+          color: XiColors.warmWhite,
           fontSize: 14,
           height: 1.5,
         ),
@@ -201,9 +313,9 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         ),
       ),
       tabBarTheme: const TabBarThemeData(
-        labelColor: XiColors.techCyan,
-        unselectedLabelColor: XiColors.steelGray,
-        indicatorColor: XiColors.techCyan,
+        labelColor: XiColors.royalBlue,
+        unselectedLabelColor: XiColors.warmWhite,
+        indicatorColor: XiColors.royalBlue,
         labelStyle: TextStyle(
           fontFamily: lumiare,
           fontSize: 13,
@@ -217,23 +329,23 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         dividerColor: XiColors.divider,
       ),
       listTileTheme: const ListTileThemeData(
-        iconColor: XiColors.steelGray,
+        iconColor: XiColors.warmWhite,
         textColor: XiColors.warmWhite,
         tileColor: Colors.transparent,
       ),
       chipTheme: ChipThemeData(
         backgroundColor: XiColors.surfaceElevated,
         selectedColor: XiColors.royalBlue.withValues(alpha: 0.35),
-        checkmarkColor: XiColors.techCyan,
+        checkmarkColor: XiColors.royalBlue,
         labelStyle: const TextStyle(
           fontFamily: lumiare,
-          color: XiColors.techLightGray,
+          color: XiColors.warmWhite,
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
         secondaryLabelStyle: const TextStyle(
           fontFamily: lumiare,
-          color: XiColors.techCyan,
+          color: XiColors.royalBlue,
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
@@ -262,7 +374,7 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
             if (states.contains(WidgetState.selected)) {
               return XiColors.warmWhite;
             }
-            return XiColors.steelGray;
+            return XiColors.warmWhite;
           }),
           textStyle: WidgetStateProperty.all(
             const TextStyle(fontFamily: lumiare, fontSize: 12, fontWeight: FontWeight.w600),
@@ -281,13 +393,13 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         titleMedium: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w600, fontSize: 16),
         titleSmall: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w600, fontSize: 14),
         bodyLarge: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontSize: 16),
-        bodyMedium: TextStyle(fontFamily: lumiare, color: XiColors.techLightGray, fontSize: 14),
-        bodySmall: TextStyle(fontFamily: lumiare, color: XiColors.steelGray, fontSize: 12),
+        bodyMedium: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontSize: 14),
+        bodySmall: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontSize: 12),
         labelLarge: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700, fontSize: 14),
-        labelMedium: TextStyle(fontFamily: lumiare, color: XiColors.techLightGray, fontWeight: FontWeight.w600, fontSize: 12),
-        labelSmall: TextStyle(fontFamily: lumiare, color: XiColors.steelGray, fontWeight: FontWeight.w500, fontSize: 11),
+        labelMedium: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w600, fontSize: 12),
+        labelSmall: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w500, fontSize: 11),
       ),
-      iconTheme: const IconThemeData(color: XiColors.techLightGray, size: 22),
+      iconTheme: const IconThemeData(color: XiColors.warmWhite, size: 22),
       primaryIconTheme: const IconThemeData(color: XiColors.warmWhite, size: 22),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: XiColors.royalBlue,
@@ -296,18 +408,18 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) return XiColors.techCyan;
+          if (states.contains(WidgetState.selected)) return XiColors.royalBlue;
           return XiColors.steelGray;
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return XiColors.techCyan.withValues(alpha: 0.3);
+            return XiColors.royalBlue.withValues(alpha: 0.3);
           }
           return XiColors.divider;
         }),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: XiColors.techCyan,
+        color: XiColors.royalBlue,
         circularTrackColor: XiColors.divider,
         linearTrackColor: XiColors.divider,
       ),
@@ -329,8 +441,8 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       localeResolutionCallback: AppLocalizations.localeResolutionCallback,
-      themeMode: ThemeMode.dark,
-      theme: _theme,
+      themeMode: preferences.appThemeMode,
+      theme: _lightTheme,
       darkTheme: _theme,
       routerConfig: appRouter,
     );

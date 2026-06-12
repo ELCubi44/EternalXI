@@ -141,7 +141,7 @@ public class LeagueLineupAvailabilityNotificationService {
                 null,
                 null,
                 "squad",
-                1
+                0
         );
         int sent = 0;
         for (Long idUsuario : owners) {

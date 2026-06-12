@@ -1,5 +1,6 @@
 package com.eternalxi.eternalxi_api.services;
 
+import com.eternalxi.eternalxi_api.util.LeagueAssetUrls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,16 +50,16 @@ public class NightMarketNotificationService {
 
             Map<String, Object> datos = userNotificationService.datosBase(
                     award.idLigaJugador(),
-                    null,
+                    award.idJugador(),
                     playerName,
-                    null,
+                    LeagueAssetUrls.player(award.idJugador()),
                     null,
                     null,
                     null,
                     null,
                     null,
                     "squad",
-                    1
+                    0
             );
             if (teamName != null && !teamName.isBlank()) {
                 datos.put("teamName", teamName);

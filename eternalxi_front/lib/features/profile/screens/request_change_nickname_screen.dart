@@ -1,7 +1,9 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
+import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/core/utils/validators.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/features/auth/widgets/auth_shell.dart';
 import 'package:eternal_xi/shared/widgets/app_loading_overlay.dart';
 import 'package:eternal_xi/shared/widgets/app_primary_button.dart';
 import 'package:eternal_xi/shared/widgets/app_text_field.dart';
@@ -42,33 +44,17 @@ class _RequestChangeNicknameScreenState
     return AppLoadingOverlay(
       isLoading: auth.isLoading,
       child: Scaffold(
-        appBar: AppBar(title: Text(l10n.changeNickname)),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+        backgroundColor: context.xiBackground,
+        body: AccountFormShell(
+          title: l10n.changeNickname,
+          hint: l10n.changeNicknameHint,
+          currentValueLabel: l10n.currentNickname,
+          currentValue: widget.nicknameActual,
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  l10n.changeNicknameHint,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    height: 1.4,
-                  ),
-                ),
-                if ((widget.nicknameActual ?? '').trim().isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.currentNickname,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(widget.nicknameActual!.trim()),
-                ],
-                const SizedBox(height: 20),
                 AppTextField(
                   controller: _nuevoNicknameController,
                   label: l10n.newNickname,
@@ -93,6 +79,9 @@ class _RequestChangeNicknameScreenState
                   child: TextButton(
                     onPressed: () =>
                         setState(() => _obscurePassword = !_obscurePassword),
+                    style: TextButton.styleFrom(
+                      foregroundColor: context.xiAccentText,
+                    ),
                     child: Text(
                       _obscurePassword ? l10n.showPassword : l10n.hidePassword,
                     ),

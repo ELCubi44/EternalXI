@@ -100,10 +100,12 @@ class LeagueSquadPlayerTile extends StatelessWidget {
                 if (isProtected) ...[
                   Tooltip(
                     message: player.proteccionHastaFinTemporada
-                        ? 'Protegido temporada'
+                        ? context.leagueL10n.protectedSeason
                         : player.proteccionJornadaFin != null
-                            ? 'Protegido hasta J${player.proteccionJornadaFin}'
-                            : 'Protegido',
+                            ? context.leagueL10n.protectedUntilMatchday(
+                                player.proteccionJornadaFin!,
+                              )
+                            : context.leagueL10n.protectedGeneric,
                     child: Container(
                       width: 22,
                       height: 22,
@@ -207,11 +209,7 @@ class LeagueSquadPlayerTile extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (isInjured)
-                        Icon(
-                          LeaguePlayerAvailabilityIcons.injured,
-                          size: 20,
-                          color: colorScheme.error,
-                        ),
+                        LeaguePlayerAvailabilityIcons.injured(size: 20),
                       if (isInjured && isSanctioned)
                         const SizedBox(width: 6),
                       if (isSanctioned)
@@ -241,7 +239,7 @@ class LeagueSquadPlayerTile extends StatelessWidget {
                 Expanded(
                   child: _StatPill(
                     icon: Icons.payments_outlined,
-                    text: LeagueMoneyFormat.money(player.valor),
+                    text: LeagueMoneyFormat.money(player.displayValor),
                     colorScheme: colorScheme,
                     theme: theme,
                     emphasize: false,

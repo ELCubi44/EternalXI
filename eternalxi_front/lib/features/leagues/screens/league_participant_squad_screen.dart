@@ -67,7 +67,7 @@ class _LeagueParticipantSquadScreenState
           return;
         }
         final shell = LeagueShellData.maybeOf(context);
-        shell?.selectTab(2);
+        shell?.openSquad();
         Navigator.of(context).maybePop();
       });
       return;
@@ -234,23 +234,38 @@ class _LeagueParticipantSquadScreenState
         continue;
       }
 
+      final lineColor = LeagueSquadPositionBucket.lineColor(line);
+
       slivers.add(
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
           sliver: SliverToBoxAdapter(
             child: Row(
               children: [
-                Icon(
-                  Icons.layers_outlined,
-                  size: 20,
-                  color: colorScheme.primary,
+                Container(
+                  width: 3,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: lineColor,
+                    borderRadius: BorderRadius.circular(2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: lineColor.withValues(alpha: 0.5),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    LeagueSquadPositionBucket.sectionTitle(line),
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                    LeagueSquadPositionBucket.sectionTitle(line).toUpperCase(),
+                    style: TextStyle(
+                      fontFamily: 'Lumiare',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: lineColor,
+                      letterSpacing: 1.5,
                     ),
                   ),
                 ),
@@ -260,14 +275,17 @@ class _LeagueParticipantSquadScreenState
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer.withValues(alpha: 0.6),
+                    color: lineColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: lineColor.withValues(alpha: 0.35)),
                   ),
                   child: Text(
                     '${list.length}',
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.w700,
+                    style: TextStyle(
+                      fontFamily: 'Lumiare',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: lineColor,
                     ),
                   ),
                 ),

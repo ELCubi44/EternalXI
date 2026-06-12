@@ -1,5 +1,6 @@
 import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/core/utils/league_asset_urls.dart';
 import 'package:eternal_xi/core/utils/league_money_format.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
@@ -19,6 +20,10 @@ import 'package:eternal_xi/features/leagues/utils/league_starter_probability_ui.
 import 'package:eternal_xi/features/leagues/widgets/league_player_avatar.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_player_profile_rounds_section.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
+import 'package:eternal_xi/shared/widgets/money_coins_icon.dart';
+import 'package:eternal_xi/shared/widgets/player_fatigue_icon.dart';
+import 'package:eternal_xi/shared/widgets/player_position_icon.dart';
+import 'package:eternal_xi/shared/widgets/player_rating_star_icon.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -318,9 +323,9 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
     }
   }
 
-  String _formatDateShort(DateTime? d) {
+  String _formatDateShort(DateTime? d, LeagueL10n ll) {
     if (d == null) {
-      return 'Sin fecha disponible';
+      return ll.noDateAvailable;
     }
     final local = d.toLocal();
     final day = local.day.toString().padLeft(2, '0');
@@ -331,16 +336,12 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
   String _availabilityText(LeagueL10n ll) {
     final info = _unavailableInfo;
     if (info != null) {
-      final txt = info.textoDisponibilidad.trim();
-      if (txt.isNotEmpty) {
-        return txt;
-      }
       if (info.numeroJornadaDisponible != null &&
           info.numeroJornadaDisponible! > 0) {
         return ll.availableForMatchday(info.numeroJornadaDisponible!);
       }
       if (info.disponibleDesde != null) {
-        return ll.availableOn(_formatDateShort(info.disponibleDesde));
+        return ll.availableOn(_formatDateShort(info.disponibleDesde, ll));
       }
       return info.isSuspended
           ? ll.noMatchdayAvailable
@@ -424,7 +425,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
     if (accepted) {
       final messenger = ScaffoldMessenger.maybeOf(context);
       final shell = LeagueShellData.maybeOf(context);
-      shell?.selectTab(2);
+      shell?.openSquad();
       Navigator.of(context).maybePop();
       messenger?.showSnackBar(
         SnackBar(
@@ -784,7 +785,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
     final pos = (detail?.posicion ?? widget.player.posicion).trim().isEmpty
         ? '—'
         : (detail?.posicion ?? widget.player.posicion).trim();
-    final valor = detail?.valor ?? widget.player.valor;
+    final valor = detail?.displayValor ?? widget.player.displayValor;
     final valorAnterior = detail?.valorAnterior ?? widget.player.valorAnterior;
     final valoracion = detail?.valoracion ?? widget.player.valoracion;
     final cansancio = detail?.cansancio ?? widget.player.cansancio;
@@ -942,10 +943,10 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                                   width: 1.4,
                                 ),
                               ),
-                              child: Icon(
-                                LeaguePlayerAvailabilityIcons.injured,
-                                size: 16,
-                                color: colorScheme.error,
+                              child: Center(
+                                child: LeaguePlayerAvailabilityIcons.injured(
+                                  size: 14,
+                                ),
                               ),
                             ),
                           ),
@@ -1033,15 +1034,16 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                             const SizedBox(height: 10),
                             Row(
                               children: [
-                                Icon(
-                                  isSuspended
-                                      ? LeaguePlayerAvailabilityIcons.sanctioned
-                                      : LeaguePlayerAvailabilityIcons.injured,
-                                  size: 16,
-                                  color: isSuspended
-                                      ? colorScheme.tertiary
-                                      : colorScheme.error,
-                                ),
+                                if (isSuspended)
+                                  Icon(
+                                    LeaguePlayerAvailabilityIcons.sanctioned,
+                                    size: 16,
+                                    color: colorScheme.tertiary,
+                                  )
+                                else
+                                  LeaguePlayerAvailabilityIcons.injured(
+                                    size: 16,
+                                  ),
                                 const SizedBox(width: 6),
                                 Text(
                                   isSuspended ? ll.suspended : ll.injured,
@@ -1192,10 +1194,11 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
               physics: const NeverScrollableScrollPhysics(),
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
-              childAspectRatio: 2.25,
+              childAspectRatio: 1.65,
               children: [
                 _StatCell(
-                  icon: Icons.sports_soccer_outlined,
+                  leading: const PlayerPositionIcon(size: 48),
+                  iconSlotWidth: 54,
                   label: ll.positionLabel,
                   value: pos,
                   colorScheme: colorScheme,
@@ -1203,7 +1206,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                   showLabel: false,
                 ),
                 _StatCell(
-                  icon: Icons.star_rounded,
+                  leading: const PlayerRatingStarIcon(size: 36),
                   label: ll.valuationLabel,
                   value: _rating(valoracion),
                   colorScheme: colorScheme,
@@ -1212,7 +1215,8 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                   showLabel: false,
                 ),
                 _StatCell(
-                  icon: Icons.payments_outlined,
+                  leading: const MoneyCoinsIcon(size: 48),
+                  iconSlotWidth: 54,
                   label: ll.currentValueLabel,
                   value: LeagueMoneyFormat.money(valor),
                   colorScheme: colorScheme,
@@ -1220,7 +1224,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                   showLabel: false,
                 ),
                 _StatCell(
-                  icon: Icons.battery_charging_full_rounded,
+                  leading: const PlayerFatigueIcon(size: 36),
                   label: ll.fatigueLabel,
                   value: '$cansancio',
                   colorScheme: colorScheme,
@@ -1348,8 +1352,9 @@ class _PlayerPointsTrendBadge extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final delta = currentValue - previousValue;
+    final ll = context.leagueL10n;
     final deltaLabel = delta.abs() < 1e-6
-        ? 'Sin cambio'
+        ? ll.noPriceChange
         : '${delta > 0 ? '+' : '-'}${LeagueMoneyFormat.money(delta.abs())}';
     final trendRow = Row(
       children: [
@@ -1642,22 +1647,26 @@ class _OfferAvatarFallback extends StatelessWidget {
 
 class _StatCell extends StatelessWidget {
   const _StatCell({
-    required this.icon,
+    this.icon,
+    this.leading,
     required this.label,
     required this.value,
     required this.colorScheme,
     required this.theme,
     this.highlight = false,
     this.showLabel = true,
-  });
+    this.iconSlotWidth = 40,
+  }) : assert(icon != null || leading != null);
 
-  final IconData icon;
+  final IconData? icon;
+  final Widget? leading;
   final String label;
   final String value;
   final ColorScheme colorScheme;
   final ThemeData theme;
   final bool highlight;
   final bool showLabel;
+  final double iconSlotWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -1672,12 +1681,18 @@ class _StatCell extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         child: Row(
           children: [
-            Icon(icon, size: 16, color: colorScheme.primary),
+            SizedBox(
+              width: iconSlotWidth,
+              child: Center(
+                child: leading ??
+                    Icon(icon, size: 32, color: colorScheme.primary),
+              ),
+            ),
             if (showLabel) ...[
-              const SizedBox(width: 6),
+              const SizedBox(width: 4),
               Text(
                 label,
                 style: theme.textTheme.labelSmall?.copyWith(
@@ -1688,12 +1703,12 @@ class _StatCell extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             Expanded(
               child: Text(
                 value,
                 textAlign: TextAlign.right,
-                style: theme.textTheme.titleSmall?.copyWith(
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w900,
                 ),
                 maxLines: 1,

@@ -1,5 +1,7 @@
 import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/theme/app_colors.dart';
+import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/data/models/league_calendar_models.dart';
 import 'package:eternal_xi/data/models/league_home_feed.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
@@ -26,6 +28,9 @@ enum _LeagueHomeSummarySection {
   injured,
   suspended,
 }
+
+const _kHomeSummaryRowCount = 8;
+const _kHomeSummaryCarouselHeight = 300.0;
 
 /// Agrupa partidos por día calendario local usando la fecha real de cada partido
 /// (`inicioEn` → [LeagueMatchSummary.fechaPartido]). No usa rangos de jornada.
@@ -611,10 +616,6 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
 
   String _availabilityText(LeagueUnavailablePlayer row) {
     final ll = context.leagueL10n;
-    final txt = row.textoDisponibilidad.trim();
-    if (txt.isNotEmpty) {
-      return txt;
-    }
     if (row.numeroJornadaDisponible != null &&
         row.numeroJornadaDisponible! > 0) {
       return ll.availableForMatchday(row.numeroJornadaDisponible!);
@@ -629,17 +630,14 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final ll = context.leagueL10n;
     super.build(context);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final shell = LeagueShellData.maybeOf(context);
     final activityDays = _calendarActivityDays();
     final summaryPages = <Widget>[
       _LeagueHomeCompactCard(
         title: ll.teamStandingsTitle,
         dense: true,
+        accentColor: XiColors.classicGold,
         onSeeMore: () => _onSummarySeeMore(_LeagueHomeSummarySection.standings),
         child: _CompactTeamStandingsTable(
           rows: _teamStandings,
@@ -650,28 +648,34 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
       ),
       _LeagueHomeCompactCard(
         title: ll.topScorers,
+        accentColor: XiColors.energyOrange,
         onSeeMore: () => _onSummarySeeMore(_LeagueHomeSummarySection.topScorers),
         child: _CompactTopPlayersTable(
           rows: _homeFeed.goleadores,
           valueLabel: ll.statGoals,
+          valueColor: XiColors.energyOrange,
           onTapPlayer: _openTopPlayerDetail,
         ),
       ),
       _LeagueHomeCompactCard(
         title: ll.topAssists,
+        accentColor: XiColors.royalBlue,
         onSeeMore: () => _onSummarySeeMore(_LeagueHomeSummarySection.topAssists),
         child: _CompactTopPlayersTable(
           rows: _homeFeed.asistidores,
           valueLabel: ll.assistsShort,
+          valueColor: XiColors.royalBlue,
           onTapPlayer: _openTopPlayerDetail,
         ),
       ),
       _LeagueHomeCompactCard(
         title: ll.cleanSheets,
+        accentColor: XiColors.emeraldGreen,
         onSeeMore: () => _onSummarySeeMore(_LeagueHomeSummarySection.cleanSheets),
         child: _CompactTopPlayersTable(
           rows: _homeFeed.porteriasCero,
           valueLabel: ll.cleanSheetsShort,
+          valueColor: XiColors.emeraldGreen,
           onTapPlayer: _openTopPlayerDetail,
         ),
       ),
@@ -690,17 +694,6 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
         key: const PageStorageKey<String>('league_tab_home'),
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-            sliver: SliverToBoxAdapter(
-              child: Text(
-                l10n.home,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
           if (_loading)
             const SliverFillRemaining(
               hasScrollBody: false,
@@ -716,49 +709,75 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 sliver: SliverToBoxAdapter(
-                  child: Card(
-                    elevation: 0,
-                    color: colorScheme.errorContainer.withValues(alpha: 0.35),
-                    child: Padding(
-                      padding: const EdgeInsets.all(14),
-                      child: Text(
-                        _error!,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onErrorContainer,
-                        ),
+                  child: Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      color: XiColors.heroRed.withValues(alpha: 0.08),
+                      border: Border.all(
+                        color: XiColors.heroRed.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Text(
+                      _error!,
+                      style: const TextStyle(
+                        fontFamily: 'Lumiare',
+                        fontSize: 12,
+                        color: XiColors.heroRed,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ),
               ),
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 420,
-                child: PageView.builder(
-                  controller: _monthPageController,
-                  itemBuilder: (context, page) {
-                    final month = _monthForPage(page);
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: LeagueMonthCalendar(
-                        visibleMonth: month,
-                        daysWithActivity: activityDays,
-                        selectedDay: _selectedDay,
-                        onSelectDay: (d) => _onDaySelected(context, d),
-                      ),
-                    );
-                  },
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(12, 16, 12, 0),
+              sliver: SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 400,
+                  child: PageView.builder(
+                    controller: _monthPageController,
+                    itemBuilder: (context, page) {
+                      final month = _monthForPage(page);
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: LeagueMonthCalendar(
+                          visibleMonth: month,
+                          daysWithActivity: activityDays,
+                          selectedDay: _selectedDay,
+                          onSelectDay: (d) => _onDaySelected(context, d),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
               sliver: SliverToBoxAdapter(
-                child: Text(
-                  ll.leagueSummaryTitle,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: XiColors.classicGold,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      ll.leagueSummaryTitle.toUpperCase(),
+                      style: TextStyle(
+                        fontFamily: 'Lumiare',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: context.xiTextPrimary,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -766,12 +785,14 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
               sliver: SliverToBoxAdapter(
                 child: SizedBox(
-                  height: 280,
+                  height: _kHomeSummaryCarouselHeight,
                   child: PageView.builder(
                     controller: _feedPageController,
                     itemCount: pagesCount,
                     onPageChanged: (index) => setState(() => _feedPage = index),
-                    itemBuilder: (context, index) => summaryPages[index],
+                    itemBuilder: (context, index) => SizedBox.expand(
+                      child: summaryPages[index],
+                    ),
                   ),
                 ),
               ),
@@ -783,16 +804,26 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(pagesCount, (index) {
                     final selected = index == safeFeedPage;
+                    const dotColors = [
+                      XiColors.classicGold,
+                      XiColors.energyOrange,
+                      XiColors.royalBlue,
+                      XiColors.emeraldGreen,
+                    ];
+                    final dotColor = dotColors[index % dotColors.length];
                     return AnimatedContainer(
-                      duration: const Duration(milliseconds: 180),
+                      duration: const Duration(milliseconds: 200),
                       margin: const EdgeInsets.symmetric(horizontal: 3),
-                      width: selected ? 18 : 8,
-                      height: 8,
+                      width: selected ? 20 : 7,
+                      height: 7,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(999),
                         color: selected
-                            ? colorScheme.primary
-                            : colorScheme.outlineVariant.withValues(alpha: 0.5),
+                            ? dotColor
+                            : XiColors.steelGray.withValues(alpha: 0.3),
+                        boxShadow: selected
+                            ? [BoxShadow(color: dotColor.withValues(alpha: 0.6), blurRadius: 8)]
+                            : null,
                       ),
                     );
                   }),
@@ -800,19 +831,21 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
               sliver: SliverToBoxAdapter(
                 child: Column(
                   children: [
                     SizedBox(
-                      height: 264,
+                      height: _kHomeSummaryCarouselHeight,
                       child: PageView(
                         controller: _unavailablePageController,
                         onPageChanged: (index) =>
                             setState(() => _unavailablePage = index),
                         children: [
-                          _LeagueHomeCompactCard(
+                          SizedBox.expand(
+                            child: _LeagueHomeCompactCard(
                             title: ll.injuredPlayers,
+                            accentColor: XiColors.heroRed,
                             onSeeMore: () =>
                                 _onSummarySeeMore(_LeagueHomeSummarySection.injured),
                             child: _CompactUnavailableListTable(
@@ -825,8 +858,11 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
                               onTapPlayer: _openUnavailablePlayerDetail,
                             ),
                           ),
-                          _LeagueHomeCompactCard(
+                          ),
+                          SizedBox.expand(
+                            child: _LeagueHomeCompactCard(
                             title: ll.suspendedPlayers,
+                            accentColor: XiColors.energyOrange,
                             onSeeMore: () => _onSummarySeeMore(
                               _LeagueHomeSummarySection.suspended,
                             ),
@@ -840,6 +876,7 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
                               onTapPlayer: _openUnavailablePlayerDetail,
                             ),
                           ),
+                          ),
                         ],
                       ),
                     ),
@@ -848,18 +885,22 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(2, (index) {
                         final selected = index == _unavailablePage;
+                        final dotColor = index == 0
+                            ? XiColors.heroRed
+                            : XiColors.energyOrange;
                         return AnimatedContainer(
-                          duration: const Duration(milliseconds: 180),
+                          duration: const Duration(milliseconds: 200),
                           margin: const EdgeInsets.symmetric(horizontal: 3),
-                          width: selected ? 18 : 8,
-                          height: 8,
+                          width: selected ? 20 : 7,
+                          height: 7,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(999),
                             color: selected
-                                ? colorScheme.primary
-                                : colorScheme.outlineVariant.withValues(
-                                    alpha: 0.5,
-                                  ),
+                                ? dotColor
+                                : XiColors.steelGray.withValues(alpha: 0.3),
+                            boxShadow: selected
+                                ? [BoxShadow(color: dotColor.withValues(alpha: 0.6), blurRadius: 8)]
+                                : null,
                           ),
                         );
                       }),
@@ -877,16 +918,20 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
                     if (_rounds.isEmpty && _error == null)
                       Text(
                         ll.noRoundsInResponse,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
+                        style: TextStyle(
+                          fontFamily: 'Lumiare',
+                          fontSize: 12,
+                          color: context.xiTextPrimary,
                           height: 1.4,
                         ),
                       )
                     else if (activityDays.isEmpty && _rounds.isNotEmpty)
                       Text(
                         ll.noRoundsWithMatches,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
+                        style: TextStyle(
+                          fontFamily: 'Lumiare',
+                          fontSize: 12,
+                          color: context.xiTextPrimary,
                           height: 1.4,
                         ),
                       ),
@@ -907,76 +952,107 @@ class _LeagueHomeCompactCard extends StatelessWidget {
     required this.child,
     this.onSeeMore,
     this.dense = false,
+    this.accentColor = XiColors.classicGold,
   });
 
   final String title;
   final Widget child;
   final VoidCallback? onSeeMore;
-
-  /// Menos padding y cabecera más compacta (p. ej. clasificación con 5 equipos visibles).
   final bool dense;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final titleStyle = dense
-        ? theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)
-        : theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800);
     final pad = dense
-        ? const EdgeInsets.fromLTRB(10, 8, 10, 6)
-        : const EdgeInsets.fromLTRB(14, 14, 14, 12);
-    final gapAfterTitle = dense ? 4.0 : 8.0;
-    return Card(
-      elevation: 0,
+        ? const EdgeInsets.fromLTRB(10, 4, 10, 6)
+        : const EdgeInsets.fromLTRB(12, 4, 12, 8);
+
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4),
-      color: colorScheme.surfaceContainerHigh,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: context.xiCompactCardGradient,
         ),
+        border: Border.all(color: context.xiBorderSubtle),
+        boxShadow: context.xiCardShadow,
       ),
-      child: Padding(
-        padding: pad,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final hasBoundedHeight = constraints.hasBoundedHeight;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: hasBoundedHeight
-                  ? MainAxisSize.max
-                  : MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: titleStyle,
-                      ),
-                    ),
-                    TextButton(
-                      style: dense
-                          ? TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            )
-                          : null,
-                      onPressed: onSeeMore,
-                      child: Text(context.l10n.continueText),
-                    ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(17),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              padding: EdgeInsets.fromLTRB(12, dense ? 7 : 9, 10, dense ? 7 : 9),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    accentColor.withValues(alpha: 0.18),
+                    Colors.transparent,
                   ],
                 ),
-                SizedBox(height: gapAfterTitle),
-                if (hasBoundedHeight) Expanded(child: child) else child,
-              ],
-            );
-          },
+                border: Border(
+                  bottom: BorderSide(
+                    color: accentColor.withValues(alpha: 0.20),
+                  ),
+                  left: BorderSide(color: accentColor, width: 3),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title.toUpperCase(),
+                      style: TextStyle(
+                        fontFamily: 'Lumiare',
+                        fontSize: dense ? 11 : 12,
+                        fontWeight: FontWeight.w800,
+                        color: accentColor,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ),
+                  if (onSeeMore != null)
+                    GestureDetector(
+                      onTap: onSeeMore,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(999),
+                          color: accentColor.withValues(alpha: 0.12),
+                          border: Border.all(
+                            color: accentColor.withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Text(
+                          context.leagueL10n.seeAll.toUpperCase(),
+                          style: TextStyle(
+                            fontFamily: 'Lumiare',
+                            fontSize: 9,
+                            fontWeight: FontWeight.w800,
+                            color: accentColor,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: pad,
+                child: child,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -998,9 +1074,6 @@ class _CompactTeamStandingsTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     if (loading) {
       return const Center(
         child: Padding(
@@ -1020,17 +1093,25 @@ class _CompactTeamStandingsTable extends StatelessWidget {
         children: [
           Text(
             error!,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.error,
+            style: const TextStyle(
+              fontFamily: 'Lumiare',
+              fontSize: 11,
+              color: XiColors.heroRed,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh, size: 16),
-              label: Text(context.l10n.retry),
+          GestureDetector(
+            onTap: onRetry,
+            child: Text(
+              context.l10n.retry.toUpperCase(),
+              style: TextStyle(
+                fontFamily: 'Lumiare',
+                fontSize: 11,
+                color: context.xiAccentText,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.8,
+              ),
             ),
           ),
         ],
@@ -1041,218 +1122,41 @@ class _CompactTeamStandingsTable extends StatelessWidget {
       return _CompactEmptyState(text: context.leagueL10n.noTeamStandingsYet);
     }
 
-    final preview = rows.take(5).toList(growable: false);
+    final preview = rows.take(_kHomeSummaryRowCount).toList(growable: false);
 
-    return ListView.separated(
-      itemCount: preview.length + 1,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      separatorBuilder: (_, _) => const SizedBox(height: 4),
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return const _TeamTableHeader();
-        }
-        return _TeamTableRow(row: preview[index - 1]);
-      },
-    );
-  }
-}
-
-class _TeamTableHeader extends StatelessWidget {
-  const _TeamTableHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final ll = context.leagueL10n;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.75),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
-        child: Row(
-          children: [
-            const _TeamHeaderCell(value: '#', width: 20),
-            const SizedBox(width: 4),
-            Expanded(
-              child: _TeamHeaderCell(
-                value: ll.teamColumn,
-                alignLeft: true,
-              ),
-            ),
-            const SizedBox(width: 4),
-            _TeamHeaderCell(value: 'PTS', width: 36, bold: true),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TeamTableRow extends StatelessWidget {
-  const _TeamTableRow({required this.row});
-
-  final LeagueTeamStandingRow row;
-
-  @override
-  Widget build(BuildContext context) {
-    final teamName = row.nombreEquipo.trim();
-    final theme = Theme.of(context);
-    final ll = context.leagueL10n;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 20,
-            child: Text(
-              '${row.posicion}',
-              textAlign: TextAlign.right,
-              style: theme.textTheme.labelSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-                height: 1.1,
-              ),
-            ),
+    return _scrollableSummaryRows([
+      for (var i = 0; i < preview.length; i++) ...[
+        if (i > 0) const SizedBox(height: 4),
+        _CompactSummaryRow(
+          rank: preview[i].posicion,
+          leading: _MiniTeamLogo(
+            idEquipo: preview[i].idEquipo,
+            networkImageUrl: preview[i].resolvedFotoEquipoUrl(),
+            onTap: preview[i].idEquipo > 0
+                ? () {
+                    final shell = LeagueShellData.maybeOf(context);
+                    LeagueInnerNavigation.openCatalogTeamSquad(
+                      context: context,
+                      idEquipo: preview[i].idEquipo,
+                      nombreEquipo: preview[i].nombreEquipo.trim().isEmpty
+                          ? null
+                          : preview[i].nombreEquipo.trim(),
+                      fotoEquipo: preview[i].resolvedFotoEquipoUrl(),
+                      idLiga: shell?.leagueId,
+                      idUsuario: shell?.idUsuario,
+                    );
+                  }
+                : null,
           ),
-          const SizedBox(width: 4),
-          Expanded(
-            child: Row(
-              children: [
-                if (row.idEquipo > 0)
-                  Semantics(
-                    button: true,
-                    label: teamName.isEmpty
-                        ? ll.seeTeam
-                        : ll.seeTeamColon(teamName),
-                    child: Tooltip(
-                      message: teamName.isEmpty
-                          ? ll.seeTeam
-                          : ll.seeTeamNamed(teamName),
-                      child: Material(
-                        color: Colors.transparent,
-                        shape: const CircleBorder(),
-                        clipBehavior: Clip.antiAlias,
-                        child: InkWell(
-                          customBorder: const CircleBorder(),
-                          onTap: () => LeagueInnerNavigation.openCatalogTeamSquad(
-                            context: context,
-                            idEquipo: row.idEquipo,
-                            nombreEquipo:
-                                teamName.isEmpty ? null : teamName,
-                            fotoEquipo: row.resolvedFotoEquipoUrl(),
-                            idLiga: LeagueShellData.maybeOf(context)?.leagueId,
-                            idUsuario: LeagueShellData.maybeOf(context)?.idUsuario,
-                          ),
-                          child: SizedBox(
-                            width: 36,
-                            height: 36,
-                            child: Center(
-                              child: LeagueTeamLogo(
-                                idEquipo: row.idEquipo,
-                                size: 20,
-                                networkImageUrl: row.resolvedFotoEquipoUrl(),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                else
-                  SizedBox(
-                    width: 36,
-                    height: 36,
-                    child: Center(
-                      child: LeagueTeamLogo(
-                        idEquipo: row.idEquipo,
-                        size: 20,
-                        networkImageUrl: row.resolvedFotoEquipoUrl(),
-                      ),
-                    ),
-                  ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    row.nombreEquipo.trim().isEmpty
-                        ? '—'
-                        : row.nombreEquipo.trim(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      height: 1.2,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 4),
-          _TeamStatCell(value: '${row.puntos}', width: 36, bold: true),
-        ],
-      ),
-    );
-  }
-}
-
-class _TeamHeaderCell extends StatelessWidget {
-  const _TeamHeaderCell({
-    required this.value,
-    this.width,
-    this.alignLeft = false,
-    this.bold = false,
-  });
-
-  final String value;
-  final double? width;
-  final bool alignLeft;
-  final bool bold;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = Text(
-      value,
-      textAlign: alignLeft ? TextAlign.left : TextAlign.right,
-      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-        color: Theme.of(context).colorScheme.onSurfaceVariant,
-        fontWeight: bold ? FontWeight.w800 : FontWeight.w700,
-      ),
-    );
-    if (width == null) {
-      return text;
-    }
-    return SizedBox(width: width, child: text);
-  }
-}
-
-class _TeamStatCell extends StatelessWidget {
-  const _TeamStatCell({
-    required this.value,
-    required this.width,
-    this.bold = false,
-  });
-
-  final String value;
-  final double width;
-  final bool bold;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      child: Text(
-        value,
-        textAlign: TextAlign.right,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
-          height: 1.2,
+          title: preview[i].nombreEquipo.trim().isEmpty
+              ? '—'
+              : preview[i].nombreEquipo.trim(),
+          trailing: '${preview[i].puntos}',
+          trailingColor: XiColors.classicGold,
+          trailingBold: true,
         ),
-      ),
-    );
+      ],
+    ]);
   }
 }
 
@@ -1261,78 +1165,40 @@ class _CompactTopPlayersTable extends StatelessWidget {
     required this.rows,
     required this.valueLabel,
     required this.onTapPlayer,
+    this.valueColor = XiColors.royalBlue,
   });
 
   final List<LeagueHomeTopPlayer> rows;
   final String valueLabel;
   final void Function(LeagueHomeTopPlayer row) onTapPlayer;
+  final Color valueColor;
 
   @override
   Widget build(BuildContext context) {
     if (rows.isEmpty) {
       return _CompactEmptyState(text: context.leagueL10n.noStatsYet);
     }
-    final top = rows.take(4).toList(growable: false);
-    final theme = Theme.of(context);
-    return ListView.separated(
-      itemCount: top.length,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      separatorBuilder: (_, _) => const SizedBox(height: 6),
-      itemBuilder: (context, index) {
-        final row = top[index];
-        return InkWell(
-          borderRadius: BorderRadius.circular(10),
-          onTap: () => onTapPlayer(row),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-            child: Row(
-              children: [
-                _RankChip(rank: index + 1),
-                const SizedBox(width: 8),
-                _MiniPlayerPhoto(
-                  idJugador: row.idJugador,
-                  fotoJugador: row.fotoJugador,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        row.displayName(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Text(
-                        row.nombreEquipo.trim().isEmpty
-                            ? '—'
-                            : row.nombreEquipo.trim(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '${row.total}',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
+    final top = rows.take(_kHomeSummaryRowCount).toList(growable: false);
+    return _scrollableSummaryRows([
+      for (var i = 0; i < top.length; i++) ...[
+        if (i > 0) const SizedBox(height: 4),
+        _CompactSummaryRow(
+          rank: i + 1,
+          leading: _MiniPlayerPhoto(
+            idJugador: top[i].idJugador,
+            fotoJugador: top[i].fotoJugador,
           ),
-        );
-      },
-    );
+          title: top[i].displayName(),
+          subtitle: top[i].nombreEquipo.trim().isEmpty
+              ? '—'
+              : top[i].nombreEquipo.trim(),
+          trailing: '${top[i].total}',
+          trailingColor: valueColor,
+          trailingBold: true,
+          onTap: () => onTapPlayer(top[i]),
+        ),
+      ],
+    ]);
   }
 }
 
@@ -1357,7 +1223,6 @@ class _CompactUnavailableListTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     if (loading) {
       return const Center(
         child: Padding(
@@ -1376,89 +1241,208 @@ class _CompactUnavailableListTable extends StatelessWidget {
         children: [
           Text(
             error!,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.error,
+            style: const TextStyle(
+              fontFamily: 'Lumiare',
+              fontSize: 11,
+              color: XiColors.heroRed,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh, size: 16),
-              label: Text(context.l10n.retry),
+          GestureDetector(
+            onTap: onRetry,
+            child: Text(
+              context.l10n.retry.toUpperCase(),
+              style: TextStyle(
+                fontFamily: 'Lumiare',
+                fontSize: 11,
+                color: context.xiAccentText,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.8,
+              ),
             ),
           ),
         ],
       );
     }
-    final top = rows.take(4).toList(growable: false);
+    final top = rows.take(_kHomeSummaryRowCount).toList(growable: false);
     if (top.isEmpty) {
       return _CompactEmptyState(text: emptyText);
     }
-    return ListView.separated(
-      itemCount: top.length,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      separatorBuilder: (_, _) => const SizedBox(height: 6),
-      itemBuilder: (context, index) {
-        final row = top[index];
-        return InkWell(
-          borderRadius: BorderRadius.circular(10),
-          onTap: () => onTapPlayer(row),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-            child: Row(
+    return _scrollableSummaryRows([
+      for (var i = 0; i < top.length; i++) ...[
+        if (i > 0) const SizedBox(height: 4),
+        _CompactSummaryRow(
+          rank: i + 1,
+          leading: _MiniPlayerPhoto(
+            idJugador: top[i].idJugador,
+            fotoJugador: top[i].fotoJugador ?? '',
+          ),
+          title: top[i].displayName,
+          subtitle: _unavailableSubtitle(top[i], resolveAvailabilityText),
+          onTap: () => onTapPlayer(top[i]),
+        ),
+      ],
+    ]);
+  }
+
+  static String _unavailableSubtitle(
+    LeagueUnavailablePlayer row,
+    String Function(LeagueUnavailablePlayer row) resolveAvailabilityText,
+  ) {
+    final team = row.nombreEquipo.trim();
+    final availability = resolveAvailabilityText(row).trim();
+    if (team.isEmpty) {
+      return availability.isEmpty ? '—' : availability;
+    }
+    if (availability.isEmpty) {
+      return team;
+    }
+    return '$team · $availability';
+  }
+}
+
+Widget _scrollableSummaryRows(List<Widget> children) {
+  return SingleChildScrollView(
+    physics: const BouncingScrollPhysics(),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: children,
+    ),
+  );
+}
+
+class _CompactSummaryRow extends StatelessWidget {
+  const _CompactSummaryRow({
+    required this.rank,
+    required this.leading,
+    required this.title,
+    this.subtitle,
+    this.trailing,
+    this.trailingColor,
+    this.trailingBold = false,
+    this.onTap,
+  });
+
+  final int rank;
+  final Widget leading;
+  final String title;
+  final String? subtitle;
+  final String? trailing;
+  final Color? trailingColor;
+  final bool trailingBold;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final row = Container(
+      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: context.xiSurfaceInset.withValues(alpha: 0.45),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _RankChip(rank: rank),
+          const SizedBox(width: 8),
+          leading,
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _MiniPlayerPhoto(
-                  idJugador: row.idJugador,
-                  fotoJugador: row.fotoJugador ?? '',
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        row.displayName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Text(
-                        row.nombreEquipo.trim().isEmpty
-                            ? '—'
-                            : row.nombreEquipo.trim(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: 'Lumiare',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: context.xiTextPrimary,
                   ),
                 ),
-                const SizedBox(width: 8),
-                SizedBox(
-                  width: 124,
-                  child: Text(
-                    resolveAvailabilityText(row),
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    textAlign: TextAlign.right,
-                    maxLines: 2,
+                if (subtitle != null && subtitle!.isNotEmpty)
+                  Text(
+                    subtitle!,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'Lumiare',
+                      fontSize: 10,
+                      color: context.xiTextPrimary,
+                    ),
                   ),
-                ),
               ],
             ),
           ),
-        );
-      },
+          if (trailing != null) ...[
+            const SizedBox(width: 8),
+            Text(
+              trailing!,
+              style: TextStyle(
+                fontFamily: 'Lumiare',
+                fontSize: trailingBold ? 16 : 12,
+                fontWeight: trailingBold ? FontWeight.w900 : FontWeight.w600,
+                color: trailingColor ?? context.xiTextPrimary,
+                shadows: trailingBold && trailingColor != null
+                    ? [
+                        Shadow(
+                          color: trailingColor!.withValues(alpha: 0.5),
+                          blurRadius: 8,
+                        ),
+                      ]
+                    : null,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+    if (onTap == null) {
+      return row;
+    }
+    return GestureDetector(onTap: onTap, child: row);
+  }
+}
+
+class _MiniTeamLogo extends StatelessWidget {
+  const _MiniTeamLogo({
+    required this.idEquipo,
+    required this.networkImageUrl,
+    this.onTap,
+  });
+
+  final int idEquipo;
+  final String? networkImageUrl;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final logo = LeagueTeamLogo(
+      idEquipo: idEquipo,
+      size: 18,
+      networkImageUrl: networkImageUrl,
+    );
+    final child = SizedBox(
+      width: 28,
+      height: 28,
+      child: Center(child: logo),
+    );
+    if (onTap == null) {
+      return child;
+    }
+    return Material(
+      color: Colors.transparent,
+      shape: const CircleBorder(),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: child,
+      ),
     );
   }
 }
@@ -1498,22 +1482,21 @@ class _CircleFallback extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       width: 28,
       height: 28,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: colorScheme.surfaceContainerHighest,
+        color: context.xiChipBackground,
         border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.45),
+          color: context.xiBorderSubtle,
         ),
       ),
       alignment: Alignment.center,
       child: Icon(
         icon,
         size: 16,
-        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.85),
+        color: context.xiTextPrimary,
       ),
     );
   }
@@ -1526,21 +1509,38 @@ class _RankChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final Color bg;
+    final Color fg;
+    switch (rank) {
+      case 1:
+        bg = XiColors.classicGold.withValues(alpha: 0.18);
+        fg = XiColors.classicGold;
+      case 2:
+        bg = const Color(0x229AA8B8);
+        fg = const Color(0xFF9AA8B8);
+      case 3:
+        bg = const Color(0x22C07840);
+        fg = const Color(0xFFC07840);
+      default:
+        bg = context.xiBorderSubtle.withValues(alpha: 0.35);
+        fg = context.xiTextPrimary;
+    }
     return Container(
       width: 30,
       height: 24,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: colorScheme.primaryContainer.withValues(alpha: 0.7),
+        color: bg,
+        border: Border.all(color: fg.withValues(alpha: 0.35)),
       ),
       alignment: Alignment.center,
       child: Text(
         '$rank',
-        style: theme.textTheme.labelMedium?.copyWith(
-          fontWeight: FontWeight.w800,
-          color: colorScheme.onPrimaryContainer,
+        style: TextStyle(
+          fontFamily: 'Lumiare',
+          fontSize: 12,
+          fontWeight: FontWeight.w900,
+          color: fg,
         ),
       ),
     );
@@ -1554,16 +1554,18 @@ class _CompactEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     return Center(
       child: Text(
         text,
         textAlign: TextAlign.center,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: colorScheme.onSurfaceVariant,
+        style: TextStyle(
+          fontFamily: 'Lumiare',
+          fontSize: 12,
+          color: context.xiTextPrimary,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
   }
 }
+

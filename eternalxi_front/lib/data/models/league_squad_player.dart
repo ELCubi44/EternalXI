@@ -40,6 +40,7 @@ class LeagueSquadPlayer {
     this.jugadorProtegido = false,
     this.proteccionHastaFinTemporada = false,
     this.proteccionJornadaFin,
+    this.valorMercadoEfectivo,
   });
 
   /// Usuario dueño lógico del jugador en liga (1 = mercado).
@@ -110,6 +111,18 @@ class LeagueSquadPlayer {
   final bool proteccionHastaFinTemporada;
   final int? proteccionJornadaFin;
 
+  /// Valor de mercado con modificadores temporales (si el backend lo envía).
+  final double? valorMercadoEfectivo;
+
+  /// Valor a mostrar en listados: efectivo de mercado si existe, si no [valor].
+  double get displayValor {
+    final effective = valorMercadoEfectivo;
+    if (effective != null && effective > 0) {
+      return effective;
+    }
+    return valor;
+  }
+
   /// Escudo: ruta API segura o `GET /assets/teams/{idEquipo}`.
   String? resolvedFotoEquipoUrl() {
     return LeagueAssetUrls.resolveTeamBadgeUrl(
@@ -168,6 +181,8 @@ class LeagueSquadPlayer {
       valoracion: readLeagueDouble(json, const [
         'valoracion',
         'valoración',
+        'valoracionActual',
+        'valoracion_actual',
         'rating',
         'overall',
         'media',
@@ -196,6 +211,10 @@ class LeagueSquadPlayer {
       ]),
       cansancio: readLeagueInt(json, const ['cansancio', 'fatiga', 'fatigue']),
       valor: readLeagueDouble(json, const ['valor', 'precio', 'marketValue']),
+      valorMercadoEfectivo: readLeagueOptionalDouble(json, const [
+        'valorMercadoEfectivo',
+        'valor_mercado_efectivo',
+      ]),
       valorAnterior: readLeagueDouble(json, const [
         'valorAnterior',
         'valor_anterior',

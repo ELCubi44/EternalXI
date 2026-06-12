@@ -173,7 +173,10 @@ class _LeagueDayMatchesScreenState extends State<LeagueDayMatchesScreen> {
           );
           final minuteLabel = resolveLiveMinuteLabel(live: live, phase: phase);
           final kick = m.fechaPartido;
-          final todayChip = LeagueSpanishDateTime.todayChipIfSameDay(kick);
+          final todayChip = LeagueSpanishDateTime.todayChipIfSameDay(
+            kick,
+            english: ll.isEnglish,
+          );
 
           return Material(
             color: Colors.transparent,
@@ -444,7 +447,8 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final label = leagueMatchPhaseLabel(phase);
+    final ll = context.leagueL10n;
+    final label = leagueMatchPhaseLabel(phase, ll);
     Color bg;
     Color fg;
     IconData icon;

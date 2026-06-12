@@ -1,7 +1,10 @@
 import 'package:eternal_xi/app/localization/rewards_l10n.dart';
+import 'package:eternal_xi/app/theme/app_colors.dart';
+import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_summary_model.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/reward_coach_detail_card.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
+import 'package:eternal_xi/shared/widgets/coach_roulette_icon.dart';
 import 'package:flutter/material.dart';
 
 class CoachRouletteSection extends StatelessWidget {
@@ -25,30 +28,34 @@ class CoachRouletteSection extends StatelessWidget {
     final canAfford =
         summary.puntosRecompensaUsuario >= summary.costeRuletaEntrenador;
     final enabled = !used && canAfford && !busy;
+    final dark = context.isXiDark;
 
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
         gradient: used
-            ? null
-            : const LinearGradient(
+            ? LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF1A237E),
-                  Color(0xFF311B92),
-                  Color(0xFF4527A0),
-                ],
-              ),
-        color: used ? const Color(0xFF1C2742) : null,
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.45),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
-        ],
+                colors: context.xiCompactCardGradient,
+              )
+            : (dark
+                ? const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1A237E),
+                      Color(0xFF311B92),
+                      Color(0xFF4527A0),
+                    ],
+                  )
+                : LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: context.xiCompactCardGradient,
+                  )),
+        border: Border.all(color: context.xiBorderSubtle),
+        boxShadow: context.xiCardShadow,
       ),
       child: Padding(
         padding: const EdgeInsets.all(18),
@@ -57,17 +64,19 @@ class CoachRouletteSection extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  used ? Icons.sports_soccer_rounded : Icons.casino_rounded,
-                  color: Colors.white.withValues(alpha: 0.92),
-                  size: 28,
-                ),
+                used
+                    ? Icon(
+                        Icons.sports_soccer_rounded,
+                        color: context.xiTextPrimary,
+                        size: 28,
+                      )
+                    : const CoachRouletteIcon(size: 32),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     used ? rl10n.yourCoach : rl10n.coachRouletteTitle,
                     style: theme.textTheme.titleLarge?.copyWith(
-                      color: Colors.white,
+                      color: context.xiTextPrimary,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -80,9 +89,14 @@ class CoachRouletteSection extends StatelessWidget {
                 ],
                 if (!used && summary.costeRuletaEntrenador > 0)
                   Text(
-                    formatRewardPoints(summary.costeRuletaEntrenador),
+                    formatRewardPoints(
+                      summary.costeRuletaEntrenador,
+                      unit: context.rewardsL10n.fichasUnit,
+                    ),
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: const Color(0xFFFFE082),
+                      color: dark
+                          ? const Color(0xFFFFE082)
+                          : XiColors.energyOrange,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -90,19 +104,19 @@ class CoachRouletteSection extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             if (used && coach != null)
-              RewardCoachDetailCard(coach: coach)
+              RewardCoachDetailCard(coach: coach, onDarkGradient: dark)
             else if (used)
               Text(
                 rl10n.rouletteUsed,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: Colors.white54,
+                  color: context.xiTextPrimary,
                 ),
               )
             else ...[
               Text(
                 rl10n.coachRouletteHint,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.85),
+                  color: context.xiTextPrimary,
                 ),
               ),
               const SizedBox(height: 14),
@@ -121,25 +135,41 @@ class CoachRouletteSection extends StatelessWidget {
                   onPressed: enabled ? onSpin : null,
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: Colors.white.withValues(alpha: 0.14),
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor:
-                        Colors.white.withValues(alpha: 0.06),
-                    disabledForegroundColor: Colors.white38,
+                    backgroundColor: dark
+                        ? Colors.white.withValues(alpha: 0.14)
+                        : XiColors.royalBlue.withValues(alpha: 0.12),
+                    foregroundColor: context.xiTextPrimary,
+                    disabledBackgroundColor: dark
+                        ? Colors.white.withValues(alpha: 0.06)
+                        : context.xiSurfaceInset.withValues(alpha: 0.55),
+                    disabledForegroundColor:
+                        context.xiTextPrimary.withValues(alpha: 0.38),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                       side: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: dark
+                            ? Colors.white.withValues(alpha: 0.2)
+                            : context.xiBorderSubtle,
                       ),
                     ),
                   ),
                   child: busy
-                      ? const SizedBox(
+                      ? SizedBox(
                           height: 22,
                           width: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: context.xiTextPrimary,
+                          ),
                         )
-                      : Text(rl10n.spin),
+                      : Text(
+                          rl10n.spin,
+                          style: TextStyle(
+                            fontFamily: 'Lumiare',
+                            fontWeight: FontWeight.w800,
+                            color: context.xiTextPrimary,
+                          ),
+                        ),
                 ),
               ),
             ],

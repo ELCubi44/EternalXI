@@ -166,6 +166,17 @@ String normalizedLeagueMatchEventType(LeagueMatchEvent e) {
   return e.tipo.trim().toUpperCase().replaceAll(RegExp(r'[\s-]+'), '_');
 }
 
+bool isRedCardMatchEvent(LeagueMatchEvent e) {
+  final t = normalizedLeagueMatchEventType(e);
+  return t == 'TARJETA_ROJA' ||
+      (t.contains('TARJETA') && t.contains('ROJ')) ||
+      t.contains('ROJA');
+}
+
+bool isInjuryMatchEvent(LeagueMatchEvent e) {
+  return normalizedLeagueMatchEventType(e).contains('LESION');
+}
+
 bool isLoanGroupedEvent(LeagueMatchEvent e) {
   final t = normalizedLeagueMatchEventType(e);
   return t == 'CESIONES_PARTIDO' || t.contains('CESIONES_PARTIDO');

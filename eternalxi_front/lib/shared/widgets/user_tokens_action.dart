@@ -2,6 +2,7 @@ import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
+import 'package:eternal_xi/shared/widgets/league_chip_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -46,22 +47,13 @@ class LeagueRewardPointsAction extends StatelessWidget {
       padding: const EdgeInsets.only(right: 4),
       child: ActionChip(
         onPressed: () => context.push(AppRoutes.rewardsShop(idLiga: idLiga)),
-        avatar: Container(
-          width: 22,
-          height: 22,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Color(0xFFFFD54F),
-          ),
-          alignment: Alignment.center,
-          child: const Icon(
-            Icons.star_rounded,
-            size: 14,
-            color: Color(0xFF1A237E),
-          ),
-        ),
+        avatar: const LeagueChipIcon(size: 22),
         label: Text(
-          formatRewardPointsForChip(puntos, compact: compact),
+          formatRewardPointsForChip(
+            puntos,
+            compact: compact,
+            unit: context.rewardsL10n.fichasUnit,
+          ),
           style: theme.textTheme.labelLarge?.copyWith(
             fontWeight: FontWeight.w800,
             color: colorScheme.onSecondaryContainer,

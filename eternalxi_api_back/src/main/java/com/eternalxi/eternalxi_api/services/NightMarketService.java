@@ -6,6 +6,7 @@ import com.eternalxi.eternalxi_api.dto.league.NightMarketItemResponse;
 import com.eternalxi.eternalxi_api.dto.league.NightMarketResponse;
 import org.springframework.stereotype.Service;
 import com.eternalxi.eternalxi_api.dto.league.LeagueInstantBuyResponse;
+import com.eternalxi.eternalxi_api.dto.league.StarterProbabilityLite;
 import com.eternalxi.eternalxi_api.util.LeagueAssetUrls;
 
 import java.sql.Connection;
@@ -18,7 +19,9 @@ import java.sql.Types;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,17 +38,20 @@ private final NightMarketNotificationService nightMarketNotificationService;
 private final LeagueMarketHistoryService leagueMarketHistoryService;
 private final AccountProgressService accountProgressService;
 private final LeagueMarketPurchaseNotificationService marketPurchaseNotificationService;
+private final LeagueStarterProbabilityService leagueStarterProbabilityService;
 
 public NightMarketService(
         NightMarketNotificationService nightMarketNotificationService,
         LeagueMarketHistoryService leagueMarketHistoryService,
         AccountProgressService accountProgressService,
-        LeagueMarketPurchaseNotificationService marketPurchaseNotificationService
+        LeagueMarketPurchaseNotificationService marketPurchaseNotificationService,
+        LeagueStarterProbabilityService leagueStarterProbabilityService
 ) {
     this.nightMarketNotificationService = nightMarketNotificationService;
     this.leagueMarketHistoryService = leagueMarketHistoryService;
     this.accountProgressService = accountProgressService;
     this.marketPurchaseNotificationService = marketPurchaseNotificationService;
+    this.leagueStarterProbabilityService = leagueStarterProbabilityService;
 }
 
     public NightMarketResponse getNightMarket(Long idLiga, Long idUsuario) throws SQLException {
@@ -61,7 +67,11 @@ public NightMarketService(
         LocalDate today = loadCurrentDbDate(conn);
         long saldoDisponible = loadParticipantMoney(conn, idLiga, idUsuario);
         long saldoRetenido = loadReservedMoney(conn, idLiga, idUsuario, today);
-        List<NightMarketItemResponse> items = loadNightMarketItems(conn, idLiga, idUsuario, today);
+        List<NightMarketItemResponse> items = enrichNightMarketWithStarterProbabilities(
+                conn,
+                idLiga,
+                loadNightMarketItems(conn, idLiga, idUsuario, today)
+        );
 
         return new NightMarketResponse(
                 idLiga,
@@ -530,6 +540,7 @@ public NightMarketService(
                 row.idLiga(),
                 winner.idUsuario(),
                 row.idLigaJugador(),
+                info.idJugador(),
                 info.nombreJugador(),
                 info.pilaJugador(),
                 buildPlayerDisplayName(info.nombreJugador(), info.pilaJugador()),
@@ -543,7 +554,8 @@ public NightMarketService(
 
     private MarketAwardInfo loadMarketAwardInfo(Connection conn, Long idLigaJugador) throws SQLException {
     String sql = """
-            SELECT j.nombre AS nombre_jugador,
+            SELECT lj.id_jugador,
+                   j.nombre AS nombre_jugador,
                    j.pila AS pila_jugador,
                    e.nombre AS nombre_equipo
             FROM liga_jugadores lj
@@ -562,6 +574,7 @@ public NightMarketService(
             }
 
             return new MarketAwardInfo(
+                    rs.getLong("id_jugador"),
                     rs.getString("nombre_jugador"),
                     rs.getString("pila_jugador"),
                     rs.getString("nombre_equipo")
@@ -773,13 +786,72 @@ public NightMarketService(
 
                             getNullableLong(rs, "mi_puja"),
                             getNullableLong(rs, "puja_mas_alta"),
-                            rs.getInt("total_pujas")
+                            rs.getInt("total_pujas"),
+                            null
                     ));
                 }
             }
         }
 
         return items;
+    }
+
+    private List<NightMarketItemResponse> enrichNightMarketWithStarterProbabilities(
+            Connection conn,
+            Long idLiga,
+            List<NightMarketItemResponse> items
+    ) throws SQLException {
+        if (items.isEmpty()) {
+            return items;
+        }
+        Map<Long, Long> ligaJugadorToEquipo = new HashMap<>();
+        for (NightMarketItemResponse item : items) {
+            if (item.idLigaJugador() != null && item.idEquipo() != null) {
+                ligaJugadorToEquipo.put(item.idLigaJugador(), item.idEquipo());
+            }
+        }
+        Map<Long, StarterProbabilityLite> prob = leagueStarterProbabilityService.loadDisplayProbabilityMapForPlayers(
+                conn,
+                idLiga,
+                null,
+                ligaJugadorToEquipo
+        );
+
+        List<NightMarketItemResponse> out = new ArrayList<>();
+        for (NightMarketItemResponse item : items) {
+            StarterProbabilityLite lite = item.idLigaJugador() == null
+                    ? null
+                    : prob.get(item.idLigaJugador());
+            out.add(new NightMarketItemResponse(
+                    item.idMercadoDiario(),
+                    item.idLiga(),
+                    item.fecha(),
+                    item.resuelto(),
+                    item.resueltoEn(),
+                    item.idUsuarioGanador(),
+                    item.pujaGanadora(),
+                    item.idLigaJugador(),
+                    item.idJugador(),
+                    item.nombre(),
+                    item.pila(),
+                    item.nombreVisible(),
+                    item.posicion(),
+                    item.fotoJugador(),
+                    item.idEquipo(),
+                    item.nombreEquipo(),
+                    item.fotoEquipo(),
+                    item.estado(),
+                    item.cansancio(),
+                    item.valorActual(),
+                    item.valoracion(),
+                    item.precioSalida(),
+                    item.miPuja(),
+                    item.pujaMasAlta(),
+                    item.totalPujas(),
+                    lite == null ? null : lite.probabilidadTitular()
+            ));
+        }
+        return out;
     }
 
     private LocalDate loadCurrentDbDate(Connection conn) throws SQLException {
@@ -1327,6 +1399,7 @@ public record MarketAward(
         Long idLiga,
         Long idUsuario,
         Long idLigaJugador,
+        Long idJugador,
         String nombreJugador,
         String pilaJugador,
         String nombreMostradoJugador,
@@ -1335,6 +1408,7 @@ public record MarketAward(
 }
 
 private record MarketAwardInfo(
+        Long idJugador,
         String nombreJugador,
         String pilaJugador,
         String nombreEquipo

@@ -3,6 +3,7 @@ package com.eternalxi.eternalxi_api.services;
 import com.eternalxi.eternalxi_api.config.DBConnection;
 import com.eternalxi.eternalxi_api.dto.user.UserNotificationItemResponse;
 import com.eternalxi.eternalxi_api.dto.user.UserNotificationsListResponse;
+import com.eternalxi.eternalxi_api.util.LeagueAssetUrls;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -243,18 +244,19 @@ public class UserNotificationService {
             }
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    out.add(mapRow(rs));
+                    out.add(mapRow(conn, rs));
                 }
             }
         }
         return out;
     }
 
-    private UserNotificationItemResponse mapRow(ResultSet rs) throws SQLException {
+    private UserNotificationItemResponse mapRow(Connection conn, ResultSet rs) throws SQLException {
         Timestamp ts = rs.getTimestamp("creada_en");
         Instant creadaEn = ts == null ? null : ts.toInstant();
         String datosRaw = rs.getString("datos_json");
         Map<String, Object> datos = parseDatos(datosRaw);
+        enrichPlayerDatos(conn, datos);
         long idLiga = rs.getLong("id_liga");
         Long idLigaObj = rs.wasNull() ? null : idLiga;
         return new UserNotificationItemResponse(
@@ -267,6 +269,74 @@ public class UserNotificationService {
                 datos,
                 creadaEn
         );
+    }
+
+    /**
+     * Notificaciones antiguas (p. ej. mercado nocturno) pueden tener idLigaJugador sin foto ni idJugador.
+     */
+    private void enrichPlayerDatos(Connection conn, Map<String, Object> datos) throws SQLException {
+        if (datos == null || datos.isEmpty()) {
+            return;
+        }
+        Long idLigaJugador = readDatosLong(datos.get("idLigaJugador"));
+        if (idLigaJugador == null || idLigaJugador <= 0) {
+            return;
+        }
+        Long idJugador = readDatosLong(datos.get("idJugador"));
+        String playerPhotoUrl = readDatosString(datos.get("playerPhotoUrl"));
+        boolean needsId = idJugador == null || idJugador <= 0;
+        boolean needsPhoto = playerPhotoUrl == null
+                || playerPhotoUrl.isBlank()
+                || LeagueAssetUrls.isFilesystemOrLegacyPath(playerPhotoUrl);
+        if (!needsId && !needsPhoto) {
+            return;
+        }
+        if (!needsId) {
+            datos.put("playerPhotoUrl", LeagueAssetUrls.player(idJugador));
+            return;
+        }
+        String sql = """
+                SELECT id_jugador
+                FROM liga_jugadores
+                WHERE id = ?
+                LIMIT 1
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idLigaJugador);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return;
+                }
+                long resolvedId = rs.getLong("id_jugador");
+                if (resolvedId <= 0) {
+                    return;
+                }
+                datos.put("idJugador", resolvedId);
+                datos.put("playerPhotoUrl", LeagueAssetUrls.player(resolvedId));
+            }
+        }
+    }
+
+    private Long readDatosLong(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Number n) {
+            return n.longValue();
+        }
+        try {
+            return Long.parseLong(value.toString().trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private String readDatosString(Object value) {
+        if (value == null) {
+            return null;
+        }
+        String s = value.toString().trim();
+        return s.isEmpty() ? null : s;
     }
 
     private Map<String, Object> parseDatos(String raw) {

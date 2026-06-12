@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/core/utils/league_coach_photo.dart';
 import 'package:eternal_xi/data/models/league_coach_assignment.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
@@ -55,7 +56,8 @@ class LeagueMatchCoachPitchBubble extends StatelessWidget {
     final uri = _coachAssignmentUri(coach);
     final fullName = coach.entrenadorNombre?.trim().isNotEmpty == true
         ? coach.entrenadorNombre!.trim()
-        : (coach.entrenadorPila?.trim() ?? 'Entrenador');
+        : (coach.entrenadorPila?.trim() ??
+            context.leagueL10n.coachLabel);
     final pila = coach.entrenadorPila?.trim() ?? '';
     final equipo = coach.equipoNombre?.trim().isNotEmpty == true
         ? coach.equipoNombre!.trim()
@@ -73,7 +75,7 @@ class LeagueMatchCoachPitchBubble extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Entrenador',
+                  ctx.leagueL10n.coachLabel,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: colorScheme.primary,
                     fontWeight: FontWeight.w900,

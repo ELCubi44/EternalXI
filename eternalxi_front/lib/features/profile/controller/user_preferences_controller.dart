@@ -8,6 +8,7 @@ import 'package:eternal_xi/data/models/user_preferences_response.dart';
 import 'package:eternal_xi/data/models/user_resources_response.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/core/storage/secure_storage_service.dart';
+import 'package:eternal_xi/core/storage/theme_preferences_storage.dart';
 import 'package:flutter/material.dart';
 
 class UserPreferencesController extends ChangeNotifier {
@@ -236,7 +237,10 @@ class UserPreferencesController extends ChangeNotifier {
 
   Future<void> _persistThemeMode(UserThemePreference preference) async {
     _localThemeMode = preference;
-    await _secureStorageService.saveThemeMode(_themeToStorage(preference));
+    final stored = _themeToStorage(preference);
+    await _secureStorageService.saveThemeMode(stored);
+    final themePrefs = await ThemePreferencesStorage.create();
+    await themePrefs.writeThemeMode(stored);
   }
 
   Future<void> _persistLanguageCode(UserLanguagePreference preference) async {
@@ -303,7 +307,7 @@ class UserPreferencesController extends ChangeNotifier {
       case 'light':
         return UserThemePreference.light;
       default:
-        return UserThemePreference.system;
+        return UserThemePreference.light;
     }
   }
 

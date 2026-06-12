@@ -32,6 +32,7 @@ public record NightMarketItemResponse(
 
         Long miPuja,
         Long pujaMasAlta,
-        Integer totalPujas
+        Integer totalPujas,
+        Integer probabilidadTitular
 ) {
 }

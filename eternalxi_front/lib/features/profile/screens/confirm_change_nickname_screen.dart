@@ -1,6 +1,8 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
+import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/features/auth/widgets/auth_shell.dart';
 import 'package:eternal_xi/features/profile/controller/profile_controller.dart';
 import 'package:eternal_xi/shared/widgets/app_loading_overlay.dart';
 import 'package:eternal_xi/shared/widgets/app_primary_button.dart';
@@ -41,42 +43,52 @@ class _ConfirmChangeNicknameScreenState
     return AppLoadingOverlay(
       isLoading: auth.isLoading,
       child: Scaffold(
-        appBar: AppBar(title: Text(l10n.confirmNicknameChange)),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+        backgroundColor: context.xiBackground,
+        body: AccountFormShell(
+          title: l10n.confirmNicknameChange,
+          hint: l10n.verificationCodeSentToEmail,
+          currentValueLabel: l10n.newNickname,
+          currentValue: nuevoNickname.isEmpty ? null : nuevoNickname,
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  l10n.verificationCodeSentToEmail,
-                  style: theme.textTheme.bodyMedium,
-                ),
                 if (correo.isNotEmpty) ...[
-                  const SizedBox(height: 8),
                   Text(
-                    correo,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                    l10n.email,
+                    style: TextStyle(
+                      fontFamily: 'Lumiare',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: context.xiAccentText,
+                      letterSpacing: 0.8,
                     ),
                   ),
+                  const SizedBox(height: 6),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: context.xiSurfaceInset.withValues(alpha: 0.55),
+                      border: Border.all(color: context.xiBorderSubtle),
+                    ),
+                    child: Text(
+                      correo,
+                      style: TextStyle(
+                        fontFamily: 'Lumiare',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: context.xiTextPrimary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
                 ],
-                const SizedBox(height: 16),
-                Text(
-                  l10n.newNickname,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  nuevoNickname.isEmpty ? '—' : nuevoNickname,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 20),
                 AppTextField(
                   controller: _codigoController,
                   label: l10n.verificationCode,

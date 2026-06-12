@@ -58,10 +58,10 @@ abstract final class LeagueConfigLabels {
     if (pts == null) {
       return '—';
     }
-    return ll?.minRewardPts(pts) ?? 'Mín. $pts pts (último puesto)';
+    return ll?.minRewardPts(pts) ?? 'Mín. $pts fichas (último puesto)';
   }
 
-  /// Reparto descendente: mínimo + 50 pts por cada puesto que sube.
+  /// Reparto descendente: mínimo + 50 fichas por cada puesto que sube.
   static int rewardForRank({
     required int rank,
     required int participantCount,
@@ -89,7 +89,7 @@ abstract final class LeagueConfigLabels {
       minReward: minReward,
     );
     if (participantCount == 1) {
-      return '$first pts';
+      return '$first fichas';
     }
     final second = rewardForRank(
       rank: 2,
@@ -97,7 +97,7 @@ abstract final class LeagueConfigLabels {
       minReward: minReward,
     );
     return ll?.rewardDistributionPreview('$first', '$second', minReward) ??
-        '$first, $second, …, $minReward pts/jornada';
+        '$first, $second, …, $minReward fichas/jornada';
   }
 
   static String dineroPorPuntoLabel(int? amount, {AppLocalizations? l10n}) {

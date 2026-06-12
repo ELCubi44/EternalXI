@@ -1,6 +1,8 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
+import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/features/auth/widgets/auth_shell.dart';
 import 'package:eternal_xi/features/profile/controller/profile_controller.dart';
 import 'package:eternal_xi/shared/widgets/app_loading_overlay.dart';
 import 'package:eternal_xi/shared/widgets/app_primary_button.dart';
@@ -50,30 +52,45 @@ class _ConfirmChangeEmailScreenState extends State<ConfirmChangeEmailScreen> {
     return AppLoadingOverlay(
       isLoading: auth.isLoading,
       child: Scaffold(
-        appBar: AppBar(title: Text(l10n.confirmEmailChange)),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+        backgroundColor: context.xiBackground,
+        body: AccountFormShell(
+          title: l10n.confirmEmailChange,
+          hint: l10n.confirmEmailChangeHint,
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  l10n.confirmEmailChangeHint,
-                  style: theme.textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 20),
-                Text(
                   l10n.currentEmail,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
+                  style: TextStyle(
+                    fontFamily: 'Lumiare',
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: context.xiAccentText,
+                    letterSpacing: 0.8,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  correoActual.isEmpty ? '—' : correoActual,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                const SizedBox(height: 6),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: context.xiSurfaceInset.withValues(alpha: 0.55),
+                    border: Border.all(color: context.xiBorderSubtle),
+                  ),
+                  child: Text(
+                    correoActual.isEmpty ? '—' : correoActual,
+                    style: TextStyle(
+                      fontFamily: 'Lumiare',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: context.xiTextPrimary,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 14),
@@ -84,18 +101,37 @@ class _ConfirmChangeEmailScreenState extends State<ConfirmChangeEmailScreen> {
                   textInputAction: TextInputAction.next,
                   validator: (v) => _codeValidator(v, l10n),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 18),
                 Text(
                   l10n.newEmail,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
+                  style: TextStyle(
+                    fontFamily: 'Lumiare',
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: context.xiAccentText,
+                    letterSpacing: 0.8,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  nuevoCorreo.isEmpty ? '—' : nuevoCorreo,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                const SizedBox(height: 6),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: context.xiSurfaceInset.withValues(alpha: 0.55),
+                    border: Border.all(color: context.xiBorderSubtle),
+                  ),
+                  child: Text(
+                    nuevoCorreo.isEmpty ? '—' : nuevoCorreo,
+                    style: TextStyle(
+                      fontFamily: 'Lumiare',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: context.xiTextPrimary,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 14),

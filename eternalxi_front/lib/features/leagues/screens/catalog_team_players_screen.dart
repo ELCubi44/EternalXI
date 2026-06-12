@@ -534,7 +534,8 @@ class _CatalogPlayerRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final showValorMercado = showLeagueValue && player.valor > 0;
+    final marketValue = player.valor;
+    final showValorMercado = showLeagueValue && marketValue > 0;
 
     final child = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -570,7 +571,7 @@ class _CatalogPlayerRow extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 3),
                     child: Text(
-                      LeagueMoneyFormat.money(player.valor),
+                      LeagueMoneyFormat.money(marketValue),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall?.copyWith(

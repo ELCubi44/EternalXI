@@ -12,14 +12,14 @@ abstract final class LeagueMarketHistoryFilters {
   static const venta = 'VENTA_MERCADO';
   static const expulsion = 'ADMIN_KICK';
 
-  static const labels = <String, String>{
-    all: 'Todo',
-    adjudicacion: 'Subasta',
-    compraDirecta: 'Compra x2',
-    acuerdo: 'Traspasos',
-    venta: 'Ventas',
-    expulsion: 'Expulsiones',
-  };
+  static const filterKeys = <String>[
+    all,
+    adjudicacion,
+    compraDirecta,
+    acuerdo,
+    venta,
+    expulsion,
+  ];
 }
 
 /// Filtros del historial de la tienda de recompensas.

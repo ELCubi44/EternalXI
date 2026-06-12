@@ -1,7 +1,9 @@
 import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'dart:async';
 
+import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/league_coach_assignment.dart';
 import 'package:eternal_xi/data/models/league_editable_lineup.dart';
@@ -11,10 +13,12 @@ import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.dart';
 import 'package:eternal_xi/features/leagues/utils/league_nav_refresh.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
+import 'package:eternal_xi/features/leagues/shell/league_shell_tabs.dart';
 import 'package:eternal_xi/features/leagues/squad/league_squad_lineup_panel.dart';
 import 'package:eternal_xi/features/leagues/squad/league_squad_position_bucket.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_squad_player_slot.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_squad_player_tile.dart';
+import 'package:eternal_xi/shared/widgets/lineup_history_icon.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -132,7 +136,9 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
     }
     final tabIndex = shell?.currentTabIndex;
     final squadTabActivated =
-        tabIndex == 2 && _lastSquadTabIndex != null && _lastSquadTabIndex != 2;
+        tabIndex == LeagueShellTabs.squad &&
+        _lastSquadTabIndex != null &&
+        _lastSquadTabIndex != LeagueShellTabs.squad;
     _lastSquadTabIndex = tabIndex;
     if (!_hasLoadedAtLeastOnce ||
         detailChanged ||
@@ -743,50 +749,58 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
     return map;
   }
 
-  List<Widget> _buildRosterSlivers(ThemeData theme, ColorScheme colorScheme) {
+  List<Widget> _buildRosterSlivers() {
     final grouped = _group(_players!);
     final slivers = <Widget>[];
 
     for (final line in LeagueSquadPositionBucket.displayOrder) {
       final list = grouped[line]!;
-      if (list.isEmpty) {
-        continue;
-      }
+      if (list.isEmpty) continue;
+
+      final lineColor = LeagueSquadPositionBucket.lineColor(line);
 
       slivers.add(
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
           sliver: SliverToBoxAdapter(
             child: Row(
               children: [
-                Icon(
-                  Icons.layers_outlined,
-                  size: 20,
-                  color: colorScheme.primary,
+                Container(
+                  width: 3,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: lineColor,
+                    borderRadius: BorderRadius.circular(2),
+                    boxShadow: [BoxShadow(color: lineColor.withValues(alpha: 0.5), blurRadius: 6)],
+                  ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    LeagueSquadPositionBucket.sectionTitle(line),
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                    LeagueSquadPositionBucket.sectionTitle(line).toUpperCase(),
+                    style: TextStyle(
+                      fontFamily: 'Lumiare',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: lineColor,
+                      letterSpacing: 1.5,
                     ),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer.withValues(alpha: 0.6),
+                    color: lineColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: lineColor.withValues(alpha: 0.35)),
                   ),
                   child: Text(
                     '${list.length}',
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.w700,
+                    style: TextStyle(
+                      fontFamily: 'Lumiare',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: lineColor,
                     ),
                   ),
                 ),
@@ -840,8 +854,6 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     super.build(context);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final shell = LeagueShellData.maybeOf(context);
 
     return PopScope(
@@ -858,59 +870,78 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Header fijo: título + botón historial (no se desplaza)
+          // Header fijo: acento + título + historial
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
             child: Row(
               children: [
-                Expanded(
-                  child: Text(
-                    l10n.squad,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                Container(
+                  width: 4,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: context.xiAccentText,
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                OutlinedButton.icon(
-                  onPressed: _openOwnHistory,
-                  icon: const Icon(Icons.history_rounded, size: 18),
-                  label: Text(l10n.history),
+                const SizedBox(width: 10),
+                Text(
+                  l10n.squad.toUpperCase(),
+                  style: TextStyle(
+                    fontFamily: 'Lumiare',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: context.xiTextPrimary,
+                    letterSpacing: 2,
+                  ),
+                ),
+                if (_segment == 0 && _lineup != null) ...[
+                  const SizedBox(width: 12),
+                  Text(
+                    _formacionEfectivaVisual(),
+                    style: TextStyle(
+                      fontFamily: 'Lumiare',
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: context.xiTextPrimary,
+                      letterSpacing: 0.5,
+                      height: 1.1,
+                    ),
+                  ),
+                ],
+                const Spacer(),
+                Tooltip(
+                  message: l10n.history,
+                  child: GestureDetector(
+                    onTap: _openOwnHistory,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: context.xiChipBackground,
+                        border: Border.all(color: context.xiBorderSubtle),
+                      ),
+                      child: const LineupHistoryIcon(size: 30),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-          // Selector Alineación/Plantilla fijo (siempre visible)
+          // Selector Alineación/Plantilla — custom XiColors
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: SegmentedButton<int>(
-              segments: [
-                ButtonSegment<int>(
-                  value: 0,
-                  label: Text(l10n.lineup),
-                  icon: const Icon(Icons.grid_on_outlined),
-                ),
-                ButtonSegment<int>(
-                  value: 1,
-                  label: Text(l10n.squad),
-                  icon: const Icon(Icons.groups_2_outlined),
-                ),
-              ],
+            child: _XiSquadTabSelector(
               key: ValueKey<int>(_segment),
-              selected: {_segment},
-              onSelectionChanged: (s) async {
-                final next = s.first;
-                if (next == _segment) {
-                  return;
-                }
+              selected: _segment,
+              lineupLabel: l10n.lineup,
+              squadLabel: l10n.squad,
+              onSelect: (next) async {
+                if (next == _segment) return;
                 if (_segment == 0 && next != 0) {
                   final leave = await _confirmLeaveLineupEditor();
-                  if (!leave) {
-                    return;
-                  }
+                  if (!leave) return;
                 }
-                if (!mounted) {
-                  return;
-                }
+                if (!mounted) return;
                 setState(() => _segment = next);
                 _scheduleLoad();
               },
@@ -943,14 +974,12 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                       child: _SquadError(
                         message: _error!,
                         onRetry: _load,
-                        colorScheme: colorScheme,
-                        theme: theme,
                       ),
                     )
                   else if (_players == null || _players!.isEmpty)
-                    SliverFillRemaining(
+                    const SliverFillRemaining(
                       hasScrollBody: false,
-                      child: _SquadEmpty(colorScheme: colorScheme, theme: theme),
+                      child: _SquadEmpty(),
                     )
                   else if (_segment == 0)
                     _lineupError != null
@@ -959,8 +988,6 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                             child: _LineupFetchError(
                               message: _lineupError!,
                               onRetry: _reloadLineup,
-                              colorScheme: colorScheme,
-                              theme: theme,
                             ),
                           )
                         : SliverFillRemaining(
@@ -1035,7 +1062,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                                   ),
                           )
                   else
-                    ..._buildRosterSlivers(theme, colorScheme),
+                    ..._buildRosterSlivers(),
                 ],
               ),
             ),
@@ -1063,54 +1090,38 @@ class _LineupActionBar extends StatelessWidget {
     final canSave = panel?.canSaveForParent ?? false;
     final l10n = context.l10n;
     final ll = context.leagueL10n;
-    final colorScheme = Theme.of(context).colorScheme;
-
-    final btnStyle = OutlinedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      minimumSize: const Size(0, 38),
-      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-    );
-    final saveStyle = FilledButton.styleFrom(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      minimumSize: const Size(0, 38),
-      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-      backgroundColor: canSave ? colorScheme.primary : colorScheme.surfaceContainerHighest,
-      foregroundColor: canSave ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
-    );
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       child: Row(
         children: [
           Expanded(
-            child: OutlinedButton.icon(
-              style: btnStyle,
-              icon: const Icon(Icons.verified_outlined, size: 15),
-              onPressed: (blocked || saving) ? null : () => panel?.triggerCaptainPicker(),
-              label: Text(l10n.captain, overflow: TextOverflow.ellipsis),
+            child: _SquadActionChip(
+              icon: Icons.verified_outlined,
+              label: l10n.captain,
+              color: XiColors.classicGold,
+              enabled: !blocked && !saving,
+              onTap: () => panelKey.currentState?.triggerCaptainPicker(),
             ),
           ),
           const SizedBox(width: 6),
           Expanded(
-            child: OutlinedButton.icon(
-              style: btnStyle,
-              icon: const Icon(Icons.auto_fix_high_rounded, size: 15),
-              onPressed: blocked ? null : () => panel?.triggerAutofill(),
-              label: Text(ll.autoFill, overflow: TextOverflow.ellipsis),
+            child: _SquadActionChip(
+              icon: Icons.auto_fix_high_rounded,
+              label: ll.autoFill,
+              color: context.xiAccentText,
+              enabled: !blocked,
+              onTap: () => panelKey.currentState?.triggerAutofill(),
             ),
           ),
           const SizedBox(width: 6),
           Expanded(
-            child: FilledButton.icon(
-              style: saveStyle,
-              icon: Icon(
-                saving ? Icons.hourglass_top_rounded : Icons.save_rounded,
-                size: 15,
-              ),
-              onPressed: (saving || !canSave) ? null : () => panel?.triggerSave(),
-              label: Text(saving ? l10n.saving : l10n.save, overflow: TextOverflow.ellipsis),
+            child: _SquadActionChip(
+              icon: saving ? Icons.hourglass_top_rounded : Icons.save_rounded,
+              label: saving ? l10n.saving : l10n.save,
+              color: canSave ? XiColors.emeraldGreen : XiColors.steelGray,
+              enabled: !saving && canSave,
+              onTap: () => panelKey.currentState?.triggerSave(),
             ),
           ),
         ],
@@ -1120,17 +1131,10 @@ class _LineupActionBar extends StatelessWidget {
 }
 
 class _LineupFetchError extends StatelessWidget {
-  const _LineupFetchError({
-    required this.message,
-    required this.onRetry,
-    required this.colorScheme,
-    required this.theme,
-  });
+  const _LineupFetchError({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;
-  final ColorScheme colorScheme;
-  final ThemeData theme;
 
   @override
   Widget build(BuildContext context) {
@@ -1139,31 +1143,30 @@ class _LineupFetchError extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.sports_soccer_outlined,
-            size: 48,
-            color: colorScheme.error,
-          ),
+          const Icon(Icons.sports_soccer_outlined, size: 48, color: XiColors.heroRed),
           const SizedBox(height: 16),
           Text(
             context.leagueL10n.couldNotLoadLineupTitle,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+            style: const TextStyle(
+              fontFamily: 'Lumiare',
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: XiColors.warmWhite,
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
           Text(
             message,
-            style: theme.textTheme.bodyMedium,
+            style: TextStyle(
+              fontFamily: 'Lumiare',
+              fontSize: 12,
+              color: XiColors.steelGray.withValues(alpha: 0.8),
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
-          FilledButton.tonalIcon(
-            onPressed: onRetry,
-            icon: const Icon(Icons.refresh),
-            label: Text(context.l10n.retry),
-          ),
+          _XiActionButton(label: context.l10n.retry, onTap: onRetry, color: XiColors.royalBlue),
         ],
       ),
     );
@@ -1171,17 +1174,10 @@ class _LineupFetchError extends StatelessWidget {
 }
 
 class _SquadError extends StatelessWidget {
-  const _SquadError({
-    required this.message,
-    required this.onRetry,
-    required this.colorScheme,
-    required this.theme,
-  });
+  const _SquadError({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;
-  final ColorScheme colorScheme;
-  final ThemeData theme;
 
   @override
   Widget build(BuildContext context) {
@@ -1190,19 +1186,19 @@ class _SquadError extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.cloud_off_outlined, size: 48, color: colorScheme.error),
+          const Icon(Icons.cloud_off_outlined, size: 48, color: XiColors.heroRed),
           const SizedBox(height: 16),
           Text(
             message,
-            style: theme.textTheme.bodyLarge,
+            style: TextStyle(
+              fontFamily: 'Lumiare',
+              fontSize: 12,
+              color: XiColors.steelGray.withValues(alpha: 0.8),
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
-          FilledButton.tonalIcon(
-            onPressed: onRetry,
-            icon: const Icon(Icons.refresh),
-            label: Text(context.l10n.retry),
-          ),
+          _XiActionButton(label: context.l10n.retry, onTap: onRetry, color: XiColors.royalBlue),
         ],
       ),
     );
@@ -1210,10 +1206,7 @@ class _SquadError extends StatelessWidget {
 }
 
 class _SquadEmpty extends StatelessWidget {
-  const _SquadEmpty({required this.colorScheme, required this.theme});
-
-  final ColorScheme colorScheme;
-  final ThemeData theme;
+  const _SquadEmpty();
 
   @override
   Widget build(BuildContext context) {
@@ -1222,29 +1215,198 @@ class _SquadEmpty extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.sports_soccer_outlined,
-            size: 52,
-            color: colorScheme.primary,
-          ),
+          const Icon(Icons.sports_soccer_outlined, size: 52, color: XiColors.royalBlue),
           const SizedBox(height: 16),
           Text(
             context.leagueL10n.emptySquadTitle,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+            style: const TextStyle(
+              fontFamily: 'Lumiare',
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: XiColors.warmWhite,
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
             context.leagueL10n.emptySquadBody,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
+            style: TextStyle(
+              fontFamily: 'Lumiare',
+              fontSize: 12,
+              color: XiColors.steelGray.withValues(alpha: 0.75),
               height: 1.4,
             ),
             textAlign: TextAlign.center,
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Custom squad tab selector ────────────────────────────────────────────────
+
+class _XiSquadTabSelector extends StatelessWidget {
+  const _XiSquadTabSelector({
+    super.key,
+    required this.selected,
+    required this.lineupLabel,
+    required this.squadLabel,
+    required this.onSelect,
+  });
+
+  final int selected;
+  final String lineupLabel;
+  final String squadLabel;
+  final Future<void> Function(int) onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: context.xiChipBackground,
+        border: Border.all(color: context.xiBorderSubtle),
+      ),
+      child: Row(
+        children: [
+          _tab(context, 0, Icons.grid_on_outlined, lineupLabel, context.xiAccentText),
+          _tab(context, 1, Icons.groups_2_outlined, squadLabel, context.xiAccentText),
+        ],
+      ),
+    );
+  }
+
+  Widget _tab(BuildContext context, int index, IconData icon, String label, Color color) {
+    final isSelected = index == selected;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onSelect(index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 9),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: isSelected ? color.withValues(alpha: 0.15) : Colors.transparent,
+            border: isSelected ? Border.all(color: color.withValues(alpha: 0.4)) : null,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 15, color: isSelected ? color : context.xiTextPrimary),
+              const SizedBox(width: 5),
+              Text(
+                label,
+                style: TextStyle(
+                  fontFamily: 'Lumiare',
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                  color: isSelected ? color : context.xiTextPrimary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Shared action button ─────────────────────────────────────────────────────
+
+class _XiActionButton extends StatelessWidget {
+  const _XiActionButton({required this.label, required this.onTap, required this.color});
+  final String label;
+  final VoidCallback onTap;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: color.withValues(alpha: 0.15),
+          border: Border.all(color: color.withValues(alpha: 0.4)),
+          boxShadow: [BoxShadow(color: color.withValues(alpha: 0.2), blurRadius: 10)],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.refresh, size: 14, color: color),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontFamily: 'Lumiare',
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SquadActionChip extends StatelessWidget {
+  const _SquadActionChip({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final effectiveColor = enabled ? color : XiColors.steelGray.withValues(alpha: 0.4);
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: Container(
+        height: 38,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: enabled
+              ? effectiveColor.withValues(alpha: 0.12)
+              : XiColors.surfaceContainer.withValues(alpha: 0.4),
+          border: Border.all(
+            color: enabled
+                ? effectiveColor.withValues(alpha: 0.35)
+                : XiColors.steelGray.withValues(alpha: 0.1),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 13, color: effectiveColor),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: 'Lumiare',
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: effectiveColor,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

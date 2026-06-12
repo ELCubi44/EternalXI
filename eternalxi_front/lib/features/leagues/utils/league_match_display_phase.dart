@@ -1,3 +1,5 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
+
 /// Fase de presentación del partido en UI (marcador vs horario).
 enum LeagueMatchDisplayPhase {
   /// Partido no iniciado: mostrar fecha/hora, no marcador 0-0.
@@ -131,13 +133,13 @@ String _normalizeEstado(String raw) {
   return out;
 }
 
-String leagueMatchPhaseLabel(LeagueMatchDisplayPhase phase) {
+String leagueMatchPhaseLabel(LeagueMatchDisplayPhase phase, LeagueL10n ll) {
   switch (phase) {
     case LeagueMatchDisplayPhase.pending:
-      return 'Programado';
+      return ll.matchPhaseScheduled;
     case LeagueMatchDisplayPhase.live:
-      return 'En juego';
+      return ll.matchPhaseLive;
     case LeagueMatchDisplayPhase.finished:
-      return 'Finalizado';
+      return ll.matchPhaseFinished;
   }
 }

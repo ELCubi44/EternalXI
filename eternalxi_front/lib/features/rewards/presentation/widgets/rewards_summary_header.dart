@@ -1,6 +1,6 @@
 import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_summary_model.dart';
-import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
+import 'package:eternal_xi/shared/widgets/reward_cards_icon.dart';
 import 'package:flutter/material.dart';
 
 class RewardsSummaryHeader extends StatelessWidget {
@@ -32,24 +32,10 @@ class RewardsSummaryHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: _ChipStat(
-                  icon: Icons.stars_rounded,
-                  label: rl10n.points,
-                  value: formatRewardPoints(summary.puntosRecompensaUsuario),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _ChipStat(
-                  icon: Icons.style_rounded,
-                  label: rl10n.cardsAvailable,
-                  value: '${summary.cartasDisponibles}',
-                ),
-              ),
-            ],
+          _ChipStat(
+            leading: const RewardCardsIcon(size: 22),
+            label: rl10n.cardsAvailable,
+            value: '${summary.cartasDisponibles}',
           ),
         ],
       ),
@@ -59,12 +45,14 @@ class RewardsSummaryHeader extends StatelessWidget {
 
 class _ChipStat extends StatelessWidget {
   const _ChipStat({
-    required this.icon,
+    this.icon,
+    this.leading,
     required this.label,
     required this.value,
-  });
+  }) : assert(icon != null || leading != null);
 
-  final IconData icon;
+  final IconData? icon;
+  final Widget? leading;
   final String label;
   final String value;
 
@@ -83,7 +71,8 @@ class _ChipStat extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: colorScheme.primary),
+          leading ??
+              Icon(icon, size: 20, color: colorScheme.primary),
           const SizedBox(width: 8),
           Expanded(
             child: Column(

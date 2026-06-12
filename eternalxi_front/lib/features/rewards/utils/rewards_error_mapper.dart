@@ -21,9 +21,9 @@ String mapRewardsActionError(Object error, ApiClient apiClient) {
         lower.contains('point') ||
         lower.contains('insufficient')) {
       if (lower.contains('ruleta') || lower.contains('roulette')) {
-        return 'No tienes puntos suficientes para usar la ruleta.';
+        return 'No tienes fichas suficientes para usar la ruleta.';
       }
-      return 'No tienes puntos suficientes para abrir este sobre.';
+      return 'No tienes fichas suficientes para abrir este sobre.';
     }
     if (lower.contains('carta') &&
         (lower.contains('usad') || lower.contains('used'))) {

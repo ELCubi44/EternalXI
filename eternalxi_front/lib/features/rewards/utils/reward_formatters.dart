@@ -31,7 +31,11 @@ String formatRewardMoneyFull(num value) {
   return '${buf.toString()} €';
 }
 
-String formatRewardPoints(int value) {
+String formatRewardPoints(int value, {String unit = 'fichas'}) {
+  return '${_formatRewardPointsNumber(value)} $unit';
+}
+
+String _formatRewardPointsNumber(int value) {
   final s = value.abs().toString();
   final buf = StringBuffer();
   for (var i = 0; i < s.length; i++) {
@@ -40,7 +44,7 @@ String formatRewardPoints(int value) {
     }
     buf.write(s[i]);
   }
-  return '${buf.toString()} pts';
+  return buf.toString();
 }
 
 /// Puntos compactos para chips (p. ej. cabecera de liga): `2.0k`, `1.2M`.
@@ -58,12 +62,16 @@ String formatRewardPointsCompact(int value) {
   return formatRewardPoints(value);
 }
 
-/// [compact] true → [formatRewardPointsCompact]; si no, miles con sufijo `pts`.
-String formatRewardPointsForChip(int value, {required bool compact}) {
+/// [compact] true → [formatRewardPointsCompact]; si no, miles con sufijo de fichas.
+String formatRewardPointsForChip(
+  int value, {
+  required bool compact,
+  String unit = 'fichas',
+}) {
   if (compact) {
     return formatRewardPointsCompact(value);
   }
-  return formatRewardPoints(value);
+  return formatRewardPoints(value, unit: unit);
 }
 
 /// Etiqueta de porcentaje/multiplicador según cómo venga el número del backend

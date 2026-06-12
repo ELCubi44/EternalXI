@@ -2,6 +2,7 @@ import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_pack_model.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_rarity_style.dart';
+import 'package:eternal_xi/shared/widgets/pack_envelope_icon.dart';
 import 'package:flutter/material.dart';
 
 class RewardPackCard extends StatelessWidget {
@@ -81,13 +82,7 @@ class RewardPackCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  pack.packType == 'PREMIUM_PACK'
-                      ? Icons.workspace_premium_rounded
-                      : Icons.inventory_2_rounded,
-                  color: Colors.white.withValues(alpha: 0.92),
-                  size: 28,
-                ),
+                const PackEnvelopeIcon(size: 32),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -101,7 +96,10 @@ class RewardPackCard extends StatelessWidget {
                 _PackInfoButton(pack: pack),
                 const SizedBox(width: 6),
                 Text(
-                  formatRewardPoints(pack.costePuntos),
+                  formatRewardPoints(
+                    pack.costePuntos,
+                    unit: rl10n.fichasUnit,
+                  ),
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: const Color(0xFFFFE082),
                     fontWeight: FontWeight.w800,
@@ -245,7 +243,12 @@ void _showPackProbabilities(BuildContext context, RewardPackModel pack) {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    rl10n.packCost(formatRewardPoints(pack.costePuntos)),
+                    rl10n.packCost(
+                      formatRewardPoints(
+                        pack.costePuntos,
+                        unit: rl10n.fichasUnit,
+                      ),
+                    ),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: const Color(0xFFFFE082),
                       fontWeight: FontWeight.w600,

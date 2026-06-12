@@ -4,6 +4,7 @@ import 'package:eternal_xi/app/router.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/core/network/api_client.dart';
 import 'package:eternal_xi/core/storage/secure_storage_service.dart';
+import 'package:eternal_xi/core/storage/theme_preferences_storage.dart';
 import 'package:eternal_xi/data/services/auth_api_service.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
@@ -36,11 +37,14 @@ Future<void> main() async {
   tzdata.initializeTimeZones();
 
   final secureStorageService = SecureStorageService();
+  final themePreferencesStorage = await ThemePreferencesStorage.create();
   final apiClient = ApiClient(
     acceptLanguage: AppLocaleResolver.apiLanguageTag(),
     secureStorage: secureStorageService,
   );
-  final savedThemeRaw = await secureStorageService.getThemeMode();
+  final savedThemeRaw =
+      themePreferencesStorage.readThemeMode() ??
+      await secureStorageService.getThemeMode();
   final savedLanguageRaw = await secureStorageService.getLanguageCode();
   final initialThemePreference = UserPreferencesController.themeFromStorage(
     savedThemeRaw,

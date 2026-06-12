@@ -1,4 +1,9 @@
+import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/data/models/league_market_history_entry.dart';
+import 'package:eternal_xi/shared/widgets/market_agreement_icon.dart';
+import 'package:eternal_xi/shared/widgets/market_bid_award_icon.dart';
+import 'package:eternal_xi/shared/widgets/market_direct_buy_icon.dart';
+import 'package:eternal_xi/shared/widgets/market_sale_icon.dart';
 import 'package:flutter/material.dart';
 
 class LeagueMarketHistoryBubble extends StatelessWidget {
@@ -10,8 +15,20 @@ class LeagueMarketHistoryBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final ll = context.leagueL10n;
     final type = _normalizedType(entry.tipo);
     final accent = marketHistoryColor(context, type);
+    final title = ll.marketHistoryTypeTitle(type);
+    final description = ll.marketHistoryDescription(
+      tipo: entry.tipo,
+      idUsuarioComprador: entry.idUsuarioComprador,
+      compradorNombre: entry.compradorNombre,
+      idUsuarioVendedor: entry.idUsuarioVendedor,
+      vendedorNombre: entry.vendedorNombre,
+      jugadorNombre: entry.jugadorNombre,
+      precio: entry.precio,
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
       child: Row(
@@ -25,7 +42,13 @@ class LeagueMarketHistoryBubble extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.center,
-            child: Icon(marketHistoryIcon(type), size: 18, color: accent),
+            child: switch (type) {
+              'COMPRA_DIRECTA_DOBLE' => const MarketDirectBuyIcon(size: 22),
+              'ADJUDICACION_MERCADO' => const MarketBidAwardIcon(size: 26),
+              'ACUERDO_USUARIOS' => const MarketAgreementIcon(size: 26),
+              'VENTA_MERCADO' => const MarketSaleIcon(size: 22),
+              _ => Icon(marketHistoryIcon(type), size: 18, color: accent),
+            },
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -36,7 +59,7 @@ class LeagueMarketHistoryBubble extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        marketHistoryTitle(type),
+                        title,
                         style: theme.textTheme.labelLarge?.copyWith(
                           fontWeight: FontWeight.w700,
                           color: accent,
@@ -45,7 +68,7 @@ class LeagueMarketHistoryBubble extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      _formatTimestamp(entry.creadoEn),
+                      ll.marketHistoryTimestamp(entry.creadoEn),
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
@@ -54,7 +77,7 @@ class LeagueMarketHistoryBubble extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text(entry.descripcion, style: theme.textTheme.bodyMedium),
+                Text(description, style: theme.textTheme.bodyMedium),
                 const SizedBox(height: 10),
                 Divider(
                   height: 1,
@@ -81,7 +104,7 @@ IconData marketHistoryIcon(String tipo) {
       return Icons.flash_on_rounded;
     case 'ACUERDO_USUARIOS':
       return Icons.handshake_rounded;
-      case 'VENTA_MERCADO':
+    case 'VENTA_MERCADO':
       return Icons.storefront_rounded;
     case 'ADMIN_KICK':
       return Icons.person_remove_rounded;
@@ -100,51 +123,11 @@ Color marketHistoryColor(BuildContext context, String tipo) {
       return Colors.amber.shade700;
     case 'ACUERDO_USUARIOS':
       return Colors.green.shade600;
-      case 'VENTA_MERCADO':
+    case 'VENTA_MERCADO':
       return Colors.deepOrange.shade600;
     case 'ADMIN_KICK':
       return Colors.red.shade400;
     default:
       return scheme.outline;
   }
-}
-
-String marketHistoryTitle(String tipo) {
-  final type = _normalizedType(tipo);
-  switch (type) {
-    case 'ADJUDICACION_MERCADO':
-      return 'Adjudicación';
-    case 'COMPRA_DIRECTA_DOBLE':
-      return 'Compra directa';
-    case 'ACUERDO_USUARIOS':
-      return 'Acuerdo';
-      case 'VENTA_MERCADO':
-      return 'Venta al mercado';
-    case 'ADMIN_KICK':
-      return 'Expulsión';
-    default:
-      return 'Movimiento de mercado';
-  }
-}
-
-String _formatTimestamp(DateTime? value) {
-  if (value == null) {
-    return 'Fecha no disponible';
-  }
-  final d = value.toLocal();
-  final now = DateTime.now();
-  final day = DateTime(d.year, d.month, d.day);
-  final today = DateTime(now.year, now.month, now.day);
-  final diff = today.difference(day).inDays;
-  final hh = d.hour.toString().padLeft(2, '0');
-  final mm = d.minute.toString().padLeft(2, '0');
-  if (diff == 0) {
-    return 'Hoy · $hh:$mm';
-  }
-  if (diff == 1) {
-    return 'Ayer · $hh:$mm';
-  }
-  final dd = d.day.toString().padLeft(2, '0');
-  final mo = d.month.toString().padLeft(2, '0');
-  return '$dd/$mo/${d.year} · $hh:$mm';
 }

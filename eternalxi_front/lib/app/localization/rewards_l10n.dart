@@ -1,13 +1,15 @@
 import 'dart:convert';
 
+import 'package:eternal_xi/data/models/league_activity_event.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_card_model.dart';
+import 'package:eternal_xi/features/rewards/data/models/reward_event_model.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_card_target_model.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_coach_item.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_redeem_result_model.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
 import 'package:flutter/material.dart';
 
-/// Textos del módulo de recompensas / tienda de puntos (es + en).
+/// Textos del módulo de recompensas / tienda de fichas (es + en).
 class RewardsL10n {
   RewardsL10n(this._en);
 
@@ -40,8 +42,8 @@ class RewardsL10n {
   String get selectLeagueTitle => _t('Selecciona una liga', 'Select a league');
 
   String get selectLeagueBody => _t(
-        'Cada liga tiene sus propios puntos de recompensa, sobres, cartas y entrenador.',
-        'Each league has its own reward points, packs, cards and coach.',
+        'Cada liga tiene sus propias fichas de recompensa, sobres, cartas y entrenador.',
+        'Each league has its own reward chips, packs, cards and coach.',
       );
 
   String participants(int n) => _t('$n participantes', '$n participants');
@@ -58,7 +60,11 @@ class RewardsL10n {
 
   String get tabHistory => _t('Historial', 'History');
 
-  String get points => _t('Puntos', 'Points');
+  String get points => _t('Fichas', 'Chips');
+
+  String get fichas => points;
+
+  String get fichasUnit => _t('fichas', 'chips');
 
   String get cardsAvailable => _t('Cartas disponibles', 'Available cards');
 
@@ -122,7 +128,8 @@ class RewardsL10n {
     }
   }
 
-  String get insufficientPoints => _t('Puntos insuficientes', 'Insufficient points');
+  String get insufficientPoints =>
+      _t('Fichas insuficientes', 'Insufficient chips');
 
   String get coachRouletteTitle => _t('Ruleta de entrenador', 'Coach roulette');
 
@@ -139,7 +146,7 @@ class RewardsL10n {
       _t('Dinero: $min — $max', 'Budget: $min — $max');
 
   String get rewardPointsTooltip =>
-      _t('Puntos de recompensa', 'Reward points');
+      _t('Fichas de recompensa', 'Reward chips');
 
   String leagueFallbackName(int id) => _t('Liga $id', 'League $id');
 
@@ -241,6 +248,10 @@ class RewardsL10n {
 
   /// Nombre visible; sustituye textos legacy de recuperación temporal.
   String cardDisplayName(RewardCardModel card) {
+    final byCode = _cardNameByCode(card.codigo);
+    if (byCode != null) {
+      return byCode;
+    }
     if (!card.isValueBoost) {
       return card.nombre;
     }
@@ -249,6 +260,10 @@ class RewardsL10n {
 
   /// Descripción visible; sustituye textos legacy de recuperación temporal.
   String cardDisplayDescription(RewardCardModel card) {
+    final byCode = _cardDescriptionByCode(card);
+    if (byCode != null) {
+      return byCode;
+    }
     if (!card.isValueBoost) {
       return card.descripcion;
     }
@@ -261,6 +276,164 @@ class RewardsL10n {
       );
     }
     return card.descripcion;
+  }
+
+  String? _cardNameByCode(String codigo) {
+    switch (codigo.trim().toUpperCase()) {
+      case 'SELL_100':
+        return _t('Venta Justa', 'Fair Sale');
+      case 'SELL_120':
+        return _t('Venta Mejorada', 'Improved Sale');
+      case 'SELL_140':
+        return _t('Venta Premium', 'Premium Sale');
+      case 'SELL_160':
+        return _t('Venta Maestra', 'Master Sale');
+      case 'SELL_200':
+        return _t('Venta Legendaria', 'Legendary Sale');
+      case 'CLAUSE_5M':
+        return _t('Cláusula Menor', 'Minor Clause');
+      case 'CLAUSE_10M':
+        return _t('Cláusula Media', 'Medium Clause');
+      case 'CLAUSE_20M':
+        return _t('Cláusula Especial', 'Special Clause');
+      case 'CLAUSE_35M':
+        return _t('Cláusula Élite', 'Elite Clause');
+      case 'CLAUSE_ANY':
+        return _t('Cláusula Legendaria', 'Legendary Clause');
+      case 'PROTECT_1_ROUND':
+        return _t('Protección Básica', 'Basic Protection');
+      case 'PROTECT_2_ROUNDS':
+        return _t('Protección Normal', 'Standard Protection');
+      case 'PROTECT_4_ROUNDS':
+        return _t('Protección Especial', 'Special Protection');
+      case 'PROTECT_8_ROUNDS':
+        return _t('Protección Élite', 'Elite Protection');
+      case 'PROTECT_SEASON':
+        return _t('Protección Legendaria', 'Legendary Protection');
+      case 'LEAGUE_POINTS_5':
+        return _t('Empujón de Puntos', 'Points Boost');
+      case 'LEAGUE_POINTS_10':
+        return _t('Racha Positiva', 'Positive Streak');
+      case 'LEAGUE_POINTS_20':
+        return _t('Jornada Inspirada', 'Inspired Matchday');
+      case 'LEAGUE_POINTS_35':
+        return _t('Golpe de Clasificación', 'Standings Strike');
+      case 'LEAGUE_POINTS_60':
+        return _t('Leyenda de la Liga', 'League Legend');
+      default:
+        return null;
+    }
+  }
+
+  String? _cardDescriptionByCode(RewardCardModel card) {
+    final code = card.codigo.trim().toUpperCase();
+    final mult = _sellMultiplierFromCard(card);
+    if (mult != null) {
+      final pct = (mult * 100).round();
+      return _t(
+        'Vende un jugador por el $pct% de su valor.',
+        'Sell a player for $pct% of their value.',
+      );
+    }
+    final maxVal = _maxClauseValueFromCard(card);
+    if (maxVal != null) {
+      final label = _formatMoneyShort(maxVal);
+      return _t(
+        'Ficha directamente un jugador rival de hasta $label pagando el 100% de su valor.',
+        'Sign a rival player worth up to $label paying 100% of their value.',
+      );
+    }
+    if (code == 'CLAUSE_ANY') {
+      return _t(
+        'Ficha directamente cualquier jugador rival de hasta 150M pagando el 100% de su valor.',
+        'Sign any rival player worth up to 150M paying 100% of their value.',
+      );
+    }
+    final rounds = _protectRoundsFromCard(card);
+    if (rounds != null) {
+      if (rounds < 0) {
+        return _t(
+          'Protege un jugador durante toda la temporada.',
+          'Protect a player for the entire season.',
+        );
+      }
+      return _t(
+        'Protege un jugador durante $rounds jornadas.',
+        'Protect a player for $rounds matchdays.',
+      );
+    }
+    final pts = _leaguePointsFromCard(card);
+    if (pts != null) {
+      return _t(
+        'Suma $pts puntos al total de la liga.',
+        'Adds $pts points to your league total.',
+      );
+    }
+    return null;
+  }
+
+  double? _sellMultiplierFromCard(RewardCardModel card) {
+    if (card.tipoEfecto.trim().toUpperCase() != 'SELL_PLAYER_BONUS') {
+      return null;
+    }
+    final params = _cardParams(card.parametrosJson);
+    final mult = _num(params['sellMultiplier'] ?? params['multiplicadorVenta']);
+    return mult?.toDouble();
+  }
+
+  int? _maxClauseValueFromCard(RewardCardModel card) {
+    if (card.tipoEfecto.trim().toUpperCase() != 'DIRECT_CLAUSE') {
+      return null;
+    }
+    final params = _cardParams(card.parametrosJson);
+    final max = _num(params['maxPlayerValue'] ?? params['valorMaximoJugador']);
+    return max?.toInt();
+  }
+
+  int? _protectRoundsFromCard(RewardCardModel card) {
+    if (card.tipoEfecto.trim().toUpperCase() != 'PROTECT_PLAYER') {
+      return null;
+    }
+    final params = _cardParams(card.parametrosJson);
+    if (params['seasonLong'] == true) {
+      return -1;
+    }
+    final rounds = _num(params['rounds'] ?? params['jornadas']);
+    return rounds?.toInt();
+  }
+
+  int? _leaguePointsFromCard(RewardCardModel card) {
+    if (card.tipoEfecto.trim().toUpperCase() != 'ADD_LEAGUE_POINTS') {
+      return null;
+    }
+    final params = _cardParams(card.parametrosJson);
+    final pts = _num(params['points'] ?? params['puntos']);
+    return pts?.toInt();
+  }
+
+  Map<String, dynamic> _cardParams(String? json) {
+    if (json == null || json.isEmpty) {
+      return const {};
+    }
+    try {
+      final raw = jsonDecode(json);
+      if (raw is Map) {
+        return Map<String, dynamic>.from(raw);
+      }
+    } catch (_) {}
+    return const {};
+  }
+
+  String _formatMoneyShort(int amount) {
+    if (amount >= 1000000) {
+      final m = amount / 1000000;
+      return m == m.roundToDouble() ? '${m.toInt()}M' : '${m.toStringAsFixed(1)}M';
+    }
+    if (amount >= 1000) {
+      final k = amount / 1000;
+      return k == k.roundToDouble() ? '${k.toInt()}K' : '${k.toStringAsFixed(1)}K';
+    }
+    return '$amount';
   }
 
   String? _valueBoostNameByCode(String codigo) {
@@ -409,7 +582,165 @@ class RewardsL10n {
     }
   }
 
+  String get packTapToOpen => _t('TOCA PARA ABRIR', 'TAP TO OPEN');
+
+  String get packOpening => _t('ABRIENDO...', 'OPENING...');
+
+  String get packReward => _t('RECOMPENSA', 'REWARD');
+
+  String get packYourCard => _t('TU CARTA', 'YOUR CARD');
+
   // ─── Historial de eventos ───
+
+  String rewardEventDescription(RewardEventModel event) {
+    if (!_en) {
+      return event.descripcion;
+    }
+    final tipo = event.tipo.trim().toUpperCase();
+    final pack = event.packType?.trim();
+    final qty = event.cantidad;
+    switch (tipo) {
+      case 'PACK_OPENED':
+        if (pack != null && pack.isNotEmpty) {
+          return 'Opened $pack pack${qty != null ? ' (−$qty chips)' : ''}.';
+        }
+        return qty != null
+            ? 'Pack opened (−$qty chips).'
+            : 'Pack opened.';
+      case 'BUDGET_GRANTED':
+        return qty != null
+            ? 'Budget reward from pack: +$qty.'
+            : 'Budget reward from pack.';
+      case 'CARD_OBTAINED':
+        return 'Card obtained from pack.';
+      case 'CARD_REDEEMED':
+        return 'Card redeemed.';
+      case 'COACH_ROULETTE_SPIN':
+        return qty != null
+            ? 'Coach roulette spin (−$qty chips).'
+            : 'Coach roulette spin.';
+      default:
+        return event.descripcion;
+    }
+  }
+
+  String activityMessage(LeagueActivityEvent event) {
+    if (!_en) {
+      return event.mensaje;
+    }
+    final tipo = event.tipo.trim().toUpperCase();
+    final nick = event.actorNickname.trim();
+    final msg = event.mensaje.trim();
+
+    switch (tipo) {
+      case 'ADMIN_KICK':
+        final kicked = _parseAdminKickTarget(msg);
+        if (kicked != null && nick.isNotEmpty) {
+          return '$nick kicked $kicked from the league.';
+        }
+        return nick.isNotEmpty
+            ? '$nick removed a participant from the league.'
+            : 'A participant was removed from the league.';
+      case 'PACK_OPENED':
+        final pack = _parsePackOpened(msg);
+        if (pack != null) {
+          return '${pack.$1} opened a ${pack.$2} and received ${pack.$3}.';
+        }
+        return nick.isNotEmpty ? '$nick opened a pack.' : 'Pack opened.';
+      case 'COACH_ROULETTE':
+      case 'COACH_ROULETTE_SPIN':
+        final coach = _parseCoachRoulette(msg);
+        if (coach != null) {
+          return '${coach.$1} spun the coach roulette and got ${coach.$2}.';
+        }
+        return nick.isNotEmpty
+            ? '$nick used the coach roulette.'
+            : 'Coach roulette used.';
+      case 'CARD_REDEEMED':
+      case 'PLAYER_SOLD_WITH_CARD':
+      case 'DIRECT_CLAUSE_EXECUTED':
+      case 'PLAYER_PROTECTION_APPLIED':
+      case 'LEAGUE_POINTS_BONUS_APPLIED':
+      case 'VALUE_RECOVERY_APPLIED':
+      case 'VALUE_BOOST_APPLIED':
+        final redeemed = _parseCardRedeem(msg);
+        if (redeemed != null) {
+          return redeemed;
+        }
+        return nick.isNotEmpty ? '$nick used a reward card.' : 'Reward card used.';
+      case 'ROUND_FINISHED':
+        return 'Matchday finished.';
+      default:
+        return msg.isNotEmpty ? msg : 'League activity.';
+    }
+  }
+
+  (String, String, String)? _parsePackOpened(String msg) {
+    final m = RegExp(
+      r'^(.+?) abrió un (.+?) y recibió (.+?)\.$',
+    ).firstMatch(msg);
+    if (m == null) {
+      return null;
+    }
+    return (m.group(1)!, m.group(2)!, m.group(3)!);
+  }
+
+  (String, String)? _parseCoachRoulette(String msg) {
+    final m = RegExp(
+      r'^(.+?) usó la ruleta de entrenador y obtuvo a (.+?)\.$',
+    ).firstMatch(msg);
+    if (m == null) {
+      return null;
+    }
+    return (m.group(1)!, m.group(2)!);
+  }
+
+  String? _parseAdminKickTarget(String msg) {
+    final m = RegExp(
+      r'^.+? expulsó a (.+?) de la liga\.$',
+    ).firstMatch(msg);
+    return m?.group(1);
+  }
+
+  String? _parseCardRedeem(String msg) {
+    final sell = RegExp(
+      r'^(.+?) usó (.+?) y vendió a (.+?) por (.+?)\.$',
+    ).firstMatch(msg);
+    if (sell != null) {
+      return '${sell.group(1)} used ${sell.group(2)} and sold ${sell.group(3)} for ${sell.group(4)}.';
+    }
+    final clause = RegExp(
+      r'^(.+?) usó (.+?) y fichó a (.+?) de (.+?) pagando (.+?)\.$',
+    ).firstMatch(msg);
+    if (clause != null) {
+      return '${clause.group(1)} used ${clause.group(2)} and signed ${clause.group(3)} from ${clause.group(4)} for ${clause.group(5)}.';
+    }
+    final protectUntil = RegExp(
+      r'^(.+?) protegió a (.+?) hasta la jornada (\d+)\.$',
+    ).firstMatch(msg);
+    if (protectUntil != null) {
+      return '${protectUntil.group(1)} protected ${protectUntil.group(2)} until matchday ${protectUntil.group(3)}.';
+    }
+    final protectSeason = RegExp(
+      r'^(.+?) protegió a (.+?) toda la temporada\.$',
+    ).firstMatch(msg);
+    if (protectSeason != null) {
+      return '${protectSeason.group(1)} protected ${protectSeason.group(2)} for the whole season.';
+    }
+    final points = RegExp(
+      r'^(.+?) usó (.+?) y sumó \+(\d+) puntos\.$',
+    ).firstMatch(msg);
+    if (points != null) {
+      return '${points.group(1)} used ${points.group(2)} and added +${points.group(3)} points.';
+    }
+    final boost = RegExp(
+      r'^(.+?) subió el valor de mercado de (.+?) un (\d+)%\.$',
+    ).firstMatch(msg);
+    if (boost != null) {
+      return '${boost.group(1)} increased ${boost.group(2)}\'s market value by ${boost.group(3)}%.';
+    }
+    return null;
+  }
 
   String rewardEventTypeLabel(String tipo) {
     switch (tipo.trim().toUpperCase()) {
@@ -489,14 +820,14 @@ class RewardsL10n {
 
   String get rouletteCostTitle => _t('Coste', 'Cost');
 
-  String rouletteCostBody(String points) => _t(
-        'Girar cuesta $points.',
-        'Spinning costs $points.',
+  String rouletteCostBody(String fichas) => _t(
+        'Girar cuesta $fichas.',
+        'Spinning costs $fichas.',
       );
 
   String get rouletteFreeCostBody => _t(
-        'Girar no tiene coste en puntos.',
-        'Spinning costs no points.',
+        'Girar no tiene coste en fichas.',
+        'Spinning costs no chips.',
       );
 
   String get rouletteBonusTitle =>

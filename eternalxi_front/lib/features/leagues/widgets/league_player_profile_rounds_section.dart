@@ -4,6 +4,8 @@ import 'package:eternal_xi/data/models/league_player_round_stats.dart';
 import 'package:eternal_xi/features/leagues/utils/league_jornada_points_display.dart';
 import 'package:eternal_xi/features/leagues/utils/league_round_stat_display.dart';
 import 'package:eternal_xi/features/leagues/utils/league_saves_stat_visibility.dart';
+import 'package:eternal_xi/shared/widgets/player_injury_icon.dart';
+import 'package:eternal_xi/shared/widgets/red_card_icon.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -214,7 +216,7 @@ class _LeaguePlayerProfileRoundsSectionState
         ),
       ),
       _RoundStatRow(
-        icon: Icons.report_rounded,
+        leading: const RedCardIcon(size: 20),
         label: ll.statRedCards,
         value: leagueRoundStatDisplayValue(
           '${stat.tarjetasRojas}',
@@ -226,7 +228,7 @@ class _LeaguePlayerProfileRoundsSectionState
     if (matchVisible) {
       rows.add(
         _RoundStatRow(
-          icon: Icons.healing_outlined,
+          leading: const PlayerInjuryIcon(size: 20),
           label: ll.statInjuredInMatch,
           value: leagueRoundStatDisplayValue(
             yesNo(stat.lesionadoEnPartido),
@@ -401,6 +403,7 @@ class _LeaguePlayerProfileRoundsSectionState
                       for (final row in statRows)
                         _StatLine(
                           icon: row.icon,
+                          leading: row.leading,
                           label: row.label,
                           value: row.value,
                         ),
@@ -428,25 +431,29 @@ class _LeaguePlayerProfileRoundsSectionState
 
 class _RoundStatRow {
   const _RoundStatRow({
-    required this.icon,
+    this.icon,
+    this.leading,
     required this.label,
     required this.value,
-  });
+  }) : assert(icon != null || leading != null);
 
-  final IconData icon;
+  final IconData? icon;
+  final Widget? leading;
   final String label;
   final String value;
 }
 
 class _StatLine extends StatelessWidget {
   const _StatLine({
-    required this.icon,
+    this.icon,
+    this.leading,
     required this.label,
     required this.value,
     this.emphasized = false,
-  });
+  }) : assert(icon != null || leading != null);
 
-  final IconData icon;
+  final IconData? icon;
+  final Widget? leading;
   final String label;
   final String value;
   final bool emphasized;
@@ -459,7 +466,8 @@ class _StatLine extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: colorScheme.primary),
+          leading ??
+              Icon(icon, size: 20, color: colorScheme.primary),
           const SizedBox(width: 10),
           Expanded(
             child: Text(

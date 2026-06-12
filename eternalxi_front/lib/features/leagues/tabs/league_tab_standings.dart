@@ -6,7 +6,6 @@ import 'package:eternal_xi/data/models/league_standing_row.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
-import 'package:eternal_xi/features/leagues/tabs/league_tab_squad.dart';
 import 'package:eternal_xi/features/leagues/utils/league_jornada_points_display.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_standing_row_card.dart';
 import 'package:flutter/material.dart';
@@ -189,8 +188,7 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
     required String nickname,
   }) {
     if (idUsuario == shell.idUsuario) {
-      LeagueTabSquad.externalSegmentRequest.value = 0;
-      shell.selectTab(2);
+      shell.openSquad(segment: 0);
       return;
     }
     LeagueInnerNavigation.openParticipantSquad(

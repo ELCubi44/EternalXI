@@ -1,8 +1,10 @@
 import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/theme/app_colors.dart';
+import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/data/models/league_listed_player.dart';
-import 'package:eternal_xi/data/models/league_market_team_summary.dart';
 import 'package:eternal_xi/data/models/league_offer_item.dart';
+import 'package:eternal_xi/data/models/league_market_team_summary.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/controller/league_night_market_controller.dart';
@@ -38,7 +40,16 @@ class _LeagueTabMarketState extends State<LeagueTabMarket>
     super.build(context);
     final shell = LeagueShellData.maybeOf(context);
     if (shell == null) {
-      return Center(child: Text(context.l10n.leagueContextError));
+      return Center(
+        child: Text(
+          context.l10n.leagueContextError,
+          style: const TextStyle(
+            fontFamily: 'Lumiare',
+            fontSize: 13,
+            color: XiColors.steelGray,
+          ),
+        ),
+      );
     }
 
     return ChangeNotifierProvider(
@@ -106,9 +117,7 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final shell = LeagueShellData.maybeOf(context);
-    if (shell == null) {
-      return;
-    }
+    if (shell == null) return;
     final gen = shell.refreshGeneration;
     if (_handledRefreshGeneration == null) {
       _handledRefreshGeneration = gen;
@@ -117,9 +126,7 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
     if (gen != _handledRefreshGeneration) {
       _handledRefreshGeneration = gen;
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        if (!mounted) {
-          return;
-        }
+        if (!mounted) return;
         await _reloadMarketTabData();
       });
     }
@@ -147,9 +154,7 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
           idUsuario: widget.shell.idUsuario,
         ),
       ]);
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
       final rows = results[0] as List<LeagueSquadPlayer>;
       final sentOffers = results[1] as List<LeagueOfferItem>;
       final flat = rows
@@ -165,9 +170,7 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
         _buyLoading = false;
       });
     } catch (e) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
       setState(() {
         _buyError = e.toString().replaceFirst('Exception: ', '');
         _buyLoading = false;
@@ -182,12 +185,12 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
   List<Widget> _buildNightMarketSlivers(
     BuildContext context,
     LeagueNightMarketController controller,
-    ThemeData theme,
-    ColorScheme colorScheme,
   ) {
     if (controller.isLoading && controller.data == null) {
       return const [
-        SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
+        SliverFillRemaining(
+          child: Center(child: CircularProgressIndicator(color: XiColors.royalBlue)),
+        ),
       ];
     }
     if (controller.errorMessage != null && controller.data == null) {
@@ -199,39 +202,31 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.cloud_off_outlined,
-                  size: 56,
-                  color: colorScheme.error,
-                ),
+                const Icon(Icons.cloud_off_outlined, size: 56, color: XiColors.heroRed),
                 const SizedBox(height: 16),
                 Text(
                   controller.errorMessage!,
                   textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyLarge,
+                  style: TextStyle(
+                    fontFamily: 'Lumiare',
+                    fontSize: 13,
+                    color: XiColors.steelGray.withValues(alpha: 0.8),
+                  ),
                 ),
                 const SizedBox(height: 20),
-                FilledButton.tonalIcon(
-                  onPressed: () => controller.load(),
-                  icon: const Icon(Icons.refresh),
-                  label: Text(context.l10n.retry),
-                ),
+                _XiRetryButton(onTap: () => controller.load()),
               ],
             ),
           ),
         ),
       ];
     }
-    if (controller.data == null) {
-      return const [];
-    }
+    if (controller.data == null) return const [];
 
     return [
-      SliverPadding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-        sliver: SliverToBoxAdapter(
-          child: const LeagueNightMarketSummaryHeader(),
-        ),
+      const SliverPadding(
+        padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+        sliver: SliverToBoxAdapter(child: LeagueNightMarketSummaryHeader()),
       ),
       if (controller.data!.items.isEmpty)
         SliverFillRemaining(
@@ -239,8 +234,10 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
           child: Center(
             child: Text(
               context.leagueL10n.noPlayersToday,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+              style: TextStyle(
+                fontFamily: 'Lumiare',
+                fontSize: 14,
+                color: XiColors.steelGray.withValues(alpha: 0.7),
               ),
             ),
           ),
@@ -266,40 +263,21 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
     ];
   }
 
-  List<Widget> _buildBuySlivers(ThemeData theme, ColorScheme colorScheme) {
+  List<Widget> _buildBuySlivers() {
     if (_buyLoading) {
       return const [
-        SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
+        SliverFillRemaining(
+          child: Center(child: CircularProgressIndicator(color: XiColors.royalBlue)),
+        ),
       ];
     }
     if (_buyError != null) {
       return [
         SliverFillRemaining(
           hasScrollBody: false,
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.cloud_off_outlined,
-                  size: 56,
-                  color: colorScheme.error,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  _buyError!,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 20),
-                FilledButton.tonalIcon(
-                  onPressed: _loadBuyMarket,
-                  icon: const Icon(Icons.refresh),
-                  label: Text(context.l10n.retry),
-                ),
-              ],
-            ),
+          child: _XiErrorState(
+            message: _buyError!,
+            onRetry: _loadBuyMarket,
           ),
         ),
       ];
@@ -312,8 +290,10 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
           child: Center(
             child: Text(
               context.leagueL10n.noPlayersAvailableYet,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+              style: TextStyle(
+                fontFamily: 'Lumiare',
+                fontSize: 14,
+                color: XiColors.steelGray.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -332,64 +312,12 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
               ..sort(compareLeagueListedPlayersMarketOrder);
             return Padding(
               padding: EdgeInsets.only(bottom: ti < teams.length - 1 ? 10 : 0),
-              child: Card(
-                elevation: 0,
-                color: colorScheme.surfaceContainerHigh,
-                clipBehavior: Clip.antiAlias,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  side: BorderSide(
-                    color: colorScheme.outlineVariant.withValues(alpha: 0.35),
-                  ),
-                ),
-                child: Theme(
-                  data: Theme.of(
-                    context,
-                  ).copyWith(dividerColor: Colors.transparent),
-                  child: ExpansionTile(
-                    key: PageStorageKey<String>(
-                      'buy_team_${widget.shell.leagueId}_${team.idEquipo}',
-                    ),
-                    initiallyExpanded: false,
-                    tilePadding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 4,
-                    ),
-                    childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                    leading: LeagueTeamLogo(
-                      idEquipo: team.idEquipo,
-                      size: 40,
-                      networkImageUrl: team.resolvedTeamBadgeUrl(),
-                    ),
-                    title: Text(
-                      team.nombreEquipo,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text(
-                      context.leagueL10n.playersCount(team.players.length),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    children: [
-                      for (final listed in sorted)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: LeagueMarketPlayerBuyCard(
-                            player: listed.squadPlayer,
-                            idLiga: widget.shell.leagueId,
-                            idUsuario: widget.shell.idUsuario,
-                            onAfterAction: _loadBuyMarket,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
+              child: _TeamExpandCard(
+                team: team,
+                sorted: sorted,
+                leagueId: widget.shell.leagueId,
+                idUsuario: widget.shell.idUsuario,
+                onAfterAction: _loadBuyMarket,
               ),
             );
           }, childCount: teams.length),
@@ -398,41 +326,19 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
     ];
   }
 
-  List<Widget> _buildSentOffersSlivers(ThemeData theme, ColorScheme colorScheme) {
+  List<Widget> _buildSentOffersSlivers() {
     if (_buyLoading) {
       return const [
-        SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
+        SliverFillRemaining(
+          child: Center(child: CircularProgressIndicator(color: XiColors.royalBlue)),
+        ),
       ];
     }
     if (_buyError != null) {
       return [
         SliverFillRemaining(
           hasScrollBody: false,
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.cloud_off_outlined,
-                  size: 56,
-                  color: colorScheme.error,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  _buyError!,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 20),
-                FilledButton.tonalIcon(
-                  onPressed: _loadBuyMarket,
-                  icon: const Icon(Icons.refresh),
-                  label: Text(context.l10n.retry),
-                ),
-              ],
-            ),
-          ),
+          child: _XiErrorState(message: _buyError!, onRetry: _loadBuyMarket),
         ),
       ];
     }
@@ -443,8 +349,10 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
           child: Center(
             child: Text(
               context.leagueL10n.noOffersPendingSnack,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+              style: TextStyle(
+                fontFamily: 'Lumiare',
+                fontSize: 14,
+                color: context.xiTextSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -476,81 +384,73 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
     ];
   }
 
-  List<ButtonSegment<int>> _marketSegments() {
+  List<_XiTabDef> _marketTabs() {
+    final l10n = context.l10n;
     final ll = context.leagueL10n;
-    final segments = <ButtonSegment<int>>[
-      ButtonSegment<int>(
-        value: 0,
-        label: Text(context.l10n.market),
-        icon: const Icon(Icons.nights_stay_outlined),
+    final tabs = <_XiTabDef>[
+      _XiTabDef(
+        label: l10n.market,
+        icon: Icons.nights_stay_outlined,
+        color: XiColors.accentViolet,
       ),
-      ButtonSegment<int>(
-        value: 1,
-        label: Text(context.leagueL10n.buy),
-        icon: const Icon(Icons.shopping_bag_outlined),
+      _XiTabDef(
+        label: ll.buy,
+        icon: Icons.shopping_bag_outlined,
+        color: XiColors.royalBlue,
       ),
     ];
     if (_pendingSentOffers.isNotEmpty) {
-      segments.add(
-        ButtonSegment<int>(
-          value: 2,
-          label: Text(ll.offersCount(_pendingSentOffers.length)),
-          icon: const Icon(Icons.local_offer_outlined),
-        ),
-      );
+      tabs.add(_XiTabDef(
+        label: ll.offersCount(_pendingSentOffers.length),
+        icon: Icons.local_offer_outlined,
+        color: XiColors.classicGold,
+      ));
     }
-    return segments;
+    return tabs;
   }
 
   List<Widget> _segmentSlivers(
     BuildContext context,
     LeagueNightMarketController nightController,
-    ThemeData theme,
-    ColorScheme colorScheme,
   ) {
     switch (_segment) {
       case 0:
-        return _buildNightMarketSlivers(
-          context,
-          nightController,
-          theme,
-          colorScheme,
-        );
+        return _buildNightMarketSlivers(context, nightController);
       case 2:
-        return _buildSentOffersSlivers(theme, colorScheme);
+        return _buildSentOffersSlivers();
       case 1:
       default:
-        return _buildBuySlivers(theme, colorScheme);
+        return _buildBuySlivers();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final nightController = context.watch<LeagueNightMarketController>();
+    final tabs = _marketTabs();
+    final safeSegment = _segment.clamp(0, tabs.length - 1);
 
     return Stack(
       children: [
         RefreshIndicator(
+          color: XiColors.royalBlue,
+          backgroundColor: context.xiCardElevated,
           onRefresh: () => _refreshAll(context),
           child: CustomScrollView(
             key: const PageStorageKey<String>('league_tab_market'),
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
                 sliver: SliverToBoxAdapter(
-                  child: SegmentedButton<int>(
-                    segments: _marketSegments(),
-                    selected: {_segment},
-                    onSelectionChanged: (selection) {
-                      setState(() => _segment = selection.first);
-                    },
+                  child: _XiTabSelector(
+                    tabs: tabs,
+                    selected: safeSegment,
+                    onSelect: (i) => setState(() => _segment = i),
                   ),
                 ),
               ),
-              ..._segmentSlivers(context, nightController, theme, colorScheme),
+              ..._segmentSlivers(context, nightController),
             ],
           ),
         ),
@@ -561,11 +461,328 @@ class _LeagueMarketViewState extends State<_LeagueMarketView> {
             right: 0,
             child: LinearProgressIndicator(
               minHeight: 2,
-              color: colorScheme.primary,
-              backgroundColor: colorScheme.surfaceContainerHighest,
+              color: XiColors.royalBlue,
+              backgroundColor: XiColors.royalBlue.withValues(alpha: 0.1),
             ),
           ),
       ],
+    );
+  }
+}
+
+// ─── Custom tab selector ──────────────────────────────────────────────────────
+
+class _XiTabDef {
+  const _XiTabDef({required this.label, required this.icon, required this.color});
+  final String label;
+  final IconData icon;
+  final Color color;
+}
+
+class _XiTabSelector extends StatelessWidget {
+  const _XiTabSelector({
+    required this.tabs,
+    required this.selected,
+    required this.onSelect,
+  });
+
+  final List<_XiTabDef> tabs;
+  final int selected;
+  final void Function(int) onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: context.xiSurfaceContainer,
+        border: Border.all(color: context.xiBorderSubtle),
+        boxShadow: context.xiCardShadow,
+      ),
+      child: Row(
+        children: List.generate(tabs.length, (i) {
+          final tab = tabs[i];
+          final isSelected = i == selected;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => onSelect(i),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: isSelected
+                      ? tab.color.withValues(alpha: 0.15)
+                      : Colors.transparent,
+                  border: isSelected
+                      ? Border.all(color: tab.color.withValues(alpha: 0.4))
+                      : null,
+                  boxShadow: isSelected
+                      ? [BoxShadow(color: tab.color.withValues(alpha: 0.2), blurRadius: 10)]
+                      : null,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      tab.icon,
+                      size: 15,
+                      color: isSelected ? tab.color : context.xiTextSecondary,
+                    ),
+                    const SizedBox(width: 5),
+                    Flexible(
+                      child: Text(
+                        tab.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: 'Lumiare',
+                          fontSize: 11,
+                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                          color: isSelected ? tab.color : context.xiTextSecondary,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
+
+// ─── Team expand card (replaces Card + ExpansionTile) ─────────────────────────
+
+class _TeamExpandCard extends StatefulWidget {
+  const _TeamExpandCard({
+    required this.team,
+    required this.sorted,
+    required this.leagueId,
+    required this.idUsuario,
+    required this.onAfterAction,
+  });
+
+  final LeagueMarketTeamSummary team;
+  final List<LeagueListedPlayer> sorted;
+  final int leagueId;
+  final int idUsuario;
+  final Future<void> Function() onAfterAction;
+
+  @override
+  State<_TeamExpandCard> createState() => _TeamExpandCardState();
+}
+
+class _TeamExpandCardState extends State<_TeamExpandCard>
+    with SingleTickerProviderStateMixin {
+  bool _expanded = false;
+  late final AnimationController _rotCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _rotCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 220),
+    );
+  }
+
+  @override
+  void dispose() {
+    _rotCtrl.dispose();
+    super.dispose();
+  }
+
+  void _toggle() {
+    setState(() => _expanded = !_expanded);
+    if (_expanded) {
+      _rotCtrl.forward();
+    } else {
+      _rotCtrl.reverse();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ll = context.leagueL10n;
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: context.xiCompactCardGradient,
+        ),
+        border: Border.all(color: context.xiBorderSubtle),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(17),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Header row
+            GestureDetector(
+              onTap: _toggle,
+              behavior: HitTestBehavior.opaque,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+                child: Row(
+                  children: [
+                    LeagueTeamLogo(
+                      idEquipo: widget.team.idEquipo,
+                      size: 38,
+                      networkImageUrl: widget.team.resolvedTeamBadgeUrl(),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.team.nombreEquipo,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'Lumiare',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: context.xiTextPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            ll.playersCount(widget.team.players.length),
+                            style: TextStyle(
+                              fontFamily: 'Lumiare',
+                              fontSize: 10,
+                              color: XiColors.royalBlue.withValues(alpha: 0.8),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    RotationTransition(
+                      turns: Tween(begin: 0.0, end: 0.5).animate(
+                        CurvedAnimation(parent: _rotCtrl, curve: Curves.easeOut),
+                      ),
+                      child: const Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: XiColors.steelGray,
+                        size: 22,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Expandable player list
+            AnimatedSize(
+              duration: const Duration(milliseconds: 240),
+              curve: Curves.easeOutCubic,
+              child: _expanded
+                  ? Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                      child: Column(
+                        children: [
+                          for (final listed in widget.sorted)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: LeagueMarketPlayerBuyCard(
+                                player: listed.squadPlayer,
+                                idLiga: widget.leagueId,
+                                idUsuario: widget.idUsuario,
+                                onAfterAction: widget.onAfterAction,
+                              ),
+                            ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Shared helpers ──────────────────────────────────────────────────────────
+
+class _XiErrorState extends StatelessWidget {
+  const _XiErrorState({required this.message, required this.onRetry});
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.cloud_off_outlined, size: 52, color: XiColors.heroRed),
+          const SizedBox(height: 14),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Lumiare',
+              fontSize: 12,
+              color: XiColors.steelGray.withValues(alpha: 0.8),
+            ),
+          ),
+          const SizedBox(height: 20),
+          _XiRetryButton(onTap: onRetry),
+        ],
+      ),
+    );
+  }
+}
+
+class _XiRetryButton extends StatelessWidget {
+  const _XiRetryButton({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: const LinearGradient(
+            colors: [XiColors.royalBlue, XiColors.royalBlue],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: XiColors.royalBlue.withValues(alpha: 0.3),
+              blurRadius: 12,
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.refresh, size: 16, color: XiColors.warmWhite),
+            const SizedBox(width: 6),
+            Text(
+              context.l10n.retry,
+              style: const TextStyle(
+                fontFamily: 'Lumiare',
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: XiColors.warmWhite,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

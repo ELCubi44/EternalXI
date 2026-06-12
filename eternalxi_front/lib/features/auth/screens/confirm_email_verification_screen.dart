@@ -3,6 +3,7 @@ import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/core/utils/validators.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/auth/widgets/auth_shell.dart';
+import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/shared/widgets/app_loading_overlay.dart';
 import 'package:eternal_xi/shared/widgets/app_primary_button.dart';
 import 'package:eternal_xi/shared/widgets/app_text_field.dart';
@@ -49,6 +50,7 @@ class _ConfirmEmailVerificationScreenState
     return AppLoadingOverlay(
       isLoading: auth.isLoading,
       child: Scaffold(
+        backgroundColor: context.xiBackground,
         body: AuthShell(
           title: l10n.confirmCodeTitle,
           subtitle: l10n.confirmCodeSubtitle,

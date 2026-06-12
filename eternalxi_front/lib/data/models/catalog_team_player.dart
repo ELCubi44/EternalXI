@@ -101,11 +101,13 @@ class CatalogTeamPlayer {
       valoracion: readLeagueDouble(json, const [
         'valoracion',
         'valoración',
+        'valoracionActual',
+        'valoracion_actual',
         'rating',
         'overall',
         'media',
       ]),
-      valor: readLeagueDouble(json, const ['valor', 'precio', 'marketValue']),
+      valor: _readCatalogMarketValue(json),
       dorsal: readLeagueInt(json, const ['dorsal', 'numero', 'número', 'num']),
       fotoJugador: readLeagueString(json, const [
         'fotoJugador',
@@ -168,11 +170,13 @@ class CatalogTeamPlayer {
       valoracion: readLeagueDouble(json, const [
         'valoracion',
         'valoración',
+        'valoracionActual',
+        'valoracion_actual',
         'rating',
         'overall',
         'media',
       ]),
-      valor: readLeagueDouble(json, const ['valor', 'precio', 'marketValue']),
+      valor: _readCatalogMarketValue(json),
       dorsal: readLeagueInt(json, const ['dorsal', 'numero', 'número', 'num']),
       fotoJugador: readLeagueString(json, const [
         'fotoJugador',
@@ -216,4 +220,15 @@ String? _readOptionalString(Map<String, dynamic> json, List<String> keys) {
 int? _readOptionalInt(Map<String, dynamic> json, List<String> keys) {
   final value = readLeagueInt(json, keys);
   return value > 0 ? value : null;
+}
+
+double _readCatalogMarketValue(Map<String, dynamic> json) {
+  final effective = readLeagueOptionalDouble(json, const [
+    'valorMercadoEfectivo',
+    'valor_mercado_efectivo',
+  ]);
+  if (effective != null && effective > 0) {
+    return effective;
+  }
+  return readLeagueDouble(json, const ['valor', 'precio', 'marketValue']);
 }

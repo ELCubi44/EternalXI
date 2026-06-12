@@ -7,6 +7,7 @@ import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.d
 import 'package:eternal_xi/features/leagues/utils/league_night_market_format.dart';
 import 'package:eternal_xi/features/leagues/utils/league_night_market_images.dart';
 import 'package:eternal_xi/features/leagues/utils/league_player_photo.dart';
+import 'package:eternal_xi/features/leagues/utils/league_starter_probability_ui.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_night_market_bid_sheet.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
 import 'package:flutter/material.dart';
@@ -140,182 +141,203 @@ class LeagueNightMarketItemCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: busy ? null : () => _openBidSheet(context),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Stack(
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(14),
-                        child: uri != null
-                            ? Image.network(
-                                uri.toString(),
-                                width: 88,
-                                height: 88,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, _, _) =>
-                                    _avatarFallback(colorScheme),
-                              )
-                            : _avatarFallback(colorScheme),
-                      ),
-                      Positioned.fill(
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: busy ? null : () => _openPlayerDetail(context),
+                      Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(14),
+                            child: uri != null
+                                ? Image.network(
+                                    uri.toString(),
+                                    width: 88,
+                                    height: 88,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, _, _) =>
+                                        _avatarFallback(colorScheme),
+                                  )
+                                : _avatarFallback(colorScheme),
                           ),
-                        ),
-                      ),
-                      if (busy)
-                        Positioned.fill(
-                          child: ColoredBox(
-                            color: colorScheme.scrim.withValues(alpha: 0.35),
-                            child: Center(
-                              child: SizedBox(
-                                width: 28,
-                                height: 28,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  color: colorScheme.onPrimary,
+                          Positioned.fill(
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: busy
+                                    ? null
+                                    : () => _openPlayerDetail(context),
+                              ),
+                            ),
+                          ),
+                          if (busy)
+                            Positioned.fill(
+                              child: ColoredBox(
+                                color: colorScheme.scrim.withValues(alpha: 0.35),
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 28,
+                                    height: 28,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      color: colorScheme.onPrimary,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InkWell(
-                          onTap: busy ? null : () => _openPlayerDetail(context),
-                          borderRadius: BorderRadius.circular(8),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Text(
-                              name,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: -0.2,
+                        ],
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            InkWell(
+                              onTap: busy
+                                  ? null
+                                  : () => _openPlayerDetail(context),
+                              borderRadius: BorderRadius.circular(8),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 2, right: 52),
+                                child: Text(
+                                  name,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.2,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            LeagueTeamLogo(
-                              idEquipo: item.idEquipo,
-                              size: 24,
-                              networkImageUrl:
-                                  LeagueNightMarketImages.teamBadgeNetworkUrl(
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                LeagueTeamLogo(
+                                  idEquipo: item.idEquipo,
+                                  size: 24,
+                                  networkImageUrl:
+                                      LeagueNightMarketImages.teamBadgeNetworkUrl(
                                     idEquipo: item.idEquipo,
                                     fotoEquipo: item.fotoEquipo,
                                   ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                item.nombreEquipo.trim().isEmpty
-                                    ? '—'
-                                    : item.nombreEquipo,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                  fontWeight: FontWeight.w500,
                                 ),
-                              ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    item.nombreEquipo.trim().isEmpty
+                                        ? '—'
+                                        : item.nombreEquipo,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                final features = <_FeatureData>[
+                                  _FeatureData(
+                                    icon: Icons.sports_soccer_rounded,
+                                    label: ll.positionLabel,
+                                    value: LeagueNightMarketFormat.posicionLabel(
+                                      item.posicion,
+                                    ),
+                                    color: colorScheme.onSurfaceVariant,
+                                    showLabel: false,
+                                  ),
+                                  _FeatureData(
+                                    icon: Icons.star_rounded,
+                                    label: ll.valuationLabel,
+                                    value: '${item.valoracion}',
+                                    color: colorScheme.primary,
+                                    showLabel: false,
+                                  ),
+                                ];
+                                final visibleFeatures = features;
+                                final itemWidth = (constraints.maxWidth - 8) / 2;
+                                return Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: [
+                                    for (final f in visibleFeatures)
+                                      SizedBox(
+                                        width: itemWidth,
+                                        child: _FeatureChip(data: f),
+                                      ),
+                                  ],
+                                );
+                              },
                             ),
                           ],
                         ),
-                        const SizedBox(height: 10),
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            final features = <_FeatureData>[
-                              _FeatureData(
-                                icon: Icons.sports_soccer_rounded,
-                                label: ll.positionLabel,
-                                value: LeagueNightMarketFormat.posicionLabel(
-                                  item.posicion,
-                                ),
-                                color: colorScheme.onSurfaceVariant,
-                                showLabel: false,
-                              ),
-                              _FeatureData(
-                                icon: Icons.star_rounded,
-                                label: ll.valuationLabel,
-                                value: '${item.valoracion}',
-                                color: colorScheme.primary,
-                                showLabel: false,
-                              ),
-                            ];
-                            final visibleFeatures = features;
-                            final itemWidth = (constraints.maxWidth - 8) / 2;
-                            return Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: [
-                                for (final f in visibleFeatures)
-                                  SizedBox(
-                                    width: itemWidth,
-                                    child: _FeatureChip(data: f),
-                                  ),
-                              ],
-                            );
-                          },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _MiniStat(
+                          label: ll.currentValueLabel,
+                          value: LeagueNightMarketFormat.moneyInt(item.valorActual),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _MiniStat(
+                          label: ll.totalBids,
+                          value: '${item.totalPujas}',
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton(
+                          onPressed: busy ? null : () => _openBidSheet(context),
+                          child: Text(
+                            item.miPuja == null ? ll.bidForPlayer : ll.updateBid,
+                          ),
+                        ),
+                      ),
+                      if (item.miPuja != null) ...[
+                        const SizedBox(width: 10),
+                        IconButton.filledTonal(
+                          tooltip: ll.deleteBid,
+                          onPressed: busy ? null : () => _confirmDelete(context),
+                          icon: const Icon(Icons.delete_outline_rounded),
                         ),
                       ],
-                    ),
+                    ],
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: _MiniStat(
-                      label: ll.currentValueLabel,
-                      value: LeagueNightMarketFormat.moneyInt(item.valorActual),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _MiniStat(
-                      label: ll.totalBids,
-                      value: '${item.totalPujas}',
-                    ),
-                  ),
-                ],
+            ),
+            Positioned(
+              top: 14,
+              right: 14,
+              child: LeagueMarketPlayerCornerStats(
+                estado: item.estado,
+                valoracion: item.valoracion,
+                probabilidadTitular: item.probabilidadTitular,
+                showValoracion: false,
+                showAvailabilityIcons: true,
               ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: FilledButton(
-                      onPressed: busy ? null : () => _openBidSheet(context),
-                      child: Text(
-                        item.miPuja == null ? ll.bidForPlayer : ll.updateBid,
-                      ),
-                    ),
-                  ),
-                  if (item.miPuja != null) ...[
-                    const SizedBox(width: 10),
-                    IconButton.filledTonal(
-                      tooltip: ll.deleteBid,
-                      onPressed: busy ? null : () => _confirmDelete(context),
-                      icon: const Icon(Icons.delete_outline_rounded),
-                    ),
-                  ],
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

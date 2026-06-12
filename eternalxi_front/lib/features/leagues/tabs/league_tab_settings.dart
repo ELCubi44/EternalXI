@@ -518,13 +518,6 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
     final adminAlone = isAdmin && detail.participantes <= 1;
 
     final sectionWidgets = <Widget>[
-      Text(
-        l10n.settings,
-        style: theme.textTheme.headlineSmall?.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      const SizedBox(height: 20),
       if (detail.hasConfigSummary) ...[
         _SectionTitle(
           icon: Icons.tune_rounded,

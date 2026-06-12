@@ -1,3 +1,6 @@
+import 'package:eternal_xi/app/theme/app_colors.dart';
+import 'package:flutter/material.dart';
+
 /// Línea de campo para agrupar la plantilla (orden de sección en UI).
 enum LeagueSquadLine { porteros, defensas, mediocentros, delanteros, otros }
 
@@ -168,6 +171,22 @@ abstract final class LeagueSquadPositionBucket {
         return 'Delanteros';
       case LeagueSquadLine.otros:
         return 'Otras posiciones';
+    }
+  }
+
+  /// Color de acento por demarcación en listados de plantilla.
+  static Color lineColor(LeagueSquadLine line) {
+    switch (line) {
+      case LeagueSquadLine.porteros:
+        return XiColors.energyOrange;
+      case LeagueSquadLine.defensas:
+        return XiColors.emeraldGreen;
+      case LeagueSquadLine.mediocentros:
+        return XiColors.royalBlue;
+      case LeagueSquadLine.delanteros:
+        return XiColors.heroRed;
+      case LeagueSquadLine.otros:
+        return XiColors.steelGray;
     }
   }
 }

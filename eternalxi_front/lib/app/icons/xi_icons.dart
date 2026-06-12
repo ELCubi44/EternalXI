@@ -57,6 +57,8 @@ enum XiIconType {
   burstStar,
   /// Flechas dobles — oferta / intercambio
   doubleArrow,
+  /// Flecha atrás — volver / navegación
+  backArrow,
   /// Entrenador — pizarra técnica
   coach,
   /// Capitán — brazalete
@@ -65,6 +67,8 @@ enum XiIconType {
   lock,
   /// Lupa — buscar / catálogo
   search,
+  /// Burbuja de chat — mensajes de liga
+  chat,
 }
 
 class _XiIconPainter extends CustomPainter {
@@ -122,6 +126,8 @@ class _XiIconPainter extends CustomPainter {
         _drawBurstStar(canvas, w, h);
       case XiIconType.doubleArrow:
         _drawDoubleArrow(canvas, w, h);
+      case XiIconType.backArrow:
+        _drawBackArrow(canvas, w, h);
       case XiIconType.coach:
         _drawCoach(canvas, w, h);
       case XiIconType.captain:
@@ -130,6 +136,8 @@ class _XiIconPainter extends CustomPainter {
         _drawLock(canvas, w, h);
       case XiIconType.search:
         _drawSearch(canvas, w, h);
+      case XiIconType.chat:
+        _drawChat(canvas, w, h);
     }
   }
 
@@ -497,6 +505,17 @@ class _XiIconPainter extends CustomPainter {
     canvas.drawLine(Offset(w * 0.80, h * 0.20), Offset(w * 0.20, h * 0.80), p..strokeWidth = 0.6..color = color.withValues(alpha: 0.4));
   }
 
+  // ─── Volver atrás ───────────────────────────────────────────
+  void _drawBackArrow(Canvas canvas, double w, double h) {
+    final p = _stroke;
+    final chevron = Path()
+      ..moveTo(w * 0.60, h * 0.16)
+      ..lineTo(w * 0.24, h * 0.50)
+      ..lineTo(w * 0.60, h * 0.84);
+    canvas.drawPath(chevron, p);
+    canvas.drawLine(Offset(w * 0.24, h * 0.50), Offset(w * 0.84, h * 0.50), p);
+  }
+
   // ─── Entrenador / pizarra ───────────────────────────────────
   void _drawCoach(Canvas canvas, double w, double h) {
     final p = _stroke;
@@ -577,6 +596,35 @@ class _XiIconPainter extends CustomPainter {
     canvas.drawLine(Offset(w * 0.28, h * 0.40), Offset(w * 0.52, h * 0.40), p..strokeWidth = 1.4);
   }
 
+  // ─── Chat / mensajes ────────────────────────────────────────
+  void _drawChat(Canvas canvas, double w, double h) {
+    final p = _mixedPaint(filled);
+    if (!filled) p.strokeWidth = 1.6;
+    // Burbuja principal
+    final bubble = Path()
+      ..moveTo(w * 0.16, h * 0.16)
+      ..lineTo(w * 0.84, h * 0.16)
+      ..quadraticBezierTo(w * 0.92, h * 0.16, w * 0.92, h * 0.26)
+      ..lineTo(w * 0.92, h * 0.64)
+      ..quadraticBezierTo(w * 0.92, h * 0.74, w * 0.82, h * 0.74)
+      ..lineTo(w * 0.44, h * 0.74)
+      ..lineTo(w * 0.26, h * 0.90)
+      ..lineTo(w * 0.28, h * 0.74)
+      ..lineTo(w * 0.18, h * 0.74)
+      ..quadraticBezierTo(w * 0.08, h * 0.74, w * 0.08, h * 0.64)
+      ..lineTo(w * 0.08, h * 0.26)
+      ..quadraticBezierTo(w * 0.08, h * 0.16, w * 0.16, h * 0.16)
+      ..close();
+    canvas.drawPath(bubble, p);
+    if (!filled) {
+      // Tres líneas de texto dentro
+      final lp = Paint()..color = color..style = PaintingStyle.stroke..strokeWidth = 1.4..strokeCap = StrokeCap.round;
+      canvas.drawLine(Offset(w * 0.22, h * 0.38), Offset(w * 0.78, h * 0.38), lp);
+      canvas.drawLine(Offset(w * 0.22, h * 0.50), Offset(w * 0.68, h * 0.50), lp);
+      canvas.drawLine(Offset(w * 0.22, h * 0.62), Offset(w * 0.56, h * 0.62), lp);
+    }
+  }
+
   @override
   bool shouldRepaint(_XiIconPainter old) =>
       old.type != type || old.color != color || old.filled != filled;
@@ -594,7 +642,7 @@ class XiNavIcon extends StatelessWidget {
     return XiIcon(
       type,
       size: 24,
-      color: selected ? XiColors.techCyan : XiColors.steelGray,
+      color: selected ? XiColors.royalBlue : XiColors.steelGray,
       filled: selected,
     );
   }

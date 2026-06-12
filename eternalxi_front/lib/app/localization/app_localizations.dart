@@ -77,6 +77,7 @@ class AppLocalizations {
       'home': 'Inicio',
       'standings': 'Tabla',
       'market': 'Mercado',
+      'transfers': 'Traspasos',
       'settings': 'Ajustes',
       'login': 'Iniciar sesión',
       'register': 'Crear cuenta',
@@ -229,6 +230,15 @@ class AppLocalizations {
       'preferencesLoadError': 'No se pudieron cargar las preferencias',
       'preferencesSaveError': 'No se pudieron guardar las preferencias',
       'savingPreferences': 'Guardando preferencias...',
+      'chat': 'Chat',
+      'chatComingSoon': 'El chat de liga llegará pronto. Habla con tus rivales y celebra tus goles.',
+      'chatHint': 'Escribe un mensaje a la liga...',
+      'chatEmpty': 'Sé el primero en escribir en el chat de la liga.',
+      'chatYou': 'Tú',
+      'chatSystemAuthor': 'Sistema',
+      'chatSeedRivalAuthor': 'Rival_XI',
+      'chatSeedRivalMessage': '¿Quién se lleva la jornada?',
+      'chatLeagueFallback': 'Liga',
     },
     'en': {
       'appTitle': 'Eternal XI',
@@ -262,6 +272,7 @@ class AppLocalizations {
       'home': 'Home',
       'standings': 'Standings',
       'market': 'Market',
+      'transfers': 'Transfers',
       'settings': 'Settings',
       'login': 'Log in',
       'register': 'Create account',
@@ -414,6 +425,15 @@ class AppLocalizations {
       'preferencesLoadError': 'Could not load preferences',
       'preferencesSaveError': 'Could not save preferences',
       'savingPreferences': 'Saving preferences...',
+      'chat': 'Chat',
+      'chatComingSoon': 'League chat is coming soon. Talk to your rivals and celebrate your goals.',
+      'chatHint': 'Write a message to the league...',
+      'chatEmpty': 'Be the first to write in the league chat.',
+      'chatYou': 'You',
+      'chatSystemAuthor': 'System',
+      'chatSeedRivalAuthor': 'Rival_XI',
+      'chatSeedRivalMessage': 'Who\'s taking this matchday?',
+      'chatLeagueFallback': 'League',
     },
   };
 
@@ -453,7 +473,25 @@ class AppLocalizations {
   String get home => _t('home');
   String get standings => _t('standings');
   String get market => _t('market');
+  String get transfers => _t('transfers');
   String get settings => _t('settings');
+  String get chat => _t('chat');
+  String get chatComingSoon => _t('chatComingSoon');
+  String get chatHint => _t('chatHint');
+  String get chatEmpty => _t('chatEmpty');
+  String get chatYou => _t('chatYou');
+  String get chatSystemAuthor => _t('chatSystemAuthor');
+  String get chatSeedRivalAuthor => _t('chatSeedRivalAuthor');
+  String get chatSeedRivalMessage => _t('chatSeedRivalMessage');
+  String get chatLeagueFallback => _t('chatLeagueFallback');
+
+  String chatWelcomeMessage(String leagueName) {
+    final en = locale.languageCode.toLowerCase() == 'en';
+    return en
+        ? 'Welcome to the $leagueName chat! ⚽'
+        : '¡Bienvenidos al chat de $leagueName! ⚽';
+  }
+
   String get login => _t('login');
   String get register => _t('register');
   String get email => _t('email');

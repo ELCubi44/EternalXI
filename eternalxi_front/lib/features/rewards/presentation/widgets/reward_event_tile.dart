@@ -45,7 +45,7 @@ class RewardEventTile extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            event.descripcion,
+            rl10n.rewardEventDescription(event),
             style: theme.textTheme.bodySmall?.copyWith(
               color: Colors.white70,
               height: 1.3,

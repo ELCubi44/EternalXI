@@ -66,7 +66,7 @@ class AchievementsTab extends StatelessWidget {
 
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 88),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       children: [
         if (progressCtrl.isFromCache)
           Padding(

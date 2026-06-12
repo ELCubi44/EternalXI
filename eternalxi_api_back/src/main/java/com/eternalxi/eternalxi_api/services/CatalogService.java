@@ -258,6 +258,9 @@ public class CatalogService {
             Long idLiga,
             String locale
     ) throws SQLException {
+        final String valoracionExpr = idLiga != null
+                ? "CAST(ROUND(COALESCE(lj.valoracion_actual, j.valoracion), 0) AS SIGNED)"
+                : "j.valoracion";
         String sql = """
                 SELECT j.id,
                        lj.id AS id_liga_jugador,
@@ -269,7 +272,7 @@ public class CatalogService {
                        j.pila,
                        j.dorsal,
                        COALESCE(jt.descripcion, j.descripcion) AS descripcion,
-                       j.valoracion,
+                       %s AS valoracion,
                        j.genero,
                        j.posicion,
                        j.foto
@@ -282,7 +285,7 @@ public class CatalogService {
                  AND lj.id_liga = ?
                 WHERE j.id_equipo = ?
                 ORDER BY j.dorsal ASC, j.id ASC
-                """;
+                """.formatted(valoracionExpr);
 
         List<CatalogTeamPlayerResponse> players = new ArrayList<>();
 

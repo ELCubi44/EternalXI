@@ -18,6 +18,7 @@ abstract final class XiColors {
   static const ivoryUniform = Color(0xFFF2E6C8);
   static const warmWhite = Color(0xFFFFF8E8);
   static const magicPurple = Color(0xFF4B2E83);
+  static const accentViolet = Color(0xFF9D6BFF);
   static const darkViolet = Color(0xFF2A1848);
   static const uniformBlack = Color(0xFF111217);
   static const steelGray = Color(0xFF59606D);

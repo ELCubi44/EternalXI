@@ -50,7 +50,7 @@ abstract final class LeagueInnerNavigation {
   }) {
     if (idUsuarioViewer > 0 && idUsuarioViewer == idUsuarioTarget) {
       final shell = LeagueShellData.maybeOf(context);
-      shell?.selectTab(2);
+      shell?.openSquad();
       return Future.value();
     }
     return Navigator.of(context).push<void>(

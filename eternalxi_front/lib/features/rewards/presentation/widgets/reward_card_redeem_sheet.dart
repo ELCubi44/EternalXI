@@ -7,6 +7,7 @@ import 'package:eternal_xi/features/rewards/data/models/reward_card_target_model
 import 'package:eternal_xi/features/rewards/data/models/reward_redeem_result_model.dart';
 import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.dart';
 import 'package:eternal_xi/features/rewards/presentation/controllers/rewards_controller.dart';
+import 'package:eternal_xi/features/rewards/presentation/theme/reward_sheet_style.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
 import 'package:eternal_xi/core/network/api_client.dart';
 import 'package:eternal_xi/core/utils/league_asset_urls.dart';
@@ -18,26 +19,30 @@ Future<void> openRewardCardRedeemSheet({
   required RewardsController rewards,
   required RewardCardModel card,
 }) async {
+  final sheetBackground = RewardSheetStyle.of(context).sheetBackground;
   await showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    backgroundColor: const Color(0xFF0E121C),
+    backgroundColor: sheetBackground,
     builder: (ctx) {
-      return MultiProvider(
-        providers: [
-          ChangeNotifierProvider<RewardsController>.value(value: rewards),
-          ChangeNotifierProvider<_RedeemSheetController>(
-            create: (c) => _RedeemSheetController(
-              api: c.read<RewardsApiService>(),
-              apiClient: c.read<ApiClient>(),
-              idLiga: rewards.idLiga,
-              idUsuario: rewards.idUsuario,
-              card: card,
-            )..load(),
-          ),
-        ],
-        child: const _RedeemSheetBody(),
+      return Theme(
+        data: rewardSheetTheme(ctx),
+        child: MultiProvider(
+          providers: [
+            ChangeNotifierProvider<RewardsController>.value(value: rewards),
+            ChangeNotifierProvider<_RedeemSheetController>(
+              create: (c) => _RedeemSheetController(
+                api: c.read<RewardsApiService>(),
+                apiClient: c.read<ApiClient>(),
+                idLiga: rewards.idLiga,
+                idUsuario: rewards.idUsuario,
+                card: card,
+              )..load(),
+            ),
+          ],
+          child: const _RedeemSheetBody(),
+        ),
       );
     },
   );
@@ -120,7 +125,7 @@ class _RedeemSheetBody extends StatelessWidget {
             return ListView(
               controller: scroll,
               children: [
-                Text(c.error!, style: const TextStyle(color: Colors.white70)),
+                Text(c.error!, style: Theme.of(context).textTheme.bodyMedium),
                 const SizedBox(height: 12),
                 FilledButton(
                   onPressed: () => Navigator.pop(context),
@@ -135,17 +140,12 @@ class _RedeemSheetBody extends StatelessWidget {
             children: [
               Text(
                 rl10n.cardDisplayName(c.card),
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                ),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 6),
               Text(
                 rl10n.cardDisplayDescription(c.card),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white70,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 16),
               if (tipo == 'ADD_LEAGUE_POINTS')
@@ -237,41 +237,44 @@ void _showRedeemSuccess(BuildContext context, RewardRedeemResultModel r) {
   );
 }
 
-Widget _emptyTargets(String message) {
+Widget _emptyTargets(BuildContext context, String message) {
+  final style = RewardSheetStyle.of(context);
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 32),
     child: Column(
       children: [
-        const Icon(Icons.search_off_rounded, size: 48, color: Colors.white38),
+        Icon(Icons.search_off_rounded, size: 48, color: style.faint),
         const SizedBox(height: 12),
         Text(
           message,
           textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.white54, height: 1.35),
+          style: TextStyle(color: style.muted, height: 1.35),
         ),
       ],
     ),
   );
 }
 
-Widget _playerAvatar(RewardCardTargetPlayer p) {
+Widget _playerAvatar(BuildContext context, RewardCardTargetPlayer p) {
+  final style = RewardSheetStyle.of(context);
   final url = LeagueAssetUrls.buildBackendImageUrl(p.fotoJugador);
   if (url != null) {
     return CircleAvatar(
       radius: 20,
       backgroundImage: NetworkImage(url),
-      backgroundColor: const Color(0xFF1A2233),
+      backgroundColor: style.avatarBackground,
       onBackgroundImageError: (_, _) {},
     );
   }
-  return const CircleAvatar(
+  return CircleAvatar(
     radius: 20,
-    backgroundColor: Color(0xFF1A2233),
-    child: Icon(Icons.person, color: Colors.white38, size: 20),
+    backgroundColor: style.avatarBackground,
+    child: Icon(Icons.person, color: style.faint, size: 20),
   );
 }
 
-Widget _teamBadge(RewardCardTargetPlayer p) {
+Widget _teamBadge(BuildContext context, RewardCardTargetPlayer p) {
+  final style = RewardSheetStyle.of(context);
   final url = LeagueAssetUrls.resolveTeamBadgeUrl(
     idEquipo: p.idEquipo ?? 0,
     rawFoto: p.fotoEquipo,
@@ -281,21 +284,23 @@ Widget _teamBadge(RewardCardTargetPlayer p) {
       url,
       width: 16,
       height: 16,
-      errorBuilder: (_, _, _) => const Icon(Icons.shield_outlined, size: 16, color: Colors.white24),
+      errorBuilder: (_, _, _) =>
+          Icon(Icons.shield_outlined, size: 16, color: style.badgeIcon),
     );
   }
   return const SizedBox.shrink();
 }
 
-Widget _positionChip(String? pos) {
+Widget _positionChip(BuildContext context, String? pos) {
   if (pos == null || pos.isEmpty) return const SizedBox.shrink();
+  final style = RewardSheetStyle.of(context);
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(4),
-      color: Colors.white.withValues(alpha: 0.08),
+      color: style.chipFill,
     ),
-    child: Text(pos, style: const TextStyle(color: Colors.white60, fontSize: 9, fontWeight: FontWeight.w700)),
+    child: Text(pos, style: style.chipTextStyle()),
   );
 }
 
@@ -358,7 +363,7 @@ class _AddPointsConfirm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(text, style: const TextStyle(color: Colors.white70)),
+        Text(text, style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 12),
         Align(
           alignment: Alignment.centerRight,
@@ -392,14 +397,14 @@ class _SellTargets extends StatelessWidget {
     final rl10n = context.rewardsL10n;
     final list = controller.targets?.objetivos ?? const [];
     if (list.isEmpty) {
-      return _emptyTargets(rl10n.noSellTargets);
+      return _emptyTargets(context, rl10n.noSellTargets);
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           rl10n.choosePlayerToSell,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 6),
         ...list.map((p) => _SellPlayerCard(player: p, controller: controller)),
@@ -418,19 +423,14 @@ class _SellPlayerCard extends StatelessWidget {
     final rl10n = context.rewardsL10n;
     final p = player;
     final hasEscudo = LeagueAssetUrls.buildBackendImageUrl(p.fotoEquipo) != null;
+    final style = RewardSheetStyle.of(context);
     return Card(
-      margin: const EdgeInsets.only(bottom: 4),
-      color: const Color(0xFF1A2233),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
-      ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _playerAvatar(p),
+            _playerAvatar(context, p),
             const SizedBox(width: 6),
             Expanded(
               child: Column(
@@ -445,20 +445,15 @@ class _SellPlayerCard extends StatelessWidget {
                           p.nombreJugador,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
-                            height: 1.15,
-                          ),
+                          style: style.playerNameStyle(),
                         ),
                       ),
                       if (hasEscudo) ...[
                         const SizedBox(width: 4),
-                        _teamBadge(p),
+                        _teamBadge(context, p),
                       ],
                       const SizedBox(width: 4),
-                      _positionChip(p.posicion),
+                      _positionChip(context, p.posicion),
                     ],
                   ),
                   if (p.valoracionActual != null)
@@ -466,14 +461,14 @@ class _SellPlayerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         rl10n.valuation(p.valoracionActual!.round()),
-                        style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
+                        style: style.metaStyle(),
                       ),
                     ),
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
                       rl10n.valueLabel(_moneyFull(p.valorActual)),
-                      style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
+                      style: style.metaStyle(),
                     ),
                   ),
                   if (p.cantidadRecibidaPreview != null)
@@ -481,8 +476,8 @@ class _SellPlayerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         rl10n.youWillReceive(_moneyFull(p.cantidadRecibidaPreview)),
-                        style: const TextStyle(
-                          color: Color(0xFF81C784),
+                        style: TextStyle(
+                          color: style.success,
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           height: 1.2,
@@ -538,7 +533,7 @@ class _ClauseTargetsState extends State<_ClauseTargets> {
     final parts = widget.controller.targets?.participantesObjetivo ?? const [];
 
     if (parts.isEmpty) {
-      return _emptyTargets(rl10n.noClauseTargets);
+      return _emptyTargets(context, rl10n.noClauseTargets);
     }
 
     if (_selected != null) {
@@ -554,23 +549,27 @@ class _ClauseTargetsState extends State<_ClauseTargets> {
       children: [
         Text(
           rl10n.chooseRivalParticipant,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
         ...parts.map((pt) => Card(
-              color: const Color(0xFF1A2233),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-                side: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
-              ),
               child: ListTile(
                 onTap: () => setState(() => _selected = pt),
-                title: Text(pt.nickname, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-                subtitle: Text(
-                  rl10n.participantsAvailableBlocked(pt.jugadoresDisponibles, pt.jugadoresBloqueados),
-                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                title: Text(
+                  pt.nickname,
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
-                trailing: const Icon(Icons.chevron_right_rounded, color: Colors.white38),
+                subtitle: Text(
+                  rl10n.participantsAvailableBlocked(
+                    pt.jugadoresDisponibles,
+                    pt.jugadoresBloqueados,
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                trailing: Icon(
+                  Icons.chevron_right_rounded,
+                  color: RewardSheetStyle.of(context).faint,
+                ),
               ),
             )),
       ],
@@ -594,6 +593,7 @@ class _ClauseParticipantSquad extends StatelessWidget {
     final ok = participant.objetivos;
     final blocked = participant.objetivosBloqueados;
     final theme = Theme.of(context);
+    final style = RewardSheetStyle.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -601,7 +601,7 @@ class _ClauseParticipantSquad extends StatelessWidget {
         Row(children: [
           IconButton(
             onPressed: onBack,
-            icon: const Icon(Icons.arrow_back_rounded, color: Colors.white70, size: 20),
+            icon: Icon(Icons.arrow_back_rounded, color: style.subtitle, size: 20),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
           ),
@@ -609,24 +609,36 @@ class _ClauseParticipantSquad extends StatelessWidget {
           Expanded(
             child: Text(
               rl10n.squadOf(participant.nickname),
-              style: theme.textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+              style: theme.textTheme.titleMedium,
             ),
           ),
         ]),
         const SizedBox(height: 12),
 
         if (ok.isEmpty && blocked.isEmpty)
-          _emptyTargets(rl10n.noPlayersForParticipant),
+          _emptyTargets(context, rl10n.noPlayersForParticipant),
 
         if (ok.isNotEmpty) ...[
-          Text(rl10n.availablePlayers, style: theme.textTheme.labelLarge?.copyWith(color: const Color(0xFFFFD54F), fontWeight: FontWeight.w700)),
+          Text(
+            rl10n.availablePlayers,
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: style.accentLabel,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           const SizedBox(height: 6),
           ...ok.map((p) => _ClausePlayerCard(player: p, controller: controller)),
         ],
 
         if (blocked.isNotEmpty) ...[
           const SizedBox(height: 16),
-          Text(rl10n.blockedPlayers, style: theme.textTheme.labelLarge?.copyWith(color: Colors.white54, fontWeight: FontWeight.w700)),
+          Text(
+            rl10n.blockedPlayers,
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: style.muted,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           const SizedBox(height: 6),
           ...blocked.map((p) => _ClauseBlockedCard(player: p)),
         ],
@@ -644,19 +656,14 @@ class _ClausePlayerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final rl10n = context.rewardsL10n;
     final p = player;
+    final style = RewardSheetStyle.of(context);
     return Card(
-      margin: const EdgeInsets.only(bottom: 4),
-      color: const Color(0xFF1A2233),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
-      ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _playerAvatar(p),
+            _playerAvatar(context, p),
             const SizedBox(width: 6),
             Expanded(
               child: Column(
@@ -671,16 +678,11 @@ class _ClausePlayerCard extends StatelessWidget {
                           p.nombreJugador,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
-                            height: 1.15,
-                          ),
+                          style: style.playerNameStyle(),
                         ),
                       ),
                       const SizedBox(width: 4),
-                      _positionChip(p.posicion),
+                      _positionChip(context, p.posicion),
                     ],
                   ),
                   if (p.nombreEquipo != null)
@@ -688,12 +690,12 @@ class _ClausePlayerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Row(
                         children: [
-                          _teamBadge(p),
+                          _teamBadge(context, p),
                           if (p.fotoEquipo != null) const SizedBox(width: 4),
                           Flexible(
                             child: Text(
                               p.nombreEquipo!,
-                              style: const TextStyle(color: Colors.white38, fontSize: 10),
+                              style: TextStyle(color: style.faint, fontSize: 10),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -706,14 +708,14 @@ class _ClausePlayerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         rl10n.valuation(p.valoracionActual!.round()),
-                        style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
+                        style: style.metaStyle(),
                       ),
                     ),
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
                       rl10n.valueLabel(_moneyFull(p.valorActual)),
-                      style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
+                      style: style.metaStyle(),
                     ),
                   ),
                   if (p.costeClausulaAtacante != null)
@@ -721,8 +723,8 @@ class _ClausePlayerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         rl10n.youWillPay(_moneyFull(p.costeClausulaAtacante)),
-                        style: const TextStyle(
-                          color: Color(0xFFFFAB91),
+                        style: TextStyle(
+                          color: style.warning,
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           height: 1.2,
@@ -767,19 +769,15 @@ class _ClauseBlockedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final rl10n = context.rewardsL10n;
     final p = player;
+    final style = RewardSheetStyle.of(context);
     return Card(
-      margin: const EdgeInsets.only(bottom: 4),
-      color: const Color(0xFF151A28),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.white.withValues(alpha: 0.04)),
-      ),
+      color: style.cardBlocked,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _playerAvatar(p),
+            _playerAvatar(context, p),
             const SizedBox(width: 6),
             Expanded(
               child: Column(
@@ -794,8 +792,8 @@ class _ClauseBlockedCard extends StatelessWidget {
                           p.nombreJugador,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white38,
+                          style: TextStyle(
+                            color: style.faint,
                             fontWeight: FontWeight.w600,
                             fontSize: 12,
                             height: 1.15,
@@ -803,7 +801,7 @@ class _ClauseBlockedCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 4),
-                      _positionChip(p.posicion),
+                      _positionChip(context, p.posicion),
                     ],
                   ),
                   if (rl10n.blockedPlayerMessage(p).isNotEmpty)
@@ -811,7 +809,7 @@ class _ClauseBlockedCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         rl10n.blockedPlayerMessage(p),
-                        style: const TextStyle(color: Color(0xFFFFAB91), fontSize: 10, height: 1.2),
+                        style: TextStyle(color: style.warning, fontSize: 10, height: 1.2),
                       ),
                     ),
                   if (p.costeClausulaAtacante != null)
@@ -819,7 +817,7 @@ class _ClauseBlockedCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         rl10n.costLabel(_moneyFull(p.costeClausulaAtacante)),
-                        style: const TextStyle(color: Colors.white30, fontSize: 10),
+                        style: TextStyle(color: style.veryFaint, fontSize: 10),
                       ),
                     ),
                 ],
@@ -843,7 +841,7 @@ class _ProtectTargets extends StatelessWidget {
     final rl10n = context.rewardsL10n;
     final list = controller.targets?.objetivos ?? const [];
     if (list.isEmpty) {
-      return _emptyTargets(rl10n.noProtectTargets);
+      return _emptyTargets(context, rl10n.noProtectTargets);
     }
 
     final card = controller.card;
@@ -867,16 +865,20 @@ class _ProtectTargets extends StatelessWidget {
       }
     } catch (_) {}
 
+    final style = RewardSheetStyle.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           rl10n.choosePlayerToProtect,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         if (protLabel != null) ...[
           const SizedBox(height: 2),
-          Text(protLabel, style: const TextStyle(color: Color(0xFF81D4FA), fontSize: 11, height: 1.25)),
+          Text(
+            protLabel,
+            style: TextStyle(color: style.info, fontSize: 11, height: 1.25),
+          ),
         ],
         const SizedBox(height: 6),
         ...list.map((p) => _ProtectPlayerCard(player: p, controller: controller)),
@@ -908,16 +910,15 @@ class _ProtectPlayerCard extends StatelessWidget {
         rawMotivo.isNotEmpty && bloqueo.isEmpty ? rl10n.notAvailableToProtect : bloqueo;
     final estadoProt = rl10n.protectionOwnerLine(p);
     final puedeAccion = rawMotivo.isEmpty;
+    final style = RewardSheetStyle.of(context);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 4),
-      color: const Color(0xFF1A2233),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
           color: p.protegido == true
-              ? const Color(0xFF81D4FA).withValues(alpha: 0.25)
-              : Colors.white.withValues(alpha: 0.06),
+              ? style.info.withValues(alpha: 0.35)
+              : style.border,
         ),
       ),
       child: Padding(
@@ -925,7 +926,7 @@ class _ProtectPlayerCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _playerAvatar(p),
+            _playerAvatar(context, p),
             const SizedBox(width: 6),
             Expanded(
               child: Column(
@@ -940,16 +941,11 @@ class _ProtectPlayerCard extends StatelessWidget {
                           p.nombreJugador,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
-                            height: 1.15,
-                          ),
+                          style: style.playerNameStyle(),
                         ),
                       ),
                       const SizedBox(width: 4),
-                      _positionChip(p.posicion),
+                      _positionChip(context, p.posicion),
                     ],
                   ),
                   if (p.nombreEquipo != null)
@@ -957,12 +953,12 @@ class _ProtectPlayerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Row(
                         children: [
-                          _teamBadge(p),
+                          _teamBadge(context, p),
                           if (p.fotoEquipo != null) const SizedBox(width: 4),
                           Flexible(
                             child: Text(
                               p.nombreEquipo!,
-                              style: const TextStyle(color: Colors.white38, fontSize: 10),
+                              style: TextStyle(color: style.faint, fontSize: 10),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -975,14 +971,14 @@ class _ProtectPlayerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         rl10n.valuation(p.valoracionActual!.round()),
-                        style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
+                        style: style.metaStyle(),
                       ),
                     ),
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
                       rl10n.valueLabel(_moneyFull(p.valorActual)),
-                      style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
+                      style: style.metaStyle(),
                     ),
                   ),
                   if (estadoProt != null)
@@ -990,7 +986,7 @@ class _ProtectPlayerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         estadoProt,
-                        style: const TextStyle(color: Color(0xFF81D4FA), fontSize: 10, height: 1.2),
+                        style: TextStyle(color: style.info, fontSize: 10, height: 1.2),
                       ),
                     ),
                   if (bloqueoVisual.isNotEmpty)
@@ -998,7 +994,7 @@ class _ProtectPlayerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         bloqueoVisual,
-                        style: const TextStyle(color: Color(0xFFFFAB91), fontSize: 10, height: 1.2),
+                        style: TextStyle(color: style.warning, fontSize: 10, height: 1.2),
                       ),
                     ),
                   const SizedBox(height: 2),
@@ -1020,7 +1016,7 @@ class _ProtectPlayerCard extends StatelessWidget {
                           )
                         : Text(
                             rl10n.notAvailable,
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white38),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: style.faint),
                           ),
                   ),
                 ],
@@ -1044,14 +1040,14 @@ class _ValueBoostTargets extends StatelessWidget {
     final rl10n = context.rewardsL10n;
     final list = controller.targets?.objetivos ?? const [];
     if (list.isEmpty) {
-      return _emptyTargets(rl10n.noValueBoostTargets);
+      return _emptyTargets(context, rl10n.noValueBoostTargets);
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           rl10n.chooseValueBoostPlayer,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 6),
         ...list.map((p) => _ValueBoostPlayerCard(player: p, controller: controller)),
@@ -1071,19 +1067,14 @@ class _ValueBoostPlayerCard extends StatelessWidget {
     final p = player;
     final pctLine = rl10n.valueBoostPercentLine(p);
     final newValueLine = rl10n.valueBoostNewValueLine(p);
+    final style = RewardSheetStyle.of(context);
     return Card(
-      margin: const EdgeInsets.only(bottom: 4),
-      color: const Color(0xFF1A2233),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
-      ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _playerAvatar(p),
+            _playerAvatar(context, p),
             const SizedBox(width: 6),
             Expanded(
               child: Column(
@@ -1098,16 +1089,11 @@ class _ValueBoostPlayerCard extends StatelessWidget {
                           p.nombreJugador,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
-                            height: 1.15,
-                          ),
+                          style: style.playerNameStyle(),
                         ),
                       ),
                       const SizedBox(width: 4),
-                      _positionChip(p.posicion),
+                      _positionChip(context, p.posicion),
                     ],
                   ),
                   if (p.nombreEquipo != null)
@@ -1115,12 +1101,12 @@ class _ValueBoostPlayerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Row(
                         children: [
-                          _teamBadge(p),
+                          _teamBadge(context, p),
                           if (p.fotoEquipo != null) const SizedBox(width: 4),
                           Flexible(
                             child: Text(
                               p.nombreEquipo!,
-                              style: const TextStyle(color: Colors.white38, fontSize: 10),
+                              style: TextStyle(color: style.faint, fontSize: 10),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -1133,14 +1119,14 @@ class _ValueBoostPlayerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         rl10n.valuation(p.valoracionActual!.round()),
-                        style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
+                        style: style.metaStyle(),
                       ),
                     ),
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
                       rl10n.currentValueLabel(_moneyFull(p.valorActual)),
-                      style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
+                      style: style.metaStyle(),
                     ),
                   ),
                   if (pctLine != null)
@@ -1148,7 +1134,7 @@ class _ValueBoostPlayerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         pctLine,
-                        style: const TextStyle(color: Colors.white54, fontSize: 10, height: 1.2),
+                        style: style.metaStyle(),
                       ),
                     ),
                   if (newValueLine != null)
@@ -1156,8 +1142,8 @@ class _ValueBoostPlayerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         newValueLine,
-                        style: const TextStyle(
-                          color: Color(0xFF81C784),
+                        style: TextStyle(
+                          color: style.success,
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
                           height: 1.2,

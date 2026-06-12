@@ -1,5 +1,6 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
+import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/core/utils/validators.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/auth/widgets/auth_shell.dart';
@@ -47,6 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return AppLoadingOverlay(
       isLoading: auth.isLoading,
       child: Scaffold(
+        backgroundColor: context.xiBackground,
         body: AuthShell(
           title: l10n.loginTitle,
           subtitle: l10n.loginSubtitle,
@@ -106,10 +108,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     final isCompact = constraints.maxWidth < 380;
                     final createAccount = TextButton(
                       onPressed: () => context.push(AppRoutes.verifyEmailRequest),
+                      style: TextButton.styleFrom(
+                        foregroundColor: context.xiAccentText,
+                      ),
                       child: Text(l10n.createAccount),
                     );
                     final forgotPassword = TextButton(
                       onPressed: () => context.push(AppRoutes.passwordResetRequest),
+                      style: TextButton.styleFrom(
+                        foregroundColor: context.xiAccentText,
+                      ),
                       child: Text(l10n.forgotPassword),
                     );
 

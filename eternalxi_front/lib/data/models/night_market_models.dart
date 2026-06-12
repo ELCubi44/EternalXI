@@ -79,6 +79,7 @@ class NightMarketItem {
     required this.miPuja,
     required this.pujaMasAlta,
     required this.totalPujas,
+    this.probabilidadTitular,
   });
 
   final int idMercadoDiario;
@@ -106,6 +107,7 @@ class NightMarketItem {
   final int? miPuja;
   final int? pujaMasAlta;
   final int totalPujas;
+  final int? probabilidadTitular;
 
   factory NightMarketItem.fromJson(Map<String, dynamic> json) {
     final resueltoEnRaw = json['resueltoEn'] ?? json['resuelto_en'];
@@ -166,6 +168,7 @@ class NightMarketItem {
         'puja_mas_alta',
       ]),
       totalPujas: readLeagueInt(json, const ['totalPujas', 'total_pujas']),
+      probabilidadTitular: readLeagueOptionalProbabilityTitular(json),
     );
   }
 

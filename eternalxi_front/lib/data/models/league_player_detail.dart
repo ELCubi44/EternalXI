@@ -37,6 +37,7 @@ class LeaguePlayerDetail {
     this.jugadorProtegido = false,
     this.proteccionHastaFinTemporada = false,
     this.proteccionJornadaFin,
+    this.valorMercadoEfectivo,
   });
 
   final int idLigaJugador;
@@ -77,6 +78,17 @@ class LeaguePlayerDetail {
   final bool jugadorProtegido;
   final bool proteccionHastaFinTemporada;
   final int? proteccionJornadaFin;
+
+  final double? valorMercadoEfectivo;
+
+  /// Valor de mercado a mostrar (con modificadores si el backend los envía).
+  double get displayValor {
+    final effective = valorMercadoEfectivo;
+    if (effective != null && effective > 0) {
+      return effective;
+    }
+    return valor;
+  }
 
   /// Total a mostrar en cabecera: backend primero, sin sumar jornadas en cliente.
   double get displayFantasyTotalPoints {
@@ -185,7 +197,11 @@ class LeaguePlayerDetail {
       nombre: readLeagueString(json, const ['nombre']),
       pila: readLeagueString(json, const ['pila']),
       posicion: readLeagueString(json, const ['posicion']),
-      valoracion: readLeagueDouble(json, const ['valoracion']),
+      valoracion: readLeagueDouble(json, const [
+        'valoracion',
+        'valoracionActual',
+        'valoracion_actual',
+      ]),
       idEquipo: readLeagueInt(json, const ['idEquipo', 'id_equipo']),
       nombreEquipo: readLeagueString(json, const [
         'nombreEquipo',
@@ -194,6 +210,10 @@ class LeaguePlayerDetail {
       estado: readLeagueString(json, const ['estado']),
       cansancio: readLeagueInt(json, const ['cansancio']),
       valor: readLeagueDouble(json, const ['valor']),
+      valorMercadoEfectivo: readLeagueOptionalDouble(json, const [
+        'valorMercadoEfectivo',
+        'valor_mercado_efectivo',
+      ]),
       valorAnterior: readLeagueDouble(json, const [
         'valorAnterior',
         'valor_anterior',

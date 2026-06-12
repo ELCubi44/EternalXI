@@ -1,5 +1,6 @@
 import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_card_model.dart';
+import 'package:eternal_xi/features/rewards/presentation/theme/reward_sheet_style.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/rarity_badge.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
 import 'package:eternal_xi/features/rewards/utils/reward_rarity_style.dart';
@@ -9,15 +10,19 @@ Future<bool> showRewardCardDetailSheet({
   required BuildContext context,
   required RewardCardModel card,
 }) async {
+  final style = RewardSheetStyle.of(context);
   final result = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    backgroundColor: const Color(0xFF0E121C),
-    shape: const RoundedRectangleBorder(
+    backgroundColor: style.sheetBackground,
+    shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
     ),
-    builder: (ctx) => _CardDetailContent(card: card),
+    builder: (ctx) => Theme(
+      data: rewardSheetTheme(ctx),
+      child: _CardDetailContent(card: card),
+    ),
   );
   return result == true;
 }
@@ -30,6 +35,7 @@ class _CardDetailContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final style = RewardSheetStyle.of(context);
     final rl10n = context.rewardsL10n;
     final s = styleForRarity(card.rareza);
     final bottom = MediaQuery.paddingOf(context).bottom;
@@ -50,7 +56,7 @@ class _CardDetailContent extends StatelessWidget {
                   child: Text(
                     rl10n.cardDisplayName(card),
                     style: theme.textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
+                      color: style.title,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -65,22 +71,21 @@ class _CardDetailContent extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: Colors.white.withValues(alpha: 0.08),
+                  color: style.effectChipBg,
                 ),
                 child: Text(
                   effectLabel,
                   style: theme.textTheme.labelLarge?.copyWith(
-                    color: Colors.white70,
+                    color: style.subtitle,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
-            if (effectLabel.isNotEmpty)
-              const SizedBox(height: 16),
+            if (effectLabel.isNotEmpty) const SizedBox(height: 16),
             Text(
               rl10n.cardDisplayDescription(card),
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: Colors.white.withValues(alpha: 0.92),
+                color: style.body,
                 height: 1.4,
               ),
             ),
@@ -91,7 +96,7 @@ class _CardDetailContent extends StatelessWidget {
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
-                  color: Colors.white.withValues(alpha: 0.05),
+                  color: style.effectChipBg,
                   border: Border.all(
                     color: s.border.withValues(alpha: 0.25),
                   ),
@@ -110,7 +115,7 @@ class _CardDetailContent extends StatelessWidget {
                         Text(
                           rl10n.cardEffect,
                           style: theme.textTheme.labelLarge?.copyWith(
-                            color: Colors.white70,
+                            color: style.subtitle,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -123,15 +128,12 @@ class _CardDetailContent extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              '•  ',
-                              style: TextStyle(color: Colors.white54),
-                            ),
+                            Text('•  ', style: TextStyle(color: style.muted)),
                             Expanded(
                               child: Text(
                                 line,
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.85),
+                                  color: style.body,
                                   height: 1.3,
                                 ),
                               ),
@@ -147,9 +149,7 @@ class _CardDetailContent extends StatelessWidget {
             const SizedBox(height: 16),
             _InfoRow(
               icon: Icons.circle,
-              iconColor: card.isAvailable
-                  ? const Color(0xFF81C784)
-                  : Colors.white38,
+              iconColor: card.isAvailable ? style.availableDot : style.faint,
               iconSize: 8,
               label: rl10n.cardStatus,
               value: rl10n.estadoLabel(card.estado),
@@ -158,7 +158,7 @@ class _CardDetailContent extends StatelessWidget {
               const SizedBox(height: 6),
               _InfoRow(
                 icon: Icons.calendar_today_rounded,
-                iconColor: Colors.white38,
+                iconColor: style.faint,
                 iconSize: 14,
                 label: rl10n.cardObtained,
                 value: formatRewardDateTime(context, card.obtenidoEn),
@@ -168,7 +168,7 @@ class _CardDetailContent extends StatelessWidget {
               const SizedBox(height: 6),
               _InfoRow(
                 icon: Icons.check_circle_outline_rounded,
-                iconColor: Colors.white38,
+                iconColor: style.faint,
                 iconSize: 14,
                 label: rl10n.cardUsedOn,
                 value: formatRewardDateTime(context, card.usadoEn),
@@ -194,12 +194,12 @@ class _CardDetailContent extends StatelessWidget {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    color: Colors.white.withValues(alpha: 0.05),
+                    color: style.disabledBg,
                   ),
                   child: Text(
                     rl10n.cardUsedLabel,
                     style: theme.textTheme.labelLarge?.copyWith(
-                      color: Colors.white38,
+                      color: style.faint,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -293,21 +293,20 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final style = RewardSheetStyle.of(context);
     return Row(
       children: [
         Icon(icon, size: iconSize, color: iconColor),
         const SizedBox(width: 8),
         Text(
           '$label: ',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: Colors.white54,
-          ),
+          style: theme.textTheme.bodySmall?.copyWith(color: style.muted),
         ),
         Expanded(
           child: Text(
             value,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: Colors.white.withValues(alpha: 0.85),
+              color: style.body,
               fontWeight: FontWeight.w600,
             ),
           ),

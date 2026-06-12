@@ -203,11 +203,13 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
   }
 
   Widget _hero(ThemeData theme, ColorScheme colorScheme) {
+    final ll = context.leagueL10n;
     final s = _effectiveSummary;
     final phase = _effectivePhase();
     final jNum = _payload?.numeroJornadaDetalle ?? widget.summary.numeroJornada;
     final kick = _kickoff();
-    final dateStr = LeagueSpanishDateTime.formatDateLong(kick);
+    final dateStr =
+        LeagueSpanishDateTime.formatDateLong(kick, english: ll.isEnglish);
     final timeStr = LeagueSpanishDateTime.formatTimeHm(kick);
     final gl = _scoreLocal();
     final gv = _scoreVisitante();
@@ -237,7 +239,7 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Inicio previsto',
+              ll.scheduledKickoffLabel,
               style: theme.textTheme.labelLarge?.copyWith(
                 color: colorScheme.primary,
                 fontWeight: FontWeight.w800,
@@ -267,7 +269,7 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    'EN JUEGO',
+                    ll.liveBadge,
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: colorScheme.error,
                       fontWeight: FontWeight.w900,
@@ -297,7 +299,7 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
             ] else ...[
               const SizedBox(height: 6),
               Text(
-                'En juego',
+                ll.inPlayLabel,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
                   color: colorScheme.onSurfaceVariant,
@@ -320,7 +322,7 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Finalizado',
+              ll.finishedLabel,
               style: theme.textTheme.labelLarge?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w800,
@@ -359,7 +361,7 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
           children: [
             if (jNum != null && jNum > 0) ...[
               Text(
-                'Jornada $jNum',
+                ll.matchday(jNum),
                 textAlign: TextAlign.center,
                 style: theme.textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w800,
@@ -433,7 +435,7 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
     final a = _effectiveSummary.nombreLocal.trim();
     final b = _effectiveSummary.nombreVisitante.trim();
     if (a.isEmpty && b.isEmpty) {
-      return 'Partido';
+      return context.leagueL10n.matchTitle;
     }
     if (a.isEmpty) {
       return b;
