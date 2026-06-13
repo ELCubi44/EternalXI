@@ -381,7 +381,7 @@ class _RoundHeader extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final ll = context.leagueL10n;
     final style = _RoundStatusStyle.fromRound(row, colorScheme, ll);
-    final showPoints = leagueJornadaShowsGrantedPoints(row.estadoJornada);
+    final showPoints = leagueJornadaShowsFantasyPoints(row.estadoJornada);
     final points = detail?.puntosTotales ?? row.puntosTotales;
 
     return Card(
@@ -443,14 +443,9 @@ class _RoundHeader extends StatelessWidget {
                 '${points.toStringAsFixed(points % 1 == 0 ? 0 : 1)} pts',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                ),
-              )
-            else if (row.isInProgress)
-              Text(
-                ll.roundInProgress,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: colorScheme.onSurfaceVariant,
+                  color: row.isInProgress
+                      ? colorScheme.tertiary
+                      : null,
                 ),
               ),
           ],

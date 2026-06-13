@@ -391,11 +391,13 @@ class _LeaguePlayerProfileRoundsSectionState
                           ),
                         ),
                       ],
-                      if (leagueJornadaShowsGrantedPoints(stat.estadoJornada)) ...[
+                      if (leagueJornadaShowsFantasyPoints(stat.estadoJornada)) ...[
                         const SizedBox(height: 12),
                         _StatLine(
                           icon: Icons.stars_rounded,
-                          label: ll.statPoints,
+                          label: leagueJornadaIsInProgress(stat.estadoJornada)
+                              ? '${ll.statPoints} (${ll.roundInProgress.toLowerCase()})'
+                              : ll.statPoints,
                           value: LeagueMoneyFormat.points(stat.puntos),
                           emphasized: true,
                         ),

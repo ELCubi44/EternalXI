@@ -157,7 +157,7 @@ class _DetailBody extends StatelessWidget {
         ? fallbackNickname!.trim()
         : ll.participantFallback;
     final status = data.estadoJornada.toUpperCase();
-    final showGrantedPoints = leagueJornadaShowsGrantedPoints(data.estadoJornada);
+    final showFantasyPoints = leagueJornadaShowsFantasyPoints(data.estadoJornada);
 
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -182,7 +182,7 @@ class _DetailBody extends StatelessWidget {
               icon: Icons.event,
             ),
             _MetaChip(label: status, icon: Icons.flag_circle_outlined),
-            if (showGrantedPoints)
+            if (showFantasyPoints)
               _MetaChip(
                 label:
                     '${data.puntosTotales.toStringAsFixed(data.puntosTotales % 1 == 0 ? 0 : 1)} pts',
@@ -209,7 +209,7 @@ class _DetailBody extends StatelessWidget {
           idCapitan: data.idCapitan,
           formacionEfectiva: data.formacionEfectiva,
           emptySlots: data.emptySlots,
-          showJornadaPitchBadges: false,
+          showJornadaPitchBadges: data.shouldShowJornadaPitchBadges,
           entrenadorAsignado: data.entrenadorAsignado,
         ),
         const SizedBox(height: 16),

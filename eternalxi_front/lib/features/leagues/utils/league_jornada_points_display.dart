@@ -12,6 +12,11 @@ bool leagueJornadaIsFinalizada(String estadoJornada) =>
 bool leagueJornadaShowsGrantedPoints(String estadoJornada) =>
     leagueJornadaIsFinalizada(estadoJornada);
 
+/// Puntos fantasy visibles (parciales en curso o definitivos al finalizar).
+bool leagueJornadaShowsFantasyPoints(String estadoJornada) =>
+    leagueJornadaIsInProgress(estadoJornada) ||
+    leagueJornadaIsFinalizada(estadoJornada);
+
 /// Etiqueta del chip/filtro de jornada (J8 → «Jornada en curso» si aplica).
 String leagueJornadaChipLabel({
   required String estadoJornada,

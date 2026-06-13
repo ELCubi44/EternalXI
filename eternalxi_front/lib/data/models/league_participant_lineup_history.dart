@@ -3,6 +3,7 @@ import 'package:eternal_xi/data/models/league_json_read.dart';
 import 'package:eternal_xi/data/models/league_player_round_points_breakdown.dart';
 import 'package:eternal_xi/data/models/league_lineup_empty_slot.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
+import 'package:eternal_xi/features/leagues/utils/league_jornada_points_display.dart';
 import 'package:flutter/foundation.dart';
 
 DateTime? _readLeagueDateTime(Map<String, dynamic> json, List<String> keys) {
@@ -305,12 +306,9 @@ class LeagueParticipantLineupRoundDetail {
   bool get isJornadaFinalizada =>
       estadoJornada.toUpperCase() == 'FINALIZADA';
 
-  /// Burbujas de puntos en campo, banquillo y tarjetas: solo `FINALIZADA`
-  /// (en `EN_CURSO` aún no hay puntos concedidos).
-  bool get shouldShowJornadaPitchBadges {
-    final s = estadoJornada.trim().toUpperCase();
-    return s == 'FINALIZADA';
-  }
+  /// Burbujas de puntos en campo, banquillo y tarjetas: jornada en curso (parcial) o finalizada.
+  bool get shouldShowJornadaPitchBadges =>
+      leagueJornadaShowsFantasyPoints(estadoJornada);
 
   /// Burbuja circular de puntos del entrenador en el campo (misma regla que jugadores).
   bool get shouldShowCoachJornadaPointsBadge => shouldShowJornadaPitchBadges;
