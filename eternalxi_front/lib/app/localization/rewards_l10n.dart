@@ -345,8 +345,8 @@ class RewardsL10n {
     }
     if (code == 'CLAUSE_ANY') {
       return _t(
-        'Ficha directamente cualquier jugador rival de hasta 150M pagando el 100% de su valor.',
-        'Sign any rival player worth up to 150M paying 100% of their value.',
+        'Ficha directamente un jugador rival de hasta 50M pagando el 100% de su valor.',
+        'Sign a rival player worth up to 50M paying 100% of their value.',
       );
     }
     final rounds = _protectRoundsFromCard(card);
@@ -456,15 +456,15 @@ class RewardsL10n {
   int? _valueBoostPercentByCode(String codigo) {
     switch (codigo.trim().toUpperCase()) {
       case 'VALUE_RECOVERY_SMALL':
-        return 5;
+        return 7;
       case 'VALUE_RECOVERY_MEDIUM':
-        return 8;
+        return 10;
       case 'VALUE_RECOVERY_SPECIAL':
-        return 12;
-      case 'VALUE_RECOVERY_ELITE':
         return 15;
+      case 'VALUE_RECOVERY_ELITE':
+        return 18;
       case 'VALUE_RECOVERY_LEGENDARY':
-        return 20;
+        return 25;
       default:
         return null;
     }

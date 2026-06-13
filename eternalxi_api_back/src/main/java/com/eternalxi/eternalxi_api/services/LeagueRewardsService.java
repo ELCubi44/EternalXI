@@ -58,6 +58,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class LeagueRewardsService {
 
     private static final long MARKET_USER_ID = 1L;
+    /** Tope si la carta legendaria no trae maxPlayerValue en BD (evita clausular sin límite). */
+    private static final long CLAUSE_UNLIMITED_FALLBACK_MAX = 50_000_000L;
     private static final ObjectMapper JSON = new ObjectMapper();
     private static final String ASSET_PLAYER_URL = "/api/v1/assets/players/";
     private static final String ASSET_TEAM_URL = "/api/v1/assets/teams/";
@@ -470,7 +472,7 @@ public class LeagueRewardsService {
         double buyerM = params.path("buyerMultiplier").asDouble();
         double ownerM = params.path("ownerCompensationMultiplier").asDouble(1.0d);
         JsonNode mv = params.get("maxPlayerValue");
-        Long maxV = mv == null || mv.isNull() ? null : mv.asLong();
+        Long maxV = mv == null || mv.isNull() ? CLAUSE_UNLIMITED_FALLBACK_MAX : mv.asLong();
 
         LockedLj lj = lockLeaguePlayerRow(conn, idLiga, idLj);
         if (isPlayerProtected(conn, idLj)) {
@@ -1405,7 +1407,7 @@ public class LeagueRewardsService {
         double buyerM = params.path("buyerMultiplier").asDouble();
         double ownerM = params.path("ownerCompensationMultiplier").asDouble(1.0d);
         JsonNode mv = params.get("maxPlayerValue");
-        Long maxV = mv == null || mv.isNull() ? null : mv.asLong();
+        Long maxV = mv == null || mv.isNull() ? CLAUSE_UNLIMITED_FALLBACK_MAX : mv.asLong();
 
         String sql = """
                 SELECT lj.id, lj.id_jugador, lj.valor, lj.id_usuario_dueno, j.nombre, j.pila, j.posicion,
