@@ -43,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen>
       final auth = context.read<AuthController>();
       final hasSession = await auth.restoreSession();
       if (!mounted) return;
-      context.go(hasSession ? AppRoutes.leagues : AppRoutes.login);
+      context.go(hasSession ? AppRoutes.mode : AppRoutes.login);
     });
   }
 

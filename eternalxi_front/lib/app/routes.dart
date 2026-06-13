@@ -7,6 +7,8 @@ class AppRoutes {
   static const passwordResetRequest = '/password-reset/request';
   static const passwordResetConfirm = '/password-reset/confirm';
   static const home = '/home';
+  static const mode = '/mode';
+  static const clash = '/clash';
   static const profile = '/profile';
   static const changeEmailRequest = '/profile/change-email';
   static const changeEmailConfirm = '/profile/change-email/confirm';

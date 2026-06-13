@@ -96,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       return;
                     }
                     if (ok) {
-                      context.go(AppRoutes.leagues);
+                      context.go(AppRoutes.mode);
                     } else {
                       _showError(auth.errorMessage);
                     }
@@ -107,14 +107,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   builder: (context, constraints) {
                     final isCompact = constraints.maxWidth < 380;
                     final createAccount = TextButton(
-                      onPressed: () => context.push(AppRoutes.verifyEmailRequest),
+                      onPressed: () =>
+                          context.push(AppRoutes.verifyEmailRequest),
                       style: TextButton.styleFrom(
                         foregroundColor: context.xiAccentText,
                       ),
                       child: Text(l10n.createAccount),
                     );
                     final forgotPassword = TextButton(
-                      onPressed: () => context.push(AppRoutes.passwordResetRequest),
+                      onPressed: () =>
+                          context.push(AppRoutes.passwordResetRequest),
                       style: TextButton.styleFrom(
                         foregroundColor: context.xiAccentText,
                       ),
@@ -122,22 +124,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
 
                     if (isCompact) {
-                      return Column(
-                        children: [
-                          createAccount,
-                          forgotPassword,
-                        ],
-                      );
+                      return Column(children: [createAccount, forgotPassword]);
                     }
 
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         createAccount,
-                        Text(
-                          '·',
-                          style: TextStyle(color: colorScheme.outline),
-                        ),
+                        Text('·', style: TextStyle(color: colorScheme.outline)),
                         forgotPassword,
                       ],
                     );

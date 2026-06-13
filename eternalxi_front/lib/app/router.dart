@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/router_auth.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/features/auth/screens/confirm_email_verification_screen.dart';
 import 'package:eternal_xi/features/auth/screens/confirm_password_reset_screen.dart';
@@ -7,10 +8,12 @@ import 'package:eternal_xi/features/auth/screens/request_email_verification_scre
 import 'package:eternal_xi/features/auth/screens/request_password_reset_screen.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/auth/screens/splash_screen.dart';
+import 'package:eternal_xi/features/clash/presentation/clash_placeholder_screen.dart';
 import 'package:eternal_xi/features/leagues/screens/create_league_screen.dart';
 import 'package:eternal_xi/features/leagues/screens/join_league_screen.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_screen.dart';
 import 'package:eternal_xi/features/leagues/screens/my_leagues_screen.dart';
+import 'package:eternal_xi/features/mode/screens/mode_selection_screen.dart';
 import 'package:eternal_xi/features/profile/screens/confirm_change_email_screen.dart';
 import 'package:eternal_xi/features/profile/screens/confirm_account_deletion_screen.dart';
 import 'package:eternal_xi/features/profile/screens/confirm_change_nickname_screen.dart';
@@ -63,6 +66,16 @@ final GoRouter appRouter = GoRouter(
       redirect: (context, state) => AppRoutes.leagues,
     ),
     GoRoute(
+      path: AppRoutes.mode,
+      redirect: redirectIfUnauthenticated,
+      builder: (context, state) => const ModeSelectionScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.clash,
+      redirect: redirectIfUnauthenticated,
+      builder: (context, state) => const ClashPlaceholderScreen(),
+    ),
+    GoRoute(
       path: AppRoutes.leagues,
       builder: (context, state) => const MyLeaguesScreen(),
       routes: [
@@ -113,7 +126,10 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: 'change-nickname',
           builder: (context, state) => RequestChangeNicknameScreen(
-            nicknameActual: context.read<AuthController>().currentUser?.nickname,
+            nicknameActual: context
+                .read<AuthController>()
+                .currentUser
+                ?.nickname,
           ),
           routes: [
             GoRoute(

@@ -1,0 +1,206 @@
+import 'package:eternal_xi/app/localization/app_localizations.dart';
+import 'package:eternal_xi/app/router_auth.dart';
+import 'package:eternal_xi/app/routes.dart';
+import 'package:eternal_xi/core/network/api_client.dart';
+import 'package:eternal_xi/core/storage/secure_storage_service.dart';
+import 'package:eternal_xi/data/models/user_model.dart';
+import 'package:eternal_xi/data/services/auth_api_service.dart';
+import 'package:eternal_xi/data/services/user_api_service.dart';
+import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/features/clash/presentation/clash_placeholder_screen.dart';
+import 'package:eternal_xi/features/mode/screens/mode_selection_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import '../../firebase_test_setup.dart';
+
+AuthController _authWithUser(UserModel? user) {
+  final auth = AuthController(
+    authApiService: AuthApiService(ApiClient()),
+    secureStorageService: SecureStorageService(),
+    userApiService: UserApiService(ApiClient()),
+  );
+  auth.currentUser = user;
+  return auth;
+}
+
+Widget _localizedApp({required Widget home, AuthController? auth}) {
+  return ChangeNotifierProvider<AuthController>.value(
+    value: auth ?? _authWithUser(null),
+    child: MaterialApp(
+      locale: const Locale('es'),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      home: home,
+    ),
+  );
+}
+
+GoRouter _phase1TestRouter(AuthController auth) {
+  return GoRouter(
+    initialLocation: AppRoutes.mode,
+    routes: [
+      GoRoute(
+        path: AppRoutes.mode,
+        redirect: redirectIfUnauthenticated,
+        builder: (context, state) => const ModeSelectionScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.clash,
+        redirect: redirectIfUnauthenticated,
+        builder: (context, state) => const ClashPlaceholderScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.leagues,
+        builder: (context, state) =>
+            const Scaffold(body: Center(child: Text('Leagues Test Page'))),
+      ),
+      GoRoute(
+        path: AppRoutes.login,
+        builder: (context, state) =>
+            const Scaffold(body: Center(child: Text('Login Test Page'))),
+      ),
+    ],
+  );
+}
+
+Widget _routerApp(GoRouter router, AuthController auth) {
+  return ChangeNotifierProvider<AuthController>.value(
+    value: auth,
+    child: MaterialApp.router(
+      locale: const Locale('es'),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      routerConfig: router,
+    ),
+  );
+}
+
+void main() {
+  setUpAll(() async {
+    await ensureFirebaseInitializedForTests();
+  });
+
+  group('ModeSelectionScreen', () {
+    testWidgets('renderiza opciones Fantasy y Clash', (tester) async {
+      final auth = _authWithUser(
+        const UserModel(
+          id: 1,
+          correo: 'test@eternalxi.com',
+          nickname: 'Tester',
+          nivel: 3,
+        ),
+      );
+
+      await tester.pumpWidget(
+        _localizedApp(home: const ModeSelectionScreen(), auth: auth),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Fantasy'), findsOneWidget);
+      expect(find.text('Clash'), findsOneWidget);
+      expect(find.text('Entrar a Fantasy'), findsOneWidget);
+      expect(find.text('Entrar a Clash'), findsOneWidget);
+      expect(find.text('Tester'), findsOneWidget);
+    });
+
+    testWidgets('Fantasy navega a /leagues', (tester) async {
+      final auth = _authWithUser(
+        const UserModel(
+          id: 1,
+          correo: 'test@eternalxi.com',
+          nickname: 'Tester',
+          nivel: 1,
+        ),
+      );
+      final router = _phase1TestRouter(auth);
+
+      await tester.pumpWidget(_routerApp(router, auth));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Entrar a Fantasy'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Leagues Test Page'), findsOneWidget);
+    });
+
+    testWidgets('Clash navega a /clash', (tester) async {
+      final auth = _authWithUser(
+        const UserModel(
+          id: 1,
+          correo: 'test@eternalxi.com',
+          nickname: 'Tester',
+          nivel: 1,
+        ),
+      );
+      final router = _phase1TestRouter(auth);
+
+      await tester.pumpWidget(_routerApp(router, auth));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Entrar a Clash'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Eternal XI Clash'), findsWidgets);
+    });
+  });
+
+  group('ClashPlaceholderScreen', () {
+    testWidgets('renderiza título y botón volver al selector', (tester) async {
+      final auth = _authWithUser(
+        const UserModel(
+          id: 1,
+          correo: 'test@eternalxi.com',
+          nickname: 'Tester',
+          nivel: 1,
+        ),
+      );
+      final router = _phase1TestRouter(auth);
+
+      await tester.pumpWidget(_routerApp(router, auth));
+      router.go(AppRoutes.clash);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Eternal XI Clash'), findsWidgets);
+      expect(find.textContaining('Próximamente'), findsOneWidget);
+      expect(find.text('Cambiar modo'), findsOneWidget);
+    });
+
+    testWidgets('volver al selector navega a /mode', (tester) async {
+      final auth = _authWithUser(
+        const UserModel(
+          id: 1,
+          correo: 'test@eternalxi.com',
+          nickname: 'Tester',
+          nivel: 1,
+        ),
+      );
+      final router = _phase1TestRouter(auth);
+
+      await tester.pumpWidget(_routerApp(router, auth));
+      router.go(AppRoutes.clash);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Cambiar modo'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Entrar a Fantasy'), findsOneWidget);
+      expect(find.text('Entrar a Clash'), findsOneWidget);
+    });
+  });
+
+  group('redirectIfUnauthenticated', () {
+    testWidgets('sin sesión redirige /mode a login', (tester) async {
+      final auth = _authWithUser(null);
+      final router = _phase1TestRouter(auth);
+
+      await tester.pumpWidget(_routerApp(router, auth));
+      router.go(AppRoutes.mode);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Login Test Page'), findsOneWidget);
+    });
+  });
+}

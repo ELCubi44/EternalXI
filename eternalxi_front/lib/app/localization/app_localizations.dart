@@ -97,12 +97,28 @@ class AppLocalizations {
       'backToLogin': 'Volver al inicio de sesión',
       'createAccount': 'Crear cuenta',
       'loginTitle': 'Entrar',
-      'loginSubtitle': 'Accede a tu cuenta, gestiona ligas y plantilla con el mismo estilo en toda la app.',
+      'loginSubtitle':
+          'Accede a tu cuenta, gestiona ligas y plantilla con el mismo estilo en toda la app.',
+      'modeSelectionSubtitle': 'Elige cómo quieres jugar hoy.',
+      'modeFantasyTitle': 'Fantasy',
+      'modeFantasyDescription':
+          'Ligas privadas, mercado, alineaciones y recompensas con tus amigos.',
+      'modeFantasyEnter': 'Entrar a Fantasy',
+      'modeClashTitle': 'Clash',
+      'modeClashDescription':
+          'Historia, cartas y batallas. Colecciona jugadores y compite en partidos 7vs7.',
+      'modeClashEnter': 'Entrar a Clash',
+      'clashPlaceholderTitle': 'Eternal XI Clash',
+      'clashPlaceholderBody':
+          'Próximamente: modo de historia, colección de cartas y batallas. Estamos preparando la experiencia.',
+      'backToModeSelection': 'Cambiar modo',
       'registerTitle': 'Crear cuenta',
-      'registerSubtitle': 'Únete a Eternal XI. Usa un correo válido y un nickname que te represente en las ligas.',
+      'registerSubtitle':
+          'Únete a Eternal XI. Usa un correo válido y un nickname que te represente en las ligas.',
       'birthDateLabel': 'Fecha de nacimiento',
       'birthDateHint': 'Selecciona tu fecha de nacimiento',
-      'acceptTermsLabel': 'Acepto los Términos de servicio y la Política de privacidad',
+      'acceptTermsLabel':
+          'Acepto los Términos de servicio y la Política de privacidad',
       'confirmMinAgeLabel': 'Confirmo que tengo al menos 13 años',
       'legalTermsTitle': 'Términos de servicio',
       'legalCommunityTitle': 'Normas de la comunidad',
@@ -112,25 +128,35 @@ class AppLocalizations {
       'legalPrivacyLink': 'Política de privacidad',
       'legalSectionTitle': 'Legal y seguridad',
       'ageConfirmationTitle': 'Confirma tu edad',
-      'chatSafetyBanner': 'Sé respetuoso. Puedes reportar mensajes y bloquear usuarios manteniendo pulsado un mensaje.',
+      'chatSafetyBanner':
+          'Sé respetuoso. Puedes reportar mensajes y bloquear usuarios manteniendo pulsado un mensaje.',
       'chatReport': 'Reportar mensaje',
       'chatBlockUser': 'Bloquear usuario',
       'chatReportSent': 'Mensaje reportado. Lo revisaremos lo antes posible.',
       'chatUserBlocked': 'Usuario bloqueado. Ya no verás sus mensajes.',
-      'chatReportConfirm': '¿Quieres reportar este mensaje por contenido inapropiado?',
-      'chatBlockConfirm': '¿Quieres bloquear a este usuario? Dejarás de ver sus mensajes en el chat.',
+      'chatReportConfirm':
+          '¿Quieres reportar este mensaje por contenido inapropiado?',
+      'chatBlockConfirm':
+          '¿Quieres bloquear a este usuario? Dejarás de ver sus mensajes en el chat.',
       'validatorRequiredBirthDate': 'La fecha de nacimiento es obligatoria',
-      'validatorUnderMinAge': 'Debes tener al menos 13 años para usar Eternal XI',
-      'validatorAcceptTermsRequired': 'Debes aceptar los términos y la política de privacidad',
-      'validatorConfirmMinAgeRequired': 'Debes confirmar que cumples la edad mínima',
+      'validatorUnderMinAge':
+          'Debes tener al menos 13 años para usar Eternal XI',
+      'validatorAcceptTermsRequired':
+          'Debes aceptar los términos y la política de privacidad',
+      'validatorConfirmMinAgeRequired':
+          'Debes confirmar que cumples la edad mínima',
       'requestPasswordTitle': 'Recuperar contraseña',
-      'requestPasswordSubtitle': 'Te enviaremos un código al correo asociado a tu cuenta para definir una nueva contraseña.',
+      'requestPasswordSubtitle':
+          'Te enviaremos un código al correo asociado a tu cuenta para definir una nueva contraseña.',
       'confirmPasswordTitle': 'Nueva contraseña',
-      'confirmPasswordSubtitle': 'Introduce el código recibido por correo y elige una contraseña segura.',
+      'confirmPasswordSubtitle':
+          'Introduce el código recibido por correo y elige una contraseña segura.',
       'verifyEmailTitle': 'Verificar correo',
-      'verifyEmailSubtitle': 'Recibirás un código por email para continuar con el registro de forma segura.',
+      'verifyEmailSubtitle':
+          'Recibirás un código por email para continuar con el registro de forma segura.',
       'confirmCodeTitle': 'Confirmar código',
-      'confirmCodeSubtitle': 'Revisa tu bandeja de entrada e introduce el código que te hemos enviado.',
+      'confirmCodeSubtitle':
+          'Revisa tu bandeja de entrada e introduce el código que te hemos enviado.',
       'verifyEmailInvalidCode': 'Código no válido',
       'changeEmail': 'Cambiar correo',
       'requestEmailChange': 'Solicitar cambio de correo',
@@ -149,11 +175,14 @@ class AppLocalizations {
       'leagueName': 'Nombre de la liga',
       'invitationCode': 'Código de invitación',
       'invitationHint': 'Ej. ABCD34XZ',
-      'joinLeagueDescription': 'Introduce el código que te ha compartido el administrador de la liga.',
+      'joinLeagueDescription':
+          'Introduce el código que te ha compartido el administrador de la liga.',
       'noLeaguesYet': 'Aún no tienes ligas',
-      'createOrJoinLeagueHint': 'Crea una liga o únete con un código usando los iconos arriba a la derecha.',
+      'createOrJoinLeagueHint':
+          'Crea una liga o únete con un código usando los iconos arriba a la derecha.',
       'noUserSession': 'No hay sesión de usuario',
-      'noUserSessionHint': 'Inicia sesión para ver tus ligas. Si ya iniciaste sesión, vuelve atrás e inténtalo de nuevo.',
+      'noUserSessionHint':
+          'Inicia sesión para ver tus ligas. Si ya iniciaste sesión, vuelve atrás e inténtalo de nuevo.',
       'league': 'Liga',
       'leagueInvalidId': 'Identificador de liga no válido.',
       'leagueContextError': 'No se pudo resolver el contexto de la liga.',
@@ -177,23 +206,29 @@ class AppLocalizations {
       'accountDeletionCodeInvalid': 'Introduce el código recibido por correo',
       'confirmAccountDeletionAction': 'Eliminar mi cuenta',
       'accountDeletedSuccess': 'Cuenta eliminada correctamente',
-      'accountDeletionRequestFailed': 'No se pudo solicitar la eliminación de la cuenta',
-      'changeEmailHint': 'Por seguridad confirmamos tu identidad y enviamos un código al correo actual y otro al nuevo antes de aplicar el cambio.',
+      'accountDeletionRequestFailed':
+          'No se pudo solicitar la eliminación de la cuenta',
+      'changeEmailHint':
+          'Por seguridad confirmamos tu identidad y enviamos un código al correo actual y otro al nuevo antes de aplicar el cambio.',
       'sendVerificationCodes': 'Enviar códigos de verificación',
-      'confirmEmailChangeHint': 'Introduce el código recibido en cada correo para confirmar el cambio.',
+      'confirmEmailChangeHint':
+          'Introduce el código recibido en cada correo para confirmar el cambio.',
       'verificationCodeNewEmail': 'Código del nuevo correo',
       'verificationCodeCurrentEmail': 'Código del correo actual',
       'changeNickname': 'Cambiar nickname',
-      'changeNicknameHint': 'Por seguridad confirmamos tu identidad con la contraseña y un código enviado a tu correo.',
+      'changeNicknameHint':
+          'Por seguridad confirmamos tu identidad con la contraseña y un código enviado a tu correo.',
       'confirmNicknameChange': 'Confirmar nuevo nickname',
       'newNickname': 'Nuevo nickname',
       'currentNickname': 'Nickname actual',
       'sendNicknameVerificationCode': 'Enviar código de verificación',
-      'verificationCodeSentToEmail': 'Hemos enviado un código a tu correo. Introdúcelo para confirmar el nickname:',
+      'verificationCodeSentToEmail':
+          'Hemos enviado un código a tu correo. Introdúcelo para confirmar el nickname:',
       'verificationCodeSentTo': 'Introduce el código que hemos enviado a:',
       'achievements': 'Logros',
       'achievementsLoadError': 'No se pudieron cargar los logros',
-      'achievementsFromCache': 'Mostrando logros guardados en el dispositivo. Conéctate para actualizar.',
+      'achievementsFromCache':
+          'Mostrando logros guardados en el dispositivo. Conéctate para actualizar.',
       'achievementsUnlockedSummary': '{unlocked} de {total} logros conseguidos',
       'achievementsHowToGet': 'Cómo conseguirlo',
       'achievementProgress': 'Progreso: {current}/{target}',
@@ -202,16 +237,21 @@ class AppLocalizations {
       'leagueRewards': 'Recompensas de liga',
       'cancelOffer': 'Cancelar oferta',
       'unsavedLineupTitle': 'Alineación sin guardar',
-      'unsavedLineupBody': 'Tienes cambios sin guardar en tu alineación. ¿Qué quieres hacer?',
+      'unsavedLineupBody':
+          'Tienes cambios sin guardar en tu alineación. ¿Qué quieres hacer?',
       'exitWithoutSaving': 'Salir sin guardar',
       'stayHere': 'Quedarme',
       'lineupSaved': 'Alineación guardada',
       'lineupLoadError': 'No se pudo cargar la alineación',
       'lineupIncomplete': 'Completa la alineación antes de guardar.',
-      'lineupNeedStarterForCaptain': 'Añade al menos un titular para elegir capitán.',
-      'lineupNeedStarterToSave': 'Añade al menos un titular para poder guardar.',
-      'apiConnectionError': 'No se pudo conectar con el servidor. Verifica backend y red.',
-      'apiNetworkError': 'Error de red. Revisa tu conexión y vuelve a intentar.',
+      'lineupNeedStarterForCaptain':
+          'Añade al menos un titular para elegir capitán.',
+      'lineupNeedStarterToSave':
+          'Añade al menos un titular para poder guardar.',
+      'apiConnectionError':
+          'No se pudo conectar con el servidor. Verifica backend y red.',
+      'apiNetworkError':
+          'Error de red. Revisa tu conexión y vuelve a intentar.',
       'apiCommunicationError': 'Error de comunicación con el servidor.',
       'apiUnexpectedError': 'Ocurrió un error inesperado.',
       'apiAmountMustBeInteger': 'El importe debe ser un número entero.',
@@ -230,7 +270,8 @@ class AppLocalizations {
       'validatorNicknameNoSpaces': 'El nickname no puede contener espacios',
       'validatorNicknameMinLength': 'Mínimo 3 caracteres',
       'validatorNicknameMaxLength': 'Máximo 24 caracteres',
-      'validatorNicknameInvalidChars': 'Solo letras, números, guiones, puntos y guiones bajos',
+      'validatorNicknameInvalidChars':
+          'Solo letras, números, guiones, puntos y guiones bajos',
       'validatorConfirmPasswordRequired': 'Confirma la contraseña',
       'validatorPasswordsDontMatch': 'Las contraseñas no coinciden',
       'validatorRequiredCode': 'El código es obligatorio',
@@ -254,7 +295,8 @@ class AppLocalizations {
       'preferencesSaveError': 'No se pudieron guardar las preferencias',
       'savingPreferences': 'Guardando preferencias...',
       'chat': 'Chat',
-      'chatComingSoon': 'El chat de liga llegará pronto. Habla con tus rivales y celebra tus goles.',
+      'chatComingSoon':
+          'El chat de liga llegará pronto. Habla con tus rivales y celebra tus goles.',
       'chatHint': 'Escribe un mensaje a la liga...',
       'chatDismissKeyboard': 'Ocultar teclado',
       'chatEmpty': 'Sé el primero en escribir en el chat de la liga.',
@@ -316,9 +358,24 @@ class AppLocalizations {
       'backToLogin': 'Back to login',
       'createAccount': 'Create account',
       'loginTitle': 'Sign in',
-      'loginSubtitle': 'Access your account, manage leagues and squad with the same style across the app.',
+      'loginSubtitle':
+          'Access your account, manage leagues and squad with the same style across the app.',
+      'modeSelectionSubtitle': 'Choose how you want to play today.',
+      'modeFantasyTitle': 'Fantasy',
+      'modeFantasyDescription':
+          'Private leagues, market, lineups and rewards with your friends.',
+      'modeFantasyEnter': 'Enter Fantasy',
+      'modeClashTitle': 'Clash',
+      'modeClashDescription':
+          'Story, cards and battles. Collect players and compete in 7v7 matches.',
+      'modeClashEnter': 'Enter Clash',
+      'clashPlaceholderTitle': 'Eternal XI Clash',
+      'clashPlaceholderBody':
+          'Coming soon: story mode, card collection and battles. We are building the experience.',
+      'backToModeSelection': 'Change mode',
       'registerTitle': 'Create account',
-      'registerSubtitle': 'Join Eternal XI. Use a valid email and a nickname that represents you in leagues.',
+      'registerSubtitle':
+          'Join Eternal XI. Use a valid email and a nickname that represents you in leagues.',
       'birthDateLabel': 'Date of birth',
       'birthDateHint': 'Select your date of birth',
       'acceptTermsLabel': 'I accept the Terms of Service and Privacy Policy',
@@ -331,23 +388,32 @@ class AppLocalizations {
       'legalPrivacyLink': 'Privacy Policy',
       'legalSectionTitle': 'Legal & safety',
       'ageConfirmationTitle': 'Confirm your age',
-      'chatSafetyBanner': 'Be respectful. Long-press a message to report it or block a user.',
+      'chatSafetyBanner':
+          'Be respectful. Long-press a message to report it or block a user.',
       'chatReport': 'Report message',
       'chatBlockUser': 'Block user',
-      'chatReportSent': 'Message reported. We will review it as soon as possible.',
+      'chatReportSent':
+          'Message reported. We will review it as soon as possible.',
       'chatUserBlocked': 'User blocked. You will no longer see their messages.',
       'chatReportConfirm': 'Report this message for inappropriate content?',
-      'chatBlockConfirm': 'Block this user? You will no longer see their chat messages.',
+      'chatBlockConfirm':
+          'Block this user? You will no longer see their chat messages.',
       'validatorRequiredBirthDate': 'Date of birth is required',
-      'validatorUnderMinAge': 'You must be at least 13 years old to use Eternal XI',
-      'validatorAcceptTermsRequired': 'You must accept the terms and privacy policy',
-      'validatorConfirmMinAgeRequired': 'You must confirm you meet the minimum age',
+      'validatorUnderMinAge':
+          'You must be at least 13 years old to use Eternal XI',
+      'validatorAcceptTermsRequired':
+          'You must accept the terms and privacy policy',
+      'validatorConfirmMinAgeRequired':
+          'You must confirm you meet the minimum age',
       'requestPasswordTitle': 'Reset password',
-      'requestPasswordSubtitle': 'We will send a code to your account email so you can set a new password.',
+      'requestPasswordSubtitle':
+          'We will send a code to your account email so you can set a new password.',
       'confirmPasswordTitle': 'New password',
-      'confirmPasswordSubtitle': 'Enter the code received by email and choose a secure password.',
+      'confirmPasswordSubtitle':
+          'Enter the code received by email and choose a secure password.',
       'verifyEmailTitle': 'Verify email',
-      'verifyEmailSubtitle': 'You will receive an email code to continue registration safely.',
+      'verifyEmailSubtitle':
+          'You will receive an email code to continue registration safely.',
       'confirmCodeTitle': 'Confirm code',
       'confirmCodeSubtitle': 'Check your inbox and enter the code we sent you.',
       'verifyEmailInvalidCode': 'Invalid code',
@@ -368,11 +434,14 @@ class AppLocalizations {
       'leagueName': 'League name',
       'invitationCode': 'Invitation code',
       'invitationHint': 'E.g. ABCD34XZ',
-      'joinLeagueDescription': 'Enter the code shared by the league administrator.',
+      'joinLeagueDescription':
+          'Enter the code shared by the league administrator.',
       'noLeaguesYet': 'You have no leagues yet',
-      'createOrJoinLeagueHint': 'Create a league or join one with a code using the top-right icons.',
+      'createOrJoinLeagueHint':
+          'Create a league or join one with a code using the top-right icons.',
       'noUserSession': 'No user session',
-      'noUserSessionHint': 'Sign in to see your leagues. If you already signed in, go back and try again.',
+      'noUserSessionHint':
+          'Sign in to see your leagues. If you already signed in, go back and try again.',
       'league': 'League',
       'leagueInvalidId': 'Invalid league identifier.',
       'leagueContextError': 'Could not resolve league context.',
@@ -397,23 +466,29 @@ class AppLocalizations {
       'confirmAccountDeletionAction': 'Delete my account',
       'accountDeletedSuccess': 'Account deleted successfully',
       'accountDeletionRequestFailed': 'Could not request account deletion',
-      'changeEmailHint': 'For security, we verify your identity and send a code to your current email and another to the new one before applying the change.',
+      'changeEmailHint':
+          'For security, we verify your identity and send a code to your current email and another to the new one before applying the change.',
       'sendVerificationCodes': 'Send verification codes',
-      'confirmEmailChangeHint': 'Enter the code received at each email address to confirm the change.',
+      'confirmEmailChangeHint':
+          'Enter the code received at each email address to confirm the change.',
       'verificationCodeNewEmail': 'New email code',
       'verificationCodeCurrentEmail': 'Current email code',
       'changeNickname': 'Change nickname',
-      'changeNicknameHint': 'For security, we verify your identity with your password and a code sent to your email.',
+      'changeNicknameHint':
+          'For security, we verify your identity with your password and a code sent to your email.',
       'confirmNicknameChange': 'Confirm new nickname',
       'newNickname': 'New nickname',
       'currentNickname': 'Current nickname',
       'sendNicknameVerificationCode': 'Send verification code',
-      'verificationCodeSentToEmail': 'We sent a code to your email. Enter it to confirm your nickname:',
+      'verificationCodeSentToEmail':
+          'We sent a code to your email. Enter it to confirm your nickname:',
       'verificationCodeSentTo': 'Enter the code we sent to:',
       'achievements': 'Achievements',
       'achievementsLoadError': 'Could not load achievements',
-      'achievementsFromCache': 'Showing achievements saved on this device. Connect to refresh.',
-      'achievementsUnlockedSummary': '{unlocked} of {total} achievements unlocked',
+      'achievementsFromCache':
+          'Showing achievements saved on this device. Connect to refresh.',
+      'achievementsUnlockedSummary':
+          '{unlocked} of {total} achievements unlocked',
       'achievementsHowToGet': 'How to unlock',
       'achievementProgress': 'Progress: {current}/{target}',
       'achievementRewardXp': 'Reward: +{xp} XP',
@@ -421,15 +496,18 @@ class AppLocalizations {
       'leagueRewards': 'League rewards',
       'cancelOffer': 'Cancel offer',
       'unsavedLineupTitle': 'Unsaved lineup',
-      'unsavedLineupBody': 'You have unsaved lineup changes. What do you want to do?',
+      'unsavedLineupBody':
+          'You have unsaved lineup changes. What do you want to do?',
       'exitWithoutSaving': 'Leave without saving',
       'stayHere': 'Stay here',
       'lineupSaved': 'Lineup saved',
       'lineupLoadError': 'Could not load lineup',
       'lineupIncomplete': 'Complete the lineup before saving.',
-      'lineupNeedStarterForCaptain': 'Add at least one starter to choose a captain.',
+      'lineupNeedStarterForCaptain':
+          'Add at least one starter to choose a captain.',
       'lineupNeedStarterToSave': 'Add at least one starter to save.',
-      'apiConnectionError': 'Could not connect to server. Check backend and network.',
+      'apiConnectionError':
+          'Could not connect to server. Check backend and network.',
       'apiNetworkError': 'Network error. Check your connection and try again.',
       'apiCommunicationError': 'Communication error with server.',
       'apiUnexpectedError': 'An unexpected error occurred.',
@@ -449,7 +527,8 @@ class AppLocalizations {
       'validatorNicknameNoSpaces': 'Nickname cannot contain spaces',
       'validatorNicknameMinLength': 'Minimum 3 characters',
       'validatorNicknameMaxLength': 'Maximum 24 characters',
-      'validatorNicknameInvalidChars': 'Only letters, numbers, dashes, dots and underscores',
+      'validatorNicknameInvalidChars':
+          'Only letters, numbers, dashes, dots and underscores',
       'validatorConfirmPasswordRequired': 'Please confirm password',
       'validatorPasswordsDontMatch': 'Passwords do not match',
       'validatorRequiredCode': 'Code is required',
@@ -473,7 +552,8 @@ class AppLocalizations {
       'preferencesSaveError': 'Could not save preferences',
       'savingPreferences': 'Saving preferences...',
       'chat': 'Chat',
-      'chatComingSoon': 'League chat is coming soon. Talk to your rivals and celebrate your goals.',
+      'chatComingSoon':
+          'League chat is coming soon. Talk to your rivals and celebrate your goals.',
       'chatHint': 'Write a message to the league...',
       'chatDismissKeyboard': 'Hide keyboard',
       'chatEmpty': 'Be the first to write in the league chat.',
@@ -560,6 +640,16 @@ class AppLocalizations {
   String get createAccount => _t('createAccount');
   String get loginTitle => _t('loginTitle');
   String get loginSubtitle => _t('loginSubtitle');
+  String get modeSelectionSubtitle => _t('modeSelectionSubtitle');
+  String get modeFantasyTitle => _t('modeFantasyTitle');
+  String get modeFantasyDescription => _t('modeFantasyDescription');
+  String get modeFantasyEnter => _t('modeFantasyEnter');
+  String get modeClashTitle => _t('modeClashTitle');
+  String get modeClashDescription => _t('modeClashDescription');
+  String get modeClashEnter => _t('modeClashEnter');
+  String get clashPlaceholderTitle => _t('clashPlaceholderTitle');
+  String get clashPlaceholderBody => _t('clashPlaceholderBody');
+  String get backToModeSelection => _t('backToModeSelection');
   String get registerTitle => _t('registerTitle');
   String get registerSubtitle => _t('registerSubtitle');
   String get birthDateLabel => _t('birthDateLabel');
@@ -584,7 +674,8 @@ class AppLocalizations {
   String get validatorRequiredBirthDate => _t('validatorRequiredBirthDate');
   String get validatorUnderMinAge => _t('validatorUnderMinAge');
   String get validatorAcceptTermsRequired => _t('validatorAcceptTermsRequired');
-  String get validatorConfirmMinAgeRequired => _t('validatorConfirmMinAgeRequired');
+  String get validatorConfirmMinAgeRequired =>
+      _t('validatorConfirmMinAgeRequired');
 
   String ageConfirmationBody(int minAge) {
     final en = locale.languageCode.toLowerCase() == 'en';
@@ -684,16 +775,18 @@ class AppLocalizations {
   String get achievementsLoadError => _t('achievementsLoadError');
   String get achievementsFromCache => _t('achievementsFromCache');
   String achievementsUnlockedSummary(int unlocked, int total) {
-    return _t('achievementsUnlockedSummary')
-        .replaceAll('{unlocked}', '$unlocked')
-        .replaceAll('{total}', '$total');
+    return _t(
+      'achievementsUnlockedSummary',
+    ).replaceAll('{unlocked}', '$unlocked').replaceAll('{total}', '$total');
   }
+
   String get achievementsHowToGet => _t('achievementsHowToGet');
   String achievementProgress(int current, int target) {
-    return _t('achievementProgress')
-        .replaceAll('{current}', '$current')
-        .replaceAll('{target}', '$target');
+    return _t(
+      'achievementProgress',
+    ).replaceAll('{current}', '$current').replaceAll('{target}', '$target');
   }
+
   String achievementRewardXp(int xp) =>
       _t('achievementRewardXp').replaceAll('{xp}', '$xp');
   String get rewards => _t('rewards');
@@ -727,7 +820,8 @@ class AppLocalizations {
   String get validatorNicknameNoSpaces => _t('validatorNicknameNoSpaces');
   String get validatorNicknameMinLength => _t('validatorNicknameMinLength');
   String get validatorNicknameMaxLength => _t('validatorNicknameMaxLength');
-  String get validatorNicknameInvalidChars => _t('validatorNicknameInvalidChars');
+  String get validatorNicknameInvalidChars =>
+      _t('validatorNicknameInvalidChars');
   String get validatorConfirmPasswordRequired =>
       _t('validatorConfirmPasswordRequired');
   String get validatorPasswordsDontMatch => _t('validatorPasswordsDontMatch');
