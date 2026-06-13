@@ -5,6 +5,7 @@ class UserModel {
     required this.nickname,
     required this.nivel,
     this.foto,
+    this.requiereConfirmacionEdad = false,
   });
 
   final int id;
@@ -12,6 +13,7 @@ class UserModel {
   final String nickname;
   final int nivel;
   final String? foto;
+  final bool requiereConfirmacionEdad;
 
   bool get hasProfilePhoto => foto != null && foto!.trim().isNotEmpty;
 
@@ -24,6 +26,7 @@ class UserModel {
       nickname: (json['nickname'] ?? '').toString(),
       nivel: _asInt(json['nivel'], fallback: 1),
       foto: (fotoStr == null || fotoStr.isEmpty) ? null : fotoStr,
+      requiereConfirmacionEdad: json['requiereConfirmacionEdad'] == true,
     );
   }
 
@@ -34,6 +37,7 @@ class UserModel {
       'nickname': nickname,
       'nivel': nivel,
       'foto': foto ?? '',
+      'requiereConfirmacionEdad': requiereConfirmacionEdad,
     };
   }
 
@@ -43,6 +47,7 @@ class UserModel {
     String? nickname,
     int? nivel,
     String? foto,
+    bool? requiereConfirmacionEdad,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -50,6 +55,8 @@ class UserModel {
       nickname: nickname ?? this.nickname,
       nivel: nivel ?? this.nivel,
       foto: foto ?? this.foto,
+      requiereConfirmacionEdad:
+          requiereConfirmacionEdad ?? this.requiereConfirmacionEdad,
     );
   }
 

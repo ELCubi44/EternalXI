@@ -5,6 +5,7 @@ public record UserResponse(
         String correo,
         String nickname,
         int nivel,
-        String foto
+        String foto,
+        boolean requiereConfirmacionEdad
 ) {
 }

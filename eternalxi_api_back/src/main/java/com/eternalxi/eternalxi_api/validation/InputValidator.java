@@ -1,5 +1,9 @@
 package com.eternalxi.eternalxi_api.validation;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.regex.Pattern;
 
 public final class InputValidator {
@@ -11,6 +15,39 @@ public final class InputValidator {
     private static final Pattern LEAGUE_NAME_PATTERN = Pattern.compile("^[\\p{L}\\p{N} _\\-.]{3,50}$");
     private static final Pattern INVITATION_CODE_PATTERN = Pattern.compile("^[A-Z0-9]{4,20}$");
     private static final Pattern CONTROL_CHARS = Pattern.compile("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]");
+    private static final DateTimeFormatter ISO_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
+    public static final int MINIMUM_AGE_YEARS = 13;
+
+    public static LocalDate validateBirthDate(String fechaNacimiento) {
+        if (fechaNacimiento == null || fechaNacimiento.isBlank()) {
+            throw new IllegalArgumentException("La fecha de nacimiento es obligatoria.");
+        }
+        LocalDate birth;
+        try {
+            birth = LocalDate.parse(fechaNacimiento.trim(), ISO_DATE);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("La fecha de nacimiento no es válida.");
+        }
+        LocalDate today = LocalDate.now();
+        if (birth.isAfter(today)) {
+            throw new IllegalArgumentException("La fecha de nacimiento no puede ser futura.");
+        }
+        if (birth.isBefore(today.minusYears(120))) {
+            throw new IllegalArgumentException("La fecha de nacimiento no es válida.");
+        }
+        int age = Period.between(birth, today).getYears();
+        if (age < MINIMUM_AGE_YEARS) {
+            throw new IllegalArgumentException(
+                    "Debes tener al menos " + MINIMUM_AGE_YEARS + " años para usar Eternal XI.");
+        }
+        return birth;
+    }
+
+    public static void requireTermsAccepted(Boolean aceptaTerminos) {
+        if (aceptaTerminos == null || !aceptaTerminos) {
+            throw new IllegalArgumentException("Debes aceptar los términos de servicio y la política de privacidad.");
+        }
+    }
 
     public static String validateNickname(String nickname) {
         if (nickname == null || nickname.isBlank()) {

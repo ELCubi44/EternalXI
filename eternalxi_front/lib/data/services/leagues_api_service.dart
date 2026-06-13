@@ -1235,4 +1235,23 @@ class LeaguesApiService {
       throw ApiException(_apiClient.extractErrorMessage(e));
     }
   }
+
+  Future<void> reportLeagueChatMessage({
+    required int idLiga,
+    required int idMensaje,
+    required int idUsuario,
+    String? motivo,
+  }) async {
+    try {
+      await _apiClient.dio.post(
+        '${ApiConstants.leagues}/$idLiga/chat/$idMensaje/report',
+        data: {
+          'idUsuario': idUsuario,
+          if (motivo != null && motivo.trim().isNotEmpty) 'motivo': motivo.trim(),
+        },
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
 }

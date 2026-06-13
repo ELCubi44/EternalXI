@@ -211,6 +211,8 @@ class AuthController extends ChangeNotifier {
     required String correo,
     required String nickname,
     required String contrasena,
+    required String fechaNacimiento,
+    required bool aceptaTerminos,
   }) async {
     _setLoading(true);
     errorMessage = null;
@@ -219,11 +221,36 @@ class AuthController extends ChangeNotifier {
         correo: correo,
         nickname: nickname,
         contrasena: contrasena,
+        fechaNacimiento: fechaNacimiento,
+        aceptaTerminos: aceptaTerminos,
       );
       return result.message;
     } catch (e) {
       errorMessage = e.toString().replaceFirst('Exception: ', '');
       return null;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> confirmAge(String fechaNacimiento) async {
+    final userId = currentUser?.id;
+    if (userId == null) {
+      return false;
+    }
+    _setLoading(true);
+    errorMessage = null;
+    try {
+      final user = await _authApiService.confirmAge(
+        idUsuario: userId,
+        fechaNacimiento: fechaNacimiento,
+      );
+      currentUser = user;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      errorMessage = e.toString().replaceFirst('Exception: ', '');
+      return false;
     } finally {
       _setLoading(false);
     }

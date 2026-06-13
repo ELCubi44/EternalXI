@@ -5,6 +5,7 @@ import 'package:eternal_xi/data/models/email_change_confirm_response.dart';
 import 'package:eternal_xi/data/models/api_message_model.dart';
 import 'package:eternal_xi/data/models/auth_response_model.dart';
 import 'package:eternal_xi/data/models/register_response_model.dart';
+import 'package:eternal_xi/data/models/user_model.dart';
 
 class AuthApiService {
   AuthApiService(this._apiClient);
@@ -30,6 +31,8 @@ class AuthApiService {
     required String correo,
     required String contrasena,
     required String nickname,
+    required String fechaNacimiento,
+    required bool aceptaTerminos,
   }) async {
     try {
       final response = await _apiClient.dio.post(
@@ -38,6 +41,8 @@ class AuthApiService {
           'correo': correo,
           'contrasena': contrasena,
           'nickname': nickname,
+          'fechaNacimiento': fechaNacimiento,
+          'aceptaTerminos': aceptaTerminos,
         },
       );
       return RegisterResponseModel.fromJson(
@@ -74,6 +79,24 @@ class AuthApiService {
       data: {'refreshToken': refreshToken},
     );
     return AuthResponseModel.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  Future<UserModel> confirmAge({
+    required int idUsuario,
+    required String fechaNacimiento,
+  }) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '${ApiConstants.auth}/confirm-age',
+        data: {
+          'idUsuario': idUsuario,
+          'fechaNacimiento': fechaNacimiento,
+        },
+      );
+      return UserModel.fromJson(response.data as Map<String, dynamic>);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
   }
 
   Future<ApiMessageModel> requestPasswordReset({required String correo}) async {

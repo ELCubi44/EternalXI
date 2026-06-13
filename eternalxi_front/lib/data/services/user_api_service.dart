@@ -13,6 +13,23 @@ class UserApiService {
 
   final ApiClient _apiClient;
 
+  Future<void> blockUser({
+    required int idUsuario,
+    required int idUsuarioBloqueado,
+  }) async {
+    try {
+      await _apiClient.dio.post(
+        '${ApiConstants.users}/block',
+        data: {
+          'idUsuario': idUsuario,
+          'idUsuarioBloqueado': idUsuarioBloqueado,
+        },
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
   Future<UserModel> getUserById(int id) async {
     try {
       final response = await _apiClient.dio.get('${ApiConstants.users}/$id');

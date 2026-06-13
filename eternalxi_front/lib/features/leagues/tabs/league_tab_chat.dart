@@ -7,6 +7,7 @@ import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/league_chat_message.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
+import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +15,7 @@ import 'package:provider/provider.dart';
 class _ChatMessage {
   const _ChatMessage({
     required this.id,
+    required this.idUsuario,
     required this.author,
     required this.text,
     required this.isMine,
@@ -23,6 +25,7 @@ class _ChatMessage {
   });
 
   final int id;
+  final int idUsuario;
   final String author;
   final String text;
   final bool isMine;
@@ -34,6 +37,7 @@ class _ChatMessage {
     final nick = msg.nickname.trim();
     return _ChatMessage(
       id: msg.id,
+      idUsuario: msg.idUsuario,
       author: nick.isEmpty ? '—' : nick,
       text: msg.texto,
       isMine: msg.idUsuario == myUserId,
@@ -252,6 +256,86 @@ class _LeagueTabChatState extends State<LeagueTabChat>
     }
   }
 
+  Future<void> _reportMessage(_ChatMessage message, LeagueShellData shell) async {
+    final l10n = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.chatReport),
+        content: Text(l10n.chatReportConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.chatReport),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await context.read<LeaguesApiService>().reportLeagueChatMessage(
+        idLiga: shell.leagueId,
+        idMensaje: message.id,
+        idUsuario: shell.idUsuario,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.chatReportSent)),
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    }
+  }
+
+  Future<void> _blockUser(_ChatMessage message, LeagueShellData shell) async {
+    final l10n = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.chatBlockUser),
+        content: Text(l10n.chatBlockConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.chatBlockUser),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await context.read<UserApiService>().blockUser(
+        idUsuario: shell.idUsuario,
+        idUsuarioBloqueado: message.idUsuario,
+      );
+      if (!mounted) return;
+      setState(() {
+        _messages.removeWhere((m) => m.idUsuario == message.idUsuario);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.chatUserBlocked)),
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -302,6 +386,21 @@ class _LeagueTabChatState extends State<LeagueTabChat>
                 ),
               ),
             ),
+          Material(
+            color: context.xiCardElevated,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Text(
+                l10n.chatSafetyBanner,
+                style: TextStyle(
+                  fontFamily: 'Lumiare',
+                  fontSize: 11,
+                  color: context.xiTextSecondary,
+                  height: 1.35,
+                ),
+              ),
+            ),
+          ),
           Expanded(
             child: GestureDetector(
               onTap: _dismissKeyboard,
@@ -354,6 +453,12 @@ class _LeagueTabChatState extends State<LeagueTabChat>
                         itemBuilder: (context, index) {
                           return _WhatsAppMessageRow(
                             message: _messages[index],
+                            onReport: _messages[index].isMine
+                                ? null
+                                : () => _reportMessage(_messages[index], shell),
+                            onBlock: _messages[index].isMine
+                                ? null
+                                : () => _blockUser(_messages[index], shell),
                           );
                         },
                       ),
@@ -376,9 +481,48 @@ class _LeagueTabChatState extends State<LeagueTabChat>
 }
 
 class _WhatsAppMessageRow extends StatelessWidget {
-  const _WhatsAppMessageRow({required this.message});
+  const _WhatsAppMessageRow({
+    required this.message,
+    this.onReport,
+    this.onBlock,
+  });
 
   final _ChatMessage message;
+  final VoidCallback? onReport;
+  final VoidCallback? onBlock;
+
+  Future<void> _showActions(BuildContext context) async {
+    if (onReport == null && onBlock == null) return;
+    final l10n = context.l10n;
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (onReport != null)
+              ListTile(
+                leading: const Icon(Icons.flag_outlined),
+                title: Text(l10n.chatReport),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  onReport!();
+                },
+              ),
+            if (onBlock != null)
+              ListTile(
+                leading: const Icon(Icons.block_outlined),
+                title: Text(l10n.chatBlockUser),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  onBlock!();
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -441,7 +585,9 @@ class _WhatsAppMessageRow extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
+      child: GestureDetector(
+        onLongPress: () => _showActions(context),
+        child: Row(
         mainAxisAlignment:
             isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -466,6 +612,7 @@ class _WhatsAppMessageRow extends StatelessWidget {
                   ),
                 ),
               ],
+      ),
       ),
     );
   }

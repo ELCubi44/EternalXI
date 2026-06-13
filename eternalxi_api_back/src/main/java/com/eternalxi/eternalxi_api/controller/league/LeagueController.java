@@ -1,5 +1,6 @@
 package com.eternalxi.eternalxi_api.controller.league;
 
+import com.eternalxi.eternalxi_api.security.AuthenticatedUser;
 import com.eternalxi.eternalxi_api.dto.auth.ApiMessageResponse;
 import com.eternalxi.eternalxi_api.dto.league.CreateLeagueRequest;
 import com.eternalxi.eternalxi_api.dto.league.CreateLeagueResponse;
@@ -7,6 +8,7 @@ import com.eternalxi.eternalxi_api.dto.league.JoinLeagueRequest;
 import com.eternalxi.eternalxi_api.dto.league.KickParticipantRequest;
 import com.eternalxi.eternalxi_api.dto.league.LeagueChatMessageResponse;
 import com.eternalxi.eternalxi_api.dto.league.PostLeagueChatMessageRequest;
+import com.eternalxi.eternalxi_api.dto.league.ReportChatMessageRequest;
 import com.eternalxi.eternalxi_api.dto.league.LeagueDetailResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueParticipantResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueParticipantSquadResponse;
@@ -21,8 +23,9 @@ import com.eternalxi.eternalxi_api.dto.league.SaveLeagueLineupRequest;
 import com.eternalxi.eternalxi_api.services.LeagueActivityService;
 import com.eternalxi.eternalxi_api.services.LeagueChatService;
 import com.eternalxi.eternalxi_api.services.LeagueLineupService;
-import com.eternalxi.eternalxi_api.services.LeagueStarterProbabilityService;
 import com.eternalxi.eternalxi_api.services.LeagueService;
+import com.eternalxi.eternalxi_api.services.LeagueStarterProbabilityService;
+import com.eternalxi.eternalxi_api.services.UserSafetyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,19 +43,22 @@ public class LeagueController {
     private final LeagueStarterProbabilityService leagueStarterProbabilityService;
     private final LeagueActivityService leagueActivityService;
     private final LeagueChatService leagueChatService;
+    private final UserSafetyService userSafetyService;
 
     public LeagueController(
             LeagueService leagueService,
             LeagueLineupService leagueLineupService,
             LeagueStarterProbabilityService leagueStarterProbabilityService,
             LeagueActivityService leagueActivityService,
-            LeagueChatService leagueChatService
+            LeagueChatService leagueChatService,
+            UserSafetyService userSafetyService
     ) {
         this.leagueService = leagueService;
         this.leagueLineupService = leagueLineupService;
         this.leagueStarterProbabilityService = leagueStarterProbabilityService;
         this.leagueActivityService = leagueActivityService;
         this.leagueChatService = leagueChatService;
+        this.userSafetyService = userSafetyService;
     }
 
     @PostMapping
@@ -234,5 +240,28 @@ public class LeagueController {
                 request.texto()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(message);
+    }
+
+    @PostMapping("/{idLiga}/chat/{idMensaje}/report")
+    public ResponseEntity<?> reportChatMessage(
+            @PathVariable Long idLiga,
+            @PathVariable Long idMensaje,
+            @RequestBody ReportChatMessageRequest request
+    ) throws SQLException {
+        if (request.idUsuario() == null) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse("Usuario no válido"));
+        }
+        AuthenticatedUser.assertSameUser(request.idUsuario());
+        try {
+            userSafetyService.reportChatMessage(
+                    idLiga,
+                    idMensaje,
+                    request.idUsuario(),
+                    request.motivo()
+            );
+            return ResponseEntity.ok(new ApiMessageResponse("Mensaje reportado. Lo revisaremos lo antes posible."));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse(e.getMessage()));
+        }
     }
 }

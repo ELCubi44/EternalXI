@@ -100,6 +100,29 @@ class AppLocalizations {
       'loginSubtitle': 'Accede a tu cuenta, gestiona ligas y plantilla con el mismo estilo en toda la app.',
       'registerTitle': 'Crear cuenta',
       'registerSubtitle': 'Únete a Eternal XI. Usa un correo válido y un nickname que te represente en las ligas.',
+      'birthDateLabel': 'Fecha de nacimiento',
+      'birthDateHint': 'Selecciona tu fecha de nacimiento',
+      'acceptTermsLabel': 'Acepto los Términos de servicio y la Política de privacidad',
+      'confirmMinAgeLabel': 'Confirmo que tengo al menos 13 años',
+      'legalTermsTitle': 'Términos de servicio',
+      'legalCommunityTitle': 'Normas de la comunidad',
+      'legalPrivacyTitle': 'Privacidad y menores',
+      'legalTermsLink': 'Términos de servicio',
+      'legalCommunityLink': 'Normas de la comunidad',
+      'legalPrivacyLink': 'Política de privacidad',
+      'legalSectionTitle': 'Legal y seguridad',
+      'ageConfirmationTitle': 'Confirma tu edad',
+      'chatSafetyBanner': 'Sé respetuoso. Puedes reportar mensajes y bloquear usuarios manteniendo pulsado un mensaje.',
+      'chatReport': 'Reportar mensaje',
+      'chatBlockUser': 'Bloquear usuario',
+      'chatReportSent': 'Mensaje reportado. Lo revisaremos lo antes posible.',
+      'chatUserBlocked': 'Usuario bloqueado. Ya no verás sus mensajes.',
+      'chatReportConfirm': '¿Quieres reportar este mensaje por contenido inapropiado?',
+      'chatBlockConfirm': '¿Quieres bloquear a este usuario? Dejarás de ver sus mensajes en el chat.',
+      'validatorRequiredBirthDate': 'La fecha de nacimiento es obligatoria',
+      'validatorUnderMinAge': 'Debes tener al menos 13 años para usar Eternal XI',
+      'validatorAcceptTermsRequired': 'Debes aceptar los términos y la política de privacidad',
+      'validatorConfirmMinAgeRequired': 'Debes confirmar que cumples la edad mínima',
       'requestPasswordTitle': 'Recuperar contraseña',
       'requestPasswordSubtitle': 'Te enviaremos un código al correo asociado a tu cuenta para definir una nueva contraseña.',
       'confirmPasswordTitle': 'Nueva contraseña',
@@ -296,6 +319,29 @@ class AppLocalizations {
       'loginSubtitle': 'Access your account, manage leagues and squad with the same style across the app.',
       'registerTitle': 'Create account',
       'registerSubtitle': 'Join Eternal XI. Use a valid email and a nickname that represents you in leagues.',
+      'birthDateLabel': 'Date of birth',
+      'birthDateHint': 'Select your date of birth',
+      'acceptTermsLabel': 'I accept the Terms of Service and Privacy Policy',
+      'confirmMinAgeLabel': 'I confirm I am at least 13 years old',
+      'legalTermsTitle': 'Terms of Service',
+      'legalCommunityTitle': 'Community Guidelines',
+      'legalPrivacyTitle': 'Privacy and minors',
+      'legalTermsLink': 'Terms of Service',
+      'legalCommunityLink': 'Community Guidelines',
+      'legalPrivacyLink': 'Privacy Policy',
+      'legalSectionTitle': 'Legal & safety',
+      'ageConfirmationTitle': 'Confirm your age',
+      'chatSafetyBanner': 'Be respectful. Long-press a message to report it or block a user.',
+      'chatReport': 'Report message',
+      'chatBlockUser': 'Block user',
+      'chatReportSent': 'Message reported. We will review it as soon as possible.',
+      'chatUserBlocked': 'User blocked. You will no longer see their messages.',
+      'chatReportConfirm': 'Report this message for inappropriate content?',
+      'chatBlockConfirm': 'Block this user? You will no longer see their chat messages.',
+      'validatorRequiredBirthDate': 'Date of birth is required',
+      'validatorUnderMinAge': 'You must be at least 13 years old to use Eternal XI',
+      'validatorAcceptTermsRequired': 'You must accept the terms and privacy policy',
+      'validatorConfirmMinAgeRequired': 'You must confirm you meet the minimum age',
       'requestPasswordTitle': 'Reset password',
       'requestPasswordSubtitle': 'We will send a code to your account email so you can set a new password.',
       'confirmPasswordTitle': 'New password',
@@ -516,6 +562,58 @@ class AppLocalizations {
   String get loginSubtitle => _t('loginSubtitle');
   String get registerTitle => _t('registerTitle');
   String get registerSubtitle => _t('registerSubtitle');
+  String get birthDateLabel => _t('birthDateLabel');
+  String get birthDateHint => _t('birthDateHint');
+  String get acceptTermsLabel => _t('acceptTermsLabel');
+  String get confirmMinAgeLabel => _t('confirmMinAgeLabel');
+  String get legalTermsTitle => _t('legalTermsTitle');
+  String get legalCommunityTitle => _t('legalCommunityTitle');
+  String get legalPrivacyTitle => _t('legalPrivacyTitle');
+  String get legalTermsLink => _t('legalTermsLink');
+  String get legalCommunityLink => _t('legalCommunityLink');
+  String get legalPrivacyLink => _t('legalPrivacyLink');
+  String get legalSectionTitle => _t('legalSectionTitle');
+  String get ageConfirmationTitle => _t('ageConfirmationTitle');
+  String get chatSafetyBanner => _t('chatSafetyBanner');
+  String get chatReport => _t('chatReport');
+  String get chatBlockUser => _t('chatBlockUser');
+  String get chatReportSent => _t('chatReportSent');
+  String get chatUserBlocked => _t('chatUserBlocked');
+  String get chatReportConfirm => _t('chatReportConfirm');
+  String get chatBlockConfirm => _t('chatBlockConfirm');
+  String get validatorRequiredBirthDate => _t('validatorRequiredBirthDate');
+  String get validatorUnderMinAge => _t('validatorUnderMinAge');
+  String get validatorAcceptTermsRequired => _t('validatorAcceptTermsRequired');
+  String get validatorConfirmMinAgeRequired => _t('validatorConfirmMinAgeRequired');
+
+  String ageConfirmationBody(int minAge) {
+    final en = locale.languageCode.toLowerCase() == 'en';
+    return en
+        ? 'To comply with age requirements, confirm your date of birth. You must be at least $minAge years old to use Eternal XI, including league chat.'
+        : 'Para cumplir los requisitos de edad, confirma tu fecha de nacimiento. Debes tener al menos $minAge años para usar Eternal XI, incluido el chat de liga.';
+  }
+
+  String get legalTermsBody {
+    final en = locale.languageCode.toLowerCase() == 'en';
+    return en
+        ? 'Eternal XI is a fantasy football app for private leagues among people who know each other. By creating an account you agree to use the service lawfully, not harass other users, and not publish illegal, hateful, sexual or spam content in chat or profile. We may suspend accounts that break these rules. The service is not directed at children under 13.'
+        : 'Eternal XI es una app de fantasy football para ligas privadas entre personas que se conocen. Al crear una cuenta aceptas usar el servicio de forma lícita, no acosar a otros usuarios y no publicar contenido ilegal, de odio, sexual o spam en el chat o perfil. Podemos suspender cuentas que incumplan estas normas. El servicio no está dirigido a menores de 13 años.';
+  }
+
+  String get legalCommunityBody {
+    final en = locale.languageCode.toLowerCase() == 'en';
+    return en
+        ? 'League chat is for coordinating your fantasy league, not for bullying or sharing personal data of others.\n\n• Be respectful to league members.\n• Do not share phone numbers, addresses or private information.\n• Report inappropriate messages with a long press.\n• Block users whose messages you do not want to see.\n• Administrators may remove users from a league for serious misconduct.\n\nWe review reports and may remove content or suspend accounts.'
+        : 'El chat de liga sirve para coordinar vuestra liga fantasy, no para acosar ni compartir datos personales de terceros.\n\n• Sé respetuoso con los miembros de la liga.\n• No compartas teléfonos, direcciones ni información privada.\n• Reporta mensajes inapropiados con pulsación larga.\n• Bloquea usuarios cuyos mensajes no quieras ver.\n• Los administradores pueden expulsar de una liga por conductas graves.\n\nRevisamos los reportes y podemos eliminar contenido o suspender cuentas.';
+  }
+
+  String get legalPrivacyBody {
+    final en = locale.languageCode.toLowerCase() == 'en';
+    return en
+        ? 'We collect your email, nickname, optional profile photo, game data and league chat messages. Date of birth is used only to verify you meet the minimum age of 13. Chat messages are stored on our servers so league members can read them; you can report and block users from the app. You can delete your account from Profile. Full policy: eternalxi.com/privacy-policy.html'
+        : 'Recopilamos tu correo, nickname, foto de perfil opcional, datos de juego y mensajes del chat de liga. La fecha de nacimiento se usa solo para verificar que cumples la edad mínima de 13 años. Los mensajes del chat se almacenan en nuestros servidores para que los miembros de la liga puedan leerlos; puedes reportar y bloquear usuarios desde la app. Puedes eliminar tu cuenta desde Perfil. Política completa: eternalxi.com/privacy-policy.html';
+  }
+
   String get requestPasswordTitle => _t('requestPasswordTitle');
   String get requestPasswordSubtitle => _t('requestPasswordSubtitle');
   String get confirmPasswordTitle => _t('confirmPasswordTitle');

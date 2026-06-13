@@ -37,7 +37,7 @@ public class LeagueChatService {
             ensureParticipant(conn, idLiga, idUsuario);
 
             if (recent) {
-                return loadRecentMessages(conn, idLiga, safeLimit);
+                return loadRecentMessages(conn, idLiga, idUsuario, safeLimit);
             }
 
             long safeAfterId = afterId == null || afterId < 0 ? 0L : afterId;
@@ -48,6 +48,11 @@ public class LeagueChatService {
                     INNER JOIN usuarios u ON u.id = m.id_usuario
                     WHERE m.id_liga = ?
                       AND m.id > ?
+                      AND m.id_usuario NOT IN (
+                          SELECT id_usuario_bloqueado
+                          FROM usuario_bloqueados
+                          WHERE id_usuario = ?
+                      )
                     ORDER BY m.id ASC
                     LIMIT ?
                     """;
@@ -56,7 +61,8 @@ public class LeagueChatService {
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setLong(1, idLiga);
                 ps.setLong(2, safeAfterId);
-                ps.setInt(3, safeLimit);
+                ps.setLong(3, idUsuario);
+                ps.setInt(4, safeLimit);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         rows.add(mapRow(rs));
@@ -70,6 +76,7 @@ public class LeagueChatService {
     private List<LeagueChatMessageResponse> loadRecentMessages(
             Connection conn,
             Long idLiga,
+            Long idUsuario,
             int limit
     ) throws SQLException {
         String sql = """
@@ -78,13 +85,19 @@ public class LeagueChatService {
                 FROM liga_chat_mensajes m
                 INNER JOIN usuarios u ON u.id = m.id_usuario
                 WHERE m.id_liga = ?
+                  AND m.id_usuario NOT IN (
+                      SELECT id_usuario_bloqueado
+                      FROM usuario_bloqueados
+                      WHERE id_usuario = ?
+                  )
                 ORDER BY m.id DESC
                 LIMIT ?
                 """;
         List<LeagueChatMessageResponse> rows = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, idLiga);
-            ps.setInt(2, limit);
+            ps.setLong(2, idUsuario);
+            ps.setInt(3, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     rows.add(mapRow(rs));
@@ -114,6 +127,7 @@ public class LeagueChatService {
 
         try (Connection conn = DBConnection.getConnection()) {
             ensureParticipant(conn, idLiga, idUsuario);
+            enforceRateLimit(conn, idLiga, idUsuario);
 
             String nickname = loadNickname(conn, idUsuario);
             if (nickname == null || nickname.isBlank()) {
@@ -178,6 +192,23 @@ public class LeagueChatService {
             ps.setLong(1, idUsuario);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? rs.getString(1) : null;
+            }
+        }
+    }
+
+    private void enforceRateLimit(Connection conn, Long idLiga, Long idUsuario) throws SQLException {
+        String sql = """
+                SELECT COUNT(*) FROM liga_chat_mensajes
+                WHERE id_liga = ? AND id_usuario = ?
+                  AND creado_en >= (NOW(3) - INTERVAL 2 SECOND)
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idLiga);
+            ps.setLong(2, idUsuario);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    throw new IllegalArgumentException("Espera un momento antes de enviar otro mensaje");
+                }
             }
         }
     }

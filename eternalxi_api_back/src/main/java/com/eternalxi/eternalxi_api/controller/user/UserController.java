@@ -9,6 +9,7 @@ import com.eternalxi.eternalxi_api.dto.user.UserPreferencesResponse;
 import com.eternalxi.eternalxi_api.dto.user.UserResourcesResponse;
 import com.eternalxi.eternalxi_api.dto.user.UserResponse;
 import com.eternalxi.eternalxi_api.util.LeagueAssetUrls;
+import com.eternalxi.eternalxi_api.util.UserMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -42,7 +43,10 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) throws SQLException {
 
-        String sql = "SELECT id, correo, nickname, nivel, foto FROM usuarios WHERE id = ?";
+        String sql = """
+                SELECT id, correo, nickname, nivel, foto, fecha_nacimiento
+                FROM usuarios WHERE id = ?
+                """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -55,13 +59,7 @@ public class UserController {
                             .body(new ApiMessageResponse("Usuario no encontrado"));
                 }
 
-                UserResponse user = new UserResponse(
-                        rs.getLong("id"),
-                        rs.getString("correo"),
-                        rs.getString("nickname"),
-                        rs.getInt("nivel"),
-                        LeagueAssetUrls.userPhotoIfStored(rs.getLong("id"), rs.getString("foto"))
-                );
+                UserResponse user = UserMapper.fromResultSet(rs);
 
                 return ResponseEntity.ok(user);
             }
@@ -236,15 +234,20 @@ public class UserController {
                         .body(new ApiMessageResponse("No se pudo actualizar el usuario"));
             }
 
-            UserResponse user = new UserResponse(
-                    id,
-                    correoActual,
-                    nuevoNickname,
-                    nivelActual,
-                    fotoActual
-            );
-
-            return ResponseEntity.ok(user);
+            try (PreparedStatement psReload = conn.prepareStatement(
+                    """
+                            SELECT id, correo, nickname, nivel, foto, fecha_nacimiento
+                            FROM usuarios WHERE id = ?
+                            """)) {
+                psReload.setLong(1, id);
+                try (ResultSet rs = psReload.executeQuery()) {
+                    if (!rs.next()) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body(new ApiMessageResponse("Usuario no encontrado"));
+                    }
+                    return ResponseEntity.ok(UserMapper.fromResultSet(rs));
+                }
+            }
         }
     }
 

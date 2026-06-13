@@ -1,6 +1,7 @@
 package com.eternalxi.eternalxi_api.controller.user;
 
 import com.eternalxi.eternalxi_api.config.DBConnection;
+import com.eternalxi.eternalxi_api.dto.auth.AgeConfirmationRequest;
 import com.eternalxi.eternalxi_api.dto.auth.ApiMessageResponse;
 import com.eternalxi.eternalxi_api.dto.auth.AuthResponse;
 import com.eternalxi.eternalxi_api.dto.auth.CodeVerificationRequest;
@@ -27,13 +28,16 @@ import org.springframework.web.bind.annotation.*;
 
 import com.eternalxi.eternalxi_api.validation.InputValidator;
 import com.eternalxi.eternalxi_api.util.LeagueAssetUrls;
+import com.eternalxi.eternalxi_api.util.UserMapper;
 
 import java.security.SecureRandom;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -58,16 +62,32 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) throws SQLException {
 
-        String correo = InputValidator.validateEmail(request.correo());
-        String contrasena = InputValidator.validatePassword(request.contrasena());
-        String nickname = InputValidator.validateNickname(request.nickname());
+        String correo;
+        String contrasena;
+        String nickname;
+        LocalDate birthDate;
+        try {
+            correo = InputValidator.validateEmail(request.correo());
+            contrasena = InputValidator.validatePassword(request.contrasena());
+            nickname = InputValidator.validateNickname(request.nickname());
+            birthDate = InputValidator.validateBirthDate(request.fechaNacimiento());
+            InputValidator.requireTermsAccepted(request.aceptaTerminos());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse(e.getMessage()));
+        }
 
         if (existeCorreo(correo)) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ApiMessageResponse("El correo ya está registrado"));
         }
 
-        String sqlInsertUsuario = "INSERT INTO usuarios (correo, contrasena, nickname, nivel) VALUES (?, ?, ?, ?)";
+        if (!correoVerificadoRecientemente(correo)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiMessageResponse("Debes verificar tu correo antes de crear la cuenta"));
+        }
+
+        String sqlInsertUsuario =
+                "INSERT INTO usuarios (correo, contrasena, nickname, nivel, fecha_nacimiento) VALUES (?, ?, ?, ?, ?)";
         String sqlInsertUsuarioTemporada = "INSERT INTO usuario_temporadas (id_usuario, id_temporada) VALUES (?, ?)";
 
         try (Connection conn = DBConnection.getConnection()) {
@@ -80,6 +100,7 @@ public class AuthController {
                 psUsuario.setString(2, passwordHashService.hashForStorage(contrasena));
                 psUsuario.setString(3, nickname);
                 psUsuario.setInt(4, 1);
+                psUsuario.setDate(5, Date.valueOf(birthDate));
 
                 int filas = psUsuario.executeUpdate();
 
@@ -114,8 +135,9 @@ public class AuthController {
                 }
 
                 conn.commit();
+                eliminarCorreoVerificado(conn, correo);
 
-                UserResponse user = new UserResponse(
+                UserResponse user = UserMapper.withoutBirthCheck(
                         id,
                         correo,
                         nickname,
@@ -149,7 +171,10 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new ApiMessageResponse("Contraseña no válida"));
         }
 
-        String sql = "SELECT id, correo, contrasena, nickname, nivel, foto FROM usuarios WHERE LOWER(correo) = ?";
+        String sql = """
+                SELECT id, correo, contrasena, nickname, nivel, foto, fecha_nacimiento
+                FROM usuarios WHERE LOWER(correo) = ?
+                """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -175,13 +200,7 @@ public class AuthController {
                     updateStoredPassword(conn, userId, match.upgradedHashIfAny());
                 }
 
-                UserResponse user = new UserResponse(
-                        userId,
-                        rs.getString("correo"),
-                        rs.getString("nickname"),
-                        rs.getInt("nivel"),
-                        LeagueAssetUrls.userPhotoIfStored(userId, rs.getString("foto"))
-                );
+                UserResponse user = UserMapper.fromResultSet(rs, userId);
 
                 AuthResponse response = new AuthResponse(
                         jwtTokenService.createAccessToken(userId, user.correo()),
@@ -284,6 +303,8 @@ public class AuthController {
                 psDelete.setString(1, request.correo());
                 psDelete.executeUpdate();
             }
+
+            marcarCorreoVerificado(conn, request.correo());
 
             return ResponseEntity.ok(new ApiMessageResponse("Código correcto"));
         }
@@ -791,6 +812,35 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/confirm-age")
+    public ResponseEntity<?> confirmAge(@RequestBody AgeConfirmationRequest request) throws SQLException {
+        if (request.idUsuario() == null || request.idUsuario() <= 0) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse("Usuario no válido"));
+        }
+        AuthenticatedUser.assertSameUser(request.idUsuario());
+
+        LocalDate birthDate;
+        try {
+            birthDate = InputValidator.validateBirthDate(request.fechaNacimiento());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse(e.getMessage()));
+        }
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(
+                     "UPDATE usuarios SET fecha_nacimiento = ? WHERE id = ?")) {
+            ps.setDate(1, Date.valueOf(birthDate));
+            ps.setLong(2, request.idUsuario());
+            if (ps.executeUpdate() != 1) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ApiMessageResponse("Usuario no encontrado"));
+            }
+        }
+
+        UserResponse user = loadUserByIdSimple(request.idUsuario());
+        return ResponseEntity.ok(user);
+    }
+
     private void ensureEmailChangeTable() throws SQLException {
         String sql = """
                 CREATE TABLE IF NOT EXISTS usuario_cambio_correo_pendiente (
@@ -878,19 +928,16 @@ public class AuthController {
     private UserResponse loadUserByIdSimple(long idUsuario) throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(
-                    "SELECT id, correo, nickname, nivel, foto FROM usuarios WHERE id = ?")) {
+                    """
+                            SELECT id, correo, nickname, nivel, foto, fecha_nacimiento
+                            FROM usuarios WHERE id = ?
+                            """)) {
                 ps.setLong(1, idUsuario);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
                         return null;
                     }
-                    return new UserResponse(
-                            rs.getLong("id"),
-                            rs.getString("correo"),
-                            rs.getString("nickname"),
-                            rs.getInt("nivel"),
-                            LeagueAssetUrls.userPhotoIfStored(rs.getLong("id"), rs.getString("foto"))
-                    );
+                    return UserMapper.fromResultSet(rs);
                 }
             }
         }
@@ -907,18 +954,52 @@ public class AuthController {
 
     private UserResponse loadUserById(Connection conn, long idUsuario) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(
-                "SELECT id, correo, nickname, nivel, foto FROM usuarios WHERE id = ?")) {
+                """
+                        SELECT id, correo, nickname, nivel, foto, fecha_nacimiento
+                        FROM usuarios WHERE id = ?
+                        """)) {
             ps.setLong(1, idUsuario);
             try (ResultSet rs = ps.executeQuery()) {
                 rs.next();
-                return new UserResponse(
-                        rs.getLong("id"),
-                        rs.getString("correo"),
-                        rs.getString("nickname"),
-                        rs.getInt("nivel"),
-                        LeagueAssetUrls.userPhotoIfStored(rs.getLong("id"), rs.getString("foto"))
-                );
+                return UserMapper.fromResultSet(rs);
             }
+        }
+    }
+
+    private boolean correoVerificadoRecientemente(String correo) {
+        String sql = """
+                SELECT 1 FROM correos_verificados
+                WHERE LOWER(correo) = LOWER(?)
+                  AND verificado_en >= (NOW(3) - INTERVAL 24 HOUR)
+                LIMIT 1
+                """;
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, correo);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    private void marcarCorreoVerificado(Connection conn, String correo) throws SQLException {
+        String sql = """
+                INSERT INTO correos_verificados (correo)
+                VALUES (?)
+                ON DUPLICATE KEY UPDATE verificado_en = CURRENT_TIMESTAMP(3)
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, correo.trim().toLowerCase());
+            ps.executeUpdate();
+        }
+    }
+
+    private void eliminarCorreoVerificado(Connection conn, String correo) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM correos_verificados WHERE LOWER(correo) = LOWER(?)")) {
+            ps.setString(1, correo);
+            ps.executeUpdate();
         }
     }
 

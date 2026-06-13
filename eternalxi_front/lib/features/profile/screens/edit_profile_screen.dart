@@ -3,6 +3,7 @@ import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/data/models/user_preferences_response.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/features/legal/screens/legal_document_screen.dart';
 import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
 import 'package:eternal_xi/features/profile/controller/profile_controller.dart';
 import 'package:eternal_xi/features/profile/controller/user_preferences_controller.dart';
@@ -464,6 +465,50 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
               const SizedBox(height: 24),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  l10n.legalSectionTitle,
+                  style: theme.textTheme.titleSmall,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(l10n.legalTermsLink),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) =>
+                        const LegalDocumentScreen(type: LegalDocumentType.terms),
+                  ),
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(l10n.legalCommunityLink),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const LegalDocumentScreen(
+                      type: LegalDocumentType.communityGuidelines,
+                    ),
+                  ),
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(l10n.legalPrivacyLink),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const LegalDocumentScreen(
+                      type: LegalDocumentType.privacySummary,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
               OutlinedButton.icon(
                 onPressed: () async {
                   await auth.logout();

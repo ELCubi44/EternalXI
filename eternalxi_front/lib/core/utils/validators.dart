@@ -1,4 +1,5 @@
 import 'package:eternal_xi/app/localization/app_localizations.dart';
+import 'package:eternal_xi/core/constants/legal_constants.dart';
 
 class Validators {
   static final _nicknameRegex =
@@ -85,6 +86,36 @@ class Validators {
     }
     if (v.length > 50) {
       return l10n.validatorLeagueNameMaxLength;
+    }
+    return null;
+  }
+
+  static String? birthDate(String? isoDate, AppLocalizations l10n) {
+    if (isoDate == null || isoDate.trim().isEmpty) {
+      return l10n.validatorRequiredBirthDate;
+    }
+    final parts = isoDate.trim().split('-');
+    if (parts.length != 3) {
+      return l10n.validatorRequiredBirthDate;
+    }
+    final year = int.tryParse(parts[0]);
+    final month = int.tryParse(parts[1]);
+    final day = int.tryParse(parts[2]);
+    if (year == null || month == null || day == null) {
+      return l10n.validatorRequiredBirthDate;
+    }
+    final birth = DateTime(year, month, day);
+    final now = DateTime.now();
+    if (birth.isAfter(now)) {
+      return l10n.validatorRequiredBirthDate;
+    }
+    var age = now.year - birth.year;
+    if (now.month < birth.month ||
+        (now.month == birth.month && now.day < birth.day)) {
+      age--;
+    }
+    if (age < LegalConstants.minimumAgeYears) {
+      return l10n.validatorUnderMinAge;
     }
     return null;
   }

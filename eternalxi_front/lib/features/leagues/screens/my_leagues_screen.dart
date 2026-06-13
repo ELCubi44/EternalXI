@@ -7,6 +7,7 @@ import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/data/models/league_summary.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/features/legal/widgets/age_confirmation_dialog.dart';
 import 'package:eternal_xi/features/leagues/controller/leagues_controller.dart';
 import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
 import 'package:eternal_xi/features/profile/widgets/achievements_tab.dart';
@@ -30,7 +31,10 @@ class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refresh();
+      showAgeConfirmationDialog(context);
+    });
   }
 
   void _onSectionChanged(int index) {
