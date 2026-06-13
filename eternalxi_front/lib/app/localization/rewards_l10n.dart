@@ -345,8 +345,8 @@ class RewardsL10n {
     }
     if (code == 'CLAUSE_ANY') {
       return _t(
-        'Ficha directamente un jugador rival de hasta 50M pagando el 100% de su valor.',
-        'Sign a rival player worth up to 50M paying 100% of their value.',
+        'Ficha directamente cualquier jugador rival pagando el 100% de su valor.',
+        'Sign any rival player paying 100% of their value.',
       );
     }
     final rounds = _protectRoundsFromCard(card);
