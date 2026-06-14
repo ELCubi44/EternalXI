@@ -8,7 +8,7 @@ import 'package:eternal_xi/features/auth/screens/request_email_verification_scre
 import 'package:eternal_xi/features/auth/screens/request_password_reset_screen.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/auth/screens/splash_screen.dart';
-import 'package:eternal_xi/features/clash/presentation/clash_placeholder_screen.dart';
+import 'package:eternal_xi/features/clash/presentation/clash_shell_screen.dart';
 import 'package:eternal_xi/features/leagues/screens/create_league_screen.dart';
 import 'package:eternal_xi/features/leagues/screens/join_league_screen.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_screen.dart';
@@ -73,7 +73,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.clash,
       redirect: redirectIfUnauthenticated,
-      builder: (context, state) => const ClashPlaceholderScreen(),
+      builder: (context, state) => const ClashShellScreen(),
     ),
     GoRoute(
       path: AppRoutes.leagues,

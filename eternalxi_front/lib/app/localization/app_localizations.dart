@@ -112,6 +112,38 @@ class AppLocalizations {
       'clashPlaceholderBody':
           'Próximamente: modo de historia, colección de cartas y batallas. Estamos preparando la experiencia.',
       'backToModeSelection': 'Cambiar modo',
+      'clashTabHome': 'Inicio',
+      'clashTabTeam': 'Equipo',
+      'clashTabSummon': 'Invocar',
+      'clashTabShop': 'Tienda',
+      'clashEnergy': 'Energía',
+      'clashCoins': 'Monedas',
+      'clashGems': 'Gemas',
+      'clashComingSoon': 'Disponible en una próxima actualización.',
+      'clashHomeTitle': 'Eternal XI Clash',
+      'clashHomeMainAccess': 'Accesos principales',
+      'clashHomeStory': 'Historia',
+      'clashHomeEvents': 'Eventos',
+      'clashHomeChallenges': 'Desafíos',
+      'clashHomeNews': 'Noticias',
+      'clashHomeProtagonistSquad': 'Equipo Eternal XI',
+      'clashHomeProtagonistHint':
+          'Vista provisional del equipo protagonista. La composición real llegará con la colección.',
+      'clashTeamLineup7': 'Alineación 7vs7',
+      'clashTeamLineup11': 'Alineación 11vs11',
+      'clashTeamCharacters': 'Personajes',
+      'clashTeamUpgrade': 'Mejorar',
+      'clashTeamSkillTree': 'Árbol de habilidades',
+      'clashSummonBanners': 'Banners',
+      'clashSummonSingle': 'Single',
+      'clashSummonMulti': 'Multi',
+      'clashSummonHistory': 'Historial',
+      'clashSummonRates': 'Probabilidades',
+      'clashShopGame': 'Tienda del juego',
+      'clashShopEvent': 'Tienda de eventos',
+      'clashShopExchange': 'Intercambio',
+      'clashShopGems': 'Gemas',
+      'clashShopPacks': 'Packs',
       'registerTitle': 'Crear cuenta',
       'registerSubtitle':
           'Únete a Eternal XI. Usa un correo válido y un nickname que te represente en las ligas.',
@@ -373,6 +405,38 @@ class AppLocalizations {
       'clashPlaceholderBody':
           'Coming soon: story mode, card collection and battles. We are building the experience.',
       'backToModeSelection': 'Change mode',
+      'clashTabHome': 'Home',
+      'clashTabTeam': 'Team',
+      'clashTabSummon': 'Summon',
+      'clashTabShop': 'Shop',
+      'clashEnergy': 'Energy',
+      'clashCoins': 'Coins',
+      'clashGems': 'Gems',
+      'clashComingSoon': 'Available in a future update.',
+      'clashHomeTitle': 'Eternal XI Clash',
+      'clashHomeMainAccess': 'Main access',
+      'clashHomeStory': 'Story',
+      'clashHomeEvents': 'Events',
+      'clashHomeChallenges': 'Challenges',
+      'clashHomeNews': 'News',
+      'clashHomeProtagonistSquad': 'Eternal XI Squad',
+      'clashHomeProtagonistHint':
+          'Provisional view of the protagonist squad. The real roster arrives with collection.',
+      'clashTeamLineup7': '7v7 lineup',
+      'clashTeamLineup11': '11v11 lineup',
+      'clashTeamCharacters': 'Characters',
+      'clashTeamUpgrade': 'Upgrade',
+      'clashTeamSkillTree': 'Skill tree',
+      'clashSummonBanners': 'Banners',
+      'clashSummonSingle': 'Single',
+      'clashSummonMulti': 'Multi',
+      'clashSummonHistory': 'History',
+      'clashSummonRates': 'Rates',
+      'clashShopGame': 'Game shop',
+      'clashShopEvent': 'Event shop',
+      'clashShopExchange': 'Exchange',
+      'clashShopGems': 'Gems',
+      'clashShopPacks': 'Packs',
       'registerTitle': 'Create account',
       'registerSubtitle':
           'Join Eternal XI. Use a valid email and a nickname that represents you in leagues.',
@@ -650,6 +714,37 @@ class AppLocalizations {
   String get clashPlaceholderTitle => _t('clashPlaceholderTitle');
   String get clashPlaceholderBody => _t('clashPlaceholderBody');
   String get backToModeSelection => _t('backToModeSelection');
+  String get clashTabHome => _t('clashTabHome');
+  String get clashTabTeam => _t('clashTabTeam');
+  String get clashTabSummon => _t('clashTabSummon');
+  String get clashTabShop => _t('clashTabShop');
+  String get clashEnergy => _t('clashEnergy');
+  String get clashCoins => _t('clashCoins');
+  String get clashGems => _t('clashGems');
+  String get clashComingSoon => _t('clashComingSoon');
+  String get clashHomeTitle => _t('clashHomeTitle');
+  String get clashHomeMainAccess => _t('clashHomeMainAccess');
+  String get clashHomeStory => _t('clashHomeStory');
+  String get clashHomeEvents => _t('clashHomeEvents');
+  String get clashHomeChallenges => _t('clashHomeChallenges');
+  String get clashHomeNews => _t('clashHomeNews');
+  String get clashHomeProtagonistSquad => _t('clashHomeProtagonistSquad');
+  String get clashHomeProtagonistHint => _t('clashHomeProtagonistHint');
+  String get clashTeamLineup7 => _t('clashTeamLineup7');
+  String get clashTeamLineup11 => _t('clashTeamLineup11');
+  String get clashTeamCharacters => _t('clashTeamCharacters');
+  String get clashTeamUpgrade => _t('clashTeamUpgrade');
+  String get clashTeamSkillTree => _t('clashTeamSkillTree');
+  String get clashSummonBanners => _t('clashSummonBanners');
+  String get clashSummonSingle => _t('clashSummonSingle');
+  String get clashSummonMulti => _t('clashSummonMulti');
+  String get clashSummonHistory => _t('clashSummonHistory');
+  String get clashSummonRates => _t('clashSummonRates');
+  String get clashShopGame => _t('clashShopGame');
+  String get clashShopEvent => _t('clashShopEvent');
+  String get clashShopExchange => _t('clashShopExchange');
+  String get clashShopGems => _t('clashShopGems');
+  String get clashShopPacks => _t('clashShopPacks');
   String get registerTitle => _t('registerTitle');
   String get registerSubtitle => _t('registerSubtitle');
   String get birthDateLabel => _t('birthDateLabel');

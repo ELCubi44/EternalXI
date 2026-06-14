@@ -7,7 +7,7 @@ import 'package:eternal_xi/data/models/user_model.dart';
 import 'package:eternal_xi/data/services/auth_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
-import 'package:eternal_xi/features/clash/presentation/clash_placeholder_screen.dart';
+import 'package:eternal_xi/features/clash/presentation/clash_shell_screen.dart';
 import 'package:eternal_xi/features/mode/screens/mode_selection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -50,7 +50,7 @@ GoRouter _phase1TestRouter(AuthController auth) {
       GoRoute(
         path: AppRoutes.clash,
         redirect: redirectIfUnauthenticated,
-        builder: (context, state) => const ClashPlaceholderScreen(),
+        builder: (context, state) => const ClashShellScreen(),
       ),
       GoRoute(
         path: AppRoutes.leagues,
@@ -143,51 +143,8 @@ void main() {
       await tester.tap(find.text('Entrar a Clash'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Eternal XI Clash'), findsWidgets);
-    });
-  });
-
-  group('ClashPlaceholderScreen', () {
-    testWidgets('renderiza título y botón volver al selector', (tester) async {
-      final auth = _authWithUser(
-        const UserModel(
-          id: 1,
-          correo: 'test@eternalxi.com',
-          nickname: 'Tester',
-          nivel: 1,
-        ),
-      );
-      final router = _phase1TestRouter(auth);
-
-      await tester.pumpWidget(_routerApp(router, auth));
-      router.go(AppRoutes.clash);
-      await tester.pumpAndSettle();
-
-      expect(find.text('Eternal XI Clash'), findsWidgets);
-      expect(find.textContaining('Próximamente'), findsOneWidget);
-      expect(find.text('Cambiar modo'), findsOneWidget);
-    });
-
-    testWidgets('volver al selector navega a /mode', (tester) async {
-      final auth = _authWithUser(
-        const UserModel(
-          id: 1,
-          correo: 'test@eternalxi.com',
-          nickname: 'Tester',
-          nivel: 1,
-        ),
-      );
-      final router = _phase1TestRouter(auth);
-
-      await tester.pumpWidget(_routerApp(router, auth));
-      router.go(AppRoutes.clash);
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Cambiar modo'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Entrar a Fantasy'), findsOneWidget);
-      expect(find.text('Entrar a Clash'), findsOneWidget);
+      expect(find.text('Eternal XI Clash'), findsOneWidget);
+      expect(find.text('Inicio'), findsOneWidget);
     });
   });
 

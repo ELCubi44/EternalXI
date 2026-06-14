@@ -52,6 +52,17 @@ Permite picos de dificultad y storytelling sin partidas excesivamente largas en 
 
 **Todos** los tipos de nivel consumen **energía** (incluidos solo historia y narrativos puros), salvo excepciones de tutorial inicial (pendiente).
 
+### 2.3 Requisitos narrativos de plantilla y cartas invitadas
+
+Algunas fases de **Historia** pueden exigir **jugadores concretos en posiciones concretas**. Estas restricciones existen para mantener coherencia narrativa y activar cinemáticas.
+
+| Regla | Detalle |
+|---|---|
+| Obligatoriedad | El diseño de la fase puede requerir un personaje concreto en una posición concreta |
+| Sin carta en colección | Si el usuario **no posee** la carta obligatoria, la fase puede **prestar una carta invitada temporal** |
+| Alcance de la invitada | Solo sirve para **esa fase**; no se añade a la colección permanente |
+| Coherencia | Las cinemáticas y escenas cómic asociadas pueden depender de esa presencia en el campo |
+
 ---
 
 ## 3. Escenas cómic
