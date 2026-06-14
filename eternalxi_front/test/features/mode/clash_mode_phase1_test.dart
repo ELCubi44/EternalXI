@@ -7,7 +7,9 @@ import 'package:eternal_xi/data/models/user_model.dart';
 import 'package:eternal_xi/data/services/auth_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/features/clash/presentation/clash_navigation_controller.dart';
 import 'package:eternal_xi/features/clash/presentation/clash_shell_screen.dart';
+import 'package:eternal_xi/features/clash/presentation/clash_tab_host.dart';
 import 'package:eternal_xi/features/mode/screens/mode_selection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,10 +49,20 @@ GoRouter _phase1TestRouter(AuthController auth) {
         redirect: redirectIfUnauthenticated,
         builder: (context, state) => const ModeSelectionScreen(),
       ),
-      GoRoute(
-        path: AppRoutes.clash,
-        redirect: redirectIfUnauthenticated,
-        builder: (context, state) => const ClashShellScreen(),
+      ShellRoute(
+        builder: (context, state, child) {
+          return ChangeNotifierProvider(
+            create: (_) => ClashNavigationController(),
+            child: ClashShellScreen(body: child),
+          );
+        },
+        routes: [
+          GoRoute(
+            path: AppRoutes.clash,
+            redirect: redirectIfUnauthenticated,
+            builder: (context, state) => const ClashTabHost(),
+          ),
+        ],
       ),
       GoRoute(
         path: AppRoutes.leagues,

@@ -1,6 +1,8 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/features/clash/presentation/widgets/clash_section_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ClashTeamScreen extends StatelessWidget {
   const ClashTeamScreen({super.key});
@@ -25,6 +27,7 @@ class ClashTeamScreen extends StatelessWidget {
         ClashSectionTile(
           icon: Icons.badge_rounded,
           title: l10n.clashTeamCharacters,
+          onTap: () => context.push(AppRoutes.clashCards),
         ),
         const SizedBox(height: 10),
         ClashSectionTile(

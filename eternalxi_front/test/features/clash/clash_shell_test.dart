@@ -6,7 +6,9 @@ import 'package:eternal_xi/data/models/user_model.dart';
 import 'package:eternal_xi/data/services/auth_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/features/clash/presentation/clash_navigation_controller.dart';
 import 'package:eternal_xi/features/clash/presentation/clash_shell_screen.dart';
+import 'package:eternal_xi/features/clash/presentation/clash_tab_host.dart';
 import 'package:eternal_xi/features/mode/screens/mode_selection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,11 +30,14 @@ AuthController _authWithUser(UserModel? user) {
 Widget _shellApp(AuthController auth) {
   return ChangeNotifierProvider<AuthController>.value(
     value: auth,
-    child: MaterialApp(
-      locale: const Locale('es'),
-      supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      home: const ClashShellScreen(),
+    child: ChangeNotifierProvider(
+      create: (_) => ClashNavigationController(),
+      child: MaterialApp(
+        locale: const Locale('es'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: const ClashShellScreen(body: ClashTabHost()),
+      ),
     ),
   );
 }
@@ -41,9 +46,19 @@ GoRouter _clashRouter(AuthController auth) {
   return GoRouter(
     initialLocation: AppRoutes.clash,
     routes: [
-      GoRoute(
-        path: AppRoutes.clash,
-        builder: (context, state) => const ClashShellScreen(),
+      ShellRoute(
+        builder: (context, state, child) {
+          return ChangeNotifierProvider(
+            create: (_) => ClashNavigationController(),
+            child: ClashShellScreen(body: child),
+          );
+        },
+        routes: [
+          GoRoute(
+            path: AppRoutes.clash,
+            builder: (context, state) => const ClashTabHost(),
+          ),
+        ],
       ),
       GoRoute(
         path: AppRoutes.mode,

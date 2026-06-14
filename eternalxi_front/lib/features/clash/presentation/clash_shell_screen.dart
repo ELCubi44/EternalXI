@@ -1,33 +1,45 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
-import 'package:eternal_xi/features/clash/home/presentation/clash_home_screen.dart';
+import 'package:eternal_xi/features/clash/presentation/clash_navigation_controller.dart';
 import 'package:eternal_xi/features/clash/presentation/widgets/clash_header_bar.dart';
-import 'package:eternal_xi/features/clash/shop/presentation/clash_shop_screen.dart';
-import 'package:eternal_xi/features/clash/summon/presentation/clash_summon_screen.dart';
-import 'package:eternal_xi/features/clash/team/presentation/clash_team_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
-class ClashShellScreen extends StatefulWidget {
-  const ClashShellScreen({super.key});
+class ClashShellScreen extends StatelessWidget {
+  const ClashShellScreen({required this.body, super.key});
 
-  @override
-  State<ClashShellScreen> createState() => _ClashShellScreenState();
-}
+  final Widget body;
 
-class _ClashShellScreenState extends State<ClashShellScreen> {
-  int _tabIndex = 0;
+  int _selectedTabIndex(BuildContext context) {
+    final nav = context.watch<ClashNavigationController>();
+    final routerState = GoRouter.maybeOf(context);
+    if (routerState != null) {
+      final path = GoRouterState.of(context).uri.path;
+      if (path.contains('/cards')) {
+        return 1;
+      }
+    }
+    return nav.tabIndex;
+  }
 
-  static const _screens = <Widget>[
-    ClashHomeScreen(),
-    ClashTeamScreen(),
-    ClashSummonScreen(),
-    ClashShopScreen(),
-  ];
+  void _onTabSelected(BuildContext context, int index) {
+    context.read<ClashNavigationController>().selectTab(index);
+    final router = GoRouter.maybeOf(context);
+    if (router != null) {
+      final path = GoRouterState.of(context).uri.path;
+      if (path != AppRoutes.clash) {
+        context.go(AppRoutes.clash);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final selectedIndex = _selectedTabIndex(context);
 
     return Scaffold(
       backgroundColor: context.xiBackground,
@@ -35,17 +47,12 @@ class _ClashShellScreenState extends State<ClashShellScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const ClashHeaderBar(),
-          Expanded(
-            child: IndexedStack(index: _tabIndex, children: _screens),
-          ),
+          Expanded(child: body),
         ],
       ),
       bottomNavigationBar: NavigationBar(
-        selectedIndex: _tabIndex,
-        onDestinationSelected: (index) {
-          if (index == _tabIndex) return;
-          setState(() => _tabIndex = index);
-        },
+        selectedIndex: selectedIndex,
+        onDestinationSelected: (index) => _onTabSelected(context, index),
         destinations: [
           NavigationDestination(
             icon: const Icon(Icons.home_outlined),

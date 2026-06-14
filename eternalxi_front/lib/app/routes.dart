@@ -9,6 +9,10 @@ class AppRoutes {
   static const home = '/home';
   static const mode = '/mode';
   static const clash = '/clash';
+  static const clashCards = '/clash/cards';
+
+  static String clashCardDetail(String cardId) => '/clash/cards/$cardId';
+
   static const profile = '/profile';
   static const changeEmailRequest = '/profile/change-email';
   static const changeEmailConfirm = '/profile/change-email/confirm';

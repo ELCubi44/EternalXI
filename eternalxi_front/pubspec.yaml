@@ -73,6 +73,7 @@ flutter:
   assets:
     - assets/app/
     - assets/fonts/
+    - assets/data/clash/cards.json
 
   fonts:
     - family: Lumiare

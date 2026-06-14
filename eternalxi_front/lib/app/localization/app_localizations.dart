@@ -144,6 +144,42 @@ class AppLocalizations {
       'clashShopExchange': 'Intercambio',
       'clashShopGems': 'Gemas',
       'clashShopPacks': 'Packs',
+      'clashBack': 'Volver',
+      'clashCollectionTitle': 'Personajes',
+      'clashSearchHint': 'Buscar por nombre',
+      'clashFilterAll': 'Todos',
+      'clashFilterRarity': 'Rareza',
+      'clashFilterPosition': 'Posición',
+      'clashFilterStyle': 'Estilo',
+      'clashSortLabel': 'Orden',
+      'clashSortPower': 'Potencia',
+      'clashSortLevel': 'Nivel',
+      'clashSortName': 'Nombre',
+      'clashSortDirection': 'Invertir orden',
+      'clashCollectionEmpty': 'No hay cartas con estos filtros.',
+      'clashCollectionLoadError': 'No se pudo cargar la colección.',
+      'clashCardNotFound': 'Carta no encontrada.',
+      'clashCardTeam': 'Equipo',
+      'clashCardPosition': 'Posición',
+      'clashCardStyle': 'Estilo',
+      'clashCardLevel': 'Nivel',
+      'clashCardPower': 'Potencia',
+      'clashCardStats': 'Estadísticas',
+      'clashStatSave': 'Parada',
+      'clashStatDefense': 'Defensa',
+      'clashStatPass': 'Pase',
+      'clashStatDribble': 'Regate',
+      'clashStatShot': 'Tiro',
+      'clashStatPt': 'PT',
+      'clashStatStamina': 'Resistencia',
+      'clashTechniqueSection': 'Supertécnica',
+      'clashTechniqueType': 'Tipo',
+      'clashTechniquePower': 'Potencia',
+      'clashTechniquePtCost': 'Coste PT',
+      'clashTechniqueLevel': 'Nivel',
+      'clashActionUpgrade': 'Mejorar',
+      'clashActionEvolve': 'Evolución',
+      'clashActionTree': 'Árbol',
       'registerTitle': 'Crear cuenta',
       'registerSubtitle':
           'Únete a Eternal XI. Usa un correo válido y un nickname que te represente en las ligas.',
@@ -437,6 +473,42 @@ class AppLocalizations {
       'clashShopExchange': 'Exchange',
       'clashShopGems': 'Gems',
       'clashShopPacks': 'Packs',
+      'clashBack': 'Back',
+      'clashCollectionTitle': 'Characters',
+      'clashSearchHint': 'Search by name',
+      'clashFilterAll': 'All',
+      'clashFilterRarity': 'Rarity',
+      'clashFilterPosition': 'Position',
+      'clashFilterStyle': 'Style',
+      'clashSortLabel': 'Sort',
+      'clashSortPower': 'Power',
+      'clashSortLevel': 'Level',
+      'clashSortName': 'Name',
+      'clashSortDirection': 'Toggle sort direction',
+      'clashCollectionEmpty': 'No cards match these filters.',
+      'clashCollectionLoadError': 'Could not load the collection.',
+      'clashCardNotFound': 'Card not found.',
+      'clashCardTeam': 'Team',
+      'clashCardPosition': 'Position',
+      'clashCardStyle': 'Style',
+      'clashCardLevel': 'Level',
+      'clashCardPower': 'Power',
+      'clashCardStats': 'Stats',
+      'clashStatSave': 'Save',
+      'clashStatDefense': 'Defense',
+      'clashStatPass': 'Pass',
+      'clashStatDribble': 'Dribble',
+      'clashStatShot': 'Shot',
+      'clashStatPt': 'TP',
+      'clashStatStamina': 'Stamina',
+      'clashTechniqueSection': 'Super technique',
+      'clashTechniqueType': 'Type',
+      'clashTechniquePower': 'Power',
+      'clashTechniquePtCost': 'TP cost',
+      'clashTechniqueLevel': 'Level',
+      'clashActionUpgrade': 'Upgrade',
+      'clashActionEvolve': 'Evolution',
+      'clashActionTree': 'Tree',
       'registerTitle': 'Create account',
       'registerSubtitle':
           'Join Eternal XI. Use a valid email and a nickname that represents you in leagues.',
@@ -745,6 +817,42 @@ class AppLocalizations {
   String get clashShopExchange => _t('clashShopExchange');
   String get clashShopGems => _t('clashShopGems');
   String get clashShopPacks => _t('clashShopPacks');
+  String get clashBack => _t('clashBack');
+  String get clashCollectionTitle => _t('clashCollectionTitle');
+  String get clashSearchHint => _t('clashSearchHint');
+  String get clashFilterAll => _t('clashFilterAll');
+  String get clashFilterRarity => _t('clashFilterRarity');
+  String get clashFilterPosition => _t('clashFilterPosition');
+  String get clashFilterStyle => _t('clashFilterStyle');
+  String get clashSortLabel => _t('clashSortLabel');
+  String get clashSortPower => _t('clashSortPower');
+  String get clashSortLevel => _t('clashSortLevel');
+  String get clashSortName => _t('clashSortName');
+  String get clashSortDirection => _t('clashSortDirection');
+  String get clashCollectionEmpty => _t('clashCollectionEmpty');
+  String get clashCollectionLoadError => _t('clashCollectionLoadError');
+  String get clashCardNotFound => _t('clashCardNotFound');
+  String get clashCardTeam => _t('clashCardTeam');
+  String get clashCardPosition => _t('clashCardPosition');
+  String get clashCardStyle => _t('clashCardStyle');
+  String get clashCardLevel => _t('clashCardLevel');
+  String get clashCardPower => _t('clashCardPower');
+  String get clashCardStats => _t('clashCardStats');
+  String get clashStatSave => _t('clashStatSave');
+  String get clashStatDefense => _t('clashStatDefense');
+  String get clashStatPass => _t('clashStatPass');
+  String get clashStatDribble => _t('clashStatDribble');
+  String get clashStatShot => _t('clashStatShot');
+  String get clashStatPt => _t('clashStatPt');
+  String get clashStatStamina => _t('clashStatStamina');
+  String get clashTechniqueSection => _t('clashTechniqueSection');
+  String get clashTechniqueType => _t('clashTechniqueType');
+  String get clashTechniquePower => _t('clashTechniquePower');
+  String get clashTechniquePtCost => _t('clashTechniquePtCost');
+  String get clashTechniqueLevel => _t('clashTechniqueLevel');
+  String get clashActionUpgrade => _t('clashActionUpgrade');
+  String get clashActionEvolve => _t('clashActionEvolve');
+  String get clashActionTree => _t('clashActionTree');
   String get registerTitle => _t('registerTitle');
   String get registerSubtitle => _t('registerSubtitle');
   String get birthDateLabel => _t('birthDateLabel');

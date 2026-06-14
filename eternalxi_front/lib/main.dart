@@ -10,6 +10,9 @@ import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/data/services/user_progress_api_service.dart';
 import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
+import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/leagues/controller/leagues_controller.dart';
 import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
@@ -23,17 +26,13 @@ import 'package:provider/provider.dart';
 import 'package:timezone/data/latest_all.dart' as tzdata;
 
 Future<void> _lockPortraitOrientation() {
-  return SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
+  return SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _lockPortraitOrientation();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   tzdata.initializeTimeZones();
 
   final secureStorageService = SecureStorageService();
@@ -64,7 +63,8 @@ Future<void> main() async {
           create: (context) => UserApiService(context.read<ApiClient>()),
         ),
         Provider<UserProgressApiService>(
-          create: (context) => UserProgressApiService(context.read<ApiClient>()),
+          create: (context) =>
+              UserProgressApiService(context.read<ApiClient>()),
         ),
         Provider<LeaguesApiService>(
           create: (context) => LeaguesApiService(context.read<ApiClient>()),
@@ -121,6 +121,17 @@ Future<void> main() async {
           create: (context) => LeaguesController(
             leaguesApiService: context.read<LeaguesApiService>(),
           ),
+        ),
+        Provider<ClashCardsLocalDataSource>(
+          create: (_) => ClashCardsLocalDataSource(),
+        ),
+        Provider<ClashCardsRepository>(
+          create: (context) =>
+              ClashCardsRepository(context.read<ClashCardsLocalDataSource>()),
+        ),
+        ChangeNotifierProvider<ClashCardsController>(
+          create: (context) =>
+              ClashCardsController(context.read<ClashCardsRepository>()),
         ),
       ],
       child: const EternalXiApp(),
