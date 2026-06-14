@@ -10,6 +10,7 @@ class AppRoutes {
   static const mode = '/mode';
   static const clash = '/clash';
   static const clashCards = '/clash/cards';
+  static const clashTeam7v7 = '/clash/team/7v7';
 
   static String clashCardDetail(String cardId) => '/clash/cards/$cardId';
 

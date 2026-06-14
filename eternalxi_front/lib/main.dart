@@ -1,7 +1,5 @@
 import 'package:eternal_xi/core/localization/app_locale_resolver.dart';
 import 'package:eternal_xi/app/app.dart';
-import 'package:eternal_xi/app/router.dart';
-import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/core/network/api_client.dart';
 import 'package:eternal_xi/core/storage/secure_storage_service.dart';
 import 'package:eternal_xi/core/storage/theme_preferences_storage.dart';
@@ -10,6 +8,9 @@ import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/data/services/user_progress_api_service.dart';
 import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.dart';
+import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
+import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
+import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
@@ -37,6 +38,8 @@ Future<void> main() async {
 
   final secureStorageService = SecureStorageService();
   final themePreferencesStorage = await ThemePreferencesStorage.create();
+  final clashLineupsBackend =
+      await SharedPreferencesClashLineupsBackend.create();
   final apiClient = ApiClient(
     acceptLanguage: AppLocaleResolver.apiLanguageTag(),
     secureStorage: secureStorageService,
@@ -132,6 +135,18 @@ Future<void> main() async {
         ChangeNotifierProvider<ClashCardsController>(
           create: (context) =>
               ClashCardsController(context.read<ClashCardsRepository>()),
+        ),
+        Provider<ClashLineupsStorageBackend>.value(value: clashLineupsBackend),
+        Provider<ClashLineupsRepository>(
+          create: (context) => ClashLineupsRepository(
+            storage: context.read<ClashLineupsStorageBackend>(),
+            cardsRepository: context.read<ClashCardsRepository>(),
+          ),
+        ),
+        ChangeNotifierProvider<ClashLineupsController>(
+          create: (context) => ClashLineupsController(
+            lineupsRepository: context.read<ClashLineupsRepository>(),
+          ),
         ),
       ],
       child: const EternalXiApp(),

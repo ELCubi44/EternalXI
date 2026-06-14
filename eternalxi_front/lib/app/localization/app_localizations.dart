@@ -180,6 +180,21 @@ class AppLocalizations {
       'clashActionUpgrade': 'Mejorar',
       'clashActionEvolve': 'Evolución',
       'clashActionTree': 'Árbol',
+      'clashLineupSlotEmpty': 'Vacío',
+      'clashLineupTotalPower': 'Potencia total',
+      'clashLineupComplete': 'Alineación completa',
+      'clashLineupIncomplete': 'Alineación incompleta',
+      'clashLineupMissingTitle': 'Posiciones pendientes:',
+      'clashLineupSetActive': 'Establecer como activa',
+      'clashLineupRenameTitle': 'Renombrar alineación',
+      'clashLineupRenameHint': 'Nombre de la alineación',
+      'clashLineupRenameSave': 'Guardar',
+      'clashLineupLoadError': 'No se pudieron cargar las alineaciones.',
+      'clashLineupClearSlot': 'Quitar carta',
+      'clashLineupNoCompatibleCards':
+          'No hay cartas compatibles para esta posición.',
+      'clashLineupBlockWrongPosition': 'Posición incompatible',
+      'clashLineupBlockDuplicatePlayer': 'Jugador ya en la alineación',
       'registerTitle': 'Crear cuenta',
       'registerSubtitle':
           'Únete a Eternal XI. Usa un correo válido y un nickname que te represente en las ligas.',
@@ -509,6 +524,20 @@ class AppLocalizations {
       'clashActionUpgrade': 'Upgrade',
       'clashActionEvolve': 'Evolution',
       'clashActionTree': 'Tree',
+      'clashLineupSlotEmpty': 'Empty',
+      'clashLineupTotalPower': 'Total power',
+      'clashLineupComplete': 'Lineup complete',
+      'clashLineupIncomplete': 'Lineup incomplete',
+      'clashLineupMissingTitle': 'Missing positions:',
+      'clashLineupSetActive': 'Set as active',
+      'clashLineupRenameTitle': 'Rename lineup',
+      'clashLineupRenameHint': 'Lineup name',
+      'clashLineupRenameSave': 'Save',
+      'clashLineupLoadError': 'Could not load lineups.',
+      'clashLineupClearSlot': 'Remove card',
+      'clashLineupNoCompatibleCards': 'No compatible cards for this position.',
+      'clashLineupBlockWrongPosition': 'Incompatible position',
+      'clashLineupBlockDuplicatePlayer': 'Player already in lineup',
       'registerTitle': 'Create account',
       'registerSubtitle':
           'Join Eternal XI. Use a valid email and a nickname that represents you in leagues.',
@@ -853,6 +882,28 @@ class AppLocalizations {
   String get clashActionUpgrade => _t('clashActionUpgrade');
   String get clashActionEvolve => _t('clashActionEvolve');
   String get clashActionTree => _t('clashActionTree');
+  String get clashLineupSlotEmpty => _t('clashLineupSlotEmpty');
+  String get clashLineupTotalPower => _t('clashLineupTotalPower');
+  String get clashLineupComplete => _t('clashLineupComplete');
+  String get clashLineupIncomplete => _t('clashLineupIncomplete');
+  String get clashLineupMissingTitle => _t('clashLineupMissingTitle');
+  String get clashLineupSetActive => _t('clashLineupSetActive');
+  String get clashLineupRenameTitle => _t('clashLineupRenameTitle');
+  String get clashLineupRenameHint => _t('clashLineupRenameHint');
+  String get clashLineupRenameSave => _t('clashLineupRenameSave');
+  String get clashLineupLoadError => _t('clashLineupLoadError');
+  String get clashLineupClearSlot => _t('clashLineupClearSlot');
+  String get clashLineupNoCompatibleCards => _t('clashLineupNoCompatibleCards');
+  String get clashLineupBlockWrongPosition =>
+      _t('clashLineupBlockWrongPosition');
+  String get clashLineupBlockDuplicatePlayer =>
+      _t('clashLineupBlockDuplicatePlayer');
+
+  String clashLineupPickCard(String position) {
+    final en = locale.languageCode.toLowerCase() == 'en';
+    return en ? 'Choose card · $position' : 'Elegir carta · $position';
+  }
+
   String get registerTitle => _t('registerTitle');
   String get registerSubtitle => _t('registerSubtitle');
   String get birthDateLabel => _t('birthDateLabel');

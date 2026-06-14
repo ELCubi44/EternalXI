@@ -18,7 +18,7 @@ class ClashShellScreen extends StatelessWidget {
     final routerState = GoRouter.maybeOf(context);
     if (routerState != null) {
       final path = GoRouterState.of(context).uri.path;
-      if (path.contains('/cards')) {
+      if (path.contains('/cards') || path.contains('/team')) {
         return 1;
       }
     }

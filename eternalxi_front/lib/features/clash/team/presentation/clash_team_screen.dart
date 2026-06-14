@@ -17,6 +17,7 @@ class ClashTeamScreen extends StatelessWidget {
         ClashSectionTile(
           icon: Icons.sports_soccer_rounded,
           title: l10n.clashTeamLineup7,
+          onTap: () => context.push(AppRoutes.clashTeam7v7),
         ),
         const SizedBox(height: 10),
         ClashSectionTile(
