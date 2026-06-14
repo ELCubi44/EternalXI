@@ -131,6 +131,8 @@ Usos: comparación, recomendación, advertencia. **Nunca bloquea** acceso al niv
 
 Valores exactos de curva de penalización: pendiente de balance en `CLASH_MATCH_SYSTEM.md`.
 
+**Implementación Fase 3 (provisional):** `deficit = 100 - resistenciaActual`, `penalty = deficit × 0.003`, multiplicador mínimo **0.70**. Solo afecta Parada, Defensa, Pase, Regate y Tiro; **PT no se reduce** por cansancio.
+
 ---
 
 ## 6. Puntos de Técnica (PT)
@@ -196,6 +198,8 @@ La pasiva XI es permanente en partido (efecto por definir en balance; no consume
 | XI | +potencia |
 
 **Solo aumenta potencia.** El coste PT **no baja**.
+
+**Implementación Fase 3 (provisional):** multiplicadores Normal 1.00, I 1.05, V 1.10, X 1.15, XI 1.20 sobre `basePower`.
 
 ---
 
@@ -337,7 +341,8 @@ Detalle de efectos numéricos: `CLASH_MATCH_SYSTEM.md`.
 ## 15. Modelo de datos (orientación implementación futura)
 
 ```
-ClashCard
+ClashCard              — definición estática (rareza, stats, técnicas, playerId)
+ClashCardProgress      — progreso del usuario (nivel, XP, árbol, niveles de técnica)
 ClashSuperTechnique
 ClashStyle (enum)
 ClashRarity (enum)
@@ -346,7 +351,9 @@ ClashTreeNode
 ClashDuplicateMaterial
 ```
 
-**Ubicación futura:** `features/clash/data/models/` — **no** en `data/models/league_*`.
+**Separación Fase 3:** `ClashCard` describe la carta; `ClashCardProgress` guarda el estado del jugador (nivel, experiencia, nodos de duplicados, niveles de supertécnicas) sin mezclar ambos en un solo modelo.
+
+**Ubicación:** `features/clash/cards/domain/` — **no** en `data/models/league_*`.
 
 **Vínculo catálogo:** `playerId` → `CatalogPlayerBridge` (solo lectura).
 
