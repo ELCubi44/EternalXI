@@ -74,6 +74,8 @@ flutter:
     - assets/app/
     - assets/fonts/
     - assets/data/clash/cards.json
+    - assets/data/clash/story/sagas.json
+    - assets/data/clash/story/chapter_01.json
 
   fonts:
     - family: Lumiare

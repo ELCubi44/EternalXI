@@ -1,5 +1,6 @@
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
 import 'package:eternal_xi/features/clash/team/domain/clash_lineup_7v7.dart';
 import 'package:eternal_xi/features/clash/team/domain/clash_lineup_rules.dart';
@@ -9,10 +10,14 @@ enum ClashLineupsLoadState { idle, loading, ready, error }
 
 /// Estado de alineaciones 7vs7 Clash.
 class ClashLineupsController extends ChangeNotifier {
-  ClashLineupsController({required ClashLineupsRepository lineupsRepository})
-    : _lineupsRepository = lineupsRepository;
+  ClashLineupsController({
+    required ClashLineupsRepository lineupsRepository,
+    required ClashPlayerCollectionRepository collectionRepository,
+  }) : _lineupsRepository = lineupsRepository,
+       _collectionRepository = collectionRepository;
 
   final ClashLineupsRepository _lineupsRepository;
+  final ClashPlayerCollectionRepository _collectionRepository;
 
   ClashLineupsLoadState _state = ClashLineupsLoadState.idle;
   String? _errorMessage;
@@ -116,7 +121,11 @@ class ClashLineupsController extends ChangeNotifier {
     }
 
     final query = searchQuery.trim().toLowerCase();
+    final owned = _collectionRepository.loadOwnedCardIds();
     final entries = _catalogById.values.where((entry) {
+      if (!owned.contains(entry.id)) {
+        return false;
+      }
       if (query.isNotEmpty && !entry.name.toLowerCase().contains(query)) {
         return false;
       }

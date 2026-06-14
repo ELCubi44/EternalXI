@@ -1,0 +1,12 @@
+{
+  "sagas": [
+    {
+      "id": "saga-01",
+      "title": "El despertar de Eternal XI",
+      "description": "El origen del equipo protagonista y la primera chispa del camino hacia la gloria.",
+      "order": 1,
+      "chapterIds": ["chapter-01"],
+      "isUnlocked": true
+    }
+  ]
+}

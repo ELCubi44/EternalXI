@@ -1,6 +1,8 @@
 import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
 import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
@@ -57,11 +59,21 @@ void main() {
 }
 ''');
 
+    final cardsRepo = ClashCardsRepository(_FakeCardsDataSource(cards));
+    final collectionRepo = ClashPlayerCollectionRepository(
+      storage: InMemoryClashPlayerCollectionBackend(),
+      cardsRepository: cardsRepo,
+    );
+    await collectionRepo.grantMissingCardIds(['gk-1']);
+
     final lineupsRepo = ClashLineupsRepository(
       storage: InMemoryClashLineupsBackend(),
-      cardsRepository: ClashCardsRepository(_FakeCardsDataSource(cards)),
+      cardsRepository: cardsRepo,
     );
-    final controller = ClashLineupsController(lineupsRepository: lineupsRepo);
+    final controller = ClashLineupsController(
+      lineupsRepository: lineupsRepo,
+      collectionRepository: collectionRepo,
+    );
     await controller.load();
 
     await tester.pumpWidget(await _lineupScreen(controller: controller));

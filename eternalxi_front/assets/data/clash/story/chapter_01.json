@@ -1,0 +1,183 @@
+{
+  "chapter": {
+    "id": "chapter-01",
+    "sagaId": "saga-01",
+    "title": "Prólogo: Nace Eternal XI",
+    "description": "Tres encuentros marcan el inicio del equipo que cambiará el destino del fútbol.",
+    "order": 1,
+    "levels": [
+      {
+        "id": "prologue-lvl-01",
+        "chapterId": "chapter-01",
+        "title": "Un nuevo amanecer",
+        "description": "Presentación del mundo y del entrenador protagonista.",
+        "order": 1,
+        "type": "story",
+        "energyCost": 5,
+        "rewards": {
+          "gems": 1,
+          "items": [
+            {
+              "id": "training-cone",
+              "name": "Cono de entrenamiento",
+              "quantity": 2
+            },
+            {
+              "id": "energy-drink",
+              "name": "Bebida energética",
+              "quantity": 1
+            }
+          ]
+        },
+        "scenes": [
+          {
+            "id": "p1-s1",
+            "order": 1,
+            "type": "narration",
+            "text": "En las calles de la ciudad, el rumor de un proyecto imposible empieza a crecer: formar un equipo capaz de desafiar a los gigantes del fútbol.",
+            "isSkippable": true
+          },
+          {
+            "id": "p1-s2",
+            "order": 2,
+            "type": "dialogue",
+            "speaker": "Narrador",
+            "text": "Tú eres el entrenador elegido para dar el primer paso. Eternal XI aún no existe… pero la chispa ya arde.",
+            "isSkippable": true
+          },
+          {
+            "id": "p1-s3",
+            "order": 3,
+            "type": "dialogue",
+            "speaker": "Entrenador",
+            "text": "No busco estrellas listas. Busco jugadores con alma. Si confían en mí, les enseñaré a ganar juntos.",
+            "isSkippable": true
+          },
+          {
+            "id": "p1-s4",
+            "order": 4,
+            "type": "narration",
+            "text": "El viejo campo de entrenamiento abre sus puertas. Es el lugar donde todo comenzará.",
+            "isSkippable": true
+          }
+        ],
+        "completionUnlocks": {}
+      },
+      {
+        "id": "prologue-lvl-02",
+        "chapterId": "chapter-01",
+        "title": "Primeros compañeros",
+        "description": "Encuentro con los primeros jugadores que responderán a la llamada.",
+        "order": 2,
+        "type": "story",
+        "energyCost": 5,
+        "rewards": {
+          "gems": 1,
+          "items": [
+            {
+              "id": "team-scarf",
+              "name": "Bufanda del equipo",
+              "quantity": 1
+            },
+            {
+              "id": "basic-kit",
+              "name": "Equipación básica",
+              "quantity": 1
+            }
+          ]
+        },
+        "scenes": [
+          {
+            "id": "p2-s1",
+            "order": 1,
+            "type": "dialogue",
+            "speaker": "Marco Reyes",
+            "text": "He oído lo que quieres construir. Si de verdad vas en serio, cuentas conmigo entre los palos.",
+            "isSkippable": true
+          },
+          {
+            "id": "p2-s2",
+            "order": 2,
+            "type": "dialogue",
+            "speaker": "Dante Silva",
+            "text": "Nadie va a pasar por mi lado sin luchar. Si formamos defensa juntos, este equipo aguantará cualquier tormenta.",
+            "isSkippable": true
+          },
+          {
+            "id": "p2-s3",
+            "order": 3,
+            "type": "dialogue",
+            "speaker": "Lucía Vega",
+            "text": "No vine por el nombre del club. Vine porque vi convicción en tus ojos. Enséñame dónde firmo.",
+            "isSkippable": true
+          },
+          {
+            "id": "p2-s4",
+            "order": 4,
+            "type": "narration",
+            "text": "Uno a uno, los primeros compañeros llegan al campo. Aún no hay once titular, pero ya hay un equipo en formación.",
+            "isSkippable": true
+          }
+        ],
+        "completionUnlocks": {}
+      },
+      {
+        "id": "prologue-lvl-03",
+        "chapterId": "chapter-01",
+        "title": "Eternal XI, oficialmente",
+        "description": "Formación oficial del equipo protagonista y entrega del roster inicial.",
+        "order": 3,
+        "type": "story",
+        "energyCost": 5,
+        "rewards": {
+          "gems": 1,
+          "items": [
+            {
+              "id": "team-badge",
+              "name": "Escudo Eternal XI",
+              "quantity": 1
+            }
+          ],
+          "starterRosterKey": "eternal_xi_starter_n"
+        },
+        "scenes": [
+          {
+            "id": "p3-s1",
+            "order": 1,
+            "type": "narration",
+            "text": "El sol se pone sobre el campo mientras catorce jugadores forman un círculo en el centro.",
+            "isSkippable": true
+          },
+          {
+            "id": "p3-s2",
+            "order": 2,
+            "type": "dialogue",
+            "speaker": "Entrenador",
+            "text": "Hoy no nace solo un club. Hoy nace Eternal XI. Cada uno de vosotros lleva este nombre en la piel.",
+            "isSkippable": false
+          },
+          {
+            "id": "p3-s3",
+            "order": 3,
+            "type": "dialogue",
+            "speaker": "Equipo",
+            "text": "¡Eternal XI!",
+            "isSkippable": false
+          },
+          {
+            "id": "p3-s4",
+            "order": 4,
+            "type": "narration",
+            "text": "Las cartas N del roster inicial quedan registradas. El equipo está listo para dar el siguiente paso en su historia.",
+            "isSkippable": true
+          }
+        ],
+        "completionUnlocks": {
+          "clashTeamUnlocked": true,
+          "firstLineupUnlocked": true,
+          "nextPlayableLevelUnlocked": true
+        }
+      }
+    ]
+  }
+}

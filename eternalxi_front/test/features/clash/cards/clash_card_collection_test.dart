@@ -2,6 +2,8 @@ import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/screens/clash_card_collection_screen.dart';
@@ -62,9 +64,13 @@ class _FakeDataSource extends ClashCardsLocalDataSource {
 
 Future<ClashCardsController> _readyController() async {
   final cards = ClashCardsLocalDataSource().parseCardsJson(_sampleJson);
-  final controller = ClashCardsController(
-    ClashCardsRepository(_FakeDataSource(cards)),
+  final cardsRepo = ClashCardsRepository(_FakeDataSource(cards));
+  final collectionRepo = ClashPlayerCollectionRepository(
+    storage: InMemoryClashPlayerCollectionBackend(),
+    cardsRepository: cardsRepo,
   );
+  await collectionRepo.grantMissingCardIds(['ui-test-1']);
+  final controller = ClashCardsController(cardsRepo, collectionRepo);
   await controller.load();
   return controller;
 }

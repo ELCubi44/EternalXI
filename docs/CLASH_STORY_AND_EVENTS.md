@@ -63,6 +63,22 @@ Algunas fases de **Historia** pueden exigir **jugadores concretos en posiciones 
 | Alcance de la invitada | Solo sirve para **esa fase**; no se añade a la colección permanente |
 | Coherencia | Las cinemáticas y escenas cómic asociadas pueden depender de esa presencia en el campo |
 
+### 2.4 Activación de escenas y cinemáticas (fases futuras)
+
+Las escenas podrán activarse en distintos momentos del flujo narrativo o de partido. **No implementado en partidos en la fase actual**; el modelo de datos ya contempla `trigger` en escenas y requisitos de plantilla para prepararlo.
+
+| Momento / condición | Uso previsto |
+|---|---|
+| Antes del partido | Contexto, presentación rival |
+| Durante el partido | Pausa por eventos narrativos |
+| Tras gol | Reacción o giro de trama |
+| Por marcador | Escena condicionada al resultado parcial |
+| Al usar jugador concreto | Coherencia con `requiredPlayers` / `guestCards` |
+| Al usar supertécnica concreta | Destacar momento clave |
+| Después del partido | Consecuencias y desbloqueos |
+
+Si el jugador no tiene la carta requerida, la fase puede prestar una **guestCard** temporal (no persistente en colección).
+
 ---
 
 ## 3. Escenas cómic

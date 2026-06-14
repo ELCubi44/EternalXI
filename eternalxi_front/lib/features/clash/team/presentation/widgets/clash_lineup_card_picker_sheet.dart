@@ -126,7 +126,8 @@ class _ClashLineupCardPickerSheetState
                 child: ListView.separated(
                   controller: scrollController,
                   itemCount: entries.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 8),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final entry = entries[index];
                     final block = widget.controller.pickerBlockReason(

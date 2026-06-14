@@ -13,6 +13,8 @@ import 'package:eternal_xi/features/clash/cards/presentation/screens/clash_card_
 import 'package:eternal_xi/features/clash/presentation/clash_navigation_controller.dart';
 import 'package:eternal_xi/features/clash/presentation/clash_shell_screen.dart';
 import 'package:eternal_xi/features/clash/presentation/clash_tab_host.dart';
+import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_level_reader_screen.dart';
+import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_map_screen.dart';
 import 'package:eternal_xi/features/clash/team/presentation/screens/clash_lineup_7v7_screen.dart';
 import 'package:eternal_xi/features/leagues/screens/create_league_screen.dart';
 import 'package:eternal_xi/features/leagues/screens/join_league_screen.dart';
@@ -89,6 +91,18 @@ final GoRouter appRouter = GoRouter(
           pageBuilder: (context, state) =>
               const NoTransitionPage(child: ClashTabHost()),
           routes: [
+            GoRoute(
+              path: 'story',
+              builder: (context, state) => const ClashStoryMapScreen(),
+              routes: [
+                GoRoute(
+                  path: 'level/:levelId',
+                  builder: (context, state) => ClashStoryLevelReaderScreen(
+                    levelId: state.pathParameters['levelId'] ?? '',
+                  ),
+                ),
+              ],
+            ),
             GoRoute(
               path: 'team/7v7',
               builder: (context, state) => const ClashLineup7v7Screen(),

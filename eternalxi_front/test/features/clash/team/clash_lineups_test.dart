@@ -1,5 +1,7 @@
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
@@ -96,6 +98,20 @@ Future<ClashLineupsRepository> _repository() async {
   return ClashLineupsRepository(
     storage: storage,
     cardsRepository: ClashCardsRepository(_FakeCardsDataSource(cards)),
+  );
+}
+
+Future<ClashLineupsController> _controller() async {
+  final cards = ClashCardsLocalDataSource().parseCardsJson(_cardsJson);
+  final cardsRepo = ClashCardsRepository(_FakeCardsDataSource(cards));
+  final collectionRepo = ClashPlayerCollectionRepository(
+    storage: InMemoryClashPlayerCollectionBackend(),
+    cardsRepository: cardsRepo,
+  );
+  await collectionRepo.grantMissingCardIds(['gk-1', 'st-1', 'cb-1', 'gk-dup']);
+  return ClashLineupsController(
+    lineupsRepository: await _repository(),
+    collectionRepository: collectionRepo,
   );
 }
 
@@ -309,8 +325,7 @@ void main() {
 
   group('ClashLineupsController picker', () {
     test('selector filtra por posición mostrando bloqueos', () async {
-      final repo = await _repository();
-      final controller = ClashLineupsController(lineupsRepository: repo);
+      final controller = await _controller();
       await controller.load();
 
       final gkEntries = controller.pickerEntries(

@@ -8,6 +8,12 @@ import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/data/services/user_progress_api_service.dart';
 import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
+import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_local_datasource.dart';
+import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
+import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
+import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
 import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
 import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
@@ -40,6 +46,10 @@ Future<void> main() async {
   final themePreferencesStorage = await ThemePreferencesStorage.create();
   final clashLineupsBackend =
       await SharedPreferencesClashLineupsBackend.create();
+  final clashCollectionBackend =
+      await SharedPreferencesClashPlayerCollectionBackend.create();
+  final clashStoryProgressBackend =
+      await SharedPreferencesClashStoryProgressBackend.create();
   final apiClient = ApiClient(
     acceptLanguage: AppLocaleResolver.apiLanguageTag(),
     secureStorage: secureStorageService,
@@ -132,9 +142,39 @@ Future<void> main() async {
           create: (context) =>
               ClashCardsRepository(context.read<ClashCardsLocalDataSource>()),
         ),
+        Provider<ClashPlayerCollectionStorageBackend>.value(
+          value: clashCollectionBackend,
+        ),
+        Provider<ClashPlayerCollectionRepository>(
+          create: (context) => ClashPlayerCollectionRepository(
+            storage: context.read<ClashPlayerCollectionStorageBackend>(),
+            cardsRepository: context.read<ClashCardsRepository>(),
+          ),
+        ),
         ChangeNotifierProvider<ClashCardsController>(
-          create: (context) =>
-              ClashCardsController(context.read<ClashCardsRepository>()),
+          create: (context) => ClashCardsController(
+            context.read<ClashCardsRepository>(),
+            context.read<ClashPlayerCollectionRepository>(),
+          ),
+        ),
+        Provider<ClashStoryLocalDataSource>(
+          create: (_) => ClashStoryLocalDataSource(),
+        ),
+        Provider<ClashStoryProgressStorageBackend>.value(
+          value: clashStoryProgressBackend,
+        ),
+        Provider<ClashStoryRepository>(
+          create: (context) => ClashStoryRepository(
+            dataSource: context.read<ClashStoryLocalDataSource>(),
+            progressStorage: context.read<ClashStoryProgressStorageBackend>(),
+            collectionRepository: context
+                .read<ClashPlayerCollectionRepository>(),
+          ),
+        ),
+        ChangeNotifierProvider<ClashStoryController>(
+          create: (context) => ClashStoryController(
+            storyRepository: context.read<ClashStoryRepository>(),
+          ),
         ),
         Provider<ClashLineupsStorageBackend>.value(value: clashLineupsBackend),
         Provider<ClashLineupsRepository>(
@@ -146,6 +186,8 @@ Future<void> main() async {
         ChangeNotifierProvider<ClashLineupsController>(
           create: (context) => ClashLineupsController(
             lineupsRepository: context.read<ClashLineupsRepository>(),
+            collectionRepository: context
+                .read<ClashPlayerCollectionRepository>(),
           ),
         ),
       ],

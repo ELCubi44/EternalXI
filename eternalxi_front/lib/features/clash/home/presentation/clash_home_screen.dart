@@ -1,8 +1,11 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/presentation/widgets/clash_section_tile.dart';
+import 'package:eternal_xi/features/clash/story/presentation/clash_story_gate.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ClashHomeScreen extends StatelessWidget {
   const ClashHomeScreen({super.key});
@@ -31,11 +34,15 @@ class ClashHomeScreen extends StatelessWidget {
         ClashSectionTile(
           icon: Icons.menu_book_rounded,
           title: l10n.clashHomeStory,
+          onTap: () => context.push(AppRoutes.clashStory),
         ),
         const SizedBox(height: 10),
         ClashSectionTile(
           icon: Icons.celebration_rounded,
           title: l10n.clashHomeEvents,
+          onTap: ClashStoryGate.isTeamUnlocked(context)
+              ? null
+              : () => ClashStoryGate.showEventsLockedSnackBar(context),
         ),
         const SizedBox(height: 10),
         ClashSectionTile(

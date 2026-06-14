@@ -7,6 +7,15 @@ import 'package:eternal_xi/data/models/user_model.dart';
 import 'package:eternal_xi/data/services/auth_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
+import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_local_datasource.dart';
+import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
+import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
+import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/clash/presentation/clash_navigation_controller.dart';
 import 'package:eternal_xi/features/clash/presentation/clash_shell_screen.dart';
 import 'package:eternal_xi/features/clash/presentation/clash_tab_host.dart';
@@ -17,6 +26,25 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../firebase_test_setup.dart';
+
+class _EmptyCardsDataSource extends ClashCardsLocalDataSource {
+  @override
+  Future<List<ClashCardCatalogEntry>> loadCards() async => const [];
+}
+
+ClashStoryController _storyController() {
+  final cardsRepo = ClashCardsRepository(_EmptyCardsDataSource());
+  final collectionRepo = ClashPlayerCollectionRepository(
+    storage: InMemoryClashPlayerCollectionBackend(),
+    cardsRepository: cardsRepo,
+  );
+  final storyRepo = ClashStoryRepository(
+    dataSource: ClashStoryLocalDataSource(),
+    progressStorage: InMemoryClashStoryProgressBackend(),
+    collectionRepository: collectionRepo,
+  );
+  return ClashStoryController(storyRepository: storyRepo);
+}
 
 AuthController _authWithUser(UserModel? user) {
   final auth = AuthController(
@@ -53,7 +81,10 @@ GoRouter _phase1TestRouter(AuthController auth) {
         builder: (context, state, child) {
           return ChangeNotifierProvider(
             create: (_) => ClashNavigationController(),
-            child: ClashShellScreen(body: child),
+            child: ChangeNotifierProvider(
+              create: (_) => _storyController(),
+              child: ClashShellScreen(body: child),
+            ),
           );
         },
         routes: [

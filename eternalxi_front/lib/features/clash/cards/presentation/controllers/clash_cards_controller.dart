@@ -1,5 +1,6 @@
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_player_style.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
@@ -9,9 +10,10 @@ enum ClashCardsLoadState { idle, loading, ready, error }
 
 /// Estado de la colección de cartas Clash.
 class ClashCardsController extends ChangeNotifier {
-  ClashCardsController(this._repository);
+  ClashCardsController(this._repository, this._collectionRepository);
 
   final ClashCardsRepository _repository;
+  final ClashPlayerCollectionRepository _collectionRepository;
 
   ClashCardsLoadState _state = ClashCardsLoadState.idle;
   String? _errorMessage;
@@ -44,7 +46,7 @@ class ClashCardsController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _allCards = await _repository.fetchAllCards();
+      _allCards = await _collectionRepository.fetchOwnedCards();
       _applyFilters();
       _state = ClashCardsLoadState.ready;
     } catch (error) {
@@ -52,6 +54,12 @@ class ClashCardsController extends ChangeNotifier {
       _errorMessage = error.toString();
       _visibleCards = const [];
     }
+    notifyListeners();
+  }
+
+  Future<void> reloadOwnedCards() async {
+    _allCards = await _collectionRepository.fetchOwnedCards();
+    _applyFilters();
     notifyListeners();
   }
 

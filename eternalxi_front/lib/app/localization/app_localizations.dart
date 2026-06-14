@@ -195,6 +195,27 @@ class AppLocalizations {
           'No hay cartas compatibles para esta posición.',
       'clashLineupBlockWrongPosition': 'Posición incompatible',
       'clashLineupBlockDuplicatePlayer': 'Jugador ya en la alineación',
+      'clashStoryLoadError': 'No se pudo cargar la historia.',
+      'clashStoryTypeStory': 'Historia',
+      'clashStoryTypeMatch': 'Partido',
+      'clashStoryTypeMixed': 'Mixto',
+      'clashStoryStatusLocked': 'Bloqueado',
+      'clashStoryStatusAvailable': 'Disponible',
+      'clashStoryStatusCompleted': 'Completado',
+      'clashStorySkipScene': 'Omitir',
+      'clashStoryNextScene': 'Siguiente',
+      'clashStoryFinishLevel': 'Finalizar nivel',
+      'clashStoryRewardTitle': 'Nivel completado',
+      'clashStoryBackToMap': 'Volver al mapa',
+      'clashStoryNextLevel': 'Siguiente nivel',
+      'clashStoryTeamFormed': 'Equipo Eternal XI formado',
+      'clashStoryCardsReceived': 'Cartas N recibidas',
+      'clashStoryLevelBlockedTitle': 'Nivel bloqueado',
+      'clashStoryLevelBlockedBody':
+          'Completa los niveles anteriores para desbloquear este capítulo.',
+      'clashStoryGateTeam': 'Completa el prólogo para formar Eternal XI.',
+      'clashStoryGateSummon': 'Disponible tras formar Eternal XI.',
+      'clashStoryGateEvents': 'Disponible después del prólogo.',
       'registerTitle': 'Crear cuenta',
       'registerSubtitle':
           'Únete a Eternal XI. Usa un correo válido y un nickname que te represente en las ligas.',
@@ -538,6 +559,27 @@ class AppLocalizations {
       'clashLineupNoCompatibleCards': 'No compatible cards for this position.',
       'clashLineupBlockWrongPosition': 'Incompatible position',
       'clashLineupBlockDuplicatePlayer': 'Player already in lineup',
+      'clashStoryLoadError': 'Could not load story.',
+      'clashStoryTypeStory': 'Story',
+      'clashStoryTypeMatch': 'Match',
+      'clashStoryTypeMixed': 'Mixed',
+      'clashStoryStatusLocked': 'Locked',
+      'clashStoryStatusAvailable': 'Available',
+      'clashStoryStatusCompleted': 'Completed',
+      'clashStorySkipScene': 'Skip',
+      'clashStoryNextScene': 'Next',
+      'clashStoryFinishLevel': 'Finish level',
+      'clashStoryRewardTitle': 'Level complete',
+      'clashStoryBackToMap': 'Back to map',
+      'clashStoryNextLevel': 'Next level',
+      'clashStoryTeamFormed': 'Eternal XI team formed',
+      'clashStoryCardsReceived': 'N cards received',
+      'clashStoryLevelBlockedTitle': 'Level locked',
+      'clashStoryLevelBlockedBody':
+          'Complete previous levels to unlock this chapter.',
+      'clashStoryGateTeam': 'Complete the prologue to form Eternal XI.',
+      'clashStoryGateSummon': 'Available after forming Eternal XI.',
+      'clashStoryGateEvents': 'Available after the prologue.',
       'registerTitle': 'Create account',
       'registerSubtitle':
           'Join Eternal XI. Use a valid email and a nickname that represents you in leagues.',
@@ -902,6 +944,37 @@ class AppLocalizations {
   String clashLineupPickCard(String position) {
     final en = locale.languageCode.toLowerCase() == 'en';
     return en ? 'Choose card · $position' : 'Elegir carta · $position';
+  }
+
+  String get clashStoryLoadError => _t('clashStoryLoadError');
+  String get clashStoryTypeStory => _t('clashStoryTypeStory');
+  String get clashStoryTypeMatch => _t('clashStoryTypeMatch');
+  String get clashStoryTypeMixed => _t('clashStoryTypeMixed');
+  String get clashStoryStatusLocked => _t('clashStoryStatusLocked');
+  String get clashStoryStatusAvailable => _t('clashStoryStatusAvailable');
+  String get clashStoryStatusCompleted => _t('clashStoryStatusCompleted');
+  String get clashStorySkipScene => _t('clashStorySkipScene');
+  String get clashStoryNextScene => _t('clashStoryNextScene');
+  String get clashStoryFinishLevel => _t('clashStoryFinishLevel');
+  String get clashStoryRewardTitle => _t('clashStoryRewardTitle');
+  String get clashStoryBackToMap => _t('clashStoryBackToMap');
+  String get clashStoryNextLevel => _t('clashStoryNextLevel');
+  String get clashStoryTeamFormed => _t('clashStoryTeamFormed');
+  String get clashStoryCardsReceived => _t('clashStoryCardsReceived');
+  String get clashStoryLevelBlockedTitle => _t('clashStoryLevelBlockedTitle');
+  String get clashStoryLevelBlockedBody => _t('clashStoryLevelBlockedBody');
+  String get clashStoryGateTeam => _t('clashStoryGateTeam');
+  String get clashStoryGateSummon => _t('clashStoryGateSummon');
+  String get clashStoryGateEvents => _t('clashStoryGateEvents');
+
+  String clashStoryRewardGems(int count) {
+    final en = locale.languageCode.toLowerCase() == 'en';
+    return en ? '$count gem(s)' : '$count gema(s)';
+  }
+
+  String clashStoryRewardCoins(int count) {
+    final en = locale.languageCode.toLowerCase() == 'en';
+    return en ? '$count coin(s)' : '$count moneda(s)';
   }
 
   String get registerTitle => _t('registerTitle');
