@@ -14,6 +14,9 @@ enum MatchEventType {
   possessionLost,
   rivalAction,
   goal,
+  halftimeStarted,
+  halftimeEnded,
+  halftimeItemUsed,
 }
 
 class MatchEvent {

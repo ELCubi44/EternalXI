@@ -105,6 +105,7 @@ MatchState _stateWith({
     pressure: 25,
     possessionRisk: 20,
     eventLog: const [],
+    matchInventory: const [],
   );
 }
 

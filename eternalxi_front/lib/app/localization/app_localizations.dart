@@ -231,6 +231,7 @@ class AppLocalizations {
       'clashMatchPhaseLabel': 'Fase',
       'clashMatchPhaseCoinToss': 'Sorteo inicial',
       'clashMatchPhasePlaying': 'En juego',
+      'clashMatchPhaseHalftime': 'Descanso',
       'clashMatchPhaseFinished': 'Finalizado',
       'clashMatchCoinTossPrompt': 'Elige cara o cruz para el saque inicial',
       'clashMatchCoinHeads': 'Cara',
@@ -256,6 +257,19 @@ class AppLocalizations {
       'clashMatchActionRivalSim': 'Simular acción rival',
       'clashMatchZoneLabel': 'Zona del balón',
       'clashMatchStaminaLabel': 'Resistencia',
+      'clashMatchPtStaminaLabel':
+          'PT {currentPt}/{maxPt} · Resistencia {currentStamina}/{maxStamina}',
+      'clashMatchHalftimeTitle': 'Descanso',
+      'clashMatchHalftimeSquadTitle': 'Tu equipo',
+      'clashMatchHalftimeItemsTitle': 'Objetos de partido',
+      'clashMatchHalftimeContinue': 'Continuar partido',
+      'clashMatchHalftimeCancel': 'Cancelar',
+      'clashMatchHalftimeApplyItem': 'Usar objeto',
+      'clashMatchHalftimeSelectPlayers': 'Elige hasta {count} jugadores',
+      'clashMatchHalftimePtLabel': 'PT {current}/{max}',
+      'clashMatchHalftimeStaminaLabel': 'RES {current}/{max}',
+      'clashMatchHalftimeItemQty': 'x{qty}',
+      'clashMatchHalftimeItemEffect': '+{amount} · hasta {targets} jug.',
       'clashMatchPressureLabel': 'Presión',
       'clashMatchRiskLabel': 'Riesgo de posesión',
       'clashMatchEventLogTitle': 'Últimos eventos',
@@ -667,6 +681,7 @@ class AppLocalizations {
       'clashMatchPhaseLabel': 'Phase',
       'clashMatchPhaseCoinToss': 'Coin toss',
       'clashMatchPhasePlaying': 'In play',
+      'clashMatchPhaseHalftime': 'Halftime',
       'clashMatchPhaseFinished': 'Finished',
       'clashMatchCoinTossPrompt': 'Choose heads or tails for kickoff',
       'clashMatchCoinHeads': 'Heads',
@@ -692,6 +707,19 @@ class AppLocalizations {
       'clashMatchActionRivalSim': 'Simulate rival action',
       'clashMatchZoneLabel': 'Ball zone',
       'clashMatchStaminaLabel': 'Stamina',
+      'clashMatchPtStaminaLabel':
+          'PT {currentPt}/{maxPt} · Stamina {currentStamina}/{maxStamina}',
+      'clashMatchHalftimeTitle': 'Halftime',
+      'clashMatchHalftimeSquadTitle': 'Your squad',
+      'clashMatchHalftimeItemsTitle': 'Match items',
+      'clashMatchHalftimeContinue': 'Resume match',
+      'clashMatchHalftimeCancel': 'Cancel',
+      'clashMatchHalftimeApplyItem': 'Use item',
+      'clashMatchHalftimeSelectPlayers': 'Pick up to {count} players',
+      'clashMatchHalftimePtLabel': 'PT {current}/{max}',
+      'clashMatchHalftimeStaminaLabel': 'STA {current}/{max}',
+      'clashMatchHalftimeItemQty': 'x{qty}',
+      'clashMatchHalftimeItemEffect': '+{amount} · up to {targets} players',
       'clashMatchPressureLabel': 'Pressure',
       'clashMatchRiskLabel': 'Possession risk',
       'clashMatchEventLogTitle': 'Recent events',
@@ -1128,6 +1156,7 @@ class AppLocalizations {
   String get clashMatchPhaseLabel => _t('clashMatchPhaseLabel');
   String get clashMatchPhaseCoinToss => _t('clashMatchPhaseCoinToss');
   String get clashMatchPhasePlaying => _t('clashMatchPhasePlaying');
+  String get clashMatchPhaseHalftime => _t('clashMatchPhaseHalftime');
   String get clashMatchPhaseFinished => _t('clashMatchPhaseFinished');
   String get clashMatchCoinTossPrompt => _t('clashMatchCoinTossPrompt');
   String get clashMatchCoinHeads => _t('clashMatchCoinHeads');
@@ -1151,6 +1180,43 @@ class AppLocalizations {
   String get clashMatchActionRivalSim => _t('clashMatchActionRivalSim');
   String get clashMatchZoneLabel => _t('clashMatchZoneLabel');
   String get clashMatchStaminaLabel => _t('clashMatchStaminaLabel');
+
+  String clashMatchPtStaminaLabel(
+    int currentPt,
+    int maxPt,
+    int currentStamina,
+    int maxStamina,
+  ) => _t('clashMatchPtStaminaLabel')
+      .replaceAll('{currentPt}', '$currentPt')
+      .replaceAll('{maxPt}', '$maxPt')
+      .replaceAll('{currentStamina}', '$currentStamina')
+      .replaceAll('{maxStamina}', '$maxStamina');
+
+  String get clashMatchHalftimeTitle => _t('clashMatchHalftimeTitle');
+  String get clashMatchHalftimeSquadTitle => _t('clashMatchHalftimeSquadTitle');
+  String get clashMatchHalftimeItemsTitle => _t('clashMatchHalftimeItemsTitle');
+  String get clashMatchHalftimeContinue => _t('clashMatchHalftimeContinue');
+  String get clashMatchHalftimeCancel => _t('clashMatchHalftimeCancel');
+  String get clashMatchHalftimeApplyItem => _t('clashMatchHalftimeApplyItem');
+
+  String clashMatchHalftimeSelectPlayers(int count) =>
+      _t('clashMatchHalftimeSelectPlayers').replaceAll('{count}', '$count');
+
+  String clashMatchHalftimePtLabel(int current, int max) => _t(
+    'clashMatchHalftimePtLabel',
+  ).replaceAll('{current}', '$current').replaceAll('{max}', '$max');
+
+  String clashMatchHalftimeStaminaLabel(int current, int max) => _t(
+    'clashMatchHalftimeStaminaLabel',
+  ).replaceAll('{current}', '$current').replaceAll('{max}', '$max');
+
+  String clashMatchHalftimeItemQty(int qty) =>
+      _t('clashMatchHalftimeItemQty').replaceAll('{qty}', '$qty');
+
+  String clashMatchHalftimeItemEffect(int amount, int targets) => _t(
+    'clashMatchHalftimeItemEffect',
+  ).replaceAll('{amount}', '$amount').replaceAll('{targets}', '$targets');
+
   String get clashMatchPressureLabel => _t('clashMatchPressureLabel');
   String get clashMatchRiskLabel => _t('clashMatchRiskLabel');
   String get clashMatchEventLogTitle => _t('clashMatchEventLogTitle');

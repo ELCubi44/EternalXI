@@ -110,11 +110,13 @@ MatchState _matchState({
         rivalSquad ??
         List.generate(
           7,
-          (i) => _player(index: i, side: MatchTeamSide.rival, label: 'R${i + 1}'),
+          (i) =>
+              _player(index: i, side: MatchTeamSide.rival, label: 'R${i + 1}'),
         ),
     pressure: 20,
     possessionRisk: 15,
     eventLog: const [],
+    matchInventory: const [],
   );
 }
 

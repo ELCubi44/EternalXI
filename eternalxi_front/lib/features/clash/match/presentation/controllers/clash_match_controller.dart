@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import 'package:eternal_xi/features/clash/match/data/datasources/clash_match_items_local_datasource.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_halftime_engine.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_match_item_engine.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_action_choice.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_engine.dart';
@@ -15,6 +18,7 @@ import 'package:eternal_xi/features/clash/match/domain/match_squad_builder.dart'
 import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_status.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_match_item_inventory_entry.dart';
 import 'package:eternal_xi/features/clash/team/domain/clash_lineup_7v7.dart';
 import 'package:flutter/foundation.dart';
 
@@ -31,11 +35,20 @@ class ClashMatchController extends ChangeNotifier {
 
   MatchState? get state => _state;
 
+  bool get isHalftime => _state?.isPausedForHalftime ?? false;
+
+  static Future<List<ClashMatchItemInventoryEntry>> loadDefaultMatchKit() {
+    return ClashMatchItemsLocalDataSource().loadDefaultKit();
+  }
+
+  bool _isGameplayBlocked(MatchState state) =>
+      state.isPausedForHalftime || state.isFinished;
+
   List<MatchPassOption> get passOptions {
     final current = _state;
     if (current == null ||
         current.status != MatchStatus.playing ||
-        current.isFinished ||
+        _isGameplayBlocked(current) ||
         current.possession != MatchTeamSide.user) {
       return const [];
     }
@@ -46,7 +59,7 @@ class ClashMatchController extends ChangeNotifier {
     final current = _state;
     if (current == null ||
         current.status != MatchStatus.playing ||
-        current.isFinished ||
+        _isGameplayBlocked(current) ||
         current.possession != MatchTeamSide.user) {
       return null;
     }
@@ -58,6 +71,7 @@ class ClashMatchController extends ChangeNotifier {
     ClashLineup7v7? lineup,
     Map<String, ClashCardCatalogEntry> catalogById = const {},
     int rivalPower = 120,
+    List<ClashMatchItemInventoryEntry> matchInventory = const [],
   }) {
     final userSquad = MatchSquadBuilder.buildUserSquad(
       lineup: lineup,
@@ -77,6 +91,7 @@ class ClashMatchController extends ChangeNotifier {
       pressure: 20,
       possessionRisk: 15,
       eventLog: const [],
+      matchInventory: matchInventory,
     );
     notifyListeners();
   }
@@ -127,6 +142,7 @@ class ClashMatchController extends ChangeNotifier {
     if (current == null ||
         current.status != MatchStatus.playing ||
         current.isFinished ||
+        current.isPausedForHalftime ||
         current.possession != MatchTeamSide.user ||
         current.hasPendingDuel ||
         current.lastDuelResolution != null) {
@@ -139,7 +155,7 @@ class ClashMatchController extends ChangeNotifier {
     final current = _state;
     if (current == null ||
         current.status != MatchStatus.playing ||
-        current.isFinished ||
+        _isGameplayBlocked(current) ||
         current.possession != MatchTeamSide.user ||
         current.hasPendingDuel) {
       return;
@@ -152,7 +168,7 @@ class ClashMatchController extends ChangeNotifier {
     final current = _state;
     if (current == null ||
         current.status != MatchStatus.playing ||
-        current.isFinished ||
+        _isGameplayBlocked(current) ||
         current.possession != MatchTeamSide.user ||
         current.hasPendingDuel ||
         current.lastDuelResolution != null) {
@@ -164,7 +180,9 @@ class ClashMatchController extends ChangeNotifier {
 
   void resolveNormalDribble() {
     final current = _state;
-    if (current == null || !current.hasPendingDuel) {
+    if (current == null ||
+        !current.hasPendingDuel ||
+        current.isPausedForHalftime) {
       return;
     }
     _state = ClashDuelEngine.resolveNormalDribble(current, _chance);
@@ -175,7 +193,7 @@ class ClashMatchController extends ChangeNotifier {
     final current = _state;
     if (current == null ||
         current.status != MatchStatus.playing ||
-        current.isFinished ||
+        _isGameplayBlocked(current) ||
         current.possession != MatchTeamSide.user ||
         current.hasPendingDuel ||
         current.lastDuelResolution != null ||
@@ -188,7 +206,9 @@ class ClashMatchController extends ChangeNotifier {
 
   void resolveNormalShot() {
     final current = _state;
-    if (current == null || !current.hasPendingDuel) {
+    if (current == null ||
+        !current.hasPendingDuel ||
+        current.isPausedForHalftime) {
       return;
     }
     _state = ClashDuelEngine.resolveNormalShot(current, _chance);
@@ -198,7 +218,10 @@ class ClashMatchController extends ChangeNotifier {
   void resolvePendingDuel({String? techniqueId}) {
     final current = _state;
     final duel = current?.activeDuel;
-    if (current == null || duel == null || !duel.isPending) {
+    if (current == null ||
+        duel == null ||
+        !duel.isPending ||
+        current.isPausedForHalftime) {
       return;
     }
     final attackerChoice = techniqueId != null
@@ -225,7 +248,7 @@ class ClashMatchController extends ChangeNotifier {
     final current = _state;
     if (current == null ||
         current.status != MatchStatus.playing ||
-        current.isFinished ||
+        _isGameplayBlocked(current) ||
         current.possession != MatchTeamSide.rival) {
       return;
     }
@@ -245,10 +268,42 @@ class ClashMatchController extends ChangeNotifier {
     final current = _state;
     if (current == null ||
         current.status != MatchStatus.playing ||
-        current.isFinished) {
+        current.isFinished ||
+        current.isPausedForHalftime) {
       return;
     }
     _state = MatchRules.applyGoal(current, scorer);
+    notifyListeners();
+  }
+
+  void continueFromHalftime() {
+    final current = _state;
+    if (current == null || !current.isPausedForHalftime) {
+      return;
+    }
+    _state = ClashHalftimeEngine.continueFromHalftime(current);
+    notifyListeners();
+  }
+
+  void useMatchItem(String itemId, {List<int> targetIndices = const []}) {
+    final current = _state;
+    if (current == null || !current.isPausedForHalftime) {
+      return;
+    }
+    _state = ClashMatchItemEngine.useItem(
+      current,
+      itemId: itemId,
+      targetIndices: targetIndices,
+    );
+    notifyListeners();
+  }
+
+  void clearItemEffectFeedback() {
+    final current = _state;
+    if (current == null || current.lastItemEffectResult == null) {
+      return;
+    }
+    _state = current.copyWith(clearLastItemEffectResult: true);
     notifyListeners();
   }
 

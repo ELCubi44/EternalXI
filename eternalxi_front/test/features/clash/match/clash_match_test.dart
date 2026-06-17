@@ -154,6 +154,10 @@ void main() {
       controller.simulateUserGoal();
       controller.simulateUserGoal();
       expect(controller.state!.isFinished, isFalse);
+      expect(controller.state!.isPausedForHalftime, isTrue);
+
+      controller.continueFromHalftime();
+      expect(controller.state!.status, MatchStatus.playing);
 
       controller.simulateUserGoal();
       expect(controller.state!.isFinished, isTrue);

@@ -7,6 +7,7 @@ import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_status.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
 import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_halftime_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_duel_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_pass_sheet.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_mini_pitch.dart';
@@ -57,10 +58,16 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
       return;
     }
 
+    final kit = await ClashMatchController.loadDefaultMatchKit();
+    if (!mounted) {
+      return;
+    }
+
     match.startMatch(
       levelId: widget.levelId,
       lineup: lineups.activeLineup,
       catalogById: lineups.catalogById,
+      matchInventory: kit,
     );
     if (mounted) {
       setState(() => _initialized = true);
@@ -117,18 +124,24 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
     final phaseLabel = switch (state.status) {
       MatchStatus.awaitingCoinToss => l10n.clashMatchPhaseCoinToss,
       MatchStatus.playing => l10n.clashMatchPhasePlaying,
+      MatchStatus.halftime => l10n.clashMatchPhaseHalftime,
       MatchStatus.finished => l10n.clashMatchPhaseFinished,
     };
     final advanceChance = match.advanceChancePercent;
-    final hasDuelUi = state.hasPendingDuel || state.lastDuelResolution != null;
+    final isHalftime = state.isPausedForHalftime;
+    final hasDuelUi =
+        !isHalftime &&
+        (state.hasPendingDuel || state.lastDuelResolution != null);
     final isUserPossession =
         state.status == MatchStatus.playing &&
         !state.isFinished &&
+        !isHalftime &&
         state.possession == MatchTeamSide.user &&
         !hasDuelUi;
     final isRivalPossession =
         state.status == MatchStatus.playing &&
         !state.isFinished &&
+        !isHalftime &&
         state.possession == MatchTeamSide.rival;
 
     return Scaffold(
@@ -174,7 +187,8 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
               ],
             ),
           ] else if (state.coinToss != null &&
-              state.status == MatchStatus.playing) ...[
+              (state.status == MatchStatus.playing ||
+                  state.status == MatchStatus.halftime)) ...[
             _InfoCard(
               children: [
                 Text(
@@ -192,13 +206,22 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
                     '${l10n.clashMatchZoneLabel}: ${state.ballZone.labelEs()}',
                   ),
                   Text(
-                    '${l10n.clashMatchStaminaLabel}: ${holder.currentStamina}',
+                    l10n.clashMatchPtStaminaLabel(
+                      holder.currentPt,
+                      holder.maxPt,
+                      holder.currentStamina,
+                      holder.maxStamina,
+                    ),
                   ),
                   Text('${l10n.clashMatchPressureLabel}: ${state.pressure}'),
                   Text('${l10n.clashMatchRiskLabel}: ${state.possessionRisk}'),
                 ],
               ],
             ),
+          ],
+          if (isHalftime) ...[
+            const SizedBox(height: 14),
+            const ClashMatchHalftimePanel(),
           ],
           if (hasDuelUi) ...[
             const SizedBox(height: 14),
@@ -372,6 +395,9 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
       MatchEventType.kickoff => Icons.flag_outlined,
       MatchEventType.rivalAction => Icons.smart_toy_outlined,
       MatchEventType.possessionLost => Icons.swap_horiz_rounded,
+      MatchEventType.halftimeStarted => Icons.free_breakfast_outlined,
+      MatchEventType.halftimeEnded => Icons.play_arrow_rounded,
+      MatchEventType.halftimeItemUsed => Icons.medical_services_outlined,
     };
   }
 }

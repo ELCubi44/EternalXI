@@ -1,5 +1,7 @@
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_resolution.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_state.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_match_item_effect_result.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_match_item_inventory_entry.dart';
 import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
@@ -24,9 +26,15 @@ class MatchState {
     required this.pressure,
     required this.possessionRisk,
     required this.eventLog,
+    required this.matchInventory,
     this.coinToss,
     this.activeDuel,
     this.lastDuelResolution,
+    this.hasHalftimeOccurred = false,
+    this.isHalftime = false,
+    this.halftimeTriggeredAtScore,
+    this.usedItemsLog = const [],
+    this.lastItemEffectResult,
   });
 
   final String levelId;
@@ -40,11 +48,19 @@ class MatchState {
   final int pressure;
   final int possessionRisk;
   final List<MatchEvent> eventLog;
+  final List<ClashMatchItemInventoryEntry> matchInventory;
   final CoinTossResult? coinToss;
   final ClashDuelState? activeDuel;
   final ClashDuelResolution? lastDuelResolution;
+  final bool hasHalftimeOccurred;
+  final bool isHalftime;
+  final MatchScore? halftimeTriggeredAtScore;
+  final List<String> usedItemsLog;
+  final ClashMatchItemEffectResult? lastItemEffectResult;
 
   bool get hasPendingDuel => activeDuel?.isPending ?? false;
+
+  bool get isPausedForHalftime => isHalftime && status == MatchStatus.halftime;
 
   /// Zona de tiro según el equipo en posesión.
   bool get isInShootingZone => switch (possession) {
@@ -106,11 +122,18 @@ class MatchState {
     int? pressure,
     int? possessionRisk,
     List<MatchEvent>? eventLog,
+    List<ClashMatchItemInventoryEntry>? matchInventory,
     CoinTossResult? coinToss,
     ClashDuelState? activeDuel,
     ClashDuelResolution? lastDuelResolution,
+    bool? hasHalftimeOccurred,
+    bool? isHalftime,
+    MatchScore? halftimeTriggeredAtScore,
+    List<String>? usedItemsLog,
+    ClashMatchItemEffectResult? lastItemEffectResult,
     bool clearActiveDuel = false,
     bool clearLastDuelResolution = false,
+    bool clearLastItemEffectResult = false,
   }) {
     return MatchState(
       levelId: levelId,
@@ -124,11 +147,20 @@ class MatchState {
       pressure: pressure ?? this.pressure,
       possessionRisk: possessionRisk ?? this.possessionRisk,
       eventLog: eventLog ?? this.eventLog,
+      matchInventory: matchInventory ?? this.matchInventory,
       coinToss: coinToss ?? this.coinToss,
       activeDuel: clearActiveDuel ? null : (activeDuel ?? this.activeDuel),
       lastDuelResolution: clearLastDuelResolution
           ? null
           : (lastDuelResolution ?? this.lastDuelResolution),
+      hasHalftimeOccurred: hasHalftimeOccurred ?? this.hasHalftimeOccurred,
+      isHalftime: isHalftime ?? this.isHalftime,
+      halftimeTriggeredAtScore:
+          halftimeTriggeredAtScore ?? this.halftimeTriggeredAtScore,
+      usedItemsLog: usedItemsLog ?? this.usedItemsLog,
+      lastItemEffectResult: clearLastItemEffectResult
+          ? null
+          : (lastItemEffectResult ?? this.lastItemEffectResult),
     );
   }
 
@@ -147,10 +179,14 @@ class MatchState {
     MatchBallZone ballZone = MatchBallZone.ownMidfield,
     int pressure = 25,
     int possessionRisk = 20,
+    List<ClashMatchItemInventoryEntry> matchInventory = const [],
+    bool hasHalftimeOccurred = false,
+    bool isHalftime = false,
+    MatchStatus status = MatchStatus.playing,
   }) {
     return MatchState(
       levelId: 'test',
-      status: MatchStatus.playing,
+      status: status,
       score: score,
       possession: possession,
       ballHolderIndex: ballHolderIndex,
@@ -163,6 +199,9 @@ class MatchState {
       pressure: pressure,
       possessionRisk: possessionRisk,
       eventLog: const [],
+      matchInventory: matchInventory,
+      hasHalftimeOccurred: hasHalftimeOccurred,
+      isHalftime: isHalftime,
     );
   }
 }

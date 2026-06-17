@@ -105,6 +105,29 @@ La **Fase 11** añade **supertécnicas normales** dentro de los duelos existente
 
 ---
 
+## Implementación Fase 12 (Flutter)
+
+La **Fase 12** añade el **descanso único** y **objetos de partido** para recuperar PT y resistencia:
+
+| Incluido | Pendiente (fases posteriores) |
+|---|---|
+| Descanso automático al total de **2 goles** (una vez por partido) | Tiempo real / cronómetro |
+| Objetos solo usables en descanso | Tienda y compra |
+| Inventario provisional in-memory por partido (kit desde JSON) | Backend / persistencia global |
+| Recuperación PT: 1, 3 o todo el equipo (poco) | Objetos en rival |
+| Recuperación resistencia: 1, 3 o todo el equipo (poco) | Efectos avanzados, lesiones |
+| Panel de descanso integrado en `ClashMatchScreen` | Cambios de jugadores |
+
+**Reglas clave:**
+- El descanso se activa cuando `user + rival >= 2` goles y aún no hay ganador.
+- Durante el descanso no se puede pasar, avanzar, tirar ni resolver duelos.
+- Al continuar se reanuda con el mismo marcador, posesión, zona y portador.
+- PT y resistencia no superan el máximo de la carta.
+- Si un objeto no tiene efecto, **no se consume**.
+- No hay tienda ni backend en esta fase.
+
+---
+
 ## 1. Visión general
 
 Clash tiene **dos modalidades de partido**:

@@ -1,0 +1,66 @@
+{
+  "items": [
+    {
+      "id": "exi-item-pt-single",
+      "name": "Bebida técnica pequeña",
+      "description": "Recupera PT de un jugador.",
+      "type": "recoverPtSingle",
+      "amount": 20,
+      "targetCount": 1,
+      "category": "pt"
+    },
+    {
+      "id": "exi-item-pt-triple",
+      "name": "Charla táctica",
+      "description": "Recupera PT de hasta tres jugadores.",
+      "type": "recoverPtTriple",
+      "amount": 15,
+      "targetCount": 3,
+      "category": "pt"
+    },
+    {
+      "id": "exi-item-pt-all",
+      "name": "Ánimo del equipo",
+      "description": "Recupera pocos PT de todo el equipo.",
+      "type": "recoverPtAllSmall",
+      "amount": 5,
+      "targetCount": 7,
+      "category": "pt"
+    },
+    {
+      "id": "exi-item-stamina-single",
+      "name": "Venda rápida",
+      "description": "Recupera resistencia de un jugador.",
+      "type": "recoverStaminaSingle",
+      "amount": 15,
+      "targetCount": 1,
+      "category": "stamina"
+    },
+    {
+      "id": "exi-item-stamina-triple",
+      "name": "Preparación física",
+      "description": "Recupera resistencia de hasta tres jugadores.",
+      "type": "recoverStaminaTriple",
+      "amount": 12,
+      "targetCount": 3,
+      "category": "stamina"
+    },
+    {
+      "id": "exi-item-stamina-all",
+      "name": "Grito de equipo",
+      "description": "Recupera poca resistencia de todo el equipo.",
+      "type": "recoverStaminaAllSmall",
+      "amount": 5,
+      "targetCount": 7,
+      "category": "stamina"
+    }
+  ],
+  "defaultKit": {
+    "exi-item-pt-single": 2,
+    "exi-item-pt-triple": 1,
+    "exi-item-pt-all": 2,
+    "exi-item-stamina-single": 2,
+    "exi-item-stamina-triple": 1,
+    "exi-item-stamina-all": 2
+  }
+}

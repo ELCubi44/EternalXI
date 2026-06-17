@@ -1,3 +1,4 @@
+import 'package:eternal_xi/features/clash/match/domain/clash_halftime_rules.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
@@ -18,21 +19,20 @@ class MatchRules {
     String? goalMessage,
   }) {
     final nextScore = state.score.increment(scorer);
+    final goalEvent = MatchEvent(
+      type: MatchEventType.goal,
+      message:
+          goalMessage ??
+          (scorer == MatchTeamSide.user
+              ? 'Gol de Eternal XI'
+              : 'Gol del rival'),
+    );
+
     if (nextScore.hasWinner()) {
       return state.copyWith(
         score: nextScore,
         status: MatchStatus.finished,
-        eventLog: [
-          ...state.eventLog,
-          MatchEvent(
-            type: MatchEventType.goal,
-            message:
-                goalMessage ??
-                (scorer == MatchTeamSide.user
-                    ? 'Gol de Eternal XI'
-                    : 'Gol del rival'),
-          ),
-        ],
+        eventLog: [...state.eventLog, goalEvent],
       );
     }
 
@@ -41,26 +41,38 @@ class MatchRules {
         ? MatchBallZone.ownMidfield
         : MatchBallZone.rivalMidfield;
 
-    return state.copyWith(
+    final afterKickoff = state.copyWith(
       score: nextScore,
       possession: nextPossession,
       ballHolderIndex: 3,
       ballZone: kickoffZone,
       pressure: 22,
       possessionRisk: 18,
+      eventLog: [...state.eventLog, goalEvent],
+    );
+
+    if (!ClashHalftimeRules.shouldTriggerHalftime(state, nextScore)) {
+      return afterKickoff.copyWith(
+        eventLog: [
+          ...afterKickoff.eventLog,
+          const MatchEvent(
+            type: MatchEventType.kickoff,
+            message: 'Saque tras gol',
+          ),
+        ],
+      );
+    }
+
+    return afterKickoff.copyWith(
+      status: MatchStatus.halftime,
+      isHalftime: true,
+      hasHalftimeOccurred: true,
+      halftimeTriggeredAtScore: nextScore,
       eventLog: [
-        ...state.eventLog,
-        MatchEvent(
-          type: MatchEventType.goal,
-          message:
-              goalMessage ??
-              (scorer == MatchTeamSide.user
-                  ? 'Gol de Eternal XI'
-                  : 'Gol del rival'),
-        ),
+        ...afterKickoff.eventLog,
         const MatchEvent(
-          type: MatchEventType.kickoff,
-          message: 'Saque tras gol',
+          type: MatchEventType.halftimeStarted,
+          message: 'Descanso',
         ),
       ],
     );
