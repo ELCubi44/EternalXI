@@ -1,3 +1,5 @@
+import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_status.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
@@ -21,6 +23,22 @@ class MatchRules {
       score: nextScore,
       possession: nextPossession,
       ballHolderIndex: 3,
+      ballZone: MatchBallZone.ownMidfield,
+      pressure: 22,
+      possessionRisk: 18,
+      eventLog: [
+        ...state.eventLog,
+        MatchEvent(
+          type: MatchEventType.goal,
+          message: scorer == MatchTeamSide.user
+              ? 'Gol de Eternal XI'
+              : 'Gol del rival',
+        ),
+        const MatchEvent(
+          type: MatchEventType.kickoff,
+          message: 'Saque tras gol',
+        ),
+      ],
     );
   }
 }

@@ -1,10 +1,14 @@
 import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_player_marker.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_score.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_squad_builder.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_squad_player.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_status.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
 
-/// Estado completo de un partido Clash 7vs7 (shell local Fase 7).
+/// Estado completo de un partido Clash 7vs7.
 class MatchState {
   const MatchState({
     required this.levelId,
@@ -12,8 +16,12 @@ class MatchState {
     required this.score,
     required this.possession,
     required this.ballHolderIndex,
-    required this.userMarkers,
-    required this.rivalMarkers,
+    required this.ballZone,
+    required this.userSquad,
+    required this.rivalSquad,
+    required this.pressure,
+    required this.possessionRisk,
+    required this.eventLog,
     this.coinToss,
   });
 
@@ -22,23 +30,55 @@ class MatchState {
   final MatchScore score;
   final MatchTeamSide possession;
   final int ballHolderIndex;
-  final List<MatchPlayerMarker> userMarkers;
-  final List<MatchPlayerMarker> rivalMarkers;
+  final MatchBallZone ballZone;
+  final List<MatchSquadPlayer> userSquad;
+  final List<MatchSquadPlayer> rivalSquad;
+  final int pressure;
+  final int possessionRisk;
+  final List<MatchEvent> eventLog;
   final CoinTossResult? coinToss;
+
+  List<MatchPlayerMarker> get userMarkers =>
+      MatchSquadBuilder.markersFromSquad(userSquad);
+
+  List<MatchPlayerMarker> get rivalMarkers =>
+      MatchSquadBuilder.markersFromSquad(rivalSquad);
 
   bool get isFinished => status == MatchStatus.finished;
 
   MatchTeamSide? get winner => score.winner();
 
+  List<MatchSquadPlayer> squadFor(MatchTeamSide side) =>
+      side == MatchTeamSide.user ? userSquad : rivalSquad;
+
+  List<MatchSquadPlayer> squadInPossession() => squadFor(possession);
+
   List<MatchPlayerMarker> markersFor(MatchTeamSide side) =>
       side == MatchTeamSide.user ? userMarkers : rivalMarkers;
 
-  MatchPlayerMarker? ballHolder() {
-    final markers = markersFor(possession);
-    if (ballHolderIndex < 0 || ballHolderIndex >= markers.length) {
-      return markers.isNotEmpty ? markers.first : null;
+  MatchSquadPlayer? ballHolderPlayer() {
+    final squad = squadInPossession();
+    for (final player in squad) {
+      if (player.index == ballHolderIndex) {
+        return player;
+      }
     }
-    return markers[ballHolderIndex];
+    return squad.isNotEmpty ? squad.first : null;
+  }
+
+  MatchPlayerMarker? ballHolder() {
+    final holder = ballHolderPlayer();
+    if (holder == null) {
+      return null;
+    }
+    return MatchPlayerMarker(
+      side: holder.side,
+      index: holder.index,
+      label: holder.label,
+      x: holder.homeX,
+      y: holder.homeY,
+      cardId: holder.cardId,
+    );
   }
 
   MatchState copyWith({
@@ -46,6 +86,12 @@ class MatchState {
     MatchScore? score,
     MatchTeamSide? possession,
     int? ballHolderIndex,
+    MatchBallZone? ballZone,
+    List<MatchSquadPlayer>? userSquad,
+    List<MatchSquadPlayer>? rivalSquad,
+    int? pressure,
+    int? possessionRisk,
+    List<MatchEvent>? eventLog,
     CoinTossResult? coinToss,
   }) {
     return MatchState(
@@ -54,9 +100,47 @@ class MatchState {
       score: score ?? this.score,
       possession: possession ?? this.possession,
       ballHolderIndex: ballHolderIndex ?? this.ballHolderIndex,
-      userMarkers: userMarkers,
-      rivalMarkers: rivalMarkers,
+      ballZone: ballZone ?? this.ballZone,
+      userSquad: userSquad ?? this.userSquad,
+      rivalSquad: rivalSquad ?? this.rivalSquad,
+      pressure: pressure ?? this.pressure,
+      possessionRisk: possessionRisk ?? this.possessionRisk,
+      eventLog: eventLog ?? this.eventLog,
       coinToss: coinToss ?? this.coinToss,
+    );
+  }
+
+  MatchState copyWithSquad(MatchTeamSide side, List<MatchSquadPlayer> squad) {
+    if (side == MatchTeamSide.user) {
+      return copyWith(userSquad: squad);
+    }
+    return copyWith(rivalSquad: squad);
+  }
+
+  /// Estado mínimo para tests de Fase 7/8.
+  factory MatchState.testing({
+    MatchScore score = const MatchScore(),
+    MatchTeamSide possession = MatchTeamSide.user,
+    int ballHolderIndex = 3,
+    MatchBallZone ballZone = MatchBallZone.ownMidfield,
+    int pressure = 25,
+    int possessionRisk = 20,
+  }) {
+    return MatchState(
+      levelId: 'test',
+      status: MatchStatus.playing,
+      score: score,
+      possession: possession,
+      ballHolderIndex: ballHolderIndex,
+      ballZone: ballZone,
+      userSquad: MatchSquadBuilder.buildUserSquad(
+        lineup: null,
+        catalogById: const {},
+      ),
+      rivalSquad: MatchSquadBuilder.buildRivalSquad(),
+      pressure: pressure,
+      possessionRisk: possessionRisk,
+      eventLog: const [],
     );
   }
 }

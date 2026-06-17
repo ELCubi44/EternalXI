@@ -248,6 +248,21 @@ class AppLocalizations {
           'Botones provisionales (tutorial/dev) — no son el gameplay final',
       'clashMatchDevGoalUser': 'Gol Eternal XI (provisional)',
       'clashMatchDevGoalRival': 'Gol Rival (provisional)',
+      'clashMatchActionPass': 'Pasar',
+      'clashMatchActionAdvance': 'Avanzar',
+      'clashMatchActionShootSoon': 'Tirar (próximamente)',
+      'clashMatchActionRivalSim': 'Simular acción rival',
+      'clashMatchZoneLabel': 'Zona del balón',
+      'clashMatchStaminaLabel': 'Resistencia',
+      'clashMatchPressureLabel': 'Presión',
+      'clashMatchRiskLabel': 'Riesgo de posesión',
+      'clashMatchEventLogTitle': 'Últimos eventos',
+      'clashMatchPassSheetTitle': 'Elegir compañero',
+      'clashMatchPassSheetEmpty': 'No hay compañeros disponibles',
+      'clashMatchPassPercent': '{percent}%',
+      'clashMatchPassOptionPower': 'Potencia {power}',
+      'clashMatchAdvanceChance': 'Probabilidad de avance: {percent}%',
+      'clashMatchDevSectionTitle': 'Herramientas dev/provisional',
       'registerTitle': 'Crear cuenta',
       'registerSubtitle':
           'Únete a Eternal XI. Usa un correo válido y un nickname que te represente en las ligas.',
@@ -644,6 +659,21 @@ class AppLocalizations {
           'Provisional buttons (tutorial/dev) — not final gameplay',
       'clashMatchDevGoalUser': 'Eternal XI goal (provisional)',
       'clashMatchDevGoalRival': 'Rival goal (provisional)',
+      'clashMatchActionPass': 'Pass',
+      'clashMatchActionAdvance': 'Advance',
+      'clashMatchActionShootSoon': 'Shoot (coming soon)',
+      'clashMatchActionRivalSim': 'Simulate rival action',
+      'clashMatchZoneLabel': 'Ball zone',
+      'clashMatchStaminaLabel': 'Stamina',
+      'clashMatchPressureLabel': 'Pressure',
+      'clashMatchRiskLabel': 'Possession risk',
+      'clashMatchEventLogTitle': 'Recent events',
+      'clashMatchPassSheetTitle': 'Choose teammate',
+      'clashMatchPassSheetEmpty': 'No teammates available',
+      'clashMatchPassPercent': '{percent}%',
+      'clashMatchPassOptionPower': 'Power {power}',
+      'clashMatchAdvanceChance': 'Advance chance: {percent}%',
+      'clashMatchDevSectionTitle': 'Dev/provisional tools',
       'registerTitle': 'Create account',
       'registerSubtitle':
           'Join Eternal XI. Use a valid email and a nickname that represents you in leagues.',
@@ -1062,6 +1092,27 @@ class AppLocalizations {
   String get clashMatchDevGoalsHint => _t('clashMatchDevGoalsHint');
   String get clashMatchDevGoalUser => _t('clashMatchDevGoalUser');
   String get clashMatchDevGoalRival => _t('clashMatchDevGoalRival');
+  String get clashMatchActionPass => _t('clashMatchActionPass');
+  String get clashMatchActionAdvance => _t('clashMatchActionAdvance');
+  String get clashMatchActionShootSoon => _t('clashMatchActionShootSoon');
+  String get clashMatchActionRivalSim => _t('clashMatchActionRivalSim');
+  String get clashMatchZoneLabel => _t('clashMatchZoneLabel');
+  String get clashMatchStaminaLabel => _t('clashMatchStaminaLabel');
+  String get clashMatchPressureLabel => _t('clashMatchPressureLabel');
+  String get clashMatchRiskLabel => _t('clashMatchRiskLabel');
+  String get clashMatchEventLogTitle => _t('clashMatchEventLogTitle');
+  String get clashMatchPassSheetTitle => _t('clashMatchPassSheetTitle');
+  String get clashMatchPassSheetEmpty => _t('clashMatchPassSheetEmpty');
+  String get clashMatchDevSectionTitle => _t('clashMatchDevSectionTitle');
+
+  String clashMatchPassPercent(int percent) =>
+      _t('clashMatchPassPercent').replaceAll('{percent}', '$percent');
+
+  String clashMatchPassOptionPower(int power) =>
+      _t('clashMatchPassOptionPower').replaceAll('{power}', '$power');
+
+  String clashMatchAdvanceChance(int percent) =>
+      _t('clashMatchAdvanceChance').replaceAll('{percent}', '$percent');
 
   String clashMatchScoreLabel(int user, int rival) {
     return _t('clashMatchScoreLabel')

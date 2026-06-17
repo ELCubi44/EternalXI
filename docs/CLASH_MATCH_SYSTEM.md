@@ -22,6 +22,23 @@ Los botones de gol simulado existen únicamente para validar victoria/derrota, r
 
 ---
 
+## Implementación Fase 8 (Flutter)
+
+La **Fase 8** añade el primer sistema **real de posesión** en el 7vs7:
+
+| Incluido | Pendiente (fases posteriores) |
+|---|---|
+| Zonas lógicas del balón (`ownDefense` … `rivalArea`) | Duelos regate/defensa reales |
+| Acciones **Pasar** y **Avanzar** con probabilidad provisional | Tiro y parada |
+| Resistencia actual por jugador en partido | Supertécnicas y PT en duelos |
+| Presión y riesgo de posesión | IA rival completa |
+| Historial breve de eventos | Objetos de descanso |
+| IA rival **provisional** (simular acción) | Física real del minicampo |
+
+Fórmulas de pase/avance son **provisionales** y se afinarán cuando existan duelos. Los botones de gol dev siguen en sección plegable separada.
+
+---
+
 ## 1. Visión general
 
 Clash tiene **dos modalidades de partido**:

@@ -52,6 +52,10 @@ class MatchPitchLayout {
   }
 
   static List<MatchPlayerMarker> userMarkersFromNames(List<String> names) {
+    return userMarkersFromLineup(names);
+  }
+
+  static List<MatchPlayerMarker> userMarkersFromLineup(List<String> names) {
     final markers = <MatchPlayerMarker>[];
     for (var i = 0; i < _userFormation.length; i++) {
       final (x, y) = _userFormation[i];
@@ -67,5 +71,13 @@ class MatchPitchLayout {
       );
     }
     return markers;
+  }
+
+  static (double x, double y) coordsForIndex(int index, MatchTeamSide side) {
+    final formation = side == MatchTeamSide.user
+        ? _userFormation
+        : _rivalFormation;
+    final safe = index.clamp(0, formation.length - 1);
+    return formation[safe];
   }
 }

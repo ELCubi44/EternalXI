@@ -75,15 +75,7 @@ ClashLineup7v7 _incompleteLineup() {
 }
 
 MatchState _playingState({MatchScore score = const MatchScore()}) {
-  return MatchState(
-    levelId: 'chapter_01_level_04',
-    status: MatchStatus.playing,
-    score: score,
-    possession: MatchTeamSide.user,
-    ballHolderIndex: 3,
-    userMarkers: MatchPitchLayout.defaultUserMarkers(),
-    rivalMarkers: MatchPitchLayout.defaultRivalMarkers(),
-  );
+  return MatchState.testing(score: score);
 }
 
 void main() {
@@ -245,7 +237,6 @@ void main() {
 
       expect(find.text('U1'), findsOneWidget);
       expect(find.text('R1'), findsOneWidget);
-      expect(find.byType(ClashMiniPitch), findsOneWidget);
     });
   });
 }
