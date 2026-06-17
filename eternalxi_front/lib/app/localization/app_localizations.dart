@@ -163,6 +163,9 @@ class AppLocalizations {
       'clashCardPosition': 'Posición',
       'clashCardStyle': 'Estilo',
       'clashCardLevel': 'Nivel',
+      'clashCardXpTitle': 'Experiencia',
+      'clashCardXpProgress': 'EXP: {current} / {needed}',
+      'clashCardMaxLevel': 'Nivel máximo',
       'clashCardPower': 'Potencia',
       'clashCardStats': 'Estadísticas',
       'clashStatSave': 'Parada',
@@ -255,6 +258,11 @@ class AppLocalizations {
       'clashMatchObjectivesDefeatHint':
           'Debes ganar el partido para recibir recompensas de objetivos',
       'clashMatchRewardsTotalTitle': 'Total obtenido',
+      'clashMatchCardXpTitle': 'Experiencia de cartas',
+      'clashMatchCardXpGained': '+{amount} EXP',
+      'clashMatchCardLevelUp': 'Nv. {from} → {to} · Sube de nivel',
+      'clashMatchCardLevelSame': 'Nv. {level}',
+      'clashMatchNoCardXpOnDefeat': 'Sin EXP por derrota',
       'clashMatchRewardsTitle': 'Recompensas del nivel',
       'clashMatchRewardsBasic': 'Progreso registrado al reclamar.',
       'clashMatchRewardGems': 'Gemas: +{amount}',
@@ -655,6 +663,9 @@ class AppLocalizations {
       'clashCardPosition': 'Position',
       'clashCardStyle': 'Style',
       'clashCardLevel': 'Level',
+      'clashCardXpTitle': 'Experience',
+      'clashCardXpProgress': 'XP: {current} / {needed}',
+      'clashCardMaxLevel': 'Max level',
       'clashCardPower': 'Power',
       'clashCardStats': 'Stats',
       'clashStatSave': 'Save',
@@ -746,6 +757,11 @@ class AppLocalizations {
       'clashMatchObjectivesDefeatHint':
           'You must win the match to receive objective rewards',
       'clashMatchRewardsTotalTitle': 'Total earned',
+      'clashMatchCardXpTitle': 'Card experience',
+      'clashMatchCardXpGained': '+{amount} XP',
+      'clashMatchCardLevelUp': 'Lv. {from} → {to} · Level up',
+      'clashMatchCardLevelSame': 'Lv. {level}',
+      'clashMatchNoCardXpOnDefeat': 'No XP on defeat',
       'clashMatchRewardsTitle': 'Level rewards',
       'clashMatchRewardsBasic': 'Progress saved when you claim.',
       'clashMatchRewardGems': 'Gems: +{amount}',
@@ -1161,6 +1177,12 @@ class AppLocalizations {
   String get clashCardPosition => _t('clashCardPosition');
   String get clashCardStyle => _t('clashCardStyle');
   String get clashCardLevel => _t('clashCardLevel');
+  String get clashCardXpTitle => _t('clashCardXpTitle');
+  String get clashCardMaxLevel => _t('clashCardMaxLevel');
+
+  String clashCardXpProgress(int current, int needed) => _t(
+    'clashCardXpProgress',
+  ).replaceAll('{current}', '$current').replaceAll('{needed}', '$needed');
   String get clashCardPower => _t('clashCardPower');
   String get clashCardStats => _t('clashCardStats');
   String get clashStatSave => _t('clashStatSave');
@@ -1267,6 +1289,19 @@ class AppLocalizations {
   String get clashMatchObjectivesDefeatHint =>
       _t('clashMatchObjectivesDefeatHint');
   String get clashMatchRewardsTotalTitle => _t('clashMatchRewardsTotalTitle');
+  String get clashMatchCardXpTitle => _t('clashMatchCardXpTitle');
+  String get clashMatchNoCardXpOnDefeat => _t('clashMatchNoCardXpOnDefeat');
+
+  String clashMatchCardXpGained(int amount) =>
+      _t('clashMatchCardXpGained').replaceAll('{amount}', '$amount');
+
+  String clashMatchCardLevelUp(int from, int to) => _t(
+    'clashMatchCardLevelUp',
+  ).replaceAll('{from}', '$from').replaceAll('{to}', '$to');
+
+  String clashMatchCardLevelSame(int level) =>
+      _t('clashMatchCardLevelSame').replaceAll('{level}', '$level');
+
   String get clashMatchRewardsTitle => _t('clashMatchRewardsTitle');
   String get clashMatchRewardsBasic => _t('clashMatchRewardsBasic');
 

@@ -26,6 +26,7 @@ class ClashStoryLevel {
     this.completionUnlocks = const ClashStoryCompletionUnlocks(),
     this.requirements = const ClashStoryLevelRequirements(),
     this.matchObjectives = const [],
+    this.cardXpReward = 0,
   });
 
   final String id;
@@ -44,6 +45,7 @@ class ClashStoryLevel {
   final ClashStoryCompletionUnlocks completionUnlocks;
   final ClashStoryLevelRequirements requirements;
   final List<ClashMatchObjective> matchObjectives;
+  final int cardXpReward;
 
   factory ClashStoryLevel.fromJson(Map<String, dynamic> json) {
     final positionsRaw = json['requiredPositions'] as List? ?? const [];
@@ -101,6 +103,7 @@ class ClashStoryLevel {
             ),
           )
           .toList(growable: false),
+      cardXpReward: clashAsInt(json['cardXpReward']),
     );
   }
 
@@ -123,5 +126,6 @@ class ClashStoryLevel {
     'completionUnlocks': completionUnlocks.toJson(),
     'required': requirements.toJson(),
     'matchObjectives': matchObjectives.map((item) => item.toJson()).toList(),
+    if (cardXpReward > 0) 'cardXpReward': cardXpReward,
   };
 }

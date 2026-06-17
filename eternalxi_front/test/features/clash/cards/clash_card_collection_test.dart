@@ -62,7 +62,8 @@ class _FakeDataSource extends ClashCardsLocalDataSource {
   Future<List<ClashCardCatalogEntry>> loadCards() async => _cards;
 }
 
-Future<ClashCardsController> _readyController() async {
+Future<(ClashCardsController, ClashPlayerCollectionRepository)>
+_readyController() async {
   final cards = ClashCardsLocalDataSource().parseCardsJson(_sampleJson);
   final cardsRepo = ClashCardsRepository(_FakeDataSource(cards));
   final collectionRepo = ClashPlayerCollectionRepository(
@@ -72,7 +73,7 @@ Future<ClashCardsController> _readyController() async {
   await collectionRepo.grantMissingCardIds(['ui-test-1']);
   final controller = ClashCardsController(cardsRepo, collectionRepo);
   await controller.load();
-  return controller;
+  return (controller, collectionRepo);
 }
 
 GoRouter _cardsRouter(ClashCardsController controller) {
@@ -98,9 +99,16 @@ GoRouter _cardsRouter(ClashCardsController controller) {
   );
 }
 
-Widget _routerApp(GoRouter router, ClashCardsController controller) {
-  return ChangeNotifierProvider<ClashCardsController>.value(
-    value: controller,
+Widget _routerApp(
+  GoRouter router,
+  ClashCardsController controller,
+  ClashPlayerCollectionRepository collectionRepo,
+) {
+  return MultiProvider(
+    providers: [
+      ChangeNotifierProvider<ClashCardsController>.value(value: controller),
+      Provider<ClashPlayerCollectionRepository>.value(value: collectionRepo),
+    ],
     child: MaterialApp.router(
       locale: const Locale('es'),
       supportedLocales: AppLocalizations.supportedLocales,
@@ -115,7 +123,7 @@ void main() {
 
   group('ClashCardCollectionScreen', () {
     testWidgets('renderiza cartas cargadas', (tester) async {
-      final controller = await _readyController();
+      final (controller, _) = await _readyController();
       await tester.pumpWidget(
         ChangeNotifierProvider<ClashCardsController>.value(
           value: controller,
@@ -134,9 +142,9 @@ void main() {
     });
 
     testWidgets('pulsar carta abre detalle', (tester) async {
-      final controller = await _readyController();
+      final (controller, collectionRepo) = await _readyController();
       final router = _cardsRouter(controller);
-      await tester.pumpWidget(_routerApp(router, controller));
+      await tester.pumpWidget(_routerApp(router, controller, collectionRepo));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(ClashCardTile));
@@ -150,7 +158,7 @@ void main() {
 
   group('ClashCardDetailScreen', () {
     testWidgets('carta inexistente muestra error seguro', (tester) async {
-      final controller = await _readyController();
+      final (controller, collectionRepo) = await _readyController();
       final router = GoRouter(
         initialLocation: AppRoutes.clashCardDetail('missing-id'),
         routes: [
@@ -165,7 +173,7 @@ void main() {
         ],
       );
 
-      await tester.pumpWidget(_routerApp(router, controller));
+      await tester.pumpWidget(_routerApp(router, controller, collectionRepo));
       await tester.pumpAndSettle();
 
       expect(find.text('Carta no encontrada.'), findsOneWidget);

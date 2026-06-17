@@ -156,11 +156,13 @@ class ClashStoryController extends ChangeNotifier {
     required String levelId,
     required bool userWon,
     MatchState? matchState,
+    Iterable<String>? lineupCardIds,
   }) async {
     final result = await _storyRepository.completeMatchLevel(
       levelId,
       userWon: userWon,
       matchState: matchState,
+      lineupCardIds: lineupCardIds,
     );
     if (userWon) {
       _progress = _storyRepository.loadProgress();

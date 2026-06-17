@@ -270,11 +270,36 @@ Tras completar árbol o sin carta compatible:
 
 ## 10. Subida de nivel
 
+### 10.0 Implementación Fase 17 (Flutter)
+
+La **Fase 17** implementa EXP y subida de nivel por victorias en partidos match:
+
+| Incluido | Pendiente |
+|---|---|
+| `ClashCardXpTable`, `ClashCardXpService`, persistencia v2 | Objetos de entrenamiento |
+| EXP por nivel (`cardXpReward` en JSON de historia) | Cartas como material |
+| UI barra XP + resumen en fin de partido | Backend |
+| Escalado provisional stats/potencia por nivel | Evolución / árbol |
+
+**Curva provisional:** `xpToNextLevel(level, rarity) = base + level × factor`.
+
+| Rareza | Base | Factor |
+|---|---|---|
+| N | 40 | 10 |
+| R | 60 | 14 |
+| SR | 90 | 20 |
+| LR | 130 | 28 |
+| XI | 160 | 34 |
+
+**Límites:** N 60, R 80, SR 100, LR/XI 120.
+
+**Farm:** la EXP de partido se puede obtener repetidamente al rejugar niveles; las recompensas base del nivel no se duplican.
+
 ### 10.1 Fuentes de experiencia
 
 | Fuente | Descripción |
 |---|---|
-| Jugar partidos | XP base por resultado y objetivos |
+| Jugar partidos | XP base por resultado y objetivos (**Fase 17:** `cardXpReward` solo si gana) |
 | Objetos de entrenamiento | Consumibles que otorgan XP |
 | Cartas como material | Duplicados u otras cartas sacrificadas |
 
@@ -282,7 +307,7 @@ Tras completar árbol o sin carta compatible:
 
 El nivel no supera el máximo de la rareza (§2).
 
-Fórmulas de XP por nivel: pendiente de balance.
+Fórmulas de XP por nivel: ver §10.0 (curva provisional Fase 17).
 
 ---
 

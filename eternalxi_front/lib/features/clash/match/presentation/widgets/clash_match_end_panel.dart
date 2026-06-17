@@ -1,5 +1,6 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_result.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_progress.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
@@ -7,13 +8,14 @@ import 'package:eternal_xi/features/clash/story/domain/clash_story_level.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_reward.dart';
 import 'package:flutter/material.dart';
 
-/// Resumen de fin de partido 7vs7 con objetivos (Fase 15–16).
+/// Resumen de fin de partido 7vs7 con objetivos (Fase 15–16) y EXP (Fase 17).
 class ClashMatchEndPanel extends StatelessWidget {
   const ClashMatchEndPanel({
     required this.state,
     required this.level,
     required this.objectiveResults,
     required this.previewRewards,
+    required this.previewCardXp,
     required this.onViewRewards,
     required this.onRetry,
     required this.onBackToMap,
@@ -24,6 +26,7 @@ class ClashMatchEndPanel extends StatelessWidget {
   final ClashStoryLevel level;
   final List<ClashMatchObjectiveProgress> objectiveResults;
   final ClashStoryReward previewRewards;
+  final List<ClashCardXpResult> previewCardXp;
   final VoidCallback onViewRewards;
   final VoidCallback onRetry;
   final VoidCallback onBackToMap;
@@ -88,6 +91,10 @@ class ClashMatchEndPanel extends StatelessWidget {
                 fontWeight: FontWeight.w700,
               ),
             ),
+            if (previewCardXp.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              _CardXpSummary(results: previewCardXp),
+            ],
             const SizedBox(height: 12),
             _RewardsSummary(rewards: previewRewards),
             const SizedBox(height: 14),
@@ -104,6 +111,14 @@ class ClashMatchEndPanel extends StatelessWidget {
                 color: context.xiTextSecondary,
               ),
             ),
+            const SizedBox(height: 6),
+            Text(
+              l10n.clashMatchNoCardXpOnDefeat,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: context.xiTextSecondary,
+              ),
+            ),
             const SizedBox(height: 14),
             FilledButton(onPressed: onRetry, child: Text(l10n.clashMatchRetry)),
           ],
@@ -114,6 +129,92 @@ class ClashMatchEndPanel extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _CardXpSummary extends StatelessWidget {
+  const _CardXpSummary({required this.results});
+
+  final List<ClashCardXpResult> results;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l10n.clashMatchCardXpTitle,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 8),
+        ...results.map((result) {
+          final levelText = result.didLevelUp
+              ? l10n.clashMatchCardLevelUp(
+                  result.previousLevel,
+                  result.newLevel,
+                )
+              : l10n.clashMatchCardLevelSame(result.newLevel);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  result.didLevelUp
+                      ? Icons.arrow_circle_up_rounded
+                      : Icons.person_rounded,
+                  size: 18,
+                  color: result.didLevelUp
+                      ? Colors.amber
+                      : context.xiTextSecondary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        result.cardName,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        l10n.clashMatchCardXpGained(result.xpGained),
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      Text(
+                        levelText,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: result.didLevelUp
+                              ? Colors.amber.shade700
+                              : context.xiTextSecondary,
+                          fontWeight: result.didLevelUp
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                        ),
+                      ),
+                      if (result.reachedMaxLevel && result.xpGained == 0)
+                        Text(
+                          l10n.clashCardMaxLevel,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: context.xiTextSecondary,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+      ],
     );
   }
 }

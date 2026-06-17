@@ -1,6 +1,9 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_result.dart';
+import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_evaluator.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_progress.dart';
 import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
@@ -88,13 +91,27 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
     }
 
     final userWon = state.winner == MatchTeamSide.user;
+    final lineups = context.read<ClashLineupsController>();
+    final lineupCardIds = lineups.activeLineup?.assignedCardIds ?? const [];
     final result = await story.finishMatchLevel(
       levelId: widget.levelId,
       userWon: userWon,
       matchState: state,
+      lineupCardIds: lineupCardIds,
     );
     if (!mounted) {
       return;
+    }
+
+    if (userWon) {
+      await lineups.load();
+      if (!mounted) {
+        return;
+      }
+      final cards = context.read<ClashCardsController>();
+      if (cards.state != ClashCardsLoadState.idle) {
+        await cards.reloadOwnedCards();
+      }
     }
 
     if (userWon && result != null && result.firstCompletion) {
@@ -138,6 +155,8 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
     final l10n = context.l10n;
     final story = context.watch<ClashStoryController>();
     final match = context.watch<ClashMatchController>();
+    final lineups = context.watch<ClashLineupsController>();
+    final collection = context.read<ClashPlayerCollectionRepository>();
     final level = story.activeLevel;
     final state = match.state;
 
@@ -167,6 +186,14 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
             progress: story.progress,
           )
         : const ClashStoryReward();
+    final lineupCardIds = lineups.activeLineup?.assignedCardIds ?? const [];
+    final previewCardXp = userWon && level.cardXpReward > 0
+        ? collection.previewMatchXpSync(
+            cardIds: lineupCardIds,
+            xpPerCard: level.cardXpReward,
+            catalogById: lineups.catalogById,
+          )
+        : const <ClashCardXpResult>[];
     final isHalftime = state.isPausedForHalftime;
     final hasDuelUi =
         !isHalftime &&
@@ -369,6 +396,7 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
               level: level,
               objectiveResults: objectiveResults,
               previewRewards: previewRewards,
+              previewCardXp: previewCardXp,
               onViewRewards: _onViewRewards,
               onRetry: _onRetry,
               onBackToMap: _onBackToMap,

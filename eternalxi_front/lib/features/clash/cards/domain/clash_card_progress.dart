@@ -55,6 +55,22 @@ class ClashCardProgress {
   /// Indica si el árbol de duplicados está completamente maximizado.
   bool get isTreeMaximized => unlockedDuplicateNodes >= maxDuplicateNodes;
 
+  ClashCardProgress copyWith({
+    int? currentLevel,
+    int? currentExperience,
+    int? unlockedDuplicateNodes,
+    Map<String, ClashTechniqueLevel>? techniqueLevels,
+  }) {
+    return ClashCardProgress(
+      cardId: cardId,
+      currentLevel: currentLevel ?? this.currentLevel,
+      currentExperience: currentExperience ?? this.currentExperience,
+      unlockedDuplicateNodes:
+          unlockedDuplicateNodes ?? this.unlockedDuplicateNodes,
+      techniqueLevels: techniqueLevels ?? this.techniqueLevels,
+    );
+  }
+
   factory ClashCardProgress.fromJson(Map<String, dynamic> json) {
     final levelsRaw =
         json['techniqueLevels'] as Map<String, dynamic>? ?? const {};

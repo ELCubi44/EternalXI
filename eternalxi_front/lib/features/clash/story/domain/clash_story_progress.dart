@@ -1,3 +1,4 @@
+import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_result.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_progress.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_completion_unlocks.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_reward.dart';
@@ -107,6 +108,7 @@ class ClashStoryCompletionResult {
     required this.unlocks,
     required this.firstCompletion,
     this.objectiveResults = const [],
+    this.cardXpResults = const [],
   });
 
   final String levelId;
@@ -115,4 +117,5 @@ class ClashStoryCompletionResult {
   final ClashStoryCompletionUnlocks unlocks;
   final bool firstCompletion;
   final List<ClashMatchObjectiveProgress> objectiveResults;
+  final List<ClashCardXpResult> cardXpResults;
 }

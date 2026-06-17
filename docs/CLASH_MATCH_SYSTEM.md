@@ -152,6 +152,31 @@ La **Fase 13** sustituye la simulación aleatoria rival por **IA básica real de
 
 ---
 
+## Implementación Fase 17 (Flutter)
+
+La **Fase 17** añade **EXP de carta y subida de nivel** tras victorias en niveles match:
+
+| Incluido | Pendiente (fases posteriores) |
+|---|---|
+| `ClashCardXpTable`, `ClashCardXpService`, `ClashCardXpResult` | Objetos de experiencia |
+| EXP de partido por nivel (`cardXpReward` en JSON) | Usar cartas como material |
+| Persistencia local de nivel/XP en colección v2 | Backend |
+| Escalado provisional de stats/potencia por nivel | Evolución N→R→SR |
+| UI: barra XP en detalle, EXP en fin de partido | Árbol / duplicados / gacha |
+
+**Curva provisional:** `xpToNextLevel = base + level × factor` por rareza (N 40+10×lvl, R 60+14×lvl, SR 90+20×lvl, LR 130+28×lvl, XI 160+34×lvl).
+
+**Límites de nivel:** N 60, R 80, SR 100, LR 120, XI 120.
+
+**Escalado provisional:** `levelMultiplier` de 1.00 (nivel 1) a ~1.25 (nivel máximo) sobre stats base; afecta potencia, alineación y partido.
+
+**Reglas clave:**
+- Solo **victoria** concede EXP a las cartas de la alineación activa.
+- La EXP de partido **sí puede repetirse** al rejugar niveles (farm).
+- Cartas al nivel máximo no acumulan más EXP.
+
+---
+
 ## Implementación Fase 16 (Flutter)
 
 La **Fase 16** añade **objetivos básicos de match** y recompensas condicionadas a victoria:
@@ -171,6 +196,8 @@ La **Fase 16** añade **objetivos básicos de match** y recompensas condicionada
 - Si **gana**, se evalúan objetivos y se entregan recompensas de los cumplidos no reclamados.
 - La recompensa **base de primera victoria** no se duplica al repetir el nivel.
 - Al repetir, se pueden reclamar objetivos secundarios pendientes.
+- Ganar un match concede **EXP** a las cartas usadas; perder no concede EXP (Fase 17).
+- Recompensas base/objetivos no se duplican; la **EXP de partido sí puede repetirse**.
 
 ---
 

@@ -59,7 +59,7 @@ class ClashCardsRepository {
     result.sort((a, b) {
       final cmp = switch (sortField) {
         ClashCardSortField.power => a.power.compareTo(b.power),
-        ClashCardSortField.level => a.card.level.compareTo(b.card.level),
+        ClashCardSortField.level => a.displayLevel.compareTo(b.displayLevel),
         ClashCardSortField.name => a.name.toLowerCase().compareTo(
           b.name.toLowerCase(),
         ),

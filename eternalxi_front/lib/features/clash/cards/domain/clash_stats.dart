@@ -70,6 +70,23 @@ class ClashStats {
   /// PT no disminuye por cansancio; devuelve el máximo de la carta.
   int effectiveTechniquePoints(int currentStamina) => techniquePoints;
 
+  /// Escala stats base por multiplicador de nivel (Fase 17).
+  ClashStats scaled(double multiplier) {
+    if (multiplier == 1.0) {
+      return this;
+    }
+    int scale(int value) => (value * multiplier).round().clamp(0, 9999);
+    return ClashStats(
+      save: scale(save),
+      defense: scale(defense),
+      pass: scale(pass),
+      dribble: scale(dribble),
+      shot: scale(shot),
+      techniquePoints: techniquePoints,
+      stamina: stamina,
+    );
+  }
+
   factory ClashStats.fromJson(Map<String, dynamic> json) {
     return ClashStats(
       save: clashRequireInt(json['save'], 'save'),

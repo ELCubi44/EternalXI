@@ -37,7 +37,7 @@ class MatchSquadBuilder {
             label: _shortLabel(entry.name),
             homeX: x,
             homeY: y,
-            baseStats: entry.card.stats,
+            baseStats: entry.displayStats,
             power: entry.power,
             currentStamina: entry.card.stats.stamina,
             style: entry.card.style,

@@ -1,6 +1,8 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_table.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_type.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
@@ -33,6 +35,7 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
 
   Future<void> _loadCard() async {
     final controller = context.read<ClashCardsController>();
+    final collection = context.read<ClashPlayerCollectionRepository>();
     if (controller.state == ClashCardsLoadState.idle) {
       await controller.load();
     }
@@ -41,7 +44,7 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
       return;
     }
     setState(() {
-      _entry = entry;
+      _entry = entry == null ? null : collection.enrichEntry(entry);
       _notFound = entry == null;
       _loading = false;
     });
@@ -106,14 +109,28 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
                 children: [
                   Expanded(child: portrait),
                   const SizedBox(width: 16),
-                  Expanded(child: info),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        info,
+                        const SizedBox(height: 12),
+                        _XpPanel(entry: entry),
+                      ],
+                    ),
+                  ),
                 ],
               );
             }
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [portrait, const SizedBox(height: 16), info],
+              children: [
+                portrait,
+                const SizedBox(height: 16),
+                info,
+                const SizedBox(height: 12),
+                _XpPanel(entry: entry),
+              ],
             );
           },
         ),
@@ -194,7 +211,7 @@ class _InfoPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final card = entry.card;
-    final stats = card.stats;
+    final stats = entry.displayStats;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -214,7 +231,7 @@ class _InfoPanel extends StatelessWidget {
           _MetaRow(label: l10n.clashCardStyle, value: card.style.displayNameEs),
           _MetaRow(
             label: l10n.clashCardLevel,
-            value: '${card.level} / ${card.rarity.maxLevel}',
+            value: '${entry.displayLevel} / ${card.rarity.maxLevel}',
           ),
           _MetaRow(label: l10n.clashCardPower, value: '${entry.power}'),
           const SizedBox(height: 12),
@@ -284,6 +301,82 @@ class _StatRow extends StatelessWidget {
         children: [
           Expanded(child: Text(label)),
           Text('$value', style: const TextStyle(fontWeight: FontWeight.w800)),
+        ],
+      ),
+    );
+  }
+}
+
+class _XpPanel extends StatelessWidget {
+  const _XpPanel({required this.entry});
+
+  final ClashCardCatalogEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final card = entry.card;
+    final progress = entry.progress;
+    final currentXp = progress?.currentExperience ?? 0;
+
+    if (entry.isMaxLevel) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.xiCardSurface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: context.xiDivider),
+        ),
+        child: Text(
+          l10n.clashCardMaxLevel,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: context.xiTextSecondary,
+          ),
+        ),
+      );
+    }
+
+    final needed =
+        entry.xpToNextLevel ??
+        ClashCardXpTable.xpToNextLevel(entry.displayLevel, card.rarity);
+    final ratio = needed <= 0 ? 0.0 : (currentXp / needed).clamp(0.0, 1.0);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.xiCardSurface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.xiDivider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            l10n.clashCardXpTitle,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: LinearProgressIndicator(
+              value: ratio,
+              minHeight: 10,
+              backgroundColor: context.xiChipBackground,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.clashCardXpProgress(currentXp, needed),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: context.xiTextSecondary,
+            ),
+          ),
         ],
       ),
     );

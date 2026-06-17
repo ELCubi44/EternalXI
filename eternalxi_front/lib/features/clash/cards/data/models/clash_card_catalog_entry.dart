@@ -1,5 +1,9 @@
 import 'package:eternal_xi/features/clash/cards/domain/clash_card.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_card_level_scaling.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_card_progress.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_table.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_json_helpers.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_stats.dart';
 
 /// Carta Clash con metadatos de presentación del catálogo local.
 ///
@@ -9,15 +13,42 @@ class ClashCardCatalogEntry {
     required this.card,
     required this.name,
     required this.team,
+    this.progress,
   });
 
   final ClashCard card;
   final String name;
   final String team;
+  final ClashCardProgress? progress;
 
   String get id => card.id;
   int get playerId => card.playerId;
-  int get power => card.power;
+
+  int get displayLevel => ClashCardLevelScaling.effectiveLevel(card, progress);
+
+  ClashStats get displayStats =>
+      ClashCardLevelScaling.effectiveStats(card, progress);
+
+  int get power => ClashCardLevelScaling.effectivePower(card, progress);
+
+  int? get xpToNextLevel {
+    final p = progress;
+    if (p == null || displayLevel >= card.rarity.maxLevel) {
+      return null;
+    }
+    return ClashCardXpTable.xpToNextLevel(displayLevel, card.rarity);
+  }
+
+  bool get isMaxLevel => displayLevel >= card.rarity.maxLevel;
+
+  ClashCardCatalogEntry withProgress(ClashCardProgress? value) {
+    return ClashCardCatalogEntry(
+      card: card,
+      name: name,
+      team: team,
+      progress: value,
+    );
+  }
 
   factory ClashCardCatalogEntry.fromJson(Map<String, dynamic> json) {
     final name = clashRequireString(json['name'], 'name');

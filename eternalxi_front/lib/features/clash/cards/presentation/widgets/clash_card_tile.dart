@@ -70,7 +70,7 @@ class ClashCardTile extends StatelessWidget {
                   _ChipLabel(text: card.style.displayNameEs),
                   const Spacer(),
                   Text(
-                    'Nv.${card.level}',
+                    'Nv.${entry.displayLevel}',
                     style: theme.textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: context.xiTextPrimary,

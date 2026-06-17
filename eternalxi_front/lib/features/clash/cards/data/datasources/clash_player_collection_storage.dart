@@ -1,19 +1,64 @@
 import 'dart:convert';
 
+import 'package:eternal_xi/features/clash/cards/domain/clash_card_progress.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+/// Snapshot persistido de la colección Clash (poseídas + progreso).
+class ClashPlayerCollectionSnapshot {
+  const ClashPlayerCollectionSnapshot({
+    this.ownedCardIds = const {},
+    this.cardProgress = const {},
+  });
+
+  final Set<String> ownedCardIds;
+  final Map<String, ClashCardProgress> cardProgress;
+
+  ClashPlayerCollectionSnapshot copyWith({
+    Set<String>? ownedCardIds,
+    Map<String, ClashCardProgress>? cardProgress,
+  }) {
+    return ClashPlayerCollectionSnapshot(
+      ownedCardIds: ownedCardIds ?? this.ownedCardIds,
+      cardProgress: cardProgress ?? this.cardProgress,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'ownedCardIds': ownedCardIds.toList(),
+    'cardProgress': cardProgress.map(
+      (key, value) => MapEntry(key, value.toJson()),
+    ),
+  };
+
+  factory ClashPlayerCollectionSnapshot.fromJson(Map<String, dynamic> json) {
+    final ownedRaw = json['ownedCardIds'] as List? ?? const [];
+    final progressRaw = json['cardProgress'] as Map? ?? const {};
+    final progress = <String, ClashCardProgress>{};
+    for (final entry in progressRaw.entries) {
+      progress[entry.key.toString()] = ClashCardProgress.fromJson(
+        Map<String, dynamic>.from(entry.value as Map),
+      );
+    }
+    return ClashPlayerCollectionSnapshot(
+      ownedCardIds: ownedRaw.map((id) => id.toString()).toSet(),
+      cardProgress: progress,
+    );
+  }
+}
 
 /// Backend intercambiable para la colección de cartas del jugador.
 abstract class ClashPlayerCollectionStorageBackend {
-  Set<String> readOwnedCardIds();
+  ClashPlayerCollectionSnapshot readSnapshot();
 
-  Future<void> writeOwnedCardIds(Set<String> cardIds);
+  Future<void> writeSnapshot(ClashPlayerCollectionSnapshot snapshot);
 }
 
 class SharedPreferencesClashPlayerCollectionBackend
     implements ClashPlayerCollectionStorageBackend {
   SharedPreferencesClashPlayerCollectionBackend(this._prefs);
 
-  static const storageKey = 'clash_player_collection_v1';
+  static const storageKeyV1 = 'clash_player_collection_v1';
+  static const storageKeyV2 = 'clash_player_collection_v2';
 
   final SharedPreferences _prefs;
 
@@ -23,35 +68,49 @@ class SharedPreferencesClashPlayerCollectionBackend
   }
 
   @override
-  Set<String> readOwnedCardIds() {
-    final raw = _prefs.getString(storageKey);
-    if (raw == null || raw.isEmpty) {
-      return {};
+  ClashPlayerCollectionSnapshot readSnapshot() {
+    final rawV2 = _prefs.getString(storageKeyV2);
+    if (rawV2 != null && rawV2.isNotEmpty) {
+      final decoded = jsonDecode(rawV2);
+      if (decoded is Map<String, dynamic>) {
+        return ClashPlayerCollectionSnapshot.fromJson(decoded);
+      }
     }
-    final decoded = jsonDecode(raw);
+
+    final rawV1 = _prefs.getString(storageKeyV1);
+    if (rawV1 == null || rawV1.isEmpty) {
+      return const ClashPlayerCollectionSnapshot();
+    }
+    final decoded = jsonDecode(rawV1);
     if (decoded is! List) {
-      return {};
+      return const ClashPlayerCollectionSnapshot();
     }
-    return decoded.map((id) => id.toString()).toSet();
+    return ClashPlayerCollectionSnapshot(
+      ownedCardIds: decoded.map((id) => id.toString()).toSet(),
+    );
   }
 
   @override
-  Future<void> writeOwnedCardIds(Set<String> cardIds) async {
-    await _prefs.setString(storageKey, jsonEncode(cardIds.toList()));
+  Future<void> writeSnapshot(ClashPlayerCollectionSnapshot snapshot) async {
+    await _prefs.setString(storageKeyV2, jsonEncode(snapshot.toJson()));
   }
 
-  Future<void> clearForTests() => _prefs.remove(storageKey);
+  Future<void> clearForTests() async {
+    await _prefs.remove(storageKeyV1);
+    await _prefs.remove(storageKeyV2);
+  }
 }
 
 class InMemoryClashPlayerCollectionBackend
     implements ClashPlayerCollectionStorageBackend {
-  Set<String> _owned = {};
+  ClashPlayerCollectionSnapshot _snapshot =
+      const ClashPlayerCollectionSnapshot();
 
   @override
-  Set<String> readOwnedCardIds() => Set<String>.from(_owned);
+  ClashPlayerCollectionSnapshot readSnapshot() => _snapshot;
 
   @override
-  Future<void> writeOwnedCardIds(Set<String> cardIds) async {
-    _owned = Set<String>.from(cardIds);
+  Future<void> writeSnapshot(ClashPlayerCollectionSnapshot snapshot) async {
+    _snapshot = snapshot;
   }
 }

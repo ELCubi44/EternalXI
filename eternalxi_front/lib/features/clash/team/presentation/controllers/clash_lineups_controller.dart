@@ -53,7 +53,9 @@ class ClashLineupsController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _catalogById = await _lineupsRepository.loadCatalogById();
+      _catalogById = _collectionRepository.enrichCatalog(
+        await _lineupsRepository.loadCatalogById(),
+      );
       _lineups = await _lineupsRepository.loadLineups();
       _selectedIndex = _lineups.indexWhere((lineup) => lineup.isActive);
       if (_selectedIndex < 0) {

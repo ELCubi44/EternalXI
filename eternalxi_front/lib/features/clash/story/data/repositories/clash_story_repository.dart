@@ -1,4 +1,5 @@
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_result.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_evaluator.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_progress.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
@@ -94,12 +95,13 @@ class ClashStoryRepository {
     required List<ClashStoryLevel> chapterLevels,
     ClashStoryProgress? progress,
   }) {
-    return levelStatus(
-          level: level,
-          chapterLevels: chapterLevels,
-          progress: progress,
-        ) ==
-        ClashStoryLevelStatus.available;
+    final status = levelStatus(
+      level: level,
+      chapterLevels: chapterLevels,
+      progress: progress,
+    );
+    return status == ClashStoryLevelStatus.available ||
+        status == ClashStoryLevelStatus.completed;
   }
 
   bool _isLevelAvailable(
@@ -132,6 +134,7 @@ class ClashStoryRepository {
     String levelId, {
     required bool userWon,
     MatchState? matchState,
+    Iterable<String>? lineupCardIds,
   }) async {
     final level = await _requireLevel(levelId);
     if (level.type != ClashStoryLevelType.match &&
@@ -156,6 +159,7 @@ class ClashStoryRepository {
         unlocks: const ClashStoryCompletionUnlocks(),
         firstCompletion: false,
         objectiveResults: objectiveResults,
+        cardXpResults: const [],
       );
     }
 
@@ -164,6 +168,7 @@ class ClashStoryRepository {
       level,
       objectiveResults,
       stateForEvaluation,
+      lineupCardIds: lineupCardIds,
     );
   }
 
@@ -171,8 +176,9 @@ class ClashStoryRepository {
     String levelId,
     ClashStoryLevel level,
     List<ClashMatchObjectiveProgress> objectiveResults,
-    MatchState matchState,
-  ) async {
+    MatchState matchState, {
+    Iterable<String>? lineupCardIds,
+  }) async {
     var progress = loadProgress();
     final firstCompletion = !progress.isLevelCompleted(levelId);
     final baseRewardsAlreadyClaimed = progress.areRewardsClaimed(levelId);
@@ -228,6 +234,13 @@ class ClashStoryRepository {
 
     await _saveProgress(progress);
 
+    final cardXpResults = level.cardXpReward > 0 && lineupCardIds != null
+        ? await _collectionRepository.grantMatchXp(
+            cardIds: lineupCardIds,
+            xpPerCard: level.cardXpReward,
+          )
+        : const <ClashCardXpResult>[];
+
     final displayResults = ClashMatchObjectiveEvaluator.evaluate(
       objectives: level.matchObjectives,
       state: matchState,
@@ -242,6 +255,7 @@ class ClashStoryRepository {
       unlocks: level.completionUnlocks,
       firstCompletion: firstCompletion,
       objectiveResults: displayResults,
+      cardXpResults: cardXpResults,
     );
   }
 
