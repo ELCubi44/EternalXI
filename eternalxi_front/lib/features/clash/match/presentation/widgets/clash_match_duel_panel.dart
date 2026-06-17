@@ -4,12 +4,13 @@ import 'package:eternal_xi/features/clash/match/domain/clash_duel_participant.da
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_resolution.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_state.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_style_result.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_duel_type.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
 import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// Panel de duelo Regate vs Defensa (Fase 9).
+/// Panel de duelos Clash: Regate vs Defensa y Tiro vs Parada.
 class ClashMatchDuelPanel extends StatelessWidget {
   const ClashMatchDuelPanel({super.key});
 
@@ -34,7 +35,7 @@ class ClashMatchDuelPanel extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return _PendingDuelCard(duel: duel, onResolve: match.resolveNormalDribble);
+    return _PendingDuelCard(duel: duel, onResolve: match.resolvePendingDuel);
   }
 }
 
@@ -48,6 +49,7 @@ class _PendingDuelCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final isShot = duel.type == ClashDuelType.shotVsSave;
 
     return Container(
       width: double.infinity,
@@ -56,14 +58,16 @@ class _PendingDuelCard extends StatelessWidget {
         color: context.xiCardSurface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: theme.colorScheme.primary.withValues(alpha: 0.4),
+          color: isShot
+              ? Colors.orange.withValues(alpha: 0.6)
+              : theme.colorScheme.primary.withValues(alpha: 0.4),
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            l10n.clashMatchDuelTitle,
+            isShot ? l10n.clashMatchShotDuelTitle : l10n.clashMatchDuelTitle,
             textAlign: TextAlign.center,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w900,
@@ -77,7 +81,9 @@ class _PendingDuelCard extends StatelessWidget {
                 child: _ParticipantCard(
                   participant: duel.attacker,
                   accent: theme.colorScheme.primary,
-                  statLabel: l10n.clashMatchDuelEffectiveDribble,
+                  statLabel: isShot
+                      ? l10n.clashMatchDuelEffectiveShot
+                      : l10n.clashMatchDuelEffectiveDribble,
                 ),
               ),
               Padding(
@@ -86,15 +92,17 @@ class _PendingDuelCard extends StatelessWidget {
                   vertical: 28,
                 ),
                 child: Icon(
-                  Icons.flash_on_rounded,
-                  color: theme.colorScheme.secondary,
+                  isShot ? Icons.sports_soccer : Icons.flash_on_rounded,
+                  color: isShot ? Colors.orange : theme.colorScheme.secondary,
                 ),
               ),
               Expanded(
                 child: _ParticipantCard(
                   participant: duel.defender,
                   accent: Colors.redAccent,
-                  statLabel: l10n.clashMatchDuelEffectiveDefense,
+                  statLabel: isShot
+                      ? l10n.clashMatchDuelEffectiveSave
+                      : l10n.clashMatchDuelEffectiveDefense,
                 ),
               ),
             ],
@@ -111,8 +119,14 @@ class _PendingDuelCard extends StatelessWidget {
           const SizedBox(height: 12),
           FilledButton.icon(
             onPressed: onResolve,
-            icon: const Icon(Icons.directions_run_rounded),
-            label: Text(l10n.clashMatchDuelNormalDribble),
+            icon: Icon(
+              isShot ? Icons.sports_soccer : Icons.directions_run_rounded,
+            ),
+            label: Text(
+              isShot
+                  ? l10n.clashMatchDuelNormalShot
+                  : l10n.clashMatchDuelNormalDribble,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -147,7 +161,18 @@ class _DuelResultCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final isShot = resolution.duelType == ClashDuelType.shotVsSave;
     final userWon = resolution.winner == MatchTeamSide.user;
+
+    final headline = isShot
+        ? (resolution.isGoal
+              ? l10n.clashMatchDuelGoal
+              : l10n.clashMatchDuelSave)
+        : null;
+
+    final borderColor = isShot
+        ? (resolution.isGoal ? Colors.green : Colors.blueAccent)
+        : (userWon ? Colors.green : Colors.redAccent);
 
     return Container(
       width: double.infinity,
@@ -155,21 +180,29 @@ class _DuelResultCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.xiCardSurface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: userWon ? Colors.green : Colors.redAccent,
-          width: 1.5,
-        ),
+        border: Border.all(color: borderColor, width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            l10n.clashMatchDuelTitle,
+            isShot ? l10n.clashMatchShotDuelTitle : l10n.clashMatchDuelTitle,
             textAlign: TextAlign.center,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w900,
             ),
           ),
+          if (headline != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              headline,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: resolution.isGoal ? Colors.green : Colors.blueAccent,
+              ),
+            ),
+          ],
           const SizedBox(height: 8),
           Text(
             resolution.eventText,

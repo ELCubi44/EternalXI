@@ -1,3 +1,4 @@
+import 'package:eternal_xi/features/clash/match/domain/clash_duel_type.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_player_marker.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
@@ -31,6 +32,9 @@ class ClashMiniPitch extends StatelessWidget {
       duelDefenderIndex = duel.defender.squadIndex;
       duelDefenderSide = duel.defender.teamSide;
     }
+
+    final isShotDuel =
+        duelPending && duel != null && duel.type == ClashDuelType.shotVsSave;
 
     return AspectRatio(
       aspectRatio: 0.68,
@@ -67,6 +71,26 @@ class ClashMiniPitch extends StatelessWidget {
                       duel.defender.squadIndex,
                       duel.defender.teamSide,
                     ),
+                    isShotDuel: isShotDuel,
+                  ),
+                ),
+              ),
+            if (isShotDuel)
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _ShotGoalLinePainter(
+                    attackerX: _markerX(
+                      duel!.attacker.squadIndex,
+                      duel.attacker.teamSide,
+                    ),
+                    attackerY: _markerY(
+                      duel.attacker.squadIndex,
+                      duel.attacker.teamSide,
+                    ),
+                    goalX: 0.5,
+                    goalY: duel.attacker.teamSide == MatchTeamSide.user
+                        ? 0.12
+                        : 0.88,
                   ),
                 ),
               ),
@@ -163,17 +187,20 @@ class _DuelLinkPainter extends CustomPainter {
     required this.attackerY,
     required this.defenderX,
     required this.defenderY,
+    this.isShotDuel = false,
   });
 
   final double attackerX;
   final double attackerY;
   final double defenderX;
   final double defenderY;
+  final bool isShotDuel;
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.yellowAccent.withValues(alpha: 0.75)
+      ..color = (isShotDuel ? Colors.orangeAccent : Colors.yellowAccent)
+          .withValues(alpha: 0.75)
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
@@ -187,7 +214,41 @@ class _DuelLinkPainter extends CustomPainter {
       oldDelegate.attackerX != attackerX ||
       oldDelegate.attackerY != attackerY ||
       oldDelegate.defenderX != defenderX ||
-      oldDelegate.defenderY != defenderY;
+      oldDelegate.defenderY != defenderY ||
+      oldDelegate.isShotDuel != isShotDuel;
+}
+
+class _ShotGoalLinePainter extends CustomPainter {
+  _ShotGoalLinePainter({
+    required this.attackerX,
+    required this.attackerY,
+    required this.goalX,
+    required this.goalY,
+  });
+
+  final double attackerX;
+  final double attackerY;
+  final double goalX;
+  final double goalY;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.35)
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+
+    final start = Offset(attackerX * size.width, attackerY * size.height);
+    final end = Offset(goalX * size.width, goalY * size.height);
+    canvas.drawLine(start, end, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ShotGoalLinePainter oldDelegate) =>
+      oldDelegate.attackerX != attackerX ||
+      oldDelegate.attackerY != attackerY ||
+      oldDelegate.goalX != goalX ||
+      oldDelegate.goalY != goalY;
 }
 
 class _ZoneBandsPainter extends CustomPainter {

@@ -1,3 +1,4 @@
+import 'package:eternal_xi/features/clash/match/domain/clash_duel_engine.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_chance_resolver.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
@@ -193,6 +194,22 @@ class MatchPossessionEngine {
   ) {
     if (state.possession != MatchTeamSide.rival) {
       return state;
+    }
+
+    if (ClashDuelEngine.canShoot(state)) {
+      final pending = ClashDuelEngine.beginShot(state);
+      if (pending.activeDuel != null) {
+        final resolved = ClashDuelEngine.resolveNormalShot(pending, chance);
+        return resolved.copyWith(
+          eventLog: [
+            ...resolved.eventLog,
+            const MatchEvent(
+              type: MatchEventType.rivalAction,
+              message: 'Rival dispara (provisional)',
+            ),
+          ],
+        );
+      }
     }
 
     final roll = chance.succeeds(50);

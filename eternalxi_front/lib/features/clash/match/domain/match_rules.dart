@@ -12,27 +12,51 @@ class MatchRules {
   static MatchTeamSide possessionAfterGoal(MatchTeamSide scorer) =>
       scorer.opposite();
 
-  static MatchState applyGoal(MatchState state, MatchTeamSide scorer) {
+  static MatchState applyGoal(
+    MatchState state,
+    MatchTeamSide scorer, {
+    String? goalMessage,
+  }) {
     final nextScore = state.score.increment(scorer);
     if (nextScore.hasWinner()) {
-      return state.copyWith(score: nextScore, status: MatchStatus.finished);
+      return state.copyWith(
+        score: nextScore,
+        status: MatchStatus.finished,
+        eventLog: [
+          ...state.eventLog,
+          MatchEvent(
+            type: MatchEventType.goal,
+            message:
+                goalMessage ??
+                (scorer == MatchTeamSide.user
+                    ? 'Gol de Eternal XI'
+                    : 'Gol del rival'),
+          ),
+        ],
+      );
     }
 
     final nextPossession = possessionAfterGoal(scorer);
+    final kickoffZone = nextPossession == MatchTeamSide.user
+        ? MatchBallZone.ownMidfield
+        : MatchBallZone.rivalMidfield;
+
     return state.copyWith(
       score: nextScore,
       possession: nextPossession,
       ballHolderIndex: 3,
-      ballZone: MatchBallZone.ownMidfield,
+      ballZone: kickoffZone,
       pressure: 22,
       possessionRisk: 18,
       eventLog: [
         ...state.eventLog,
         MatchEvent(
           type: MatchEventType.goal,
-          message: scorer == MatchTeamSide.user
-              ? 'Gol de Eternal XI'
-              : 'Gol del rival',
+          message:
+              goalMessage ??
+              (scorer == MatchTeamSide.user
+                  ? 'Gol de Eternal XI'
+                  : 'Gol del rival'),
         ),
         const MatchEvent(
           type: MatchEventType.kickoff,

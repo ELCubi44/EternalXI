@@ -2,6 +2,7 @@ import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_status.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
@@ -224,7 +225,8 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
                 ),
               ],
             ),
-            if (advanceChance != null) ...[
+            if (advanceChance != null &&
+                state.ballZone != MatchBallZone.rivalArea) ...[
               const SizedBox(height: 8),
               Text(
                 l10n.clashMatchAdvanceChance(advanceChance),
@@ -235,10 +237,17 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
               ),
             ],
             const SizedBox(height: 8),
-            OutlinedButton(
-              onPressed: null,
-              child: Text(l10n.clashMatchActionShootSoon),
-            ),
+            if (match.canUserShoot)
+              FilledButton.icon(
+                onPressed: match.shoot,
+                icon: const Icon(Icons.sports_soccer),
+                label: Text(l10n.clashMatchActionShoot),
+              )
+            else
+              OutlinedButton(
+                onPressed: null,
+                child: Text(l10n.clashMatchActionShootNeedArea),
+              ),
           ],
           if (isRivalPossession) ...[
             const SizedBox(height: 14),
@@ -356,6 +365,8 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
       MatchEventType.duelStarted => Icons.sports_martial_arts_outlined,
       MatchEventType.duelSuccess => Icons.check_circle_outline,
       MatchEventType.duelFail => Icons.block_outlined,
+      MatchEventType.shotDuelStarted => Icons.sports_soccer_outlined,
+      MatchEventType.saveMade => Icons.back_hand_outlined,
       MatchEventType.goal => Icons.sports_soccer,
       MatchEventType.kickoff => Icons.flag_outlined,
       MatchEventType.rivalAction => Icons.smart_toy_outlined,

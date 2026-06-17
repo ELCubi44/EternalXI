@@ -4,6 +4,7 @@ import 'package:eternal_xi/features/clash/match/domain/clash_duel_style_result.d
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_squad_player.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
 
 /// Selección provisional del defensor rival al avanzar (Fase 9).
 class ClashDuelDefenderSelector {
@@ -89,6 +90,21 @@ class ClashDuelDefenderSelector {
       }
     }
     return best;
+  }
+
+  /// Portero del equipo que defiende el tiro.
+  static MatchSquadPlayer? selectGoalkeeper(
+    MatchState state,
+    MatchTeamSide attackingSide,
+  ) {
+    final defendingSide = attackingSide.opposite();
+    final squad = state.squadFor(defendingSide);
+    for (final player in squad) {
+      if (player.position == ClashPosition.goalkeeper) {
+        return player;
+      }
+    }
+    return squad.isNotEmpty ? squad.first : null;
   }
 
   static ClashDuelStyleResult attackerStyleResult(

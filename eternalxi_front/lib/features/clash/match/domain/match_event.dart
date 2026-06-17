@@ -8,6 +8,8 @@ enum MatchEventType {
   duelStarted,
   duelSuccess,
   duelFail,
+  shotDuelStarted,
+  saveMade,
   possessionLost,
   rivalAction,
   goal,

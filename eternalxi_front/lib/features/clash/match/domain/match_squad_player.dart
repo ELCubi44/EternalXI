@@ -42,6 +42,10 @@ class MatchSquadPlayer {
 
   int get effectiveDefense => baseStats.effectiveDefense(currentStamina);
 
+  int get effectiveShot => baseStats.effectiveShot(currentStamina);
+
+  int get effectiveSave => baseStats.effectiveSave(currentStamina);
+
   MatchSquadPlayer copyWith({int? currentStamina}) {
     return MatchSquadPlayer(
       index: index,

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_engine.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_duel_type.dart';
 import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_chance_resolver.dart';
@@ -121,6 +122,19 @@ class ClashMatchController extends ChangeNotifier {
 
   bool get hasDuelResultToShow => _state?.lastDuelResolution != null;
 
+  bool get canUserShoot {
+    final current = _state;
+    if (current == null ||
+        current.status != MatchStatus.playing ||
+        current.isFinished ||
+        current.possession != MatchTeamSide.user ||
+        current.hasPendingDuel ||
+        current.lastDuelResolution != null) {
+      return false;
+    }
+    return ClashDuelEngine.canShoot(current);
+  }
+
   void passTo(int targetIndex) {
     final current = _state;
     if (current == null ||
@@ -155,6 +169,43 @@ class ClashMatchController extends ChangeNotifier {
     }
     _state = ClashDuelEngine.resolveNormalDribble(current, _chance);
     notifyListeners();
+  }
+
+  void shoot() {
+    final current = _state;
+    if (current == null ||
+        current.status != MatchStatus.playing ||
+        current.isFinished ||
+        current.possession != MatchTeamSide.user ||
+        current.hasPendingDuel ||
+        current.lastDuelResolution != null ||
+        !ClashDuelEngine.canShoot(current)) {
+      return;
+    }
+    _state = ClashDuelEngine.beginShot(current);
+    notifyListeners();
+  }
+
+  void resolveNormalShot() {
+    final current = _state;
+    if (current == null || !current.hasPendingDuel) {
+      return;
+    }
+    _state = ClashDuelEngine.resolveNormalShot(current, _chance);
+    notifyListeners();
+  }
+
+  void resolvePendingDuel() {
+    final current = _state;
+    final duel = current?.activeDuel;
+    if (current == null || duel == null || !duel.isPending) {
+      return;
+    }
+    if (duel.type == ClashDuelType.shotVsSave) {
+      resolveNormalShot();
+    } else {
+      resolveNormalDribble();
+    }
   }
 
   void dismissDuelResult() {

@@ -60,6 +60,26 @@ La **Fase 9** sustituye el avance directo por probabilidad por **duelos normales
 
 ---
 
+## Implementación Fase 10 (Flutter)
+
+La **Fase 10** cierra el **ciclo básico del partido** con duelos **Tiro vs Parada** en zona de remate:
+
+| Incluido | Pendiente (fases posteriores) |
+|---|---|
+| `ClashDuelType.shotVsSave` reutilizando dominio de duelo | Supertécnicas y consumo de PT |
+| Acción **Tirar** en `rivalArea` (usuario) | Rechaces y córners |
+| Duelo pendiente → «Tiro normal» → GOL o PARADA | Objetos de descanso, faltas |
+| Fórmula Tiro vs Parada (+8 estilo, +4 área, presión) | IA rival completa |
+| Gol suma marcador; saque al equipo que encajó | Gacha/tienda/evolución |
+| Parada cede posesión al portero | |
+| Primero a 3 goles finaliza partido (victoria/recompensas existentes) | |
+| Rival provisional puede disparar en `ownDefense` | |
+| Minicampo destaca tirador/portero y línea a portería | |
+
+El ciclo **posesión → pasar → avanzar → regate/defensa → tirar → gol/parada** ya permite marcar sin botones dev. Los botones de gol en la sección plegable son **temporales** y se eliminarán en fases posteriores.
+
+---
+
 ## 1. Visión general
 
 Clash tiene **dos modalidades de partido**:

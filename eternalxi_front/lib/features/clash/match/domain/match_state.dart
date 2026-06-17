@@ -46,6 +46,12 @@ class MatchState {
 
   bool get hasPendingDuel => activeDuel?.isPending ?? false;
 
+  /// Zona de tiro según el equipo en posesión.
+  bool get isInShootingZone => switch (possession) {
+    MatchTeamSide.user => ballZone == MatchBallZone.rivalArea,
+    MatchTeamSide.rival => ballZone == MatchBallZone.ownDefense,
+  };
+
   List<MatchPlayerMarker> get userMarkers =>
       MatchSquadBuilder.markersFromSquad(userSquad);
 

@@ -251,6 +251,8 @@ class AppLocalizations {
       'clashMatchActionPass': 'Pasar',
       'clashMatchActionAdvance': 'Avanzar',
       'clashMatchActionShootSoon': 'Tirar (próximamente)',
+      'clashMatchActionShoot': 'Tirar',
+      'clashMatchActionShootNeedArea': 'Llega al área para tirar',
       'clashMatchActionRivalSim': 'Simular acción rival',
       'clashMatchZoneLabel': 'Zona del balón',
       'clashMatchStaminaLabel': 'Resistencia',
@@ -274,6 +276,12 @@ class AppLocalizations {
       'clashMatchDuelContinue': 'Continuar',
       'clashMatchDuelScore': 'Marcador del duelo: {attacker} — {defender}',
       'clashMatchDuelCoinTie': 'Empate resuelto por moneda',
+      'clashMatchShotDuelTitle': 'Duelo de tiro',
+      'clashMatchDuelNormalShot': 'Tiro normal',
+      'clashMatchDuelEffectiveShot': 'Tiro efectivo',
+      'clashMatchDuelEffectiveSave': 'Parada efectiva',
+      'clashMatchDuelGoal': '¡GOL!',
+      'clashMatchDuelSave': 'PARADA',
       'clashMatchDevSectionTitle': 'Herramientas dev/provisional',
       'registerTitle': 'Crear cuenta',
       'registerSubtitle':
@@ -674,6 +682,8 @@ class AppLocalizations {
       'clashMatchActionPass': 'Pass',
       'clashMatchActionAdvance': 'Advance',
       'clashMatchActionShootSoon': 'Shoot (coming soon)',
+      'clashMatchActionShoot': 'Shoot',
+      'clashMatchActionShootNeedArea': 'Reach the box to shoot',
       'clashMatchActionRivalSim': 'Simulate rival action',
       'clashMatchZoneLabel': 'Ball zone',
       'clashMatchStaminaLabel': 'Stamina',
@@ -697,6 +707,12 @@ class AppLocalizations {
       'clashMatchDuelContinue': 'Continue',
       'clashMatchDuelScore': 'Duel score: {attacker} — {defender}',
       'clashMatchDuelCoinTie': 'Tie broken by coin flip',
+      'clashMatchShotDuelTitle': 'Shot duel',
+      'clashMatchDuelNormalShot': 'Normal shot',
+      'clashMatchDuelEffectiveShot': 'Effective shot',
+      'clashMatchDuelEffectiveSave': 'Effective save',
+      'clashMatchDuelGoal': 'GOAL!',
+      'clashMatchDuelSave': 'SAVE',
       'clashMatchDevSectionTitle': 'Dev/provisional tools',
       'registerTitle': 'Create account',
       'registerSubtitle':
@@ -1119,6 +1135,8 @@ class AppLocalizations {
   String get clashMatchActionPass => _t('clashMatchActionPass');
   String get clashMatchActionAdvance => _t('clashMatchActionAdvance');
   String get clashMatchActionShootSoon => _t('clashMatchActionShootSoon');
+  String get clashMatchActionShoot => _t('clashMatchActionShoot');
+  String get clashMatchActionShootNeedArea => _t('clashMatchActionShootNeedArea');
   String get clashMatchActionRivalSim => _t('clashMatchActionRivalSim');
   String get clashMatchZoneLabel => _t('clashMatchZoneLabel');
   String get clashMatchStaminaLabel => _t('clashMatchStaminaLabel');
@@ -1151,6 +1169,12 @@ class AppLocalizations {
   String get clashMatchDuelSuperTechSoon => _t('clashMatchDuelSuperTechSoon');
   String get clashMatchDuelContinue => _t('clashMatchDuelContinue');
   String get clashMatchDuelCoinTie => _t('clashMatchDuelCoinTie');
+  String get clashMatchShotDuelTitle => _t('clashMatchShotDuelTitle');
+  String get clashMatchDuelNormalShot => _t('clashMatchDuelNormalShot');
+  String get clashMatchDuelEffectiveShot => _t('clashMatchDuelEffectiveShot');
+  String get clashMatchDuelEffectiveSave => _t('clashMatchDuelEffectiveSave');
+  String get clashMatchDuelGoal => _t('clashMatchDuelGoal');
+  String get clashMatchDuelSave => _t('clashMatchDuelSave');
 
   String clashMatchDuelScore(int attacker, int defender) => _t(
     'clashMatchDuelScore',
