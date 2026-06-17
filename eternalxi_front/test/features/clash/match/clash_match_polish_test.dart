@@ -314,6 +314,8 @@ void main() {
             body: ClashMatchEndPanel(
               state: state,
               level: _matchLevel,
+              objectiveResults: const [],
+              previewRewards: const ClashStoryReward(gems: 1, coins: 500),
               onViewRewards: () {},
               onRetry: () {},
               onBackToMap: () {},
@@ -344,6 +346,8 @@ void main() {
             body: ClashMatchEndPanel(
               state: state,
               level: _matchLevel,
+              objectiveResults: const [],
+              previewRewards: const ClashStoryReward(),
               onViewRewards: () {},
               onRetry: () {},
               onBackToMap: () {},
@@ -354,7 +358,12 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Derrota'), findsOneWidget);
-      expect(find.text('Sin recompensas en esta derrota.'), findsOneWidget);
+      expect(
+        find.text(
+          'Debes ganar el partido para recibir recompensas de objetivos',
+        ),
+        findsOneWidget,
+      );
       expect(find.text('Reintentar'), findsOneWidget);
       expect(find.text('Ver recompensas'), findsNothing);
     });

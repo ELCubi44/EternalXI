@@ -15,6 +15,7 @@ import 'package:eternal_xi/features/clash/match/domain/match_chance_resolver.dar
 import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_possession_engine.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_possession_math.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_goal_details.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_rules.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_squad_player.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
@@ -768,6 +769,14 @@ class ClashDuelEngine {
       next,
       duel.attacker.teamSide,
       goalMessage: resolution.eventText,
+      goalDetails: MatchGoalDetails(
+        scorer: duel.attacker.teamSide,
+        usedTechnique: attackerTechnique != null,
+        techniqueType:
+            attackerTechnique?.type ?? resolution.attackerTechniqueType,
+        techniqueId: attackerTechnique?.id,
+        techniqueName: attackerTechnique?.name,
+      ),
     );
     return next;
   }

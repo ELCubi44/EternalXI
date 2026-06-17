@@ -1,6 +1,8 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_evaluator.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_progress.dart';
 import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
@@ -14,6 +16,7 @@ import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_pass_sheet.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_status_banner.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_mini_pitch.dart';
+import 'package:eternal_xi/features/clash/story/domain/clash_story_reward.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_reward_screen.dart';
 import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
@@ -88,6 +91,7 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
     final result = await story.finishMatchLevel(
       levelId: widget.levelId,
       userWon: userWon,
+      matchState: state,
     );
     if (!mounted) {
       return;
@@ -143,6 +147,26 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
 
     final holder = state.ballHolderPlayer();
     final isFinished = state.isFinished;
+    final userWon = isFinished && state.winner == MatchTeamSide.user;
+    final objectiveResults = isFinished
+        ? ClashMatchObjectiveEvaluator.evaluate(
+            objectives: level.matchObjectives,
+            state: state,
+            userWon: userWon,
+            progress: story.progress,
+          )
+        : const <ClashMatchObjectiveProgress>[];
+    final previewRewards = userWon
+        ? ClashMatchObjectiveEvaluator.rewardsToGrant(
+            levelId: widget.levelId,
+            baseVictoryReward: level.rewards,
+            objectiveResults: objectiveResults,
+            grantBaseVictory:
+                !story.progress.isLevelCompleted(widget.levelId) &&
+                !story.progress.areRewardsClaimed(widget.levelId),
+            progress: story.progress,
+          )
+        : const ClashStoryReward();
     final isHalftime = state.isPausedForHalftime;
     final hasDuelUi =
         !isHalftime &&
@@ -343,6 +367,8 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
             ClashMatchEndPanel(
               state: state,
               level: level,
+              objectiveResults: objectiveResults,
+              previewRewards: previewRewards,
               onViewRewards: _onViewRewards,
               onRetry: _onRetry,
               onBackToMap: _onBackToMap,

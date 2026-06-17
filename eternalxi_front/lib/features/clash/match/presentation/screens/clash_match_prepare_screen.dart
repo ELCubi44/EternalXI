@@ -1,6 +1,7 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_objectives_card.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_prepare_validation.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_map_screen.dart';
@@ -142,6 +143,10 @@ class _ClashMatchPrepareScreenState extends State<ClashMatchPrepareScreen> {
                 ],
               ),
             ),
+          ],
+          if (level.matchObjectives.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            ClashMatchObjectivesCard(objectives: level.matchObjectives),
           ],
           const SizedBox(height: 24),
           OutlinedButton(

@@ -1,3 +1,5 @@
+import 'package:eternal_xi/features/clash/match/domain/match_goal_details.dart';
+
 /// Evento breve del historial de partido.
 enum MatchEventType {
   kickoff,
@@ -20,8 +22,13 @@ enum MatchEventType {
 }
 
 class MatchEvent {
-  const MatchEvent({required this.type, required this.message});
+  const MatchEvent({
+    required this.type,
+    required this.message,
+    this.goalDetails,
+  });
 
   final MatchEventType type;
   final String message;
+  final MatchGoalDetails? goalDetails;
 }

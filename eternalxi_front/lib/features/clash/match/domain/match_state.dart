@@ -175,6 +175,7 @@ class MatchState {
 
   /// Estado mínimo para tests de Fase 7/8.
   factory MatchState.testing({
+    String levelId = 'test',
     MatchScore score = const MatchScore(),
     MatchTeamSide possession = MatchTeamSide.user,
     int ballHolderIndex = 3,
@@ -187,7 +188,7 @@ class MatchState {
     MatchStatus status = MatchStatus.playing,
   }) {
     return MatchState(
-      levelId: 'test',
+      levelId: levelId,
       status: status,
       score: score,
       possession: possession,

@@ -1,6 +1,7 @@
 import 'package:eternal_xi/features/clash/match/domain/clash_halftime_rules.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_goal_details.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_status.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
@@ -17,6 +18,7 @@ class MatchRules {
     MatchState state,
     MatchTeamSide scorer, {
     String? goalMessage,
+    MatchGoalDetails? goalDetails,
   }) {
     final nextScore = state.score.increment(scorer);
     final goalEvent = MatchEvent(
@@ -26,6 +28,8 @@ class MatchRules {
           (scorer == MatchTeamSide.user
               ? 'Gol de Eternal XI'
               : 'Gol del rival'),
+      goalDetails:
+          goalDetails ?? MatchGoalDetails(scorer: scorer, usedTechnique: false),
     );
 
     if (nextScore.hasWinner()) {

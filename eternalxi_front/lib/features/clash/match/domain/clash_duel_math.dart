@@ -190,6 +190,7 @@ class ClashDuelMath {
       defenderPtSpent: defenderTechnique?.ptCost ?? 0,
       attackerUsedNormal: attackerTechnique == null,
       defenderUsedNormal: defenderTechnique == null,
+      attackerTechniqueType: attackerTechnique?.type,
     );
   }
 

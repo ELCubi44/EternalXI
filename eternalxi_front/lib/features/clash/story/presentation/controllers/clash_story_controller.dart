@@ -1,3 +1,4 @@
+import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_chapter.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level.dart';
@@ -154,10 +155,12 @@ class ClashStoryController extends ChangeNotifier {
   Future<ClashStoryCompletionResult?> finishMatchLevel({
     required String levelId,
     required bool userWon,
+    MatchState? matchState,
   }) async {
     final result = await _storyRepository.completeMatchLevel(
       levelId,
       userWon: userWon,
+      matchState: matchState,
     );
     if (userWon) {
       _progress = _storyRepository.loadProgress();

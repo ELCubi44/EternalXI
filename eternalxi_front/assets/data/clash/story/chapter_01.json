@@ -198,6 +198,40 @@
             }
           ]
         },
+        "matchObjectives": [
+          {
+            "id": "win_match",
+            "type": "winMatch",
+            "title": "Ganar el partido",
+            "description": "Gana el partido llegando primero a 3 goles.",
+            "isMandatory": true,
+            "rewards": {}
+          },
+          {
+            "id": "clean_sheet",
+            "type": "cleanSheet",
+            "title": "Ganar sin recibir goles",
+            "description": "Gana el partido sin que el rival marque.",
+            "rewards": {
+              "gems": 1
+            }
+          },
+          {
+            "id": "shot_technique_goal",
+            "type": "scoreWithShotTechnique",
+            "title": "Marcar con supertécnica de Tiro",
+            "description": "Marca un gol usando una supertécnica de tipo Tiro.",
+            "rewards": {
+              "items": [
+                {
+                  "id": "basic-book",
+                  "name": "Libro básico",
+                  "quantity": 1
+                }
+              ]
+            }
+          }
+        ],
         "scenes": [],
         "required": {
           "clashTeamUnlocked": true,

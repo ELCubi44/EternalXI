@@ -203,6 +203,10 @@ void main() {
       final result = await storyRepo.completeMatchLevel(
         'chapter_01_level_04',
         userWon: true,
+        matchState: MatchState.testing(
+          score: const MatchScore(user: 3, rival: 1),
+          status: MatchStatus.finished,
+        ),
       );
 
       expect(result.firstCompletion, isTrue);
@@ -220,6 +224,10 @@ void main() {
       final result = await storyRepo.completeMatchLevel(
         'chapter_01_level_04',
         userWon: false,
+        matchState: MatchState.testing(
+          score: const MatchScore(user: 1, rival: 3),
+          status: MatchStatus.finished,
+        ),
       );
 
       expect(result.firstCompletion, isFalse);

@@ -167,7 +167,19 @@ SI se gana el partido:
   → + bonus por objetivos cumplidos (clean sheet, variables, etc.)
 ```
 
-El objetivo «ganar el partido» es gate de todos los bonus.
+### 5.4 Implementación Fase 16 (Flutter)
+
+Los niveles match pueden declarar objetivos en `matchObjectives` del JSON de historia:
+
+| Categoría | Ejemplos |
+|---|---|
+| **Obligatorios** | `winMatch` — gate de todas las recompensas |
+| **Fijos secundarios** | `cleanSheet` — ganar sin recibir goles |
+| **Variables** | `scoreWithShotTechnique`, duelos por estilo, etc. |
+
+Los objetivos futuros podrán depender de **jugadores obligatorios**, **técnicas**, **estilos** y **cinemáticas**; el modelo ya contempla `requiredPlayerId`, `requiredStyle` y `requiredTechniqueType`.
+
+El **Nivel 4** (`chapter_01_level_04`) incluye los tres objetivos iniciales de la Fase 16.
 
 ---
 

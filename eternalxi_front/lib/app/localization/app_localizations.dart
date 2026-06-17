@@ -249,6 +249,12 @@ class AppLocalizations {
       'clashMatchFinalScore': 'Marcador final: {user} - {rival}',
       'clashMatchLevelCompleted': 'Nivel completado: {title}',
       'clashMatchNoRewards': 'Sin recompensas en esta derrota.',
+      'clashMatchObjectivesTitle': 'Objetivos',
+      'clashMatchObjectiveCompleted': 'Completado',
+      'clashMatchObjectiveIncomplete': 'No completado',
+      'clashMatchObjectivesDefeatHint':
+          'Debes ganar el partido para recibir recompensas de objetivos',
+      'clashMatchRewardsTotalTitle': 'Total obtenido',
       'clashMatchRewardsTitle': 'Recompensas del nivel',
       'clashMatchRewardsBasic': 'Progreso registrado al reclamar.',
       'clashMatchRewardGems': 'Gemas: +{amount}',
@@ -734,6 +740,12 @@ class AppLocalizations {
       'clashMatchFinalScore': 'Final score: {user} - {rival}',
       'clashMatchLevelCompleted': 'Level completed: {title}',
       'clashMatchNoRewards': 'No rewards on defeat.',
+      'clashMatchObjectivesTitle': 'Objectives',
+      'clashMatchObjectiveCompleted': 'Completed',
+      'clashMatchObjectiveIncomplete': 'Not completed',
+      'clashMatchObjectivesDefeatHint':
+          'You must win the match to receive objective rewards',
+      'clashMatchRewardsTotalTitle': 'Total earned',
       'clashMatchRewardsTitle': 'Level rewards',
       'clashMatchRewardsBasic': 'Progress saved when you claim.',
       'clashMatchRewardGems': 'Gems: +{amount}',
@@ -1248,6 +1260,13 @@ class AppLocalizations {
       _t('clashMatchLevelCompleted').replaceAll('{title}', title);
 
   String get clashMatchNoRewards => _t('clashMatchNoRewards');
+  String get clashMatchObjectivesTitle => _t('clashMatchObjectivesTitle');
+  String get clashMatchObjectiveCompleted => _t('clashMatchObjectiveCompleted');
+  String get clashMatchObjectiveIncomplete =>
+      _t('clashMatchObjectiveIncomplete');
+  String get clashMatchObjectivesDefeatHint =>
+      _t('clashMatchObjectivesDefeatHint');
+  String get clashMatchRewardsTotalTitle => _t('clashMatchRewardsTotalTitle');
   String get clashMatchRewardsTitle => _t('clashMatchRewardsTitle');
   String get clashMatchRewardsBasic => _t('clashMatchRewardsBasic');
 

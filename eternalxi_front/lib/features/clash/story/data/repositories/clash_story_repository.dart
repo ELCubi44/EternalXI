@@ -1,4 +1,7 @@
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_evaluator.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_progress.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_local_datasource.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_completion_unlocks.dart';
@@ -128,7 +131,23 @@ class ClashStoryRepository {
   Future<ClashStoryCompletionResult> completeMatchLevel(
     String levelId, {
     required bool userWon,
+    MatchState? matchState,
   }) async {
+    final level = await _requireLevel(levelId);
+    if (level.type != ClashStoryLevelType.match &&
+        level.type != ClashStoryLevelType.mixed) {
+      throw ClashStoryOperationException('Este nivel no es un partido');
+    }
+
+    final stateForEvaluation =
+        matchState ?? MatchState.testing(levelId: levelId);
+    final objectiveResults = ClashMatchObjectiveEvaluator.evaluate(
+      objectives: level.matchObjectives,
+      state: stateForEvaluation,
+      userWon: userWon,
+      progress: loadProgress(),
+    );
+
     if (!userWon) {
       return ClashStoryCompletionResult(
         levelId: levelId,
@@ -136,15 +155,94 @@ class ClashStoryRepository {
         newlyGrantedCardIds: const [],
         unlocks: const ClashStoryCompletionUnlocks(),
         firstCompletion: false,
+        objectiveResults: objectiveResults,
       );
     }
 
-    final level = await _requireLevel(levelId);
-    if (level.type != ClashStoryLevelType.match &&
-        level.type != ClashStoryLevelType.mixed) {
-      throw ClashStoryOperationException('Este nivel no es un partido');
+    return _completeMatchLevel(
+      levelId,
+      level,
+      objectiveResults,
+      stateForEvaluation,
+    );
+  }
+
+  Future<ClashStoryCompletionResult> _completeMatchLevel(
+    String levelId,
+    ClashStoryLevel level,
+    List<ClashMatchObjectiveProgress> objectiveResults,
+    MatchState matchState,
+  ) async {
+    var progress = loadProgress();
+    final firstCompletion = !progress.isLevelCompleted(levelId);
+    final baseRewardsAlreadyClaimed = progress.areRewardsClaimed(levelId);
+    final grantBaseVictory = firstCompletion && !baseRewardsAlreadyClaimed;
+
+    final rewardsToGrant = ClashMatchObjectiveEvaluator.rewardsToGrant(
+      levelId: levelId,
+      baseVictoryReward: level.rewards,
+      objectiveResults: objectiveResults,
+      grantBaseVictory: grantBaseVictory,
+      progress: progress,
+    );
+
+    final newlyGrantedCards = <String>[];
+    if (!rewardsToGrant.isEmpty) {
+      newlyGrantedCards.addAll(await _grantRewards(rewardsToGrant, progress));
     }
-    return _completeLevel(levelId, level);
+
+    final newlyClaimedObjectiveKeys = <String>{};
+    for (final result in objectiveResults) {
+      if (!result.completed || result.objective.rewards.isEmpty) {
+        continue;
+      }
+      final key = ClashMatchObjectiveEvaluator.rewardKey(
+        levelId,
+        result.objectiveId,
+      );
+      if (!progress.claimedObjectiveRewardKeys.contains(key)) {
+        newlyClaimedObjectiveKeys.add(key);
+      }
+    }
+
+    progress = progress.copyWith(
+      completedLevelIds: {...progress.completedLevelIds, levelId},
+      claimedRewardLevelIds: grantBaseVictory
+          ? {...progress.claimedRewardLevelIds, levelId}
+          : progress.claimedRewardLevelIds,
+      claimedObjectiveRewardKeys: {
+        ...progress.claimedObjectiveRewardKeys,
+        ...newlyClaimedObjectiveKeys,
+      },
+      unlocks: firstCompletion
+          ? progress.unlocks.merge(level.completionUnlocks)
+          : progress.unlocks,
+      eternalXiCardsGranted:
+          progress.eternalXiCardsGranted ||
+          (level.rewards.starterRosterKey != null &&
+              newlyGrantedCards.isNotEmpty),
+      walletGems: progress.walletGems + rewardsToGrant.gems,
+      walletCoins: progress.walletCoins + rewardsToGrant.coins,
+      currentChapterId: level.chapterId,
+    );
+
+    await _saveProgress(progress);
+
+    final displayResults = ClashMatchObjectiveEvaluator.evaluate(
+      objectives: level.matchObjectives,
+      state: matchState,
+      userWon: true,
+      progress: progress,
+    );
+
+    return ClashStoryCompletionResult(
+      levelId: levelId,
+      rewardsGranted: rewardsToGrant,
+      newlyGrantedCardIds: newlyGrantedCards,
+      unlocks: level.completionUnlocks,
+      firstCompletion: firstCompletion,
+      objectiveResults: displayResults,
+    );
   }
 
   Future<ClashStoryLevel> _requireLevel(String levelId) async {
@@ -152,8 +250,16 @@ class ClashStoryRepository {
     if (level == null) {
       throw ClashStoryOperationException('Nivel no encontrado');
     }
+    final progress = loadProgress();
+    if (progress.isLevelCompleted(levelId)) {
+      return level;
+    }
     final chapter = await loadChapter(level.chapterId);
-    if (!canOpenLevel(level: level, chapterLevels: chapter.levels)) {
+    if (!canOpenLevel(
+      level: level,
+      chapterLevels: chapter.levels,
+      progress: progress,
+    )) {
       throw ClashStoryOperationException('Nivel bloqueado');
     }
     return level;

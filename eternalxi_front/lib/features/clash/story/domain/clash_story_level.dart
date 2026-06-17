@@ -1,5 +1,6 @@
 import 'package:eternal_xi/features/clash/cards/domain/clash_json_helpers.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_match_objective.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_completion_unlocks.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level_requirements.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level_type.dart';
@@ -24,6 +25,7 @@ class ClashStoryLevel {
     this.guestCards = const [],
     this.completionUnlocks = const ClashStoryCompletionUnlocks(),
     this.requirements = const ClashStoryLevelRequirements(),
+    this.matchObjectives = const [],
   });
 
   final String id;
@@ -41,12 +43,14 @@ class ClashStoryLevel {
   final List<ClashStoryScene> scenes;
   final ClashStoryCompletionUnlocks completionUnlocks;
   final ClashStoryLevelRequirements requirements;
+  final List<ClashMatchObjective> matchObjectives;
 
   factory ClashStoryLevel.fromJson(Map<String, dynamic> json) {
     final positionsRaw = json['requiredPositions'] as List? ?? const [];
     final playersRaw = json['requiredPlayers'] as List? ?? const [];
     final guestsRaw = json['guestCards'] as List? ?? const [];
     final scenesRaw = json['scenes'] as List? ?? const [];
+    final objectivesRaw = json['matchObjectives'] as List? ?? const [];
 
     return ClashStoryLevel(
       id: clashRequireString(json['id'], 'id'),
@@ -90,6 +94,13 @@ class ClashStoryLevel {
       requirements: ClashStoryLevelRequirements.fromJson(
         json['required'] as Map<String, dynamic>?,
       ),
+      matchObjectives: objectivesRaw
+          .map(
+            (item) => ClashMatchObjective.fromJson(
+              Map<String, dynamic>.from(item as Map),
+            ),
+          )
+          .toList(growable: false),
     );
   }
 
@@ -111,5 +122,6 @@ class ClashStoryLevel {
     'scenes': scenes.map((scene) => scene.toJson()).toList(),
     'completionUnlocks': completionUnlocks.toJson(),
     'required': requirements.toJson(),
+    'matchObjectives': matchObjectives.map((item) => item.toJson()).toList(),
   };
 }

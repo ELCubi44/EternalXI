@@ -152,6 +152,28 @@ La **Fase 13** sustituye la simulación aleatoria rival por **IA básica real de
 
 ---
 
+## Implementación Fase 16 (Flutter)
+
+La **Fase 16** añade **objetivos básicos de match** y recompensas condicionadas a victoria:
+
+| Incluido | Pendiente (fases posteriores) |
+|---|---|
+| Dominio `ClashMatchObjective`, tipos y evaluador | Todos los tipos variables con lógica completa |
+| Objetivos activos en Nivel 4: ganar, clean sheet, gol con técnica Tiro | Objetivos con jugadores obligatorios |
+| Recompensas base + bonus por objetivo cumplido (solo si gana) | Backend de recompensas |
+| Persistencia local: objetivos reclamados sin duplicar base | Inventario persistente de ítems/materiales |
+| Panel fin de partido con resumen de objetivos y total | Logros globales / misiones diarias |
+| Preparación muestra objetivos del nivel | Cinemáticas por objetivo |
+| Eventos de gol con metadatos de técnica (`MatchGoalDetails`) | |
+
+**Reglas clave:**
+- Si el usuario **pierde**, no se entrega ninguna recompensa de objetivos ni base.
+- Si **gana**, se evalúan objetivos y se entregan recompensas de los cumplidos no reclamados.
+- La recompensa **base de primera victoria** no se duplica al repetir el nivel.
+- Al repetir, se pueden reclamar objetivos secundarios pendientes.
+
+---
+
 ## Implementación Fase 15 (Flutter)
 
 La **Fase 15** elimina las acciones dev de gol y pule el flujo jugable 7vs7:

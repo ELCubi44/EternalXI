@@ -1,3 +1,4 @@
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_type.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_type.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
 
@@ -19,6 +20,7 @@ class ClashDuelResolution {
     this.defenderPtSpent = 0,
     this.attackerUsedNormal = true,
     this.defenderUsedNormal = true,
+    this.attackerTechniqueType,
   });
 
   final ClashDuelType duelType;
@@ -36,6 +38,7 @@ class ClashDuelResolution {
   final int defenderPtSpent;
   final bool attackerUsedNormal;
   final bool defenderUsedNormal;
+  final ClashTechniqueType? attackerTechniqueType;
 
   bool get attackerWon => winner == attackerSide;
 
