@@ -2,6 +2,7 @@ import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_player_style.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_stats.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_defender_selector.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_engine.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_math.dart';
@@ -32,6 +33,9 @@ MatchSquadPlayer _player({
   int stamina = 100,
   String label = 'P',
   ClashPlayerStyle style = ClashPlayerStyle.valiente,
+  List<ClashSuperTechnique> superTechniques = const [],
+  int techniquePoints = 10,
+  int currentPt = 10,
 }) {
   final pos = position ?? ClashPosition.values[index];
   final (x, y) = MatchPitchLayout.coordsForIndex(index, side);
@@ -41,7 +45,7 @@ MatchSquadPlayer _player({
     pass: 40,
     dribble: dribble,
     shot: 30,
-    techniquePoints: 10,
+    techniquePoints: techniquePoints,
     stamina: 100,
   );
   return MatchSquadPlayer(
@@ -57,6 +61,9 @@ MatchSquadPlayer _player({
     baseStats: stats,
     power: 200,
     currentStamina: stamina,
+    superTechniques: superTechniques,
+    maxPt: techniquePoints,
+    currentPt: currentPt,
   );
 }
 
@@ -252,7 +259,6 @@ void main() {
       final resolution = ClashDuelMath.resolveDribbleVsDefense(
         attacker: attacker,
         defender: defender,
-        attackerStyleResult: ClashDuelStyleResult.neutral,
         ballZone: MatchBallZone.ownMidfield,
         pressure: 0,
         chance: const FixedMatchChanceResolver(
@@ -294,7 +300,6 @@ void main() {
       final resolution = ClashDuelMath.resolveDribbleVsDefense(
         attacker: attacker,
         defender: defender,
-        attackerStyleResult: ClashDuelStyleResult.neutral,
         ballZone: MatchBallZone.ownMidfield,
         pressure: 0,
         chance: const FixedMatchChanceResolver(
@@ -405,15 +410,39 @@ void main() {
       final withAdvantage = ClashDuelMath.resolveDribbleVsDefense(
         attacker: attacker,
         defender: defender,
-        attackerStyleResult: ClashDuelStyleResult.advantage,
         ballZone: MatchBallZone.midfield,
         pressure: 0,
         chance: succeed,
       );
+      final neutralAttacker = ClashDuelParticipant(
+        teamSide: MatchTeamSide.user,
+        cardId: 'a2',
+        playerId: 3,
+        position: ClashPosition.striker,
+        style: ClashPlayerStyle.valiente,
+        label: 'A2',
+        squadIndex: 6,
+        baseStat: 40,
+        effectiveStat: 40,
+        stamina: 100,
+        power: 200,
+      );
+      final neutralDefender = ClashDuelParticipant(
+        teamSide: MatchTeamSide.rival,
+        cardId: 'd2',
+        playerId: 4,
+        position: ClashPosition.centreBack,
+        style: ClashPlayerStyle.valiente,
+        label: 'D2',
+        squadIndex: 1,
+        baseStat: 40,
+        effectiveStat: 40,
+        stamina: 100,
+        power: 200,
+      );
       final neutral = ClashDuelMath.resolveDribbleVsDefense(
-        attacker: attacker,
-        defender: defender,
-        attackerStyleResult: ClashDuelStyleResult.neutral,
+        attacker: neutralAttacker,
+        defender: neutralDefender,
         ballZone: MatchBallZone.midfield,
         pressure: 0,
         chance: succeed,

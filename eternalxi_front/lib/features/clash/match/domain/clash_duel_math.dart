@@ -1,3 +1,6 @@
+import 'package:eternal_xi/features/clash/cards/domain/clash_player_style.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_duel_defender_selector.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_participant.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_resolution.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_style_result.dart';
@@ -6,7 +9,7 @@ import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_chance_resolver.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
 
-/// Fórmulas de duelos Clash (Fase 9–10).
+/// Fórmulas de duelos Clash (Fase 9–11).
 class ClashDuelMath {
   const ClashDuelMath._();
 
@@ -30,30 +33,130 @@ class ClashDuelMath {
     return 0;
   }
 
+  static int computeScore({
+    required int effectiveStat,
+    required ClashPlayerStyle actorStyle,
+    required ClashPlayerStyle opponentStyle,
+    ClashSuperTechnique? technique,
+    int zoneBonus = 0,
+    int pressureBonus = 0,
+    int variance = 0,
+  }) {
+    final actingStyle = technique?.style ?? actorStyle;
+    final styleResult = ClashDuelDefenderSelector.attackerStyleResult(
+      actingStyle,
+      opponentStyle,
+    );
+    var score = effectiveStat;
+    if (technique != null) {
+      score += technique.effectivePower;
+    }
+    score += styleBonusFor(styleResult);
+    score += zoneBonus;
+    score += pressureBonus;
+    score += variance;
+    return score;
+  }
+
   static ClashDuelResolution resolveDribbleVsDefense({
     required ClashDuelParticipant attacker,
     required ClashDuelParticipant defender,
-    required ClashDuelStyleResult attackerStyleResult,
     required MatchBallZone ballZone,
     required int pressure,
     required MatchChanceResolver chance,
+    ClashSuperTechnique? attackerTechnique,
+    ClashSuperTechnique? defenderTechnique,
     int attackerVariance = 0,
     int defenderVariance = 0,
   }) {
-    final attackerStyleBonus = styleBonusFor(attackerStyleResult);
-    final defenderStyleResult = _defenderStyleResult(attackerStyleResult);
-    final defenderStyleBonus = styleBonusFor(defenderStyleResult);
+    final attackerActingStyle = attackerTechnique?.style ?? attacker.style;
+    final defenderActingStyle = defenderTechnique?.style ?? defender.style;
 
-    var attackerScore = attacker.effectiveStat;
-    attackerScore += attackerStyleBonus;
-    attackerScore += attackerZoneBonus(ballZone);
-    attackerScore += attackerVariance;
+    final attackerScore = computeScore(
+      effectiveStat: attacker.effectiveStat,
+      actorStyle: attacker.style,
+      opponentStyle: defenderActingStyle,
+      technique: attackerTechnique,
+      zoneBonus: attackerZoneBonus(ballZone),
+      variance: attackerVariance,
+    );
+    final defenderScore = computeScore(
+      effectiveStat: defender.effectiveStat,
+      actorStyle: defender.style,
+      opponentStyle: attackerActingStyle,
+      technique: defenderTechnique,
+      pressureBonus: defenderPressureBonus(pressure),
+      variance: defenderVariance,
+    );
 
-    var defenderScore = defender.effectiveStat;
-    defenderScore += defenderStyleBonus;
-    defenderScore += defenderPressureBonus(pressure);
-    defenderScore += defenderVariance;
+    return _finishResolution(
+      duelType: ClashDuelType.dribbleVsDefense,
+      attacker: attacker,
+      defender: defender,
+      attackerScore: attackerScore,
+      defenderScore: defenderScore,
+      chance: chance,
+      attackerTechnique: attackerTechnique,
+      defenderTechnique: defenderTechnique,
+      dribbleDuel: true,
+    );
+  }
 
+  static ClashDuelResolution resolveShotVsSave({
+    required ClashDuelParticipant shooter,
+    required ClashDuelParticipant goalkeeper,
+    required MatchBallZone ballZone,
+    required int pressure,
+    required MatchChanceResolver chance,
+    ClashSuperTechnique? shooterTechnique,
+    ClashSuperTechnique? goalkeeperTechnique,
+    int attackerVariance = 0,
+    int defenderVariance = 0,
+  }) {
+    final shooterActingStyle = shooterTechnique?.style ?? shooter.style;
+    final keeperActingStyle = goalkeeperTechnique?.style ?? goalkeeper.style;
+
+    final attackerScore = computeScore(
+      effectiveStat: shooter.effectiveStat,
+      actorStyle: shooter.style,
+      opponentStyle: keeperActingStyle,
+      technique: shooterTechnique,
+      zoneBonus: shotAreaBonus,
+      variance: attackerVariance,
+    );
+    final defenderScore = computeScore(
+      effectiveStat: goalkeeper.effectiveStat,
+      actorStyle: goalkeeper.style,
+      opponentStyle: shooterActingStyle,
+      technique: goalkeeperTechnique,
+      pressureBonus: defenderPressureBonus(pressure),
+      variance: defenderVariance,
+    );
+
+    return _finishResolution(
+      duelType: ClashDuelType.shotVsSave,
+      attacker: shooter,
+      defender: goalkeeper,
+      attackerScore: attackerScore,
+      defenderScore: defenderScore,
+      chance: chance,
+      attackerTechnique: shooterTechnique,
+      defenderTechnique: goalkeeperTechnique,
+      dribbleDuel: false,
+    );
+  }
+
+  static ClashDuelResolution _finishResolution({
+    required ClashDuelType duelType,
+    required ClashDuelParticipant attacker,
+    required ClashDuelParticipant defender,
+    required int attackerScore,
+    required int defenderScore,
+    required MatchChanceResolver chance,
+    required ClashSuperTechnique? attackerTechnique,
+    required ClashSuperTechnique? defenderTechnique,
+    required bool dribbleDuel,
+  }) {
     final winner = _resolveWinner(
       attackerScore: attackerScore,
       defenderScore: defenderScore,
@@ -61,77 +164,66 @@ class ClashDuelMath {
       defenderSide: defender.teamSide,
       chance: chance,
     );
-
     final attackerWon = winner == attacker.teamSide;
-    final eventText = attackerWon
-        ? '${attacker.label} supera a ${defender.label}'
-        : '${defender.label} frena a ${attacker.label}';
+    final eventText = _buildEventText(
+      duelType: duelType,
+      attacker: attacker,
+      defender: defender,
+      attackerWon: attackerWon,
+      attackerTechnique: attackerTechnique,
+      defenderTechnique: defenderTechnique,
+    );
 
-    return _buildResolution(
-      duelType: ClashDuelType.dribbleVsDefense,
+    return ClashDuelResolution(
+      duelType: duelType,
       attackerSide: attacker.teamSide,
       attackerScore: attackerScore,
       defenderScore: defenderScore,
       winner: winner,
-      attackerStyleBonus: attackerStyleBonus,
-      defenderStyleBonus: defenderStyleBonus,
-      attacker: attacker,
-      defender: defender,
+      styleBonusApplied: true,
+      staminaPenaltyApplied: attacker.stamina < 100 || defender.stamina < 100,
+      resolvedByCoin: attackerScore == defenderScore,
       eventText: eventText,
-      chance: chance,
+      attackerTechniqueName: attackerTechnique?.name,
+      defenderTechniqueName: defenderTechnique?.name,
+      attackerPtSpent: attackerTechnique?.ptCost ?? 0,
+      defenderPtSpent: defenderTechnique?.ptCost ?? 0,
+      attackerUsedNormal: attackerTechnique == null,
+      defenderUsedNormal: defenderTechnique == null,
     );
   }
 
-  static ClashDuelResolution resolveShotVsSave({
-    required ClashDuelParticipant shooter,
-    required ClashDuelParticipant goalkeeper,
-    required ClashDuelStyleResult attackerStyleResult,
-    required MatchBallZone ballZone,
-    required int pressure,
-    required MatchChanceResolver chance,
-    int attackerVariance = 0,
-    int defenderVariance = 0,
+  static String _buildEventText({
+    required ClashDuelType duelType,
+    required ClashDuelParticipant attacker,
+    required ClashDuelParticipant defender,
+    required bool attackerWon,
+    required ClashSuperTechnique? attackerTechnique,
+    required ClashSuperTechnique? defenderTechnique,
   }) {
-    final shooterStyleBonus = styleBonusFor(attackerStyleResult);
-    final keeperStyleResult = _defenderStyleResult(attackerStyleResult);
-    final keeperStyleBonus = styleBonusFor(keeperStyleResult);
+    if (duelType == ClashDuelType.shotVsSave) {
+      if (attackerWon) {
+        if (attackerTechnique != null) {
+          return '${attacker.label} marca con ${attackerTechnique.name}';
+        }
+        return '${attacker.label} marca ante ${defender.label}';
+      }
+      if (defenderTechnique != null) {
+        return '${defender.label} detiene ${attackerTechnique?.name ?? 'el tiro de ${attacker.label}'}';
+      }
+      return '${defender.label} detiene el tiro de ${attacker.label}';
+    }
 
-    var attackerScore = shooter.effectiveStat;
-    attackerScore += shooterStyleBonus;
-    attackerScore += shotAreaBonus;
-    attackerScore += attackerVariance;
-
-    var defenderScore = goalkeeper.effectiveStat;
-    defenderScore += keeperStyleBonus;
-    defenderScore += defenderPressureBonus(pressure);
-    defenderScore += defenderVariance;
-
-    final winner = _resolveWinner(
-      attackerScore: attackerScore,
-      defenderScore: defenderScore,
-      attackerSide: shooter.teamSide,
-      defenderSide: goalkeeper.teamSide,
-      chance: chance,
-    );
-
-    final attackerWon = winner == shooter.teamSide;
-    final eventText = attackerWon
-        ? '${shooter.label} marca ante ${goalkeeper.label}'
-        : '${goalkeeper.label} detiene el tiro de ${shooter.label}';
-
-    return _buildResolution(
-      duelType: ClashDuelType.shotVsSave,
-      attackerSide: shooter.teamSide,
-      attackerScore: attackerScore,
-      defenderScore: defenderScore,
-      winner: winner,
-      attackerStyleBonus: shooterStyleBonus,
-      defenderStyleBonus: keeperStyleBonus,
-      attacker: shooter,
-      defender: goalkeeper,
-      eventText: eventText,
-      chance: chance,
-    );
+    if (attackerWon) {
+      if (attackerTechnique != null) {
+        return '${attacker.label} supera a ${defender.label} con ${attackerTechnique.name}';
+      }
+      return '${attacker.label} supera a ${defender.label}';
+    }
+    if (defenderTechnique != null) {
+      return '${defender.label} frena a ${attacker.label} con ${defenderTechnique.name}';
+    }
+    return '${defender.label} frena a ${attacker.label}';
   }
 
   static MatchTeamSide _resolveWinner({
@@ -150,46 +242,5 @@ class ClashDuelMath {
     return chance.coinFlipFavorsUser()
         ? MatchTeamSide.user
         : MatchTeamSide.rival;
-  }
-
-  static ClashDuelResolution _buildResolution({
-    required ClashDuelType duelType,
-    required MatchTeamSide attackerSide,
-    required int attackerScore,
-    required int defenderScore,
-    required MatchTeamSide winner,
-    required int attackerStyleBonus,
-    required int defenderStyleBonus,
-    required ClashDuelParticipant attacker,
-    required ClashDuelParticipant defender,
-    required String eventText,
-    required MatchChanceResolver chance,
-  }) {
-    final staminaPenaltyApplied =
-        attacker.stamina < 100 || defender.stamina < 100;
-    final styleBonusApplied = attackerStyleBonus > 0 || defenderStyleBonus > 0;
-    final resolvedByCoin = attackerScore == defenderScore;
-
-    return ClashDuelResolution(
-      duelType: duelType,
-      attackerSide: attackerSide,
-      attackerScore: attackerScore,
-      defenderScore: defenderScore,
-      winner: winner,
-      styleBonusApplied: styleBonusApplied,
-      staminaPenaltyApplied: staminaPenaltyApplied,
-      resolvedByCoin: resolvedByCoin,
-      eventText: eventText,
-    );
-  }
-
-  static ClashDuelStyleResult _defenderStyleResult(
-    ClashDuelStyleResult attackerResult,
-  ) {
-    return switch (attackerResult) {
-      ClashDuelStyleResult.advantage => ClashDuelStyleResult.disadvantage,
-      ClashDuelStyleResult.disadvantage => ClashDuelStyleResult.advantage,
-      ClashDuelStyleResult.neutral => ClashDuelStyleResult.neutral,
-    };
   }
 }

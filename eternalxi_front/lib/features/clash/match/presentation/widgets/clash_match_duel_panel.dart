@@ -1,16 +1,20 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_participant.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_resolution.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_state.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_style_result.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_duel_technique_rules.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_type.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_squad_player.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
 import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// Panel de duelos Clash: Regate vs Defensa y Tiro vs Parada.
+/// Panel de duelos Clash: Regate vs Defensa y Tiro vs Parada (Fase 9–11).
 class ClashMatchDuelPanel extends StatelessWidget {
   const ClashMatchDuelPanel({super.key});
 
@@ -35,21 +39,53 @@ class ClashMatchDuelPanel extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return _PendingDuelCard(duel: duel, onResolve: match.resolvePendingDuel);
+    final attackerPlayer = _attackerFromState(state, duel);
+    return _PendingDuelCard(
+      duel: duel,
+      attackerPlayer: attackerPlayer,
+      onResolveNormal: () => match.resolvePendingDuel(),
+      onResolveTechnique: (id) => match.resolvePendingDuel(techniqueId: id),
+    );
+  }
+
+  static MatchSquadPlayer? _attackerFromState(
+    MatchState state,
+    ClashDuelState duel,
+  ) {
+    final squad = state.squadFor(duel.attacker.teamSide);
+    final index = duel.attacker.squadIndex;
+    if (index < 0 || index >= squad.length) {
+      return null;
+    }
+    return squad[index];
   }
 }
 
 class _PendingDuelCard extends StatelessWidget {
-  const _PendingDuelCard({required this.duel, required this.onResolve});
+  const _PendingDuelCard({
+    required this.duel,
+    required this.attackerPlayer,
+    required this.onResolveNormal,
+    required this.onResolveTechnique,
+  });
 
   final ClashDuelState duel;
-  final VoidCallback onResolve;
+  final MatchSquadPlayer? attackerPlayer;
+  final VoidCallback onResolveNormal;
+  final ValueChanged<String> onResolveTechnique;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final isShot = duel.type == ClashDuelType.shotVsSave;
+    final techniques = attackerPlayer == null
+        ? const <ClashSuperTechnique>[]
+        : ClashDuelTechniqueRules.compatibleForAttacker(
+            attackerPlayer!,
+            duel.type,
+          );
+    final currentPt = attackerPlayer?.currentPt ?? 0;
 
     return Container(
       width: double.infinity,
@@ -84,6 +120,7 @@ class _PendingDuelCard extends StatelessWidget {
                   statLabel: isShot
                       ? l10n.clashMatchDuelEffectiveShot
                       : l10n.clashMatchDuelEffectiveDribble,
+                  currentPt: currentPt,
                 ),
               ),
               Padding(
@@ -118,7 +155,7 @@ class _PendingDuelCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           FilledButton.icon(
-            onPressed: onResolve,
+            onPressed: onResolveNormal,
             icon: Icon(
               isShot ? Icons.sports_soccer : Icons.directions_run_rounded,
             ),
@@ -128,14 +165,23 @@ class _PendingDuelCard extends StatelessWidget {
                   : l10n.clashMatchDuelNormalDribble,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.clashMatchDuelSuperTechSoon,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: context.xiTextSecondary,
+          if (techniques.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              l10n.clashMatchDuelSuperTechniques,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
             ),
-          ),
+            const SizedBox(height: 8),
+            ...techniques.map(
+              (technique) => _TechniqueButton(
+                technique: technique,
+                currentPt: currentPt,
+                onTap: () => onResolveTechnique(technique.id),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -148,6 +194,74 @@ class _PendingDuelCard extends StatelessWidget {
       ClashDuelStyleResult.disadvantage => l10n.clashMatchDuelStyleDisadvantage,
       ClashDuelStyleResult.neutral => l10n.clashMatchDuelStyleNeutral,
     };
+  }
+}
+
+class _TechniqueButton extends StatelessWidget {
+  const _TechniqueButton({
+    required this.technique,
+    required this.currentPt,
+    required this.onTap,
+  });
+
+  final ClashSuperTechnique technique;
+  final int currentPt;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final canAfford = technique.canBeUsed(currentPt);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: OutlinedButton(
+        onPressed: canAfford ? onTap : null,
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          alignment: Alignment.centerLeft,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              technique.name,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              l10n.clashMatchDuelTechniqueMeta(
+                technique.type.displayNameEs,
+                technique.style.displayNameEs,
+                technique.effectivePower,
+                technique.ptCost,
+                technique.level.name.toUpperCase(),
+              ),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: context.xiTextSecondary,
+              ),
+            ),
+            Text(
+              l10n.clashMatchDuelCurrentPt(currentPt),
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            if (!canAfford)
+              Text(
+                l10n.clashMatchDuelInsufficientPt,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.error,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -211,6 +325,28 @@ class _DuelResultCard extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
+          if (resolution.attackerTechniqueName != null ||
+              resolution.defenderTechniqueName != null) ...[
+            const SizedBox(height: 6),
+            if (resolution.attackerTechniqueName != null)
+              Text(
+                l10n.clashMatchDuelTechniqueUsed(
+                  resolution.attackerTechniqueName!,
+                  resolution.attackerPtSpent,
+                ),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall,
+              ),
+            if (resolution.defenderTechniqueName != null)
+              Text(
+                l10n.clashMatchDuelDefenderTechnique(
+                  resolution.defenderTechniqueName!,
+                  resolution.defenderPtSpent,
+                ),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall,
+              ),
+          ],
           const SizedBox(height: 6),
           Text(
             l10n.clashMatchDuelScore(
@@ -248,15 +384,18 @@ class _ParticipantCard extends StatelessWidget {
     required this.participant,
     required this.accent,
     required this.statLabel,
+    this.currentPt,
   });
 
   final ClashDuelParticipant participant;
   final Color accent;
   final String statLabel;
+  final int? currentPt;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
 
     return Column(
       children: [
@@ -305,6 +444,16 @@ class _ParticipantCard extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
+        if (currentPt != null) ...[
+          const SizedBox(height: 2),
+          Text(
+            l10n.clashMatchDuelCurrentPt(currentPt!),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ],
     );
   }

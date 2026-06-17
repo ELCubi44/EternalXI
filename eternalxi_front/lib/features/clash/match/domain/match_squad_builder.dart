@@ -1,7 +1,10 @@
-import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_player_style.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_stats.dart';
+import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_level.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_type.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_pitch_layout.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_player_marker.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_squad_player.dart';
@@ -38,6 +41,9 @@ class MatchSquadBuilder {
             power: entry.power,
             currentStamina: entry.card.stats.stamina,
             style: entry.card.style,
+            superTechniques: entry.card.superTechniques,
+            maxPt: entry.card.stats.techniquePoints,
+            currentPt: entry.card.stats.techniquePoints,
           ),
         );
       } else {
@@ -62,6 +68,7 @@ class MatchSquadBuilder {
         techniquePoints: 10,
         stamina: 100,
       );
+      final techniques = _rivalTechniquesFor(position, i);
       players.add(
         MatchSquadPlayer(
           index: i,
@@ -76,6 +83,9 @@ class MatchSquadBuilder {
           power: stats.power,
           currentStamina: stats.stamina,
           style: ClashPlayerStyle.values[i % ClashPlayerStyle.values.length],
+          superTechniques: techniques,
+          maxPt: stats.techniquePoints,
+          currentPt: stats.techniquePoints,
         ),
       );
     }
@@ -127,7 +137,37 @@ class MatchSquadBuilder {
       power: stats.power,
       currentStamina: stats.stamina,
       style: ClashPlayerStyle.valiente,
+      superTechniques: const [],
+      maxPt: stats.techniquePoints,
+      currentPt: stats.techniquePoints,
     );
+  }
+
+  static List<ClashSuperTechnique> _rivalTechniquesFor(
+    ClashPosition position,
+    int index,
+  ) {
+    final type = switch (position) {
+      ClashPosition.goalkeeper => ClashTechniqueType.save,
+      ClashPosition.centreBack ||
+      ClashPosition.fullBack => ClashTechniqueType.defense,
+      ClashPosition.defensiveMidfielder => ClashTechniqueType.defense,
+      ClashPosition.attackingMidfielder => ClashTechniqueType.dribble,
+      ClashPosition.winger => ClashTechniqueType.dribble,
+      ClashPosition.striker => ClashTechniqueType.shot,
+    };
+    return [
+      ClashSuperTechnique(
+        id: 'rival-$index-st1',
+        name: 'Técnica R${index + 1}',
+        description: 'Supertécnica rival provisional.',
+        type: type,
+        style: ClashPlayerStyle.values[index % ClashPlayerStyle.values.length],
+        basePower: 36,
+        ptCost: 10,
+        level: ClashTechniqueLevel.normal,
+      ),
+    ];
   }
 
   static String _shortLabel(String name) {

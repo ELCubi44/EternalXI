@@ -365,6 +365,7 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
       MatchEventType.duelStarted => Icons.sports_martial_arts_outlined,
       MatchEventType.duelSuccess => Icons.check_circle_outline,
       MatchEventType.duelFail => Icons.block_outlined,
+      MatchEventType.duelTechniqueUsed => Icons.bolt_rounded,
       MatchEventType.shotDuelStarted => Icons.sports_soccer_outlined,
       MatchEventType.saveMade => Icons.back_hand_outlined,
       MatchEventType.goal => Icons.sports_soccer,

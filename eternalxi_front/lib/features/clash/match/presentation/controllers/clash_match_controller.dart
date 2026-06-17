@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_duel_action_choice.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_engine.dart';
-import 'package:eternal_xi/features/clash/match/domain/clash_duel_type.dart';
 import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_chance_resolver.dart';
@@ -195,17 +195,21 @@ class ClashMatchController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void resolvePendingDuel() {
+  void resolvePendingDuel({String? techniqueId}) {
     final current = _state;
     final duel = current?.activeDuel;
     if (current == null || duel == null || !duel.isPending) {
       return;
     }
-    if (duel.type == ClashDuelType.shotVsSave) {
-      resolveNormalShot();
-    } else {
-      resolveNormalDribble();
-    }
+    final attackerChoice = techniqueId != null
+        ? ClashDuelActionChoice.technique(techniqueId)
+        : const ClashDuelActionChoice.normal();
+    _state = ClashDuelEngine.resolveDuel(
+      current,
+      _chance,
+      attackerChoice: attackerChoice,
+    );
+    notifyListeners();
   }
 
   void dismissDuelResult() {

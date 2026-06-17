@@ -199,7 +199,7 @@ class MatchPossessionEngine {
     if (ClashDuelEngine.canShoot(state)) {
       final pending = ClashDuelEngine.beginShot(state);
       if (pending.activeDuel != null) {
-        final resolved = ClashDuelEngine.resolveNormalShot(pending, chance);
+        final resolved = ClashDuelEngine.resolveRivalAutoDuel(pending, chance);
         return resolved.copyWith(
           eventLog: [
             ...resolved.eventLog,

@@ -271,8 +271,13 @@ class AppLocalizations {
       'clashMatchDuelStyleAdvantage': 'Ventaja de estilo',
       'clashMatchDuelStyleDisadvantage': 'Desventaja de estilo',
       'clashMatchDuelStyleNeutral': 'Estilo neutral',
-      'clashMatchDuelSuperTechSoon':
-          'Las supertécnicas llegarán en una fase posterior.',
+      'clashMatchDuelSuperTechniques': 'Supertécnicas',
+      'clashMatchDuelTechniqueMeta':
+          '{type} · {style} · Potencia {power} · Coste {cost} PT · Nivel {level}',
+      'clashMatchDuelCurrentPt': 'PT actuales: {pt}',
+      'clashMatchDuelInsufficientPt': 'PT insuficientes',
+      'clashMatchDuelTechniqueUsed': 'Atacante: {name} (−{pt} PT)',
+      'clashMatchDuelDefenderTechnique': 'Defensor: {name} (−{pt} PT)',
       'clashMatchDuelContinue': 'Continuar',
       'clashMatchDuelScore': 'Marcador del duelo: {attacker} — {defender}',
       'clashMatchDuelCoinTie': 'Empate resuelto por moneda',
@@ -702,8 +707,13 @@ class AppLocalizations {
       'clashMatchDuelStyleAdvantage': 'Style advantage',
       'clashMatchDuelStyleDisadvantage': 'Style disadvantage',
       'clashMatchDuelStyleNeutral': 'Neutral style',
-      'clashMatchDuelSuperTechSoon':
-          'Super techniques will arrive in a later phase.',
+      'clashMatchDuelSuperTechniques': 'Super techniques',
+      'clashMatchDuelTechniqueMeta':
+          '{type} · {style} · Power {power} · Cost {cost} PT · Level {level}',
+      'clashMatchDuelCurrentPt': 'Current PT: {pt}',
+      'clashMatchDuelInsufficientPt': 'Insufficient PT',
+      'clashMatchDuelTechniqueUsed': 'Attacker: {name} (−{pt} PT)',
+      'clashMatchDuelDefenderTechnique': 'Defender: {name} (−{pt} PT)',
       'clashMatchDuelContinue': 'Continue',
       'clashMatchDuelScore': 'Duel score: {attacker} — {defender}',
       'clashMatchDuelCoinTie': 'Tie broken by coin flip',
@@ -1136,7 +1146,8 @@ class AppLocalizations {
   String get clashMatchActionAdvance => _t('clashMatchActionAdvance');
   String get clashMatchActionShootSoon => _t('clashMatchActionShootSoon');
   String get clashMatchActionShoot => _t('clashMatchActionShoot');
-  String get clashMatchActionShootNeedArea => _t('clashMatchActionShootNeedArea');
+  String get clashMatchActionShootNeedArea =>
+      _t('clashMatchActionShootNeedArea');
   String get clashMatchActionRivalSim => _t('clashMatchActionRivalSim');
   String get clashMatchZoneLabel => _t('clashMatchZoneLabel');
   String get clashMatchStaminaLabel => _t('clashMatchStaminaLabel');
@@ -1166,7 +1177,9 @@ class AppLocalizations {
   String get clashMatchDuelStyleDisadvantage =>
       _t('clashMatchDuelStyleDisadvantage');
   String get clashMatchDuelStyleNeutral => _t('clashMatchDuelStyleNeutral');
-  String get clashMatchDuelSuperTechSoon => _t('clashMatchDuelSuperTechSoon');
+  String get clashMatchDuelSuperTechniques =>
+      _t('clashMatchDuelSuperTechniques');
+  String get clashMatchDuelInsufficientPt => _t('clashMatchDuelInsufficientPt');
   String get clashMatchDuelContinue => _t('clashMatchDuelContinue');
   String get clashMatchDuelCoinTie => _t('clashMatchDuelCoinTie');
   String get clashMatchShotDuelTitle => _t('clashMatchShotDuelTitle');
@@ -1180,16 +1193,40 @@ class AppLocalizations {
     'clashMatchDuelScore',
   ).replaceAll('{attacker}', '$attacker').replaceAll('{defender}', '$defender');
 
+  String clashMatchDuelCurrentPt(int pt) =>
+      _t('clashMatchDuelCurrentPt').replaceAll('{pt}', '$pt');
+
+  String clashMatchDuelTechniqueMeta(
+    String type,
+    String style,
+    int power,
+    int cost,
+    String level,
+  ) => _t('clashMatchDuelTechniqueMeta')
+      .replaceAll('{type}', type)
+      .replaceAll('{style}', style)
+      .replaceAll('{power}', '$power')
+      .replaceAll('{cost}', '$cost')
+      .replaceAll('{level}', level);
+
+  String clashMatchDuelTechniqueUsed(String name, int pt) => _t(
+    'clashMatchDuelTechniqueUsed',
+  ).replaceAll('{name}', name).replaceAll('{pt}', '$pt');
+
+  String clashMatchDuelDefenderTechnique(String name, int pt) => _t(
+    'clashMatchDuelDefenderTechnique',
+  ).replaceAll('{name}', name).replaceAll('{pt}', '$pt');
+
   String clashMatchScoreLabel(int user, int rival) {
-    return _t('clashMatchScoreLabel')
-        .replaceAll('{user}', '$user')
-        .replaceAll('{rival}', '$rival');
+    return _t(
+      'clashMatchScoreLabel',
+    ).replaceAll('{user}', '$user').replaceAll('{rival}', '$rival');
   }
 
   String clashMatchCoinResult(String outcome, String kickoff) {
-    return _t('clashMatchCoinResult')
-        .replaceAll('{outcome}', outcome)
-        .replaceAll('{kickoff}', kickoff);
+    return _t(
+      'clashMatchCoinResult',
+    ).replaceAll('{outcome}', outcome).replaceAll('{kickoff}', kickoff);
   }
 
   String clashMatchBallHolder(String player) {

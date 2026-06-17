@@ -13,6 +13,12 @@ class ClashDuelResolution {
     required this.staminaPenaltyApplied,
     required this.resolvedByCoin,
     required this.eventText,
+    this.attackerTechniqueName,
+    this.defenderTechniqueName,
+    this.attackerPtSpent = 0,
+    this.defenderPtSpent = 0,
+    this.attackerUsedNormal = true,
+    this.defenderUsedNormal = true,
   });
 
   final ClashDuelType duelType;
@@ -24,6 +30,12 @@ class ClashDuelResolution {
   final bool staminaPenaltyApplied;
   final bool resolvedByCoin;
   final String eventText;
+  final String? attackerTechniqueName;
+  final String? defenderTechniqueName;
+  final int attackerPtSpent;
+  final int defenderPtSpent;
+  final bool attackerUsedNormal;
+  final bool defenderUsedNormal;
 
   bool get attackerWon => winner == attackerSide;
 

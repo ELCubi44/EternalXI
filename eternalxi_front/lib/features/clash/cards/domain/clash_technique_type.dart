@@ -17,4 +17,11 @@ enum ClashTechniqueType {
       _ => throw FormatException('Tipo de supertécnica desconocido: $value'),
     };
   }
+
+  String get displayNameEs => switch (this) {
+    ClashTechniqueType.save => 'Parada',
+    ClashTechniqueType.defense => 'Defensa',
+    ClashTechniqueType.dribble => 'Regate',
+    ClashTechniqueType.shot => 'Tiro',
+  };
 }

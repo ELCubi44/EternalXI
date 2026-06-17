@@ -118,9 +118,9 @@
       "superTechniques": [
         {
           "id": "exi-n-fb-001-st1",
-          "name": "Carril Relámpago",
-          "description": "Regate veloz por la banda.",
-          "type": "dribble",
+          "name": "Muro Lateral",
+          "description": "Entrada firme en la banda.",
+          "type": "defense",
           "style": "agil",
           "basePower": 40,
           "ptCost": 9,
@@ -150,9 +150,9 @@
       "superTechniques": [
         {
           "id": "exi-n-fb-002-st1",
-          "name": "Finta Brillante",
-          "description": "Engaño rápido para superar al rival.",
-          "type": "dribble",
+          "name": "Corte Lateral",
+          "description": "Anticipación en defensa por la banda.",
+          "type": "defense",
           "style": "picaro",
           "basePower": 38,
           "ptCost": 9,
@@ -214,9 +214,9 @@
       "superTechniques": [
         {
           "id": "exi-n-am-001-st1",
-          "name": "Pase Láser",
-          "description": "Apertura medida que rompe líneas.",
-          "type": "shot",
+          "name": "Giro Interior",
+          "description": "Regate fluido entre líneas.",
+          "type": "dribble",
           "style": "preciso",
           "basePower": 41,
           "ptCost": 10,
@@ -310,9 +310,9 @@
       "superTechniques": [
         {
           "id": "exi-n-wg-002-st1",
-          "name": "Caño Espectacular",
-          "description": "Regate audaz por la banda.",
-          "type": "dribble",
+          "name": "Disparo Cruzado",
+          "description": "Remate colocado desde la banda.",
+          "type": "shot",
           "style": "picaro",
           "basePower": 40,
           "ptCost": 9,

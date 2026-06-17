@@ -80,6 +80,31 @@ El ciclo **posesión → pasar → avanzar → regate/defensa → tirar → gol/
 
 ---
 
+## Implementación Fase 11 (Flutter)
+
+La **Fase 11** añade **supertécnicas normales** dentro de los duelos existentes y el **consumo de PT**:
+
+| Incluido | Pendiente (fases posteriores) |
+|---|---|
+| `maxPt` / `currentPt` por jugador en partido | Recuperación de PT (objetos/descanso) |
+| Supertécnicas en duelos Regate vs Defensa y Tiro vs Parada | Técnicas de pase (no existen) |
+| Elección usuario: acción normal o técnica compatible | IA rival completa |
+| IA rival provisional: mejor técnica pagable si mejora score | Gacha/tienda/evolución/árbol |
+| Fórmula: stat efectiva + `effectivePower` + estilo de técnica + zona/presión | LR/XI |
+| Eventos con nombre de técnica y PT gastados | |
+| Panel de duelo con lista de técnicas y PT insuficientes | |
+| Mayor desgaste de resistencia al usar técnica | |
+
+**Reglas clave:**
+- Las supertécnicas **solo aparecen dentro de duelos** (no en pases).
+- `currentPt` inicia en `stats.techniquePoints` al comenzar el partido.
+- Al usar técnica se resta `ptCost`; no se puede usar si `currentPt < ptCost`.
+- **PT no se recupera** hasta implementar objetos/descanso.
+- El **nivel** de técnica aumenta `effectivePower`, **no** reduce `ptCost`.
+- El estilo de la supertécnica activa se usa en la rueda de afinidad.
+
+---
+
 ## 1. Visión general
 
 Clash tiene **dos modalidades de partido**:

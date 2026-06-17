@@ -57,6 +57,9 @@ MatchSquadPlayer _player({
     power: power,
     currentStamina: stamina,
     style: style,
+    superTechniques: const [],
+    maxPt: 10,
+    currentPt: 10,
   );
 }
 

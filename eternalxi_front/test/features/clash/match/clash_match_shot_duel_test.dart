@@ -2,6 +2,7 @@ import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_player_style.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_stats.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_defender_selector.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_engine.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_math.dart';
@@ -35,6 +36,9 @@ MatchSquadPlayer _player({
   int stamina = 100,
   String label = 'P',
   ClashPlayerStyle style = ClashPlayerStyle.valiente,
+  List<ClashSuperTechnique> superTechniques = const [],
+  int techniquePoints = 10,
+  int currentPt = 10,
 }) {
   final pos = position ?? ClashPosition.values[index];
   final (x, y) = MatchPitchLayout.coordsForIndex(index, side);
@@ -44,7 +48,7 @@ MatchSquadPlayer _player({
     pass: 40,
     dribble: dribble,
     shot: shot,
-    techniquePoints: 10,
+    techniquePoints: techniquePoints,
     stamina: 100,
   );
   return MatchSquadPlayer(
@@ -60,6 +64,9 @@ MatchSquadPlayer _player({
     baseStats: stats,
     power: 200,
     currentStamina: stamina,
+    superTechniques: superTechniques,
+    maxPt: techniquePoints,
+    currentPt: currentPt,
   );
 }
 
@@ -355,15 +362,39 @@ void main() {
       final withAdvantage = ClashDuelMath.resolveShotVsSave(
         shooter: shooter,
         goalkeeper: keeper,
-        attackerStyleResult: ClashDuelStyleResult.advantage,
         ballZone: MatchBallZone.rivalArea,
         pressure: 0,
         chance: succeed,
       );
+      final neutralShooter = ClashDuelParticipant(
+        teamSide: MatchTeamSide.user,
+        cardId: 's2',
+        playerId: 3,
+        position: ClashPosition.striker,
+        style: ClashPlayerStyle.valiente,
+        label: 'S2',
+        squadIndex: 6,
+        baseStat: 40,
+        effectiveStat: 40,
+        stamina: 100,
+        power: 200,
+      );
+      final neutralKeeper = ClashDuelParticipant(
+        teamSide: MatchTeamSide.rival,
+        cardId: 'k2',
+        playerId: 4,
+        position: ClashPosition.goalkeeper,
+        style: ClashPlayerStyle.valiente,
+        label: 'K2',
+        squadIndex: 0,
+        baseStat: 40,
+        effectiveStat: 40,
+        stamina: 100,
+        power: 200,
+      );
       final neutral = ClashDuelMath.resolveShotVsSave(
-        shooter: shooter,
-        goalkeeper: keeper,
-        attackerStyleResult: ClashDuelStyleResult.neutral,
+        shooter: neutralShooter,
+        goalkeeper: neutralKeeper,
         ballZone: MatchBallZone.rivalArea,
         pressure: 0,
         chance: succeed,
@@ -404,7 +435,6 @@ void main() {
       final resolution = ClashDuelMath.resolveShotVsSave(
         shooter: shooter,
         goalkeeper: keeper,
-        attackerStyleResult: ClashDuelStyleResult.neutral,
         ballZone: MatchBallZone.ownMidfield,
         pressure: 0,
         chance: const FixedMatchChanceResolver(
