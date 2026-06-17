@@ -85,6 +85,61 @@ class ClashDuelEngine {
     );
   }
 
+  /// Avance rival: duelo Regate vs Defensa del usuario o avance libre (Fase 13).
+  static MatchState beginRivalAdvance(
+    MatchState state,
+    MatchChanceResolver chance,
+  ) {
+    final holder = state.ballHolderPlayer();
+    if (holder == null ||
+        state.possession != MatchTeamSide.rival ||
+        state.activeDuel != null) {
+      return state;
+    }
+
+    final defender = ClashDuelDefenderSelector.selectForRivalAdvance(
+      state,
+      holder,
+    );
+    if (defender == null) {
+      return MatchPossessionEngine.executeFreeAdvance(state, chance);
+    }
+
+    final attackerStyle = ClashDuelDefenderSelector.attackerStyleResult(
+      holder.style,
+      defender.style,
+    );
+
+    final duel = ClashDuelState(
+      duelId: 'rival-duel-${state.eventLog.length + 1}',
+      type: ClashDuelType.dribbleVsDefense,
+      attacker: ClashDuelParticipant.fromSquadPlayer(
+        holder,
+        baseStat: holder.baseStats.dribble,
+        effectiveStat: holder.effectiveDribble,
+      ),
+      defender: ClashDuelParticipant.fromSquadPlayer(
+        defender,
+        baseStat: defender.baseStats.defense,
+        effectiveStat: defender.effectiveDefense,
+      ),
+      ballZone: state.ballZone,
+      status: ClashDuelStatus.pendingUserChoice,
+      attackerStyleResult: attackerStyle,
+    );
+
+    return state.copyWith(
+      activeDuel: duel,
+      eventLog: [
+        ...state.eventLog,
+        MatchEvent(
+          type: MatchEventType.duelStarted,
+          message: '${holder.label} encara a ${defender.label}',
+        ),
+      ],
+    );
+  }
+
   static MatchState beginShot(MatchState state) {
     final holder = state.ballHolderPlayer();
     if (holder == null || state.activeDuel != null || !canShoot(state)) {
@@ -196,6 +251,7 @@ class ClashDuelEngine {
     final resolvedDefenderChoice =
         defenderChoice ??
         _selectDefenderChoice(
+          state: state,
           duel: duel,
           attackerPlayer: attackerPlayer,
           defenderPlayer: defenderPlayer,
@@ -288,6 +344,8 @@ class ClashDuelEngine {
       effectiveBaseStat: duel.attacker.effectiveStat,
       opponentStyle: defenderPlayer.style,
       ballZone: duel.ballZone,
+      score: state.score,
+      playerSide: attackerPlayer.side,
     );
     final attackerTechnique = _validateTechnique(
       player: attackerPlayer,
@@ -302,6 +360,8 @@ class ClashDuelEngine {
       effectiveBaseStat: duel.defender.effectiveStat,
       opponentStyle: opponentStyle,
       pressure: state.pressure,
+      score: state.score,
+      playerSide: defenderPlayer.side,
     );
 
     return resolveDuel(
@@ -317,6 +377,7 @@ class ClashDuelEngine {
   }
 
   static ClashDuelActionChoice _selectDefenderChoice({
+    required MatchState state,
     required ClashDuelState duel,
     required MatchSquadPlayer attackerPlayer,
     required MatchSquadPlayer defenderPlayer,
@@ -330,6 +391,8 @@ class ClashDuelEngine {
       effectiveBaseStat: duel.defender.effectiveStat,
       opponentStyle: opponentStyle,
       pressure: pressure,
+      score: state.score,
+      playerSide: defenderPlayer.side,
     );
   }
 

@@ -373,7 +373,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Simular acción rival'), findsOneWidget);
+      expect(find.text('Continuar acción rival'), findsOneWidget);
     });
 
     testWidgets('minicampo destaca poseedor', (tester) async {
@@ -440,8 +440,8 @@ class _RivalPossessionActionsProbe extends StatelessWidget {
     }
     return Scaffold(
       body: FilledButton(
-        onPressed: match.simulateRivalAction,
-        child: const Text('Simular acción rival'),
+        onPressed: match.continueRivalTurn,
+        child: const Text('Continuar acción rival'),
       ),
     );
   }

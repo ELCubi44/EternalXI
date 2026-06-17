@@ -1,4 +1,3 @@
-import 'package:eternal_xi/features/clash/match/domain/clash_duel_engine.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_chance_resolver.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
@@ -22,7 +21,7 @@ class MatchPossessionEngine {
       return const [];
     }
 
-    final defense = MatchPossessionMath.rivalDefenseQuality(state);
+    final defense = MatchPossessionMath.defenseQualityAgainst(state);
     final options = <MatchPassOption>[];
 
     for (final teammate in squad) {
@@ -61,7 +60,7 @@ class MatchPossessionEngine {
       carrier: holder,
       ballZone: state.ballZone,
       pressure: state.pressure,
-      rivalDefenseQuality: MatchPossessionMath.rivalDefenseQuality(state),
+      rivalDefenseQuality: MatchPossessionMath.defenseQualityAgainst(state),
     );
   }
 
@@ -89,7 +88,7 @@ class MatchPossessionEngine {
       receiver: receiver,
       ballZone: state.ballZone,
       pressure: state.pressure,
-      rivalDefenseQuality: MatchPossessionMath.rivalDefenseQuality(state),
+      rivalDefenseQuality: MatchPossessionMath.defenseQualityAgainst(state),
     );
 
     final success = chance.succeeds(percent);
@@ -150,7 +149,7 @@ class MatchPossessionEngine {
       carrier: holder,
       ballZone: state.ballZone,
       pressure: state.pressure,
-      rivalDefenseQuality: MatchPossessionMath.rivalDefenseQuality(state),
+      rivalDefenseQuality: MatchPossessionMath.defenseQualityAgainst(state),
     );
 
     final success = chance.succeeds(percent);
@@ -186,84 +185,6 @@ class MatchPossessionEngine {
       message: 'El rival recupera',
       eventType: MatchEventType.advanceFail,
     );
-  }
-
-  static MatchState executeRivalTurn(
-    MatchState state,
-    MatchChanceResolver chance,
-  ) {
-    if (state.possession != MatchTeamSide.rival) {
-      return state;
-    }
-
-    if (ClashDuelEngine.canShoot(state)) {
-      final pending = ClashDuelEngine.beginShot(state);
-      if (pending.activeDuel != null) {
-        final resolved = ClashDuelEngine.resolveRivalAutoDuel(pending, chance);
-        return resolved.copyWith(
-          eventLog: [
-            ...resolved.eventLog,
-            const MatchEvent(
-              type: MatchEventType.rivalAction,
-              message: 'Rival dispara (provisional)',
-            ),
-          ],
-        );
-      }
-    }
-
-    final roll = chance.succeeds(50);
-    if (!roll) {
-      return _losePossession(
-        state,
-        zone: state.ballZone,
-        message: 'Rival pierde el balón',
-        eventType: MatchEventType.possessionLost,
-        newPossession: MatchTeamSide.user,
-      );
-    }
-
-    final advanceRoll = chance.succeeds(55);
-    if (advanceRoll) {
-      final result = executeFreeAdvance(state, chance);
-      if (result.possession == MatchTeamSide.rival) {
-        return result.copyWith(
-          eventLog: [
-            ...result.eventLog,
-            const MatchEvent(
-              type: MatchEventType.rivalAction,
-              message: 'Rival avanza (provisional)',
-            ),
-          ],
-        );
-      }
-      return result;
-    }
-
-    final squad = state.rivalSquad;
-    final holder = state.ballHolderPlayer();
-    if (holder == null || squad.length < 2) {
-      return state;
-    }
-
-    final targets = squad.where((p) => p.index != holder.index).toList();
-    if (targets.isEmpty) {
-      return state;
-    }
-    final target = targets[holder.index % targets.length];
-    final result = executePass(state, target.index, chance);
-    if (result.possession == MatchTeamSide.rival) {
-      return result.copyWith(
-        eventLog: [
-          ...result.eventLog,
-          const MatchEvent(
-            type: MatchEventType.rivalAction,
-            message: 'Rival pasa el balón (provisional)',
-          ),
-        ],
-      );
-    }
-    return result;
   }
 
   static MatchState _losePossession(

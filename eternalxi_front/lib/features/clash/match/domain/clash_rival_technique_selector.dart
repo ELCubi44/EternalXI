@@ -7,9 +7,11 @@ import 'package:eternal_xi/features/clash/match/domain/clash_duel_math.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_technique_rules.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_type.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_score.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_squad_player.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
 
-/// Selección provisional de supertécnica rival (Fase 11).
+/// Selección de supertécnica para IA (rival y defensa automática del usuario).
 class ClashRivalTechniqueSelector {
   const ClashRivalTechniqueSelector._();
 
@@ -19,6 +21,8 @@ class ClashRivalTechniqueSelector {
     required int effectiveBaseStat,
     required ClashPlayerStyle opponentStyle,
     required MatchBallZone ballZone,
+    MatchScore? score,
+    MatchTeamSide? playerSide,
   }) {
     final zoneBonus = duelType == ClashDuelType.shotVsSave
         ? ClashDuelMath.shotAreaBonus
@@ -30,6 +34,9 @@ class ClashRivalTechniqueSelector {
       opponentStyle: opponentStyle,
       pressureBonus: 0,
       zoneBonus: zoneBonus,
+      duelType: duelType,
+      score: score,
+      playerSide: playerSide,
     );
   }
 
@@ -39,6 +46,8 @@ class ClashRivalTechniqueSelector {
     required int effectiveBaseStat,
     required ClashPlayerStyle opponentStyle,
     required int pressure,
+    MatchScore? score,
+    MatchTeamSide? playerSide,
   }) {
     return _select(
       player: player,
@@ -47,6 +56,9 @@ class ClashRivalTechniqueSelector {
       opponentStyle: opponentStyle,
       pressureBonus: ClashDuelMath.defenderPressureBonus(pressure),
       zoneBonus: 0,
+      duelType: duelType,
+      score: score,
+      playerSide: playerSide,
     );
   }
 
@@ -57,6 +69,9 @@ class ClashRivalTechniqueSelector {
     required ClashPlayerStyle opponentStyle,
     required int pressureBonus,
     required int zoneBonus,
+    required ClashDuelType duelType,
+    MatchScore? score,
+    MatchTeamSide? playerSide,
   }) {
     final affordable = player.superTechniques
         .where(
@@ -93,10 +108,42 @@ class ClashRivalTechniqueSelector {
         pressureBonus +
         zoneBonus;
 
-    if (techniqueScore > normalScore) {
+    final margin = _techniqueMargin(
+      duelType: duelType,
+      normalScore: normalScore,
+      score: score,
+      playerSide: playerSide,
+    );
+
+    if (techniqueScore > normalScore + margin) {
       return ClashDuelActionChoice.technique(best.id);
     }
     return const ClashDuelActionChoice.normal();
+  }
+
+  static int _techniqueMargin({
+    required ClashDuelType duelType,
+    required int normalScore,
+    MatchScore? score,
+    MatchTeamSide? playerSide,
+  }) {
+    if (duelType == ClashDuelType.shotVsSave) {
+      return 2;
+    }
+
+    if (score != null && playerSide != null) {
+      final lead =
+          score.goalsFor(playerSide) - score.goalsFor(playerSide.opposite());
+      if (lead >= 2) {
+        return 14;
+      }
+    }
+
+    if (normalScore < 48) {
+      return 4;
+    }
+
+    return 8;
   }
 
   static ClashSuperTechnique? bestAffordable(

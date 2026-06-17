@@ -92,6 +92,76 @@ class ClashDuelDefenderSelector {
     return best;
   }
 
+  /// Defensor usuario cuando el rival avanza (Fase 13).
+  static MatchSquadPlayer? selectForRivalAdvance(
+    MatchState state,
+    MatchSquadPlayer attacker,
+  ) {
+    if (state.possession != MatchTeamSide.rival ||
+        attacker.side != MatchTeamSide.rival) {
+      return null;
+    }
+
+    final zone = state.ballZone;
+    if (zone == MatchBallZone.rivalMidfield ||
+        zone == MatchBallZone.rivalArea) {
+      return null;
+    }
+
+    final priority = switch (zone) {
+      MatchBallZone.midfield || MatchBallZone.ownMidfield => _midfieldPriority,
+      MatchBallZone.ownDefense => _areaPriority,
+      _ => _midfieldPriority,
+    };
+
+    for (final position in priority) {
+      final defender = _firstUserAtPosition(state, position);
+      if (defender != null) {
+        return defender;
+      }
+    }
+
+    return _closestUserDefender(state, attacker);
+  }
+
+  static MatchSquadPlayer? _firstUserAtPosition(
+    MatchState state,
+    ClashPosition position,
+  ) {
+    for (final player in state.userSquad) {
+      if (player.position == position) {
+        return player;
+      }
+    }
+    return null;
+  }
+
+  static MatchSquadPlayer? _closestUserDefender(
+    MatchState state,
+    MatchSquadPlayer attacker,
+  ) {
+    const defensivePositions = {
+      ClashPosition.goalkeeper,
+      ClashPosition.centreBack,
+      ClashPosition.fullBack,
+      ClashPosition.defensiveMidfielder,
+    };
+
+    MatchSquadPlayer? best;
+    var bestDistance = 999;
+    for (final player in state.userSquad) {
+      if (!defensivePositions.contains(player.position)) {
+        continue;
+      }
+      final distance = (player.index - attacker.index).abs();
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = player;
+      }
+    }
+    return best;
+  }
+
   /// Portero del equipo que defiende el tiro.
   static MatchSquadPlayer? selectGoalkeeper(
     MatchState state,

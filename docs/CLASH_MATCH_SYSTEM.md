@@ -128,6 +128,30 @@ La **Fase 12** añade el **descanso único** y **objetos de partido** para recup
 
 ---
 
+## Implementación Fase 13 (Flutter)
+
+La **Fase 13** sustituye la simulación aleatoria rival por **IA básica real de posesión**:
+
+| Incluido | Pendiente (fases posteriores) |
+|---|---|
+| `ClashRivalAiEngine`: decide pase, avance, duelo o tiro | Selección defensiva manual del usuario |
+| Un botón = una decisión IA (`Continuar acción rival`) | Cadena automática de acciones |
+| Pase/avance/tiro con las mismas reglas que el usuario | Objetos para IA |
+| Duelos Regate/Defensa y Tiro/Parada resueltos automáticamente | Tácticas avanzadas |
+| `ClashRivalTechniqueSelector` para rival y defensa automática del usuario | Backend / tienda / gacha |
+| Panel «Turno rival» con jugador, zona, PT/resistencia | Cambios de jugadores |
+| Dificultad por stats, rareza, nivel y técnicas (no IA «tonta») | |
+
+**Reglas clave:**
+- La IA evalúa zona, compañeros, presión, PT y resistencia antes de actuar.
+- En área rival (`ownDefense` para el rival) prioriza tirar.
+- Prefiere pase seguro y progresivo; evita pases largos defensa→delantero salvo buen porcentaje.
+- Al avanzar enfrenta defensor usuario → duelo automático con supertécnicas si conviene.
+- El portero usuario elige parada/técnica automáticamente (defensa manual en fase posterior).
+- Los botones de gol en la sección plegable siguen siendo **solo debug**.
+
+---
+
 ## 1. Visión general
 
 Clash tiene **dos modalidades de partido**:

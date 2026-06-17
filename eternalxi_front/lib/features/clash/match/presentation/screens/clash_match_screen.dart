@@ -8,6 +8,7 @@ import 'package:eternal_xi/features/clash/match/domain/match_status.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
 import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_halftime_panel.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_rival_turn_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_duel_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_pass_sheet.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_mini_pitch.dart';
@@ -142,7 +143,8 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
         state.status == MatchStatus.playing &&
         !state.isFinished &&
         !isHalftime &&
-        state.possession == MatchTeamSide.rival;
+        state.possession == MatchTeamSide.rival &&
+        !hasDuelUi;
 
     return Scaffold(
       appBar: AppBar(title: Text(level.title)),
@@ -223,6 +225,10 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
             const SizedBox(height: 14),
             const ClashMatchHalftimePanel(),
           ],
+          if (isRivalPossession) ...[
+            const SizedBox(height: 14),
+            const ClashMatchRivalTurnPanel(),
+          ],
           if (hasDuelUi) ...[
             const SizedBox(height: 14),
             const ClashMatchDuelPanel(),
@@ -271,14 +277,6 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
                 onPressed: null,
                 child: Text(l10n.clashMatchActionShootNeedArea),
               ),
-          ],
-          if (isRivalPossession) ...[
-            const SizedBox(height: 14),
-            OutlinedButton.icon(
-              onPressed: match.simulateRivalAction,
-              icon: const Icon(Icons.smart_toy_outlined),
-              label: Text(l10n.clashMatchActionRivalSim),
-            ),
           ],
           if (state.eventLog.isNotEmpty) ...[
             const SizedBox(height: 16),

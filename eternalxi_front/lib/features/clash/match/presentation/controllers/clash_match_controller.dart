@@ -12,6 +12,8 @@ import 'package:eternal_xi/features/clash/match/domain/match_chance_resolver.dar
 import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_pass_option.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_possession_engine.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_rival_ai_decision.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_rival_ai_engine.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_rules.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_score.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_squad_builder.dart';
@@ -32,8 +34,11 @@ class ClashMatchController extends ChangeNotifier {
   final MatchChanceResolver _chance;
 
   MatchState? _state;
+  ClashRivalAiDecision? _lastRivalAiDecision;
 
   MatchState? get state => _state;
+
+  ClashRivalAiDecision? get lastRivalAiDecision => _lastRivalAiDecision;
 
   bool get isHalftime => _state?.isPausedForHalftime ?? false;
 
@@ -244,17 +249,22 @@ class ClashMatchController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void simulateRivalAction() {
+  void continueRivalTurn() {
     final current = _state;
     if (current == null ||
         current.status != MatchStatus.playing ||
         _isGameplayBlocked(current) ||
-        current.possession != MatchTeamSide.rival) {
+        current.possession != MatchTeamSide.rival ||
+        current.hasPendingDuel) {
       return;
     }
-    _state = MatchPossessionEngine.executeRivalTurn(current, _chance);
+    final result = ClashRivalAiEngine.executeTurn(current, _chance);
+    _state = result.state;
+    _lastRivalAiDecision = result.decision;
     notifyListeners();
   }
+
+  void simulateRivalAction() => continueRivalTurn();
 
   void simulateUserGoal() {
     _scoreGoal(MatchTeamSide.user);
@@ -309,6 +319,7 @@ class ClashMatchController extends ChangeNotifier {
 
   void reset() {
     _state = null;
+    _lastRivalAiDecision = null;
     notifyListeners();
   }
 

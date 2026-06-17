@@ -38,3 +38,23 @@ class FixedMatchChanceResolver implements MatchChanceResolver {
   @override
   bool coinFlipFavorsUser() => coinFavorsUser;
 }
+
+/// Cola de resultados para tests deterministas con varias acciones.
+class QueuedMatchChanceResolver implements MatchChanceResolver {
+  QueuedMatchChanceResolver(this._results, {this.coinFavorsUser = true});
+
+  final List<bool> _results;
+  final bool coinFavorsUser;
+  var _index = 0;
+
+  @override
+  bool succeeds(int percent) {
+    if (_index >= _results.length) {
+      return false;
+    }
+    return _results[_index++];
+  }
+
+  @override
+  bool coinFlipFavorsUser() => coinFavorsUser;
+}

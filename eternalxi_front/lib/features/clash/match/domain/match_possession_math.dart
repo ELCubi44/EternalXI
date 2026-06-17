@@ -37,6 +37,17 @@ class MatchPossessionMath {
     return (total / squad.length).round();
   }
 
+  /// Calidad defensiva del equipo que no tiene el balón.
+  static int defenseQualityAgainst(MatchState state) {
+    final defending = state.possession.opposite();
+    final squad = state.squadFor(defending);
+    if (squad.isEmpty) {
+      return 50;
+    }
+    final total = squad.fold<int>(0, (sum, p) => sum + p.effectiveDefense);
+    return (total / squad.length).round();
+  }
+
   static int passSuccessPercent({
     required MatchSquadPlayer passer,
     required MatchSquadPlayer receiver,

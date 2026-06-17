@@ -255,6 +255,8 @@ class AppLocalizations {
       'clashMatchActionShoot': 'Tirar',
       'clashMatchActionShootNeedArea': 'Llega al área para tirar',
       'clashMatchActionRivalSim': 'Simular acción rival',
+      'clashMatchActionRivalContinue': 'Continuar acción rival',
+      'clashMatchRivalTurnTitle': 'Turno rival',
       'clashMatchZoneLabel': 'Zona del balón',
       'clashMatchStaminaLabel': 'Resistencia',
       'clashMatchPtStaminaLabel':
@@ -705,6 +707,8 @@ class AppLocalizations {
       'clashMatchActionShoot': 'Shoot',
       'clashMatchActionShootNeedArea': 'Reach the box to shoot',
       'clashMatchActionRivalSim': 'Simulate rival action',
+      'clashMatchActionRivalContinue': 'Continue rival action',
+      'clashMatchRivalTurnTitle': 'Rival turn',
       'clashMatchZoneLabel': 'Ball zone',
       'clashMatchStaminaLabel': 'Stamina',
       'clashMatchPtStaminaLabel':
@@ -1178,6 +1182,9 @@ class AppLocalizations {
   String get clashMatchActionShootNeedArea =>
       _t('clashMatchActionShootNeedArea');
   String get clashMatchActionRivalSim => _t('clashMatchActionRivalSim');
+  String get clashMatchActionRivalContinue =>
+      _t('clashMatchActionRivalContinue');
+  String get clashMatchRivalTurnTitle => _t('clashMatchRivalTurnTitle');
   String get clashMatchZoneLabel => _t('clashMatchZoneLabel');
   String get clashMatchStaminaLabel => _t('clashMatchStaminaLabel');
 
