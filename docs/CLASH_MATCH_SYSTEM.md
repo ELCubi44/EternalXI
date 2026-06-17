@@ -147,8 +147,28 @@ La **Fase 13** sustituye la simulación aleatoria rival por **IA básica real de
 - En área rival (`ownDefense` para el rival) prioriza tirar.
 - Prefiere pase seguro y progresivo; evita pases largos defensa→delantero salvo buen porcentaje.
 - Al avanzar enfrenta defensor usuario → duelo automático con supertécnicas si conviene.
-- El portero usuario elige parada/técnica automáticamente (defensa manual en fase posterior).
-- Los botones de gol en la sección plegable siguen siendo **solo debug**.
+- El portero usuario elige parada/técnica en defensa manual (Fase 14).
+- La experiencia normal ya no incluye botones dev de gol (Fase 15).
+
+---
+
+## Implementación Fase 15 (Flutter)
+
+La **Fase 15** elimina las acciones dev de gol y pule el flujo jugable 7vs7:
+
+| Incluido | Pendiente (fases posteriores) |
+|---|---|
+| Sin botones dev de gol en la UI normal | Equilibrio numérico fino |
+| Banner contextual de estado del partido | Cinemáticas reales con imágenes |
+| Fin de partido con victoria/derrota, recompensas y reintentar | Objetivos avanzados de partido |
+| Historial de eventos (últimos 6) con iconos | Recompensas backend |
+| Partido completable solo con flujo real (pase, duelo, tiro, IA, defensa) | 11vs11 |
+| Robustez: sin acciones en descanso, duelo pendiente o partido terminado | Tienda / gacha real |
+
+**Reglas clave:**
+- Victoria y derrota se alcanzan únicamente por goles en juego.
+- Mensajes claros para posesión, zona, duelo, defensa manual y descanso.
+- El partido sigue siendo **MVP**: falta tuning, cinemáticas y economía conectada al servidor.
 
 ---
 

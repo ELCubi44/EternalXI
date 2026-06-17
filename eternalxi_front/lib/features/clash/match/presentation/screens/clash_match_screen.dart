@@ -7,10 +7,12 @@ import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_status.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
 import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_end_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_halftime_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_rival_turn_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_duel_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_pass_sheet.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_status_banner.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_mini_pitch.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_reward_screen.dart';
@@ -30,7 +32,6 @@ class ClashMatchScreen extends StatefulWidget {
 
 class _ClashMatchScreenState extends State<ClashMatchScreen> {
   var _initialized = false;
-  var _devToolsExpanded = false;
 
   @override
   void initState() {
@@ -109,6 +110,25 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
     }
   }
 
+  Future<void> _onRetry() async {
+    final lineups = context.read<ClashLineupsController>();
+    final match = context.read<ClashMatchController>();
+    final kit = await ClashMatchController.loadDefaultMatchKit();
+    if (!mounted) {
+      return;
+    }
+    match.restartMatch(
+      lineup: lineups.activeLineup,
+      catalogById: lineups.catalogById,
+      matchInventory: kit,
+    );
+  }
+
+  void _onBackToMap() {
+    context.read<ClashMatchController>().reset();
+    context.go(AppRoutes.clashStory);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -122,29 +142,25 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
     }
 
     final holder = state.ballHolderPlayer();
-    final phaseLabel = switch (state.status) {
-      MatchStatus.awaitingCoinToss => l10n.clashMatchPhaseCoinToss,
-      MatchStatus.playing => l10n.clashMatchPhasePlaying,
-      MatchStatus.halftime => l10n.clashMatchPhaseHalftime,
-      MatchStatus.finished => l10n.clashMatchPhaseFinished,
-    };
-    final advanceChance = match.advanceChancePercent;
+    final isFinished = state.isFinished;
     final isHalftime = state.isPausedForHalftime;
     final hasDuelUi =
         !isHalftime &&
+        !isFinished &&
         (state.hasPendingDuel || state.lastDuelResolution != null);
     final isUserPossession =
         state.status == MatchStatus.playing &&
-        !state.isFinished &&
+        !isFinished &&
         !isHalftime &&
         state.possession == MatchTeamSide.user &&
         !hasDuelUi;
     final isRivalPossession =
         state.status == MatchStatus.playing &&
-        !state.isFinished &&
+        !isFinished &&
         !isHalftime &&
         state.possession == MatchTeamSide.rival &&
         !hasDuelUi;
+    final canPass = match.canUserPass;
 
     return Scaffold(
       appBar: AppBar(title: Text(level.title)),
@@ -160,17 +176,16 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
           ),
           const SizedBox(height: 4),
           Text(l10n.clashMatchWinTarget, textAlign: TextAlign.center),
-          const SizedBox(height: 6),
-          Text(
-            '${l10n.clashMatchPhaseLabel}: $phaseLabel',
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 12),
-          ClashMiniPitch(state: state),
-          const SizedBox(height: 14),
-          if (state.status == MatchStatus.awaitingCoinToss) ...[
-            Text(l10n.clashMatchCoinTossPrompt, textAlign: TextAlign.center),
+          if (!isFinished) ...[
             const SizedBox(height: 12),
+            ClashMatchStatusBanner(state: state),
+          ],
+          if (!isFinished) ...[
+            const SizedBox(height: 12),
+            ClashMiniPitch(state: state),
+          ],
+          if (state.status == MatchStatus.awaitingCoinToss) ...[
+            const SizedBox(height: 14),
             Row(
               children: [
                 Expanded(
@@ -188,9 +203,11 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
                 ),
               ],
             ),
-          ] else if (state.coinToss != null &&
+          ] else if (!isFinished &&
+              state.coinToss != null &&
               (state.status == MatchStatus.playing ||
                   state.status == MatchStatus.halftime)) ...[
+            const SizedBox(height: 12),
             _InfoCard(
               children: [
                 Text(
@@ -215,8 +232,6 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
                       holder.maxStamina,
                     ),
                   ),
-                  Text('${l10n.clashMatchPressureLabel}: ${state.pressure}'),
-                  Text('${l10n.clashMatchRiskLabel}: ${state.possessionRisk}'),
                 ],
               ],
             ),
@@ -239,7 +254,9 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
               children: [
                 Expanded(
                   child: FilledButton.icon(
-                    onPressed: () => showClashMatchPassSheet(context),
+                    onPressed: canPass
+                        ? () => showClashMatchPassSheet(context)
+                        : null,
                     icon: const Icon(Icons.swap_horiz_rounded),
                     label: Text(l10n.clashMatchActionPass),
                   ),
@@ -254,11 +271,21 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
                 ),
               ],
             ),
-            if (advanceChance != null &&
+            if (!canPass) ...[
+              const SizedBox(height: 8),
+              Text(
+                l10n.clashMatchPassUnavailable,
+                textAlign: TextAlign.center,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: context.xiTextSecondary),
+              ),
+            ],
+            if (match.advanceChancePercent != null &&
                 state.ballZone != MatchBallZone.rivalArea) ...[
               const SizedBox(height: 8),
               Text(
-                l10n.clashMatchAdvanceChance(advanceChance),
+                l10n.clashMatchAdvanceChance(match.advanceChancePercent!),
                 textAlign: TextAlign.center,
                 style: Theme.of(
                   context,
@@ -273,12 +300,16 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
                 label: Text(l10n.clashMatchActionShoot),
               )
             else
-              OutlinedButton(
-                onPressed: null,
-                child: Text(l10n.clashMatchActionShootNeedArea),
+              Text(
+                l10n.clashMatchStatusShootNeedArea,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: context.xiTextSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
           ],
-          if (state.eventLog.isNotEmpty) ...[
+          if (state.eventLog.isNotEmpty && !isFinished) ...[
             const SizedBox(height: 16),
             Text(
               l10n.clashMatchEventLogTitle,
@@ -307,69 +338,14 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
                   ),
                 ),
           ],
-          if (state.isFinished) ...[
+          if (isFinished) ...[
             const SizedBox(height: 16),
-            Text(
-              state.winner == MatchTeamSide.user
-                  ? l10n.clashMatchVictory
-                  : l10n.clashMatchDefeat,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w800,
-                color: state.winner == MatchTeamSide.user
-                    ? Colors.green
-                    : Colors.redAccent,
-              ),
-            ),
-            const SizedBox(height: 12),
-            if (state.winner == MatchTeamSide.user)
-              FilledButton(
-                onPressed: _onViewRewards,
-                child: Text(l10n.clashMatchViewRewards),
-              ),
-            const SizedBox(height: 8),
-            OutlinedButton(
-              onPressed: () {
-                match.reset();
-                context.go(AppRoutes.clashStory);
-              },
-              child: Text(l10n.clashStoryBackToMap),
-            ),
-          ] else if (state.status == MatchStatus.playing) ...[
-            const SizedBox(height: 16),
-            ExpansionTile(
-              initiallyExpanded: _devToolsExpanded,
-              onExpansionChanged: (value) =>
-                  setState(() => _devToolsExpanded = value),
-              title: Text(
-                l10n.clashMatchDevSectionTitle,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: Colors.orange,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              children: [
-                Text(
-                  l10n.clashMatchDevGoalsHint,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: Colors.orange),
-                ),
-                const SizedBox(height: 8),
-                FilledButton.tonal(
-                  onPressed: match.simulateUserGoal,
-                  child: Text(l10n.clashMatchDevGoalUser),
-                ),
-                const SizedBox(height: 8),
-                FilledButton.tonal(
-                  onPressed: match.simulateRivalGoal,
-                  style: FilledButton.styleFrom(
-                    foregroundColor: Colors.redAccent,
-                  ),
-                  child: Text(l10n.clashMatchDevGoalRival),
-                ),
-              ],
+            ClashMatchEndPanel(
+              state: state,
+              level: level,
+              onViewRewards: _onViewRewards,
+              onRetry: _onRetry,
+              onBackToMap: _onBackToMap,
             ),
           ],
         ],

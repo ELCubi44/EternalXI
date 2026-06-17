@@ -245,10 +245,35 @@ class AppLocalizations {
       'clashMatchVictory': '¡Victoria!',
       'clashMatchDefeat': 'Derrota',
       'clashMatchViewRewards': 'Ver recompensas',
-      'clashMatchDevGoalsHint':
-          'Botones provisionales (tutorial/dev) — no son el gameplay final',
-      'clashMatchDevGoalUser': 'Gol Eternal XI (provisional)',
-      'clashMatchDevGoalRival': 'Gol Rival (provisional)',
+      'clashMatchRetry': 'Reintentar',
+      'clashMatchFinalScore': 'Marcador final: {user} - {rival}',
+      'clashMatchLevelCompleted': 'Nivel completado: {title}',
+      'clashMatchNoRewards': 'Sin recompensas en esta derrota.',
+      'clashMatchRewardsTitle': 'Recompensas del nivel',
+      'clashMatchRewardsBasic': 'Progreso registrado al reclamar.',
+      'clashMatchRewardGems': 'Gemas: +{amount}',
+      'clashMatchRewardCoins': 'Monedas: +{amount}',
+      'clashMatchRewardCards': 'Cartas: +{count}',
+      'clashMatchStatusBallUser': 'Balón para Eternal XI',
+      'clashMatchStatusShootNeedArea':
+          'Avanza hasta el área rival para poder tirar',
+      'clashMatchStatusCanShoot': 'Estás en posición de tiro',
+      'clashMatchStatusRivalTurn': 'Turno rival',
+      'clashMatchStatusRivalTurnHint':
+          'Pulsa «Continuar acción rival» para ver su jugada',
+      'clashMatchStatusHalftime': 'Descanso',
+      'clashMatchStatusHalftimeHint':
+          'Recupera PT o resistencia con objetos antes de seguir',
+      'clashMatchStatusDefendRivalHint':
+          'El rival se aproxima: elige cómo defender',
+      'clashMatchStatusPickDefender': 'Elige quién defiende',
+      'clashMatchStatusUserDuel': 'Duelo en curso',
+      'clashMatchStatusUserAdvanceDuelHint':
+          'Elige regate normal o supertécnica',
+      'clashMatchStatusUserShotDuelHint': 'Elige tiro normal o supertécnica',
+      'clashMatchStatusDuelResult': 'Resultado del duelo',
+      'clashMatchStatusDuelResultHint': 'Pulsa Continuar para seguir jugando',
+      'clashMatchPassUnavailable': 'No hay compañeros válidos para pasar',
       'clashMatchActionPass': 'Pasar',
       'clashMatchActionAdvance': 'Avanzar',
       'clashMatchActionShootSoon': 'Tirar (próximamente)',
@@ -312,7 +337,6 @@ class AppLocalizations {
       'clashMatchRivalAttackTechnique': 'Rival: {name}',
       'clashMatchDefendCandidateMeta':
           'DEF {defense} · PT {pt} · RES {stamina} · {style}',
-      'clashMatchDevSectionTitle': 'Herramientas dev/provisional',
       'registerTitle': 'Crear cuenta',
       'registerSubtitle':
           'Únete a Eternal XI. Usa un correo válido y un nickname que te represente en las ligas.',
@@ -706,10 +730,35 @@ class AppLocalizations {
       'clashMatchVictory': 'Victory!',
       'clashMatchDefeat': 'Defeat',
       'clashMatchViewRewards': 'View rewards',
-      'clashMatchDevGoalsHint':
-          'Provisional buttons (tutorial/dev) — not final gameplay',
-      'clashMatchDevGoalUser': 'Eternal XI goal (provisional)',
-      'clashMatchDevGoalRival': 'Rival goal (provisional)',
+      'clashMatchRetry': 'Retry',
+      'clashMatchFinalScore': 'Final score: {user} - {rival}',
+      'clashMatchLevelCompleted': 'Level completed: {title}',
+      'clashMatchNoRewards': 'No rewards on defeat.',
+      'clashMatchRewardsTitle': 'Level rewards',
+      'clashMatchRewardsBasic': 'Progress saved when you claim.',
+      'clashMatchRewardGems': 'Gems: +{amount}',
+      'clashMatchRewardCoins': 'Coins: +{amount}',
+      'clashMatchRewardCards': 'Cards: +{count}',
+      'clashMatchStatusBallUser': 'Ball for Eternal XI',
+      'clashMatchStatusShootNeedArea': 'Advance to the rival box to shoot',
+      'clashMatchStatusCanShoot': 'You are in shooting range',
+      'clashMatchStatusRivalTurn': 'Rival turn',
+      'clashMatchStatusRivalTurnHint':
+          'Tap «Continue rival action» to see their play',
+      'clashMatchStatusHalftime': 'Halftime',
+      'clashMatchStatusHalftimeHint':
+          'Recover PT or stamina with items before continuing',
+      'clashMatchStatusDefendRivalHint':
+          'The rival is closing in: choose how to defend',
+      'clashMatchStatusPickDefender': 'Choose a defender',
+      'clashMatchStatusUserDuel': 'Duel in progress',
+      'clashMatchStatusUserAdvanceDuelHint':
+          'Choose normal dribble or super technique',
+      'clashMatchStatusUserShotDuelHint':
+          'Choose normal shot or super technique',
+      'clashMatchStatusDuelResult': 'Duel result',
+      'clashMatchStatusDuelResultHint': 'Tap Continue to keep playing',
+      'clashMatchPassUnavailable': 'No valid teammates to pass to',
       'clashMatchActionPass': 'Pass',
       'clashMatchActionAdvance': 'Advance',
       'clashMatchActionShootSoon': 'Shoot (coming soon)',
@@ -773,7 +822,6 @@ class AppLocalizations {
       'clashMatchRivalAttackTechnique': 'Rival: {name}',
       'clashMatchDefendCandidateMeta':
           'DEF {defense} · PT {pt} · STA {stamina} · {style}',
-      'clashMatchDevSectionTitle': 'Dev/provisional tools',
       'registerTitle': 'Create account',
       'registerSubtitle':
           'Join Eternal XI. Use a valid email and a nickname that represents you in leagues.',
@@ -1190,9 +1238,49 @@ class AppLocalizations {
   String get clashMatchVictory => _t('clashMatchVictory');
   String get clashMatchDefeat => _t('clashMatchDefeat');
   String get clashMatchViewRewards => _t('clashMatchViewRewards');
-  String get clashMatchDevGoalsHint => _t('clashMatchDevGoalsHint');
-  String get clashMatchDevGoalUser => _t('clashMatchDevGoalUser');
-  String get clashMatchDevGoalRival => _t('clashMatchDevGoalRival');
+  String get clashMatchRetry => _t('clashMatchRetry');
+
+  String clashMatchFinalScore(int user, int rival) => _t(
+    'clashMatchFinalScore',
+  ).replaceAll('{user}', '$user').replaceAll('{rival}', '$rival');
+
+  String clashMatchLevelCompleted(String title) =>
+      _t('clashMatchLevelCompleted').replaceAll('{title}', title);
+
+  String get clashMatchNoRewards => _t('clashMatchNoRewards');
+  String get clashMatchRewardsTitle => _t('clashMatchRewardsTitle');
+  String get clashMatchRewardsBasic => _t('clashMatchRewardsBasic');
+
+  String clashMatchRewardGems(int amount) =>
+      _t('clashMatchRewardGems').replaceAll('{amount}', '$amount');
+
+  String clashMatchRewardCoins(int amount) =>
+      _t('clashMatchRewardCoins').replaceAll('{amount}', '$amount');
+
+  String clashMatchRewardCards(int count) =>
+      _t('clashMatchRewardCards').replaceAll('{count}', '$count');
+
+  String get clashMatchStatusBallUser => _t('clashMatchStatusBallUser');
+  String get clashMatchStatusShootNeedArea =>
+      _t('clashMatchStatusShootNeedArea');
+  String get clashMatchStatusCanShoot => _t('clashMatchStatusCanShoot');
+  String get clashMatchStatusRivalTurn => _t('clashMatchStatusRivalTurn');
+  String get clashMatchStatusRivalTurnHint =>
+      _t('clashMatchStatusRivalTurnHint');
+  String get clashMatchStatusHalftime => _t('clashMatchStatusHalftime');
+  String get clashMatchStatusHalftimeHint => _t('clashMatchStatusHalftimeHint');
+  String get clashMatchStatusDefendRivalHint =>
+      _t('clashMatchStatusDefendRivalHint');
+  String get clashMatchStatusPickDefender => _t('clashMatchStatusPickDefender');
+  String get clashMatchStatusUserDuel => _t('clashMatchStatusUserDuel');
+  String get clashMatchStatusUserAdvanceDuelHint =>
+      _t('clashMatchStatusUserAdvanceDuelHint');
+  String get clashMatchStatusUserShotDuelHint =>
+      _t('clashMatchStatusUserShotDuelHint');
+  String get clashMatchStatusDuelResult => _t('clashMatchStatusDuelResult');
+  String get clashMatchStatusDuelResultHint =>
+      _t('clashMatchStatusDuelResultHint');
+  String get clashMatchPassUnavailable => _t('clashMatchPassUnavailable');
   String get clashMatchActionPass => _t('clashMatchActionPass');
   String get clashMatchActionAdvance => _t('clashMatchActionAdvance');
   String get clashMatchActionShootSoon => _t('clashMatchActionShootSoon');
@@ -1247,7 +1335,6 @@ class AppLocalizations {
   String get clashMatchEventLogTitle => _t('clashMatchEventLogTitle');
   String get clashMatchPassSheetTitle => _t('clashMatchPassSheetTitle');
   String get clashMatchPassSheetEmpty => _t('clashMatchPassSheetEmpty');
-  String get clashMatchDevSectionTitle => _t('clashMatchDevSectionTitle');
 
   String clashMatchPassPercent(int percent) =>
       _t('clashMatchPassPercent').replaceAll('{percent}', '$percent');

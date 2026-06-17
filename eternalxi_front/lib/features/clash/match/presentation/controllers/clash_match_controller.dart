@@ -36,6 +36,11 @@ class ClashMatchController extends ChangeNotifier {
 
   MatchState? _state;
   ClashRivalAiDecision? _lastRivalAiDecision;
+  String? _levelId;
+  ClashLineup7v7? _lineup;
+  Map<String, ClashCardCatalogEntry> _catalogById = const {};
+  int _rivalPower = 120;
+  List<ClashMatchItemInventoryEntry> _matchInventory = const [];
 
   MatchState? get state => _state;
 
@@ -72,6 +77,8 @@ class ClashMatchController extends ChangeNotifier {
     return MatchPossessionEngine.advanceChance(current);
   }
 
+  bool get canUserPass => passOptions.isNotEmpty;
+
   void startMatch({
     required String levelId,
     ClashLineup7v7? lineup,
@@ -84,6 +91,13 @@ class ClashMatchController extends ChangeNotifier {
       catalogById: catalogById,
     );
     final rivalSquad = MatchSquadBuilder.buildRivalSquad(basePower: rivalPower);
+
+    _levelId = levelId;
+    _lineup = lineup;
+    _catalogById = catalogById;
+    _rivalPower = rivalPower;
+    _matchInventory = matchInventory;
+    _lastRivalAiDecision = null;
 
     _state = MatchState(
       levelId: levelId,
@@ -296,10 +310,32 @@ class ClashMatchController extends ChangeNotifier {
 
   void simulateRivalAction() => continueRivalTurn();
 
+  /// Reinicia el partido con la misma configuración (Fase 15).
+  void restartMatch({
+    ClashLineup7v7? lineup,
+    Map<String, ClashCardCatalogEntry>? catalogById,
+    List<ClashMatchItemInventoryEntry>? matchInventory,
+    int? rivalPower,
+  }) {
+    final levelId = _levelId;
+    if (levelId == null) {
+      return;
+    }
+    startMatch(
+      levelId: levelId,
+      lineup: lineup ?? _lineup,
+      catalogById: catalogById ?? _catalogById,
+      rivalPower: rivalPower ?? _rivalPower,
+      matchInventory: matchInventory ?? _matchInventory,
+    );
+  }
+
+  @visibleForTesting
   void simulateUserGoal() {
     _scoreGoal(MatchTeamSide.user);
   }
 
+  @visibleForTesting
   void simulateRivalGoal() {
     _scoreGoal(MatchTeamSide.rival);
   }
@@ -350,6 +386,11 @@ class ClashMatchController extends ChangeNotifier {
   void reset() {
     _state = null;
     _lastRivalAiDecision = null;
+    _levelId = null;
+    _lineup = null;
+    _catalogById = const {};
+    _rivalPower = 120;
+    _matchInventory = const [];
     notifyListeners();
   }
 
