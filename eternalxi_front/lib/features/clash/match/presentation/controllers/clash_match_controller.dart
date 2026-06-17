@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_duel_engine.dart';
 import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_chance_resolver.dart';
@@ -113,12 +114,20 @@ class ClashMatchController extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool get hasPendingDuel {
+    final current = _state;
+    return current?.hasPendingDuel ?? false;
+  }
+
+  bool get hasDuelResultToShow => _state?.lastDuelResolution != null;
+
   void passTo(int targetIndex) {
     final current = _state;
     if (current == null ||
         current.status != MatchStatus.playing ||
         current.isFinished ||
-        current.possession != MatchTeamSide.user) {
+        current.possession != MatchTeamSide.user ||
+        current.hasPendingDuel) {
       return;
     }
     _state = MatchPossessionEngine.executePass(current, targetIndex, _chance);
@@ -130,10 +139,30 @@ class ClashMatchController extends ChangeNotifier {
     if (current == null ||
         current.status != MatchStatus.playing ||
         current.isFinished ||
-        current.possession != MatchTeamSide.user) {
+        current.possession != MatchTeamSide.user ||
+        current.hasPendingDuel ||
+        current.lastDuelResolution != null) {
       return;
     }
-    _state = MatchPossessionEngine.executeAdvance(current, _chance);
+    _state = ClashDuelEngine.beginAdvance(current, _chance);
+    notifyListeners();
+  }
+
+  void resolveNormalDribble() {
+    final current = _state;
+    if (current == null || !current.hasPendingDuel) {
+      return;
+    }
+    _state = ClashDuelEngine.resolveNormalDribble(current, _chance);
+    notifyListeners();
+  }
+
+  void dismissDuelResult() {
+    final current = _state;
+    if (current == null || current.lastDuelResolution == null) {
+      return;
+    }
+    _state = ClashDuelEngine.dismissDuelResult(current);
     notifyListeners();
   }
 
@@ -197,6 +226,13 @@ class ClashMatchController extends ChangeNotifier {
         ),
       ],
     );
+    notifyListeners();
+  }
+
+  /// Sustituye el estado del partido (solo tests).
+  @visibleForTesting
+  void setStateForTesting(MatchState state) {
+    _state = state;
     notifyListeners();
   }
 }

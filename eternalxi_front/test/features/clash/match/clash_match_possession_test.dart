@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:eternal_xi/app/localization/app_localizations.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_player_style.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_stats.dart';
 import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
@@ -30,6 +31,7 @@ MatchSquadPlayer _player({
   int power = 200,
   int stamina = 100,
   String label = 'P',
+  ClashPlayerStyle style = ClashPlayerStyle.valiente,
 }) {
   final pos = position ?? ClashPosition.values[index];
   final (x, y) = MatchPitchLayout.coordsForIndex(index, side);
@@ -54,6 +56,7 @@ MatchSquadPlayer _player({
     baseStats: stats,
     power: power,
     currentStamina: stamina,
+    style: style,
   );
 }
 

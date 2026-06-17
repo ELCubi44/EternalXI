@@ -16,7 +16,8 @@ La **Fase 7** entrega solo la **base del partido** y el flujo tutorial del prime
 | Sorteo cara/cruz y saque inicial | Tiro/parada |
 | Marcador primero a 3 goles | Supertécnicas y PT |
 | Minicampo abstracto `ClashMiniPitch` | IA completa del rival |
-| Botones **provisional tutorial/dev** «Gol Eternal XI» / «Gol Rival» | Gameplay definitivo |
+| Botones **provisional tutorial/dev** «Gol Eternal XI» / «Gol Rival» | Gameplay definitivo completo |
+| Duelos Regate vs Defensa al avanzar (Fase 9) | |
 
 Los botones de gol simulado existen únicamente para validar victoria/derrota, recompensas y progresión. **No** representan el gameplay final.
 
@@ -28,14 +29,34 @@ La **Fase 8** añade el primer sistema **real de posesión** en el 7vs7:
 
 | Incluido | Pendiente (fases posteriores) |
 |---|---|
-| Zonas lógicas del balón (`ownDefense` … `rivalArea`) | Duelos regate/defensa reales |
-| Acciones **Pasar** y **Avanzar** con probabilidad provisional | Tiro y parada |
-| Resistencia actual por jugador en partido | Supertécnicas y PT en duelos |
-| Presión y riesgo de posesión | IA rival completa |
-| Historial breve de eventos | Objetos de descanso |
-| IA rival **provisional** (simular acción) | Física real del minicampo |
+| Zonas lógicas del balón (`ownDefense` … `rivalArea`) | Tiro y parada |
+| Acciones **Pasar** y **Avanzar** (duelo si hay defensor) | Supertécnicas y PT en duelos |
+| Resistencia actual por jugador en partido | IA rival completa |
+| Presión y riesgo de posesión | Objetos de descanso |
+| Historial breve de eventos | Física real del minicampo |
+| IA rival **provisional** (simular acción) | |
+| Duelos Regate vs Defensa (Fase 9) | |
 
 Fórmulas de pase/avance son **provisionales** y se afinarán cuando existan duelos. Los botones de gol dev siguen en sección plegable separada.
+
+---
+
+## Implementación Fase 9 (Flutter)
+
+La **Fase 9** sustituye el avance directo por probabilidad por **duelos normales Regate vs Defensa** cuando hay un defensor rival cercano:
+
+| Incluido | Pendiente (fases posteriores) |
+|---|---|
+| Dominio `ClashDuelState`, participantes y resolución | Supertécnicas y consumo de PT |
+| Avanzar → defensor rival → duelo pendiente → «Regate normal» | Tiro y parada |
+| Fórmula Regate vs Defensa con ventaja de estilo (+8) | IA rival completa |
+| Empate exacto resuelto por moneda (verde=usuario, rojo=rival) | Objetos de descanso, faltas, rechaces |
+| Panel de duelo en `ClashMatchScreen` | Gacha/tienda/evolución/árbol |
+| Minicampo destaca atacante/defensor y enlace visual | |
+| Fallback de avance libre sin defensor (zonas propias) | |
+| Resistencia efectiva en stats de duelo | |
+
+**Avanzar** ya no calcula probabilidad directa cuando hay defensor: crea un duelo pendiente. Las supertécnicas y el gasto de PT llegarán en fases posteriores. El rival provisional sigue usando avance directo en `executeRivalTurn`.
 
 ---
 

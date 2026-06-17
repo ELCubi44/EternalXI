@@ -132,6 +132,14 @@ class MatchPossessionEngine {
     MatchState state,
     MatchChanceResolver chance,
   ) {
+    return executeFreeAdvance(state, chance);
+  }
+
+  /// Avance directo sin duelo (fallback o rival provisional).
+  static MatchState executeFreeAdvance(
+    MatchState state,
+    MatchChanceResolver chance,
+  ) {
     final holder = state.ballHolderPlayer();
     if (holder == null) {
       return state;
@@ -200,7 +208,7 @@ class MatchPossessionEngine {
 
     final advanceRoll = chance.succeeds(55);
     if (advanceRoll) {
-      final result = executeAdvance(state, chance);
+      final result = executeFreeAdvance(state, chance);
       if (result.possession == MatchTeamSide.rival) {
         return result.copyWith(
           eventLog: [

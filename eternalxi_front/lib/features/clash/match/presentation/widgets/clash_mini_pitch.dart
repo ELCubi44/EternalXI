@@ -14,10 +14,23 @@ class ClashMiniPitch extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final holder = state.ballHolderPlayer();
+    final duel = state.activeDuel;
+    final duelPending = duel?.isPending ?? false;
     final ballY = holder != null
         ? (holder.homeY * 0.55 + state.ballZone.normalizedY * 0.45)
         : state.ballZone.normalizedY;
     final ballX = holder?.homeX ?? 0.5;
+
+    int? duelAttackerIndex;
+    int? duelDefenderIndex;
+    MatchTeamSide? duelAttackerSide;
+    MatchTeamSide? duelDefenderSide;
+    if (duelPending && duel != null) {
+      duelAttackerIndex = duel.attacker.squadIndex;
+      duelAttackerSide = duel.attacker.teamSide;
+      duelDefenderIndex = duel.defender.squadIndex;
+      duelDefenderSide = duel.defender.teamSide;
+    }
 
     return AspectRatio(
       aspectRatio: 0.68,
@@ -34,6 +47,29 @@ class ClashMiniPitch extends StatelessWidget {
                 painter: _ZoneBandsPainter(zone: state.ballZone),
               ),
             ),
+            if (duelPending && duel != null)
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _DuelLinkPainter(
+                    attackerX: _markerX(
+                      duel.attacker.squadIndex,
+                      duel.attacker.teamSide,
+                    ),
+                    attackerY: _markerY(
+                      duel.attacker.squadIndex,
+                      duel.attacker.teamSide,
+                    ),
+                    defenderX: _markerX(
+                      duel.defender.squadIndex,
+                      duel.defender.teamSide,
+                    ),
+                    defenderY: _markerY(
+                      duel.defender.squadIndex,
+                      duel.defender.teamSide,
+                    ),
+                  ),
+                ),
+              ),
             Center(
               child: Container(
                 width: double.infinity,
@@ -64,6 +100,12 @@ class ClashMiniPitch extends StatelessWidget {
                         holder != null &&
                         holder.side == marker.side &&
                         holder.index == marker.index,
+                    isDuelAttacker:
+                        duelAttackerSide == marker.side &&
+                        duelAttackerIndex == marker.index,
+                    isDuelDefender:
+                        duelDefenderSide == marker.side &&
+                        duelDefenderIndex == marker.index,
                   ),
                 ),
               ),
@@ -93,6 +135,59 @@ class ClashMiniPitch extends StatelessWidget {
       ),
     );
   }
+
+  double _markerX(int index, MatchTeamSide side) {
+    final squad = state.squadFor(side);
+    for (final player in squad) {
+      if (player.index == index) {
+        return player.homeX;
+      }
+    }
+    return 0.5;
+  }
+
+  double _markerY(int index, MatchTeamSide side) {
+    final squad = state.squadFor(side);
+    for (final player in squad) {
+      if (player.index == index) {
+        return player.homeY;
+      }
+    }
+    return state.ballZone.normalizedY;
+  }
+}
+
+class _DuelLinkPainter extends CustomPainter {
+  _DuelLinkPainter({
+    required this.attackerX,
+    required this.attackerY,
+    required this.defenderX,
+    required this.defenderY,
+  });
+
+  final double attackerX;
+  final double attackerY;
+  final double defenderX;
+  final double defenderY;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.yellowAccent.withValues(alpha: 0.75)
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    final start = Offset(attackerX * size.width, attackerY * size.height);
+    final end = Offset(defenderX * size.width, defenderY * size.height);
+    canvas.drawLine(start, end, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _DuelLinkPainter oldDelegate) =>
+      oldDelegate.attackerX != attackerX ||
+      oldDelegate.attackerY != attackerY ||
+      oldDelegate.defenderX != defenderX ||
+      oldDelegate.defenderY != defenderY;
 }
 
 class _ZoneBandsPainter extends CustomPainter {
@@ -120,23 +215,40 @@ class _PlayerDot extends StatelessWidget {
     required this.marker,
     required this.color,
     required this.isBallHolder,
+    this.isDuelAttacker = false,
+    this.isDuelDefender = false,
   });
 
   final MatchPlayerMarker marker;
   final Color color;
   final bool isBallHolder;
+  final bool isDuelAttacker;
+  final bool isDuelDefender;
 
   @override
   Widget build(BuildContext context) {
+    final duelBorder = isDuelAttacker
+        ? Colors.cyanAccent
+        : isDuelDefender
+        ? Colors.orangeAccent
+        : null;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          padding: isBallHolder ? const EdgeInsets.all(2) : EdgeInsets.zero,
+          padding: (isBallHolder || duelBorder != null)
+              ? const EdgeInsets.all(2)
+              : EdgeInsets.zero,
           decoration: isBallHolder
               ? BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.yellowAccent, width: 2),
+                )
+              : duelBorder != null
+              ? BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: duelBorder, width: 2),
                 )
               : null,
           child: Container(
@@ -155,7 +267,9 @@ class _PlayerDot extends StatelessWidget {
           style: TextStyle(
             color: Colors.white,
             fontSize: 9,
-            fontWeight: isBallHolder ? FontWeight.w900 : FontWeight.w700,
+            fontWeight: isBallHolder || isDuelAttacker || isDuelDefender
+                ? FontWeight.w900
+                : FontWeight.w700,
           ),
         ),
       ],

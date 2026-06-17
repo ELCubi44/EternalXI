@@ -1,3 +1,4 @@
+import 'package:eternal_xi/features/clash/cards/domain/clash_player_style.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_stats.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
@@ -17,6 +18,7 @@ class MatchSquadPlayer {
     required this.baseStats,
     required this.power,
     required this.currentStamina,
+    required this.style,
   });
 
   final int index;
@@ -24,6 +26,7 @@ class MatchSquadPlayer {
   final String cardId;
   final int playerId;
   final ClashPosition position;
+  final ClashPlayerStyle style;
   final String label;
   final double homeX;
   final double homeY;
@@ -46,6 +49,7 @@ class MatchSquadPlayer {
       cardId: cardId,
       playerId: playerId,
       position: position,
+      style: style,
       label: label,
       homeX: homeX,
       homeY: homeY,

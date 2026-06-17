@@ -1,3 +1,5 @@
+import 'package:eternal_xi/features/clash/match/domain/clash_duel_resolution.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_duel_state.dart';
 import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
@@ -23,6 +25,8 @@ class MatchState {
     required this.possessionRisk,
     required this.eventLog,
     this.coinToss,
+    this.activeDuel,
+    this.lastDuelResolution,
   });
 
   final String levelId;
@@ -37,6 +41,10 @@ class MatchState {
   final int possessionRisk;
   final List<MatchEvent> eventLog;
   final CoinTossResult? coinToss;
+  final ClashDuelState? activeDuel;
+  final ClashDuelResolution? lastDuelResolution;
+
+  bool get hasPendingDuel => activeDuel?.isPending ?? false;
 
   List<MatchPlayerMarker> get userMarkers =>
       MatchSquadBuilder.markersFromSquad(userSquad);
@@ -93,6 +101,10 @@ class MatchState {
     int? possessionRisk,
     List<MatchEvent>? eventLog,
     CoinTossResult? coinToss,
+    ClashDuelState? activeDuel,
+    ClashDuelResolution? lastDuelResolution,
+    bool clearActiveDuel = false,
+    bool clearLastDuelResolution = false,
   }) {
     return MatchState(
       levelId: levelId,
@@ -107,6 +119,10 @@ class MatchState {
       possessionRisk: possessionRisk ?? this.possessionRisk,
       eventLog: eventLog ?? this.eventLog,
       coinToss: coinToss ?? this.coinToss,
+      activeDuel: clearActiveDuel ? null : (activeDuel ?? this.activeDuel),
+      lastDuelResolution: clearLastDuelResolution
+          ? null
+          : (lastDuelResolution ?? this.lastDuelResolution),
     );
   }
 

@@ -262,6 +262,18 @@ class AppLocalizations {
       'clashMatchPassPercent': '{percent}%',
       'clashMatchPassOptionPower': 'Potencia {power}',
       'clashMatchAdvanceChance': 'Probabilidad de avance: {percent}%',
+      'clashMatchDuelTitle': 'Duelo',
+      'clashMatchDuelNormalDribble': 'Regate normal',
+      'clashMatchDuelEffectiveDribble': 'Regate efectivo',
+      'clashMatchDuelEffectiveDefense': 'Defensa efectiva',
+      'clashMatchDuelStyleAdvantage': 'Ventaja de estilo',
+      'clashMatchDuelStyleDisadvantage': 'Desventaja de estilo',
+      'clashMatchDuelStyleNeutral': 'Estilo neutral',
+      'clashMatchDuelSuperTechSoon':
+          'Las supertécnicas llegarán en una fase posterior.',
+      'clashMatchDuelContinue': 'Continuar',
+      'clashMatchDuelScore': 'Marcador del duelo: {attacker} — {defender}',
+      'clashMatchDuelCoinTie': 'Empate resuelto por moneda',
       'clashMatchDevSectionTitle': 'Herramientas dev/provisional',
       'registerTitle': 'Crear cuenta',
       'registerSubtitle':
@@ -673,6 +685,18 @@ class AppLocalizations {
       'clashMatchPassPercent': '{percent}%',
       'clashMatchPassOptionPower': 'Power {power}',
       'clashMatchAdvanceChance': 'Advance chance: {percent}%',
+      'clashMatchDuelTitle': 'Duel',
+      'clashMatchDuelNormalDribble': 'Normal dribble',
+      'clashMatchDuelEffectiveDribble': 'Effective dribble',
+      'clashMatchDuelEffectiveDefense': 'Effective defense',
+      'clashMatchDuelStyleAdvantage': 'Style advantage',
+      'clashMatchDuelStyleDisadvantage': 'Style disadvantage',
+      'clashMatchDuelStyleNeutral': 'Neutral style',
+      'clashMatchDuelSuperTechSoon':
+          'Super techniques will arrive in a later phase.',
+      'clashMatchDuelContinue': 'Continue',
+      'clashMatchDuelScore': 'Duel score: {attacker} — {defender}',
+      'clashMatchDuelCoinTie': 'Tie broken by coin flip',
       'clashMatchDevSectionTitle': 'Dev/provisional tools',
       'registerTitle': 'Create account',
       'registerSubtitle':
@@ -1113,6 +1137,24 @@ class AppLocalizations {
 
   String clashMatchAdvanceChance(int percent) =>
       _t('clashMatchAdvanceChance').replaceAll('{percent}', '$percent');
+
+  String get clashMatchDuelTitle => _t('clashMatchDuelTitle');
+  String get clashMatchDuelNormalDribble => _t('clashMatchDuelNormalDribble');
+  String get clashMatchDuelEffectiveDribble =>
+      _t('clashMatchDuelEffectiveDribble');
+  String get clashMatchDuelEffectiveDefense =>
+      _t('clashMatchDuelEffectiveDefense');
+  String get clashMatchDuelStyleAdvantage => _t('clashMatchDuelStyleAdvantage');
+  String get clashMatchDuelStyleDisadvantage =>
+      _t('clashMatchDuelStyleDisadvantage');
+  String get clashMatchDuelStyleNeutral => _t('clashMatchDuelStyleNeutral');
+  String get clashMatchDuelSuperTechSoon => _t('clashMatchDuelSuperTechSoon');
+  String get clashMatchDuelContinue => _t('clashMatchDuelContinue');
+  String get clashMatchDuelCoinTie => _t('clashMatchDuelCoinTie');
+
+  String clashMatchDuelScore(int attacker, int defender) => _t(
+    'clashMatchDuelScore',
+  ).replaceAll('{attacker}', '$attacker').replaceAll('{defender}', '$defender');
 
   String clashMatchScoreLabel(int user, int rival) {
     return _t('clashMatchScoreLabel')

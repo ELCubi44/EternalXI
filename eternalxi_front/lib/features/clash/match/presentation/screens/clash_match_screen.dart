@@ -6,6 +6,7 @@ import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_status.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
 import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_duel_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_pass_sheet.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_mini_pitch.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
@@ -118,10 +119,12 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
       MatchStatus.finished => l10n.clashMatchPhaseFinished,
     };
     final advanceChance = match.advanceChancePercent;
+    final hasDuelUi = state.hasPendingDuel || state.lastDuelResolution != null;
     final isUserPossession =
         state.status == MatchStatus.playing &&
         !state.isFinished &&
-        state.possession == MatchTeamSide.user;
+        state.possession == MatchTeamSide.user &&
+        !hasDuelUi;
     final isRivalPossession =
         state.status == MatchStatus.playing &&
         !state.isFinished &&
@@ -195,6 +198,10 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
                 ],
               ],
             ),
+          ],
+          if (hasDuelUi) ...[
+            const SizedBox(height: 14),
+            const ClashMatchDuelPanel(),
           ],
           if (isUserPossession) ...[
             const SizedBox(height: 14),
@@ -346,6 +353,9 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
       MatchEventType.passFail ||
       MatchEventType.advanceFail => Icons.cancel_outlined,
       MatchEventType.advanceSuccess => Icons.trending_up_rounded,
+      MatchEventType.duelStarted => Icons.sports_martial_arts_outlined,
+      MatchEventType.duelSuccess => Icons.check_circle_outline,
+      MatchEventType.duelFail => Icons.block_outlined,
       MatchEventType.goal => Icons.sports_soccer,
       MatchEventType.kickoff => Icons.flag_outlined,
       MatchEventType.rivalAction => Icons.smart_toy_outlined,

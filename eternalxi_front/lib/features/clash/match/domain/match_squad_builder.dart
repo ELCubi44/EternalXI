@@ -1,4 +1,5 @@
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_player_style.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_stats.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_pitch_layout.dart';
@@ -36,6 +37,7 @@ class MatchSquadBuilder {
             baseStats: entry.card.stats,
             power: entry.power,
             currentStamina: entry.card.stats.stamina,
+            style: entry.card.style,
           ),
         );
       } else {
@@ -73,6 +75,7 @@ class MatchSquadBuilder {
           baseStats: stats,
           power: stats.power,
           currentStamina: stats.stamina,
+          style: ClashPlayerStyle.values[i % ClashPlayerStyle.values.length],
         ),
       );
     }
@@ -123,6 +126,7 @@ class MatchSquadBuilder {
       baseStats: stats,
       power: stats.power,
       currentStamina: stats.stamina,
+      style: ClashPlayerStyle.valiente,
     );
   }
 
