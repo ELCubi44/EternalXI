@@ -85,7 +85,7 @@ class ClashDuelEngine {
     );
   }
 
-  /// Avance rival: duelo Regate vs Defensa del usuario o avance libre (Fase 13).
+  /// Avance rival: duelo manual Regate vs Defensa del usuario (Fase 14).
   static MatchState beginRivalAdvance(
     MatchState state,
     MatchChanceResolver chance,
@@ -97,35 +97,156 @@ class ClashDuelEngine {
       return state;
     }
 
-    final defender = ClashDuelDefenderSelector.selectForRivalAdvance(
+    final candidates = ClashDuelDefenderSelector.candidatesForRivalAdvance(
       state,
       holder,
     );
-    if (defender == null) {
+    if (candidates.isEmpty) {
       return MatchPossessionEngine.executeFreeAdvance(state, chance);
     }
 
-    final attackerStyle = ClashDuelDefenderSelector.attackerStyleResult(
-      holder.style,
-      defender.style,
+    if (candidates.length == 1) {
+      return _beginRivalDefenseDuel(state, holder, candidates.first);
+    }
+
+    final placeholder = candidates.first;
+    final presetChoice = _rivalAttackerChoice(
+      state,
+      holder,
+      placeholder,
+      ClashDuelType.dribbleVsDefense,
+    );
+
+    return state.copyWith(
+      activeDuel: ClashDuelState(
+        duelId: 'rival-duel-${state.eventLog.length + 1}',
+        type: ClashDuelType.dribbleVsDefense,
+        attacker: _attackerParticipant(holder),
+        defender: _defenderParticipant(placeholder),
+        ballZone: state.ballZone,
+        status: ClashDuelStatus.pendingUserDefenderSelection,
+        attackerStyleResult: ClashDuelDefenderSelector.attackerStyleResult(
+          holder.style,
+          placeholder.style,
+        ),
+        presetAttackerChoice: presetChoice,
+        defenderCandidateIndices: candidates.map((p) => p.index).toList(),
+      ),
+      eventLog: [
+        ...state.eventLog,
+        MatchEvent(
+          type: MatchEventType.duelStarted,
+          message: '${holder.label} encara a tu defensa',
+        ),
+      ],
+    );
+  }
+
+  /// Tiro rival pendiente de parada manual del usuario (Fase 14).
+  static MatchState beginRivalShot(MatchState state) {
+    final holder = state.ballHolderPlayer();
+    if (holder == null ||
+        state.possession != MatchTeamSide.rival ||
+        state.activeDuel != null ||
+        !canShoot(state)) {
+      return state;
+    }
+
+    final goalkeeper = ClashDuelDefenderSelector.selectGoalkeeper(
+      state,
+      holder.side,
+    );
+    if (goalkeeper == null) {
+      return state;
+    }
+
+    return _beginRivalDefenseDuel(state, holder, goalkeeper);
+  }
+
+  static MatchState selectUserDefender(MatchState state, int defenderIndex) {
+    final duel = state.activeDuel;
+    if (duel == null || !duel.needsDefenderSelection) {
+      return state;
+    }
+
+    final candidates = duel.defenderCandidateIndices;
+    if (candidates == null || !candidates.contains(defenderIndex)) {
+      return state;
+    }
+
+    final defender = _userPlayer(state, defenderIndex);
+    final attackerPlayer = _squadPlayer(state, duel.attacker);
+    if (defender == null || attackerPlayer == null) {
+      return state;
+    }
+
+    return state.copyWith(
+      activeDuel: duel.copyWith(
+        defender: _defenderParticipant(defender),
+        status: ClashDuelStatus.pendingUserDefensiveChoice,
+        attackerStyleResult: ClashDuelDefenderSelector.attackerStyleResult(
+          attackerPlayer.style,
+          defender.style,
+        ),
+        clearDefenderCandidates: true,
+      ),
+    );
+  }
+
+  static MatchState resolveManualDefense(
+    MatchState state,
+    MatchChanceResolver chance, {
+    ClashDuelActionChoice defenderChoice = const ClashDuelActionChoice.normal(),
+  }) {
+    final duel = state.activeDuel;
+    if (duel == null ||
+        duel.status != ClashDuelStatus.pendingUserDefensiveChoice) {
+      return state;
+    }
+
+    return resolveDuel(
+      state,
+      chance,
+      attackerChoice:
+          duel.presetAttackerChoice ?? const ClashDuelActionChoice.normal(),
+      defenderChoice: defenderChoice,
+    );
+  }
+
+  static MatchState _beginRivalDefenseDuel(
+    MatchState state,
+    MatchSquadPlayer holder,
+    MatchSquadPlayer defender,
+  ) {
+    final isShot = state.isInShootingZone;
+    final duelType = isShot
+        ? ClashDuelType.shotVsSave
+        : ClashDuelType.dribbleVsDefense;
+    final presetChoice = _rivalAttackerChoice(
+      state,
+      holder,
+      defender,
+      duelType,
     );
 
     final duel = ClashDuelState(
-      duelId: 'rival-duel-${state.eventLog.length + 1}',
-      type: ClashDuelType.dribbleVsDefense,
-      attacker: ClashDuelParticipant.fromSquadPlayer(
-        holder,
-        baseStat: holder.baseStats.dribble,
-        effectiveStat: holder.effectiveDribble,
-      ),
-      defender: ClashDuelParticipant.fromSquadPlayer(
-        defender,
-        baseStat: defender.baseStats.defense,
-        effectiveStat: defender.effectiveDefense,
-      ),
+      duelId: isShot
+          ? 'rival-shot-${state.eventLog.length + 1}'
+          : 'rival-duel-${state.eventLog.length + 1}',
+      type: duelType,
+      attacker: isShot
+          ? _shooterParticipant(holder)
+          : _attackerParticipant(holder),
+      defender: isShot
+          ? _goalkeeperParticipant(defender)
+          : _defenderParticipant(defender),
       ballZone: state.ballZone,
-      status: ClashDuelStatus.pendingUserChoice,
-      attackerStyleResult: attackerStyle,
+      status: ClashDuelStatus.pendingUserDefensiveChoice,
+      attackerStyleResult: ClashDuelDefenderSelector.attackerStyleResult(
+        holder.style,
+        defender.style,
+      ),
+      presetAttackerChoice: presetChoice,
     );
 
     return state.copyWith(
@@ -133,11 +254,75 @@ class ClashDuelEngine {
       eventLog: [
         ...state.eventLog,
         MatchEvent(
-          type: MatchEventType.duelStarted,
-          message: '${holder.label} encara a ${defender.label}',
+          type: isShot
+              ? MatchEventType.shotDuelStarted
+              : MatchEventType.duelStarted,
+          message: isShot
+              ? '${holder.label} se planta ante ${defender.label}'
+              : '${holder.label} encara a ${defender.label}',
         ),
       ],
     );
+  }
+
+  static ClashDuelParticipant _attackerParticipant(MatchSquadPlayer player) {
+    return ClashDuelParticipant.fromSquadPlayer(
+      player,
+      baseStat: player.baseStats.dribble,
+      effectiveStat: player.effectiveDribble,
+    );
+  }
+
+  static ClashDuelParticipant _shooterParticipant(MatchSquadPlayer player) {
+    return ClashDuelParticipant.fromSquadPlayer(
+      player,
+      baseStat: player.baseStats.shot,
+      effectiveStat: player.effectiveShot,
+    );
+  }
+
+  static ClashDuelParticipant _defenderParticipant(MatchSquadPlayer player) {
+    return ClashDuelParticipant.fromSquadPlayer(
+      player,
+      baseStat: player.baseStats.defense,
+      effectiveStat: player.effectiveDefense,
+    );
+  }
+
+  static ClashDuelParticipant _goalkeeperParticipant(MatchSquadPlayer player) {
+    return ClashDuelParticipant.fromSquadPlayer(
+      player,
+      baseStat: player.baseStats.save,
+      effectiveStat: player.effectiveSave,
+    );
+  }
+
+  static ClashDuelActionChoice _rivalAttackerChoice(
+    MatchState state,
+    MatchSquadPlayer attacker,
+    MatchSquadPlayer defender,
+    ClashDuelType duelType,
+  ) {
+    return ClashRivalTechniqueSelector.selectAttacker(
+      player: attacker,
+      duelType: duelType,
+      effectiveBaseStat: duelType == ClashDuelType.shotVsSave
+          ? attacker.effectiveShot
+          : attacker.effectiveDribble,
+      opponentStyle: defender.style,
+      ballZone: state.ballZone,
+      score: state.score,
+      playerSide: attacker.side,
+    );
+  }
+
+  static MatchSquadPlayer? _userPlayer(MatchState state, int index) {
+    for (final player in state.userSquad) {
+      if (player.index == index) {
+        return player;
+      }
+    }
+    return null;
   }
 
   static MatchState beginShot(MatchState state) {
@@ -233,31 +418,46 @@ class ClashDuelEngine {
       return state;
     }
 
+    if (duel.status == ClashDuelStatus.pendingUserDefenderSelection) {
+      return state;
+    }
+
     final attackerPlayer = _squadPlayer(state, duel.attacker);
     final defenderPlayer = _squadPlayer(state, duel.defender);
     if (attackerPlayer == null || defenderPlayer == null) {
       return state;
     }
 
+    final isManualDefense =
+        duel.status == ClashDuelStatus.pendingUserDefensiveChoice;
+
+    final resolvedAttackerChoice = isManualDefense
+        ? (duel.presetAttackerChoice ?? const ClashDuelActionChoice.normal())
+        : attackerChoice;
+
     final attackerTechnique = _validateTechnique(
       player: attackerPlayer,
-      choice: attackerChoice,
+      choice: resolvedAttackerChoice,
       requiredType: ClashDuelTechniqueRules.attackerTechniqueType(duel.type),
     );
-    if (attackerChoice.usesTechnique && attackerTechnique == null) {
+    if (resolvedAttackerChoice.usesTechnique && attackerTechnique == null) {
       return state;
     }
 
-    final resolvedDefenderChoice =
-        defenderChoice ??
-        _selectDefenderChoice(
-          state: state,
-          duel: duel,
-          attackerPlayer: attackerPlayer,
-          defenderPlayer: defenderPlayer,
-          attackerTechnique: attackerTechnique,
-          pressure: state.pressure,
-        );
+    final resolvedDefenderChoice = isManualDefense
+        ? defenderChoice
+        : (defenderChoice ??
+              _selectDefenderChoice(
+                state: state,
+                duel: duel,
+                attackerPlayer: attackerPlayer,
+                defenderPlayer: defenderPlayer,
+                attackerTechnique: attackerTechnique,
+                pressure: state.pressure,
+              ));
+    if (resolvedDefenderChoice == null) {
+      return state;
+    }
 
     final defenderTechnique = _validateTechnique(
       player: defenderPlayer,

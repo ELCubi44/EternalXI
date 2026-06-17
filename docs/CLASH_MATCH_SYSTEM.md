@@ -152,6 +152,26 @@ La **Fase 13** sustituye la simulación aleatoria rival por **IA básica real de
 
 ---
 
+## Implementación Fase 14 (Flutter)
+
+La **Fase 14** añade **defensa manual del usuario** cuando el rival avanza o tira:
+
+| Incluido | Pendiente (fases posteriores) |
+|---|---|
+| Selección de defensor usuario (varios candidatos) | Cambios de jugadores |
+| Panel «Defiende el avance» / «Detén el tiro» | Tácticas avanzadas |
+| Defensa normal y supertécnicas de Defensa/Parada | Objetos para IA |
+| Rival elige Regate/Tiro con IA; usuario responde | Backend / tienda / gacha |
+| PT, estilos y resistencia en duelos defensivos | |
+
+**Reglas clave:**
+- La IA rival ya no resuelve automáticamente duelos defensivos.
+- Si hay varios defensores candidatos, el usuario elige uno.
+- Solo se muestran técnicas compatibles (Defensa o Parada).
+- Sin PT suficiente, la técnica queda deshabilitada.
+
+---
+
 ## 1. Visión general
 
 Clash tiene **dos modalidades de partido**:

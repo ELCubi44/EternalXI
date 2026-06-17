@@ -129,6 +129,15 @@ MatchState _rivalState({
   );
 }
 
+MatchState _prepareManualDefense(MatchState state, {int? defenderIndex}) {
+  final duel = state.activeDuel;
+  if (duel?.needsDefenderSelection != true) {
+    return state;
+  }
+  final index = defenderIndex ?? duel!.defenderCandidateIndices!.first;
+  return ClashDuelEngine.selectUserDefender(state, index);
+}
+
 void main() {
   group('ClashRivalAiEngine decide', () {
     test('IA tira cuando está en área', () {
@@ -398,6 +407,7 @@ void main() {
       expect(pending.activeDuel, isNotNull);
       expect(pending.activeDuel!.type, ClashDuelType.dribbleVsDefense);
       expect(pending.activeDuel!.defender.teamSide, MatchTeamSide.user);
+      expect(pending.activeDuel!.isUserDefending, isTrue);
     });
 
     test('avance rival perdido da posesión al usuario', () {
@@ -424,15 +434,23 @@ void main() {
         ),
       );
 
-      final result = ClashRivalAiEngine.executeTurn(
-        state,
+      final turn = _prepareManualDefense(
+        ClashDuelEngine.beginRivalAdvance(
+          state,
+          const FixedMatchChanceResolver(alwaysSucceed: true),
+        ),
+      );
+      expect(turn.activeDuel?.isUserDefending, isTrue);
+
+      final resolved = ClashDuelEngine.resolveManualDefense(
+        turn,
         const FixedMatchChanceResolver(
           alwaysSucceed: false,
           coinFavorsUser: true,
         ),
       );
 
-      expect(result.state.possession, MatchTeamSide.user);
+      expect(resolved.possession, MatchTeamSide.user);
     });
 
     test('tiro rival puede acabar en gol', () {
@@ -459,16 +477,22 @@ void main() {
         ),
       );
 
-      final result = ClashRivalAiEngine.executeTurn(
+      final turn = ClashRivalAiEngine.executeTurn(
         state,
+        const FixedMatchChanceResolver(alwaysSucceed: true),
+      );
+      expect(turn.state.activeDuel?.type, ClashDuelType.shotVsSave);
+
+      final resolved = ClashDuelEngine.resolveManualDefense(
+        turn.state,
         const FixedMatchChanceResolver(
           alwaysSucceed: true,
           coinFavorsUser: false,
         ),
       );
 
-      expect(result.state.score.rival, 1);
-      expect(result.state.possession, MatchTeamSide.user);
+      expect(resolved.score.rival, 1);
+      expect(resolved.possession, MatchTeamSide.user);
     });
 
     test('parada usuario cambia posesión al usuario', () {
@@ -495,18 +519,23 @@ void main() {
         ),
       );
 
-      final result = ClashRivalAiEngine.executeTurn(
+      final turn = ClashRivalAiEngine.executeTurn(
         state,
+        const FixedMatchChanceResolver(alwaysSucceed: true),
+      );
+
+      final resolved = ClashDuelEngine.resolveManualDefense(
+        turn.state,
         const FixedMatchChanceResolver(
           alwaysSucceed: false,
           coinFavorsUser: true,
         ),
       );
 
-      expect(result.state.score.rival, 0);
-      expect(result.state.possession, MatchTeamSide.user);
+      expect(resolved.score.rival, 0);
+      expect(resolved.possession, MatchTeamSide.user);
       expect(
-        result.state.eventLog.any((e) => e.type == MatchEventType.saveMade),
+        resolved.eventLog.any((e) => e.type == MatchEventType.saveMade),
         isTrue,
       );
     });

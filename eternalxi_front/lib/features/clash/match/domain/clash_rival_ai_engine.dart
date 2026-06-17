@@ -100,10 +100,7 @@ class ClashRivalAiEngine {
     MatchChanceResolver chance,
     ClashRivalAiDecision decision,
   ) {
-    var next = ClashDuelEngine.beginShot(state);
-    if (next.activeDuel != null) {
-      next = ClashDuelEngine.resolveRivalAutoDuel(next, chance);
-    }
+    var next = ClashDuelEngine.beginRivalShot(state);
     return _appendRivalActionEvent(next, decision.summary);
   }
 
@@ -112,14 +109,7 @@ class ClashRivalAiEngine {
     MatchChanceResolver chance,
     ClashRivalAiDecision decision,
   ) {
-    var next = ClashDuelEngine.beginRivalAdvance(state, chance);
-    if (next.activeDuel?.isPending ?? false) {
-      next = ClashDuelEngine.resolveRivalAutoDuel(next, chance);
-      return _appendRivalActionEvent(
-        next,
-        '${decision.summary} — duelo resuelto',
-      );
-    }
+    final next = ClashDuelEngine.beginRivalAdvance(state, chance);
     return _appendRivalActionEvent(next, decision.summary);
   }
 

@@ -92,6 +92,45 @@ class ClashDuelDefenderSelector {
     return best;
   }
 
+  /// Candidatos usuario para frenar un avance rival (Fase 14).
+  static List<MatchSquadPlayer> candidatesForRivalAdvance(
+    MatchState state,
+    MatchSquadPlayer attacker,
+  ) {
+    if (state.possession != MatchTeamSide.rival ||
+        attacker.side != MatchTeamSide.rival) {
+      return const [];
+    }
+
+    final zone = state.ballZone;
+    if (zone == MatchBallZone.rivalMidfield ||
+        zone == MatchBallZone.rivalArea) {
+      return const [];
+    }
+
+    final priority = switch (zone) {
+      MatchBallZone.midfield || MatchBallZone.ownMidfield => _midfieldPriority,
+      MatchBallZone.ownDefense => _areaPriority,
+      _ => _midfieldPriority,
+    };
+
+    final candidates = <MatchSquadPlayer>[];
+    final seen = <int>{};
+    for (final position in priority) {
+      final defender = _firstUserAtPosition(state, position);
+      if (defender != null && seen.add(defender.index)) {
+        candidates.add(defender);
+      }
+    }
+
+    final closest = _closestUserDefender(state, attacker);
+    if (closest != null && seen.add(closest.index)) {
+      candidates.add(closest);
+    }
+
+    return candidates;
+  }
+
   /// Defensor usuario cuando el rival avanza (Fase 13).
   static MatchSquadPlayer? selectForRivalAdvance(
     MatchState state,

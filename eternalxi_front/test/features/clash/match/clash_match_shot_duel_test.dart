@@ -636,6 +636,8 @@ void main() {
         ),
       );
       match.simulateRivalAction();
+      expect(match.state!.hasPendingManualDefense, isTrue);
+      match.resolveManualDefense();
       expect(match.state!.isFinished, isTrue);
       expect(match.state!.winner, MatchTeamSide.rival);
     });

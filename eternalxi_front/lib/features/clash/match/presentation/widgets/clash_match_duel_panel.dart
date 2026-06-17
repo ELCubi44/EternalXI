@@ -39,7 +39,27 @@ class ClashMatchDuelPanel extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final attackerPlayer = _attackerFromState(state, duel);
+    if (duel.needsDefenderSelection) {
+      return _DefenderSelectionCard(
+        state: state,
+        duel: duel,
+        onSelectDefender: match.selectManualDefender,
+      );
+    }
+
+    final attackerPlayer = _playerFromState(state, duel.attacker);
+    final defenderPlayer = _playerFromState(state, duel.defender);
+
+    if (duel.isUserDefending) {
+      return _ManualDefenseCard(
+        duel: duel,
+        attackerPlayer: attackerPlayer,
+        defenderPlayer: defenderPlayer,
+        onResolveNormal: () => match.resolveManualDefense(),
+        onResolveTechnique: (id) => match.resolveManualDefense(techniqueId: id),
+      );
+    }
+
     return _PendingDuelCard(
       duel: duel,
       attackerPlayer: attackerPlayer,
@@ -48,16 +68,266 @@ class ClashMatchDuelPanel extends StatelessWidget {
     );
   }
 
-  static MatchSquadPlayer? _attackerFromState(
+  static MatchSquadPlayer? _playerFromState(
     MatchState state,
-    ClashDuelState duel,
+    ClashDuelParticipant participant,
   ) {
-    final squad = state.squadFor(duel.attacker.teamSide);
-    final index = duel.attacker.squadIndex;
+    final squad = state.squadFor(participant.teamSide);
+    final index = participant.squadIndex;
     if (index < 0 || index >= squad.length) {
       return null;
     }
     return squad[index];
+  }
+}
+
+class _DefenderSelectionCard extends StatelessWidget {
+  const _DefenderSelectionCard({
+    required this.state,
+    required this.duel,
+    required this.onSelectDefender,
+  });
+
+  final MatchState state;
+  final ClashDuelState duel;
+  final ValueChanged<int> onSelectDefender;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final indices = duel.defenderCandidateIndices ?? const <int>[];
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: context.xiCardSurface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            l10n.clashMatchDefendSelectDefenderTitle,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.clashMatchBallHolder(duel.attacker.label),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          ...indices.map((index) {
+            final player = state.userSquad.firstWhere(
+              (p) => p.index == index,
+              orElse: () => state.userSquad.first,
+            );
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: OutlinedButton(
+                onPressed: () => onSelectDefender(index),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${player.label} · ${player.position.displayNameEs}',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    Text(
+                      l10n.clashMatchDefendCandidateMeta(
+                        player.effectiveDefense,
+                        player.currentPt,
+                        player.currentStamina,
+                        player.style.displayNameEs,
+                      ),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: context.xiTextSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+}
+
+class _ManualDefenseCard extends StatelessWidget {
+  const _ManualDefenseCard({
+    required this.duel,
+    required this.attackerPlayer,
+    required this.defenderPlayer,
+    required this.onResolveNormal,
+    required this.onResolveTechnique,
+  });
+
+  final ClashDuelState duel;
+  final MatchSquadPlayer? attackerPlayer;
+  final MatchSquadPlayer? defenderPlayer;
+  final VoidCallback onResolveNormal;
+  final ValueChanged<String> onResolveTechnique;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final isShot = duel.type == ClashDuelType.shotVsSave;
+    final techniques = defenderPlayer == null
+        ? const <ClashSuperTechnique>[]
+        : ClashDuelTechniqueRules.compatibleForDefender(
+            defenderPlayer!,
+            duel.type,
+          );
+    final currentPt = defenderPlayer?.currentPt ?? 0;
+    final rivalAttack = _rivalAttackLabel(context, attackerPlayer, duel);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: context.xiCardSurface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isShot
+              ? Colors.orange.withValues(alpha: 0.6)
+              : Colors.blueAccent.withValues(alpha: 0.5),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            isShot
+                ? l10n.clashMatchDefendShotTitle
+                : l10n.clashMatchDefendAdvanceTitle,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            rivalAttack,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: Colors.redAccent,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _ParticipantCard(
+                  participant: duel.attacker,
+                  accent: Colors.redAccent,
+                  statLabel: isShot
+                      ? l10n.clashMatchDuelEffectiveShot
+                      : l10n.clashMatchDuelEffectiveDribble,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 28,
+                ),
+                child: Icon(
+                  isShot ? Icons.sports_soccer : Icons.flash_on_rounded,
+                  color: isShot ? Colors.orange : Colors.blueAccent,
+                ),
+              ),
+              Expanded(
+                child: _ParticipantCard(
+                  participant: duel.defender,
+                  accent: theme.colorScheme.primary,
+                  statLabel: isShot
+                      ? l10n.clashMatchDuelEffectiveSave
+                      : l10n.clashMatchDuelEffectiveDefense,
+                  currentPt: currentPt,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            _styleLabel(context, duel.attackerStyleResult),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: context.xiTextSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          FilledButton.icon(
+            onPressed: onResolveNormal,
+            icon: Icon(isShot ? Icons.back_hand_rounded : Icons.shield_rounded),
+            label: Text(
+              isShot
+                  ? l10n.clashMatchDefendNormalSave
+                  : l10n.clashMatchDefendNormalDefense,
+            ),
+          ),
+          if (techniques.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              l10n.clashMatchDuelSuperTechniques,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...techniques.map(
+              (technique) => _TechniqueButton(
+                technique: technique,
+                currentPt: currentPt,
+                onTap: () => onResolveTechnique(technique.id),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _rivalAttackLabel(
+    BuildContext context,
+    MatchSquadPlayer? attacker,
+    ClashDuelState duel,
+  ) {
+    final l10n = context.l10n;
+    final choice = duel.presetAttackerChoice;
+    if (choice == null || choice.isNormal) {
+      return l10n.clashMatchRivalAttackNormal;
+    }
+    if (attacker == null) {
+      return l10n.clashMatchRivalAttackTechnique('—');
+    }
+    final technique = ClashDuelTechniqueRules.findTechnique(
+      attacker,
+      choice.techniqueId,
+    );
+    return l10n.clashMatchRivalAttackTechnique(technique?.name ?? '—');
+  }
+
+  String _styleLabel(BuildContext context, ClashDuelStyleResult result) {
+    final l10n = context.l10n;
+    return switch (result) {
+      ClashDuelStyleResult.advantage => l10n.clashMatchDuelStyleAdvantage,
+      ClashDuelStyleResult.disadvantage => l10n.clashMatchDuelStyleDisadvantage,
+      ClashDuelStyleResult.neutral => l10n.clashMatchDuelStyleNeutral,
+    };
   }
 }
 

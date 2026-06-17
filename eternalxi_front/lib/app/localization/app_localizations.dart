@@ -303,6 +303,15 @@ class AppLocalizations {
       'clashMatchDuelEffectiveSave': 'Parada efectiva',
       'clashMatchDuelGoal': '¡GOL!',
       'clashMatchDuelSave': 'PARADA',
+      'clashMatchDefendAdvanceTitle': 'Defiende el avance',
+      'clashMatchDefendShotTitle': 'Detén el tiro',
+      'clashMatchDefendSelectDefenderTitle': 'Elige defensor',
+      'clashMatchDefendNormalDefense': 'Defensa normal',
+      'clashMatchDefendNormalSave': 'Parada normal',
+      'clashMatchRivalAttackNormal': 'Rival: acción normal',
+      'clashMatchRivalAttackTechnique': 'Rival: {name}',
+      'clashMatchDefendCandidateMeta':
+          'DEF {defense} · PT {pt} · RES {stamina} · {style}',
       'clashMatchDevSectionTitle': 'Herramientas dev/provisional',
       'registerTitle': 'Crear cuenta',
       'registerSubtitle':
@@ -755,6 +764,15 @@ class AppLocalizations {
       'clashMatchDuelEffectiveSave': 'Effective save',
       'clashMatchDuelGoal': 'GOAL!',
       'clashMatchDuelSave': 'SAVE',
+      'clashMatchDefendAdvanceTitle': 'Defend the advance',
+      'clashMatchDefendShotTitle': 'Stop the shot',
+      'clashMatchDefendSelectDefenderTitle': 'Choose defender',
+      'clashMatchDefendNormalDefense': 'Normal defense',
+      'clashMatchDefendNormalSave': 'Normal save',
+      'clashMatchRivalAttackNormal': 'Rival: normal action',
+      'clashMatchRivalAttackTechnique': 'Rival: {name}',
+      'clashMatchDefendCandidateMeta':
+          'DEF {defense} · PT {pt} · STA {stamina} · {style}',
       'clashMatchDevSectionTitle': 'Dev/provisional tools',
       'registerTitle': 'Create account',
       'registerSubtitle':
@@ -1261,6 +1279,26 @@ class AppLocalizations {
   String get clashMatchDuelEffectiveSave => _t('clashMatchDuelEffectiveSave');
   String get clashMatchDuelGoal => _t('clashMatchDuelGoal');
   String get clashMatchDuelSave => _t('clashMatchDuelSave');
+  String get clashMatchDefendAdvanceTitle => _t('clashMatchDefendAdvanceTitle');
+  String get clashMatchDefendShotTitle => _t('clashMatchDefendShotTitle');
+  String get clashMatchDefendSelectDefenderTitle =>
+      _t('clashMatchDefendSelectDefenderTitle');
+  String get clashMatchDefendNormalDefense =>
+      _t('clashMatchDefendNormalDefense');
+  String get clashMatchDefendNormalSave => _t('clashMatchDefendNormalSave');
+  String get clashMatchRivalAttackNormal => _t('clashMatchRivalAttackNormal');
+  String clashMatchRivalAttackTechnique(String name) =>
+      _t('clashMatchRivalAttackTechnique').replaceAll('{name}', name);
+  String clashMatchDefendCandidateMeta(
+    int defense,
+    int pt,
+    int stamina,
+    String style,
+  ) => _t('clashMatchDefendCandidateMeta')
+      .replaceAll('{defense}', '$defense')
+      .replaceAll('{pt}', '$pt')
+      .replaceAll('{stamina}', '$stamina')
+      .replaceAll('{style}', style);
 
   String clashMatchDuelScore(int attacker, int defender) => _t(
     'clashMatchDuelScore',

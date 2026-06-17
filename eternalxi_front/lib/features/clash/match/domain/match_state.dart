@@ -60,6 +60,8 @@ class MatchState {
 
   bool get hasPendingDuel => activeDuel?.isPending ?? false;
 
+  bool get hasPendingManualDefense => activeDuel?.isUserDefending ?? false;
+
   bool get isPausedForHalftime => isHalftime && status == MatchStatus.halftime;
 
   /// Zona de tiro según el equipo en posesión.

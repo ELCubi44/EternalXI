@@ -5,6 +5,7 @@ import 'package:eternal_xi/features/clash/match/domain/clash_halftime_engine.dar
 import 'package:eternal_xi/features/clash/match/domain/clash_match_item_engine.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_action_choice.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_duel_status.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_duel_engine.dart';
 import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
@@ -225,7 +226,7 @@ class ClashMatchController extends ChangeNotifier {
     final duel = current?.activeDuel;
     if (current == null ||
         duel == null ||
-        !duel.isPending ||
+        !duel.isUserAttacking ||
         current.isPausedForHalftime) {
       return;
     }
@@ -236,6 +237,35 @@ class ClashMatchController extends ChangeNotifier {
       current,
       _chance,
       attackerChoice: attackerChoice,
+    );
+    notifyListeners();
+  }
+
+  void selectManualDefender(int defenderIndex) {
+    final current = _state;
+    if (current == null || current.isPausedForHalftime) {
+      return;
+    }
+    _state = ClashDuelEngine.selectUserDefender(current, defenderIndex);
+    notifyListeners();
+  }
+
+  void resolveManualDefense({String? techniqueId}) {
+    final current = _state;
+    final duel = current?.activeDuel;
+    if (current == null ||
+        duel == null ||
+        duel.status != ClashDuelStatus.pendingUserDefensiveChoice ||
+        current.isPausedForHalftime) {
+      return;
+    }
+    final defenderChoice = techniqueId != null
+        ? ClashDuelActionChoice.technique(techniqueId)
+        : const ClashDuelActionChoice.normal();
+    _state = ClashDuelEngine.resolveManualDefense(
+      current,
+      _chance,
+      defenderChoice: defenderChoice,
     );
     notifyListeners();
   }
