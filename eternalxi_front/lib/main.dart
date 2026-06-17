@@ -16,6 +16,7 @@ import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_re
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
 import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
+import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
 import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
@@ -189,6 +190,9 @@ Future<void> main() async {
             collectionRepository: context
                 .read<ClashPlayerCollectionRepository>(),
           ),
+        ),
+        ChangeNotifierProvider<ClashMatchController>(
+          create: (_) => ClashMatchController(),
         ),
       ],
       child: const EternalXiApp(),

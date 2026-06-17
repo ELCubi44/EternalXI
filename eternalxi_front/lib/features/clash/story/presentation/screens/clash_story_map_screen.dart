@@ -137,7 +137,12 @@ class _ClashStoryMapScreenState extends State<ClashStoryMapScreen> {
           level: level,
           status: status,
           onTap: status == ClashStoryLevelStatus.available
-              ? () => context.push(AppRoutes.clashStoryLevel(level.id))
+              ? () {
+                  final route = level.type == ClashStoryLevelType.story
+                      ? AppRoutes.clashStoryLevel(level.id)
+                      : AppRoutes.clashStoryLevelPrepare(level.id);
+                  context.push(route);
+                }
               : null,
         ),
       );

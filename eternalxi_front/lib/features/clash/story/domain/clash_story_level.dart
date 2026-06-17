@@ -1,6 +1,7 @@
 import 'package:eternal_xi/features/clash/cards/domain/clash_json_helpers.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_completion_unlocks.dart';
+import 'package:eternal_xi/features/clash/story/domain/clash_story_level_requirements.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level_type.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_reward.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_scene.dart';
@@ -22,6 +23,7 @@ class ClashStoryLevel {
     this.requiredPositions = const [],
     this.guestCards = const [],
     this.completionUnlocks = const ClashStoryCompletionUnlocks(),
+    this.requirements = const ClashStoryLevelRequirements(),
   });
 
   final String id;
@@ -38,6 +40,7 @@ class ClashStoryLevel {
   final List<ClashStoryGuestCard> guestCards;
   final List<ClashStoryScene> scenes;
   final ClashStoryCompletionUnlocks completionUnlocks;
+  final ClashStoryLevelRequirements requirements;
 
   factory ClashStoryLevel.fromJson(Map<String, dynamic> json) {
     final positionsRaw = json['requiredPositions'] as List? ?? const [];
@@ -84,6 +87,9 @@ class ClashStoryLevel {
       completionUnlocks: ClashStoryCompletionUnlocks.fromJson(
         json['completionUnlocks'] as Map<String, dynamic>?,
       ),
+      requirements: ClashStoryLevelRequirements.fromJson(
+        json['required'] as Map<String, dynamic>?,
+      ),
     );
   }
 
@@ -104,5 +110,6 @@ class ClashStoryLevel {
     'guestCards': guestCards.map((card) => card.toJson()).toList(),
     'scenes': scenes.map((scene) => scene.toJson()).toList(),
     'completionUnlocks': completionUnlocks.toJson(),
+    'required': requirements.toJson(),
   };
 }

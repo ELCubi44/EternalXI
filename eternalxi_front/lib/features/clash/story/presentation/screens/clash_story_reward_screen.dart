@@ -2,6 +2,7 @@ import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
+import 'package:eternal_xi/features/clash/story/domain/clash_story_level_type.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_reward.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:flutter/material.dart';
@@ -122,7 +123,10 @@ class ClashStoryRewardScreen extends StatelessWidget {
               onPressed: () {
                 controller.clearActiveLevel();
                 controller.clearLastCompletion();
-                context.push(AppRoutes.clashStoryLevel(nextLevel.id));
+                final route = nextLevel.type == ClashStoryLevelType.story
+                    ? AppRoutes.clashStoryLevel(nextLevel.id)
+                    : AppRoutes.clashStoryLevelPrepare(nextLevel.id);
+                context.push(route);
               },
               child: Text(l10n.clashStoryNextLevel),
             ),

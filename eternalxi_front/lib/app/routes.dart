@@ -16,6 +16,11 @@ class AppRoutes {
   static String clashStoryLevel(String levelId) =>
       '/clash/story/level/$levelId';
 
+  static String clashStoryLevelPrepare(String levelId) =>
+      '/clash/story/level/$levelId/prepare';
+
+  static String clashMatch(String levelId) => '/clash/match/$levelId';
+
   static String clashCardDetail(String cardId) => '/clash/cards/$cardId';
 
   static const profile = '/profile';

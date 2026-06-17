@@ -177,6 +177,35 @@
           "firstLineupUnlocked": true,
           "nextPlayableLevelUnlocked": true
         }
+      },
+      {
+        "id": "chapter_01_level_04",
+        "chapterId": "chapter-01",
+        "title": "La primera pachanga",
+        "description": "Primer partido tutorial del Eternal XI: un 7vs7 para probar la alineación activa.",
+        "order": 4,
+        "type": "match",
+        "energyCost": 8,
+        "recommendedPower": 120,
+        "rewards": {
+          "gems": 1,
+          "coins": 500,
+          "items": [
+            {
+              "id": "practice-ball",
+              "name": "Balón de práctica",
+              "quantity": 1
+            }
+          ]
+        },
+        "scenes": [],
+        "required": {
+          "clashTeamUnlocked": true,
+          "completeActiveLineup": true
+        },
+        "completionUnlocks": {
+          "nextPlayableLevelUnlocked": true
+        }
       }
     ]
   }

@@ -1,7 +1,24 @@
 # Eternal Clash — Sistema de partido y combate
 
-> **Estado:** diseño pre-implementación.  
+> **Estado:** diseño + **Fase 7 implementada** (shell base 7vs7, flujo provisional).  
 > **Relacionado:** `CLASH_CARD_SYSTEM.md`, `CLASH_STORY_AND_EVENTS.md`
+
+---
+
+## Implementación Fase 7 (Flutter)
+
+La **Fase 7** entrega solo la **base del partido** y el flujo tutorial del primer nivel match (`chapter_01_level_04`):
+
+| Incluido | Pendiente (fases posteriores) |
+|---|---|
+| Pantalla de preparación (`/clash/story/level/:id/prepare`) | Motor real de pases y avance |
+| Pantalla de partido (`/clash/match/:id`) | Duelos regate/defensa |
+| Sorteo cara/cruz y saque inicial | Tiro/parada |
+| Marcador primero a 3 goles | Supertécnicas y PT |
+| Minicampo abstracto `ClashMiniPitch` | IA completa del rival |
+| Botones **provisional tutorial/dev** «Gol Eternal XI» / «Gol Rival» | Gameplay definitivo |
+
+Los botones de gol simulado existen únicamente para validar victoria/derrota, recompensas y progresión. **No** representan el gameplay final.
 
 ---
 

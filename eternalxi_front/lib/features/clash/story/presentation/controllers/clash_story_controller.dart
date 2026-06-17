@@ -151,6 +151,24 @@ class ClashStoryController extends ChangeNotifier {
     return result;
   }
 
+  Future<ClashStoryCompletionResult?> finishMatchLevel({
+    required String levelId,
+    required bool userWon,
+  }) async {
+    final result = await _storyRepository.completeMatchLevel(
+      levelId,
+      userWon: userWon,
+    );
+    if (userWon) {
+      _progress = _storyRepository.loadProgress();
+      _lastCompletion = result;
+    } else {
+      _lastCompletion = null;
+    }
+    notifyListeners();
+    return result;
+  }
+
   void clearLastCompletion() {
     _lastCompletion = null;
     notifyListeners();

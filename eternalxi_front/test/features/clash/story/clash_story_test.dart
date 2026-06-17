@@ -10,6 +10,7 @@ import 'package:eternal_xi/features/clash/story/domain/clash_story_chapter.dart'
 import 'package:eternal_xi/features/clash/story/domain/clash_story_saga.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level_status.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level_type.dart';
+import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/features/clash/story/presentation/clash_story_gate.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_map_screen.dart';
@@ -93,15 +94,20 @@ const _chapterJson = '''
         }
       },
       {
-        "id": "prologue-lvl-04",
+        "id": "chapter_01_level_04",
         "chapterId": "chapter-01",
-        "title": "Nivel futuro",
+        "title": "Nivel match",
         "description": "Match futuro",
         "order": 4,
         "type": "match",
         "energyCost": 8,
-        "rewards": { "gems": 2 },
-        "scenes": []
+        "recommendedPower": 100,
+        "rewards": { "gems": 2, "coins": 100 },
+        "scenes": [],
+        "required": {
+          "clashTeamUnlocked": true,
+          "completeActiveLineup": true
+        }
       }
     ]
   }
@@ -300,6 +306,34 @@ void main() {
         throwsA(isA<ClashStoryOperationException>()),
       );
     });
+
+    test('Nivel 4 match bloqueado antes del Nivel 3', () async {
+      final setup = await _setup();
+      final chapter = await setup.storyRepo.loadChapter('chapter-01');
+      final levels = chapter.levels;
+      final level4 = levels.firstWhere((l) => l.id == 'chapter_01_level_04');
+
+      expect(
+        setup.storyRepo.levelStatus(level: level4, chapterLevels: levels),
+        ClashStoryLevelStatus.locked,
+      );
+    });
+
+    test('completar Nivel 3 desbloquea Nivel 4 match', () async {
+      final setup = await _setup();
+      final chapter = await setup.storyRepo.loadChapter('chapter-01');
+      final levels = chapter.levels;
+      final level4 = levels.firstWhere((l) => l.id == 'chapter_01_level_04');
+
+      await setup.storyRepo.completeStoryLevel('prologue-lvl-01');
+      await setup.storyRepo.completeStoryLevel('prologue-lvl-02');
+      await setup.storyRepo.completeStoryLevel('prologue-lvl-03');
+
+      expect(
+        setup.storyRepo.levelStatus(level: level4, chapterLevels: levels),
+        ClashStoryLevelStatus.available,
+      );
+    });
   });
 
   group('ClashStoryController', () {
@@ -332,7 +366,9 @@ void main() {
       );
     }
 
-    testWidgets('mapa muestra 3 niveles del prólogo', (tester) async {
+    testWidgets('mapa muestra niveles del prólogo incluido match bloqueado', (
+      tester,
+    ) async {
       final setup = await _setup();
       final controller = ClashStoryController(storyRepository: setup.storyRepo);
       await controller.load();
@@ -345,6 +381,18 @@ void main() {
       expect(find.text('Nivel 1'), findsOneWidget);
       expect(find.text('Nivel 2'), findsOneWidget);
       expect(find.text('Nivel 3'), findsOneWidget);
+
+      await tester.drag(find.byType(ListView), const Offset(0, -500));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Nivel match'), findsOneWidget);
+    });
+
+    test('mapa abre prepare para nivel match', () {
+      expect(
+        AppRoutes.clashStoryLevelPrepare('chapter_01_level_04'),
+        '/clash/story/level/chapter_01_level_04/prepare',
+      );
     });
 
     testWidgets('nivel bloqueado no se puede abrir desde lector', (

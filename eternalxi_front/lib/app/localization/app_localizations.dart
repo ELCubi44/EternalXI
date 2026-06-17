@@ -216,6 +216,38 @@ class AppLocalizations {
       'clashStoryGateTeam': 'Completa el prólogo para formar Eternal XI.',
       'clashStoryGateSummon': 'Disponible tras formar Eternal XI.',
       'clashStoryGateEvents': 'Disponible después del prólogo.',
+      'clashMatchPrepareType': 'Tipo',
+      'clashMatchPrepareEnergy': 'Coste de energía',
+      'clashMatchPrepareRecommendedPower': 'Potencia recomendada',
+      'clashMatchPrepareLineupPower': 'Potencia de tu alineación',
+      'clashMatchPrepareLineupComplete': 'Alineación activa completa',
+      'clashMatchPrepareLineupIncomplete': 'Alineación activa incompleta',
+      'clashMatchPreparePowerWarning':
+          'Tu potencia está por debajo de la recomendada. Puedes jugar igualmente.',
+      'clashMatchPrepareEditLineup': 'Editar alineación',
+      'clashMatchPrepareStart': 'Comenzar partido',
+      'clashMatchScoreLabel': '{user} - {rival}',
+      'clashMatchWinTarget': 'Objetivo: primero a 3 goles',
+      'clashMatchPhaseLabel': 'Fase',
+      'clashMatchPhaseCoinToss': 'Sorteo inicial',
+      'clashMatchPhasePlaying': 'En juego',
+      'clashMatchPhaseFinished': 'Finalizado',
+      'clashMatchCoinTossPrompt': 'Elige cara o cruz para el saque inicial',
+      'clashMatchCoinHeads': 'Cara',
+      'clashMatchCoinTails': 'Cruz',
+      'clashMatchCoinResult': 'Resultado: {outcome}. Saca: {kickoff}',
+      'clashMatchKickoffUser': 'Eternal XI',
+      'clashMatchKickoffRival': 'Rival',
+      'clashMatchPossessionUser': 'Posesión: Eternal XI',
+      'clashMatchPossessionRival': 'Posesión: Rival',
+      'clashMatchBallHolder': 'Balón: {player}',
+      'clashMatchVictory': '¡Victoria!',
+      'clashMatchDefeat': 'Derrota',
+      'clashMatchViewRewards': 'Ver recompensas',
+      'clashMatchDevGoalsHint':
+          'Botones provisionales (tutorial/dev) — no son el gameplay final',
+      'clashMatchDevGoalUser': 'Gol Eternal XI (provisional)',
+      'clashMatchDevGoalRival': 'Gol Rival (provisional)',
       'registerTitle': 'Crear cuenta',
       'registerSubtitle':
           'Únete a Eternal XI. Usa un correo válido y un nickname que te represente en las ligas.',
@@ -580,6 +612,38 @@ class AppLocalizations {
       'clashStoryGateTeam': 'Complete the prologue to form Eternal XI.',
       'clashStoryGateSummon': 'Available after forming Eternal XI.',
       'clashStoryGateEvents': 'Available after the prologue.',
+      'clashMatchPrepareType': 'Type',
+      'clashMatchPrepareEnergy': 'Energy cost',
+      'clashMatchPrepareRecommendedPower': 'Recommended power',
+      'clashMatchPrepareLineupPower': 'Your lineup power',
+      'clashMatchPrepareLineupComplete': 'Active lineup complete',
+      'clashMatchPrepareLineupIncomplete': 'Active lineup incomplete',
+      'clashMatchPreparePowerWarning':
+          'Your power is below the recommended value. You can still play.',
+      'clashMatchPrepareEditLineup': 'Edit lineup',
+      'clashMatchPrepareStart': 'Start match',
+      'clashMatchScoreLabel': '{user} - {rival}',
+      'clashMatchWinTarget': 'Goal: first to 3',
+      'clashMatchPhaseLabel': 'Phase',
+      'clashMatchPhaseCoinToss': 'Coin toss',
+      'clashMatchPhasePlaying': 'In play',
+      'clashMatchPhaseFinished': 'Finished',
+      'clashMatchCoinTossPrompt': 'Choose heads or tails for kickoff',
+      'clashMatchCoinHeads': 'Heads',
+      'clashMatchCoinTails': 'Tails',
+      'clashMatchCoinResult': 'Result: {outcome}. Kickoff: {kickoff}',
+      'clashMatchKickoffUser': 'Eternal XI',
+      'clashMatchKickoffRival': 'Rival',
+      'clashMatchPossessionUser': 'Possession: Eternal XI',
+      'clashMatchPossessionRival': 'Possession: Rival',
+      'clashMatchBallHolder': 'Ball: {player}',
+      'clashMatchVictory': 'Victory!',
+      'clashMatchDefeat': 'Defeat',
+      'clashMatchViewRewards': 'View rewards',
+      'clashMatchDevGoalsHint':
+          'Provisional buttons (tutorial/dev) — not final gameplay',
+      'clashMatchDevGoalUser': 'Eternal XI goal (provisional)',
+      'clashMatchDevGoalRival': 'Rival goal (provisional)',
       'registerTitle': 'Create account',
       'registerSubtitle':
           'Join Eternal XI. Use a valid email and a nickname that represents you in leagues.',
@@ -966,6 +1030,54 @@ class AppLocalizations {
   String get clashStoryGateTeam => _t('clashStoryGateTeam');
   String get clashStoryGateSummon => _t('clashStoryGateSummon');
   String get clashStoryGateEvents => _t('clashStoryGateEvents');
+
+  String get clashMatchPrepareType => _t('clashMatchPrepareType');
+  String get clashMatchPrepareEnergy => _t('clashMatchPrepareEnergy');
+  String get clashMatchPrepareRecommendedPower =>
+      _t('clashMatchPrepareRecommendedPower');
+  String get clashMatchPrepareLineupPower => _t('clashMatchPrepareLineupPower');
+  String get clashMatchPrepareLineupComplete =>
+      _t('clashMatchPrepareLineupComplete');
+  String get clashMatchPrepareLineupIncomplete =>
+      _t('clashMatchPrepareLineupIncomplete');
+  String get clashMatchPreparePowerWarning =>
+      _t('clashMatchPreparePowerWarning');
+  String get clashMatchPrepareEditLineup => _t('clashMatchPrepareEditLineup');
+  String get clashMatchPrepareStart => _t('clashMatchPrepareStart');
+  String get clashMatchWinTarget => _t('clashMatchWinTarget');
+  String get clashMatchPhaseLabel => _t('clashMatchPhaseLabel');
+  String get clashMatchPhaseCoinToss => _t('clashMatchPhaseCoinToss');
+  String get clashMatchPhasePlaying => _t('clashMatchPhasePlaying');
+  String get clashMatchPhaseFinished => _t('clashMatchPhaseFinished');
+  String get clashMatchCoinTossPrompt => _t('clashMatchCoinTossPrompt');
+  String get clashMatchCoinHeads => _t('clashMatchCoinHeads');
+  String get clashMatchCoinTails => _t('clashMatchCoinTails');
+  String get clashMatchKickoffUser => _t('clashMatchKickoffUser');
+  String get clashMatchKickoffRival => _t('clashMatchKickoffRival');
+  String get clashMatchPossessionUser => _t('clashMatchPossessionUser');
+  String get clashMatchPossessionRival => _t('clashMatchPossessionRival');
+  String get clashMatchVictory => _t('clashMatchVictory');
+  String get clashMatchDefeat => _t('clashMatchDefeat');
+  String get clashMatchViewRewards => _t('clashMatchViewRewards');
+  String get clashMatchDevGoalsHint => _t('clashMatchDevGoalsHint');
+  String get clashMatchDevGoalUser => _t('clashMatchDevGoalUser');
+  String get clashMatchDevGoalRival => _t('clashMatchDevGoalRival');
+
+  String clashMatchScoreLabel(int user, int rival) {
+    return _t('clashMatchScoreLabel')
+        .replaceAll('{user}', '$user')
+        .replaceAll('{rival}', '$rival');
+  }
+
+  String clashMatchCoinResult(String outcome, String kickoff) {
+    return _t('clashMatchCoinResult')
+        .replaceAll('{outcome}', outcome)
+        .replaceAll('{kickoff}', kickoff);
+  }
+
+  String clashMatchBallHolder(String player) {
+    return _t('clashMatchBallHolder').replaceAll('{player}', player);
+  }
 
   String clashStoryRewardGems(int count) {
     final en = locale.languageCode.toLowerCase() == 'en';

@@ -1,6 +1,7 @@
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_local_datasource.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
+import 'package:eternal_xi/features/clash/story/domain/clash_story_completion_unlocks.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_chapter.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level_status.dart';
@@ -117,21 +118,51 @@ class ClashStoryRepository {
   }
 
   Future<ClashStoryCompletionResult> completeStoryLevel(String levelId) async {
+    final level = await _requireLevel(levelId);
+    if (level.type != ClashStoryLevelType.story) {
+      throw ClashStoryOperationException('Este nivel no es narrativo');
+    }
+    return _completeLevel(levelId, level);
+  }
+
+  Future<ClashStoryCompletionResult> completeMatchLevel(
+    String levelId, {
+    required bool userWon,
+  }) async {
+    if (!userWon) {
+      return ClashStoryCompletionResult(
+        levelId: levelId,
+        rewardsGranted: const ClashStoryReward(),
+        newlyGrantedCardIds: const [],
+        unlocks: const ClashStoryCompletionUnlocks(),
+        firstCompletion: false,
+      );
+    }
+
+    final level = await _requireLevel(levelId);
+    if (level.type != ClashStoryLevelType.match &&
+        level.type != ClashStoryLevelType.mixed) {
+      throw ClashStoryOperationException('Este nivel no es un partido');
+    }
+    return _completeLevel(levelId, level);
+  }
+
+  Future<ClashStoryLevel> _requireLevel(String levelId) async {
     final level = await findLevelById(levelId);
     if (level == null) {
       throw ClashStoryOperationException('Nivel no encontrado');
     }
-    if (level.type != ClashStoryLevelType.story) {
-      throw ClashStoryOperationException(
-        'Solo niveles narrativos disponibles en esta fase',
-      );
-    }
-
     final chapter = await loadChapter(level.chapterId);
     if (!canOpenLevel(level: level, chapterLevels: chapter.levels)) {
       throw ClashStoryOperationException('Nivel bloqueado');
     }
+    return level;
+  }
 
+  Future<ClashStoryCompletionResult> _completeLevel(
+    String levelId,
+    ClashStoryLevel level,
+  ) async {
     var progress = loadProgress();
     final firstCompletion = !progress.isLevelCompleted(levelId);
     final rewardsAlreadyClaimed = progress.areRewardsClaimed(levelId);

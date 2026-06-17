@@ -27,16 +27,19 @@
 | **2** | Navegación inferior Clash | 4 tabs: Inicio, Equipo, Invocar, Tienda (stubs) |
 | **3** | Modelos de cartas | DTOs Clash, rarezas, stats, supertécnicas (local) |
 | **4** | Colección y equipo | Inventario, alineación 7vs7, cartas iniciales N |
-| **5** | Historia y eventos (UI) | Mapa de capítulos, cómic stub, lista niveles |
-| **6** | Prototipo 7vs7 | Loop posesión básico sin arte final |
-| **7** | Minicampo | Campo abstracto + posiciones + balón |
-| **8** | Duelos | Resolución Regate/Defensa/Tiro/Parada + moneda |
-| **9** | IA | Oponente inteligente con PT y estilos |
-| **10** | Gacha | UI Invocar, single/multi, descuento diario (mock) |
-| **11** | Tienda | Monedas, objetos, venta duplicados (stub) |
-| **12** | 11vs11 simulado | Motor resumen + alineaciones desbloqueables |
-| **13** | Backend Clash | API real, persistencia cuenta Clash |
-| **14** | Recompensas cruzadas | Logros Fantasy → recursos Clash |
+| **5** | Alineaciones 7vs7 | Modelo, persistencia, pantalla equipo |
+| **6** | Historia prólogo | Mapa, lector, 3 niveles story, roster N |
+| **7** | Base match shell 7vs7 | Nivel 4 match, prepare, partido provisional, minicampo |
+| **8** | Pase y avance | Motor de posesión y movimiento en minicampo |
+| **9** | Duelos regate/defensa | Resolución interactiva con moneda |
+| **10** | Tiro/parada | Cierre de jugada a portería |
+| **11** | Supertécnicas / PT | Activación y coste en duelos |
+| **12** | IA rival | Decisiones del oponente 7vs7 |
+| **13** | Gacha | UI Invocar, single/multi, descuento diario (mock) |
+| **14** | Tienda | Monedas, objetos, venta duplicados (stub) |
+| **15** | 11vs11 simulado | Motor resumen + alineaciones desbloqueables |
+| **16** | Backend Clash | API real, persistencia cuenta Clash |
+| **17** | Recompensas cruzadas | Logros Fantasy → recursos Clash |
 
 ---
 

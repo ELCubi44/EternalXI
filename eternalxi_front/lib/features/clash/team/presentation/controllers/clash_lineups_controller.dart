@@ -33,6 +33,15 @@ class ClashLineupsController extends ChangeNotifier {
   ClashLineup7v7? get selectedLineup =>
       _lineups.isEmpty ? null : _lineups[_selectedIndex];
 
+  ClashLineup7v7? get activeLineup {
+    for (final lineup in _lineups) {
+      if (lineup.isActive) {
+        return lineup;
+      }
+    }
+    return null;
+  }
+
   Map<String, ClashCardCatalogEntry> get catalogById => _catalogById;
 
   Future<void> load() async {
