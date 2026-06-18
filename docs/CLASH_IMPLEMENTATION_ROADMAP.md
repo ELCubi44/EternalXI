@@ -578,7 +578,16 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 - Detalle reorganizado en secciones: cabecera, stats con barras, supertécnicas, EXP, evolución y árbol.
 - Sin cambios de lógica de progresión ni economía.
 
-**Pendiente:** artes LR/XI reales, imágenes remotas, animaciones, filtros avanzados nuevos, backend.
+## Fase 37 — Pulido visual Equipo y alineación 7v7
+
+**Estado:** implementada (local).
+
+- Pantalla Equipo con resumen de alineación activa, potencia y estado; accesos claros y sección Próximamente.
+- Alineación 7v7 con cabecera (nombre, potencia, X/7, estado), campo por zonas y slots mejorados.
+- Selector de cartas con búsqueda, filtros compatibles/todas/rareza, etiquetas de bloqueo y limpiar posición.
+- Sin cambios de reglas de alineación ni fórmulas de potencia.
+
+**Pendiente:** 11v11, formaciones avanzadas, tácticas, drag & drop.
 
 ---
 

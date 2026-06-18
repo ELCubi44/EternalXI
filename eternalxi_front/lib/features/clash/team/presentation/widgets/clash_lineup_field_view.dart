@@ -1,94 +1,10 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
-import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
-import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_rarity_badge.dart';
 import 'package:eternal_xi/features/clash/team/domain/clash_lineup_7v7.dart';
 import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
+import 'package:eternal_xi/features/clash/team/presentation/widgets/clash_lineup_slot_tile.dart';
 import 'package:flutter/material.dart';
-
-class ClashLineupSlotTile extends StatelessWidget {
-  const ClashLineupSlotTile({
-    required this.position,
-    required this.entry,
-    required this.onTap,
-    super.key,
-  });
-
-  final ClashPosition position;
-  final ClashCardCatalogEntry? entry;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final isEmpty = entry == null;
-
-    return Material(
-      color: context.xiCardSurface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: BorderSide(
-          color: isEmpty
-              ? context.xiDivider
-              : theme.colorScheme.primary.withValues(alpha: 0.45),
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      position.displayNameEs,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: context.xiTextSecondary.withValues(alpha: 0.85),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      isEmpty ? l10n.clashLineupSlotEmpty : entry!.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: context.xiTextPrimary,
-                      ),
-                    ),
-                    if (!isEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        '${entry!.power} PWR',
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              if (!isEmpty) ClashRarityBadge(rarity: entry!.card.rarity),
-              if (isEmpty)
-                Icon(
-                  Icons.add_circle_outline_rounded,
-                  color: context.xiTextSecondary.withValues(alpha: 0.6),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class ClashLineupFieldView extends StatelessWidget {
   const ClashLineupFieldView({
@@ -102,39 +18,119 @@ class ClashLineupFieldView extends StatelessWidget {
   final ClashLineupsController controller;
   final ValueChanged<ClashPosition> onSlotTap;
 
+  static const _attack = [ClashPosition.striker, ClashPosition.winger];
+  static const _midfield = [
+    ClashPosition.attackingMidfielder,
+    ClashPosition.defensiveMidfielder,
+  ];
+  static const _defense = [ClashPosition.centreBack, ClashPosition.fullBack];
+  static const _goalkeeper = [ClashPosition.goalkeeper];
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: context.xiSurfaceInset,
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            theme.colorScheme.primary.withValues(alpha: 0.06),
+            context.xiSurfaceInset,
+            theme.colorScheme.tertiary.withValues(alpha: 0.05),
+          ],
+        ),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: context.xiDivider),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (var i = 0; i < ClashLineup7v7.slotOrder.length; i++) ...[
-            ClashLineupSlotTile(
-              position: ClashLineup7v7
-                  .slotOrder[ClashLineup7v7.slotOrder.length - 1 - i],
-              entry: controller.entryForCardId(
-                lineup.cardIdFor(
-                  ClashLineup7v7.slotOrder[ClashLineup7v7.slotOrder.length -
-                      1 -
-                      i],
-                ),
-              ),
-              onTap: () => onSlotTap(
-                ClashLineup7v7.slotOrder[ClashLineup7v7.slotOrder.length -
-                    1 -
-                    i],
-              ),
-            ),
-            if (i < ClashLineup7v7.slotOrder.length - 1)
-              const SizedBox(height: 8),
-          ],
+          _ZoneSection(
+            title: context.l10n.clashLineupZoneAttack,
+            accent: theme.colorScheme.error.withValues(alpha: 0.85),
+            positions: _attack,
+            lineup: lineup,
+            controller: controller,
+            onSlotTap: onSlotTap,
+          ),
+          const SizedBox(height: 10),
+          _ZoneSection(
+            title: context.l10n.clashLineupZoneMidfield,
+            accent: theme.colorScheme.primary,
+            positions: _midfield,
+            lineup: lineup,
+            controller: controller,
+            onSlotTap: onSlotTap,
+          ),
+          const SizedBox(height: 10),
+          _ZoneSection(
+            title: context.l10n.clashLineupZoneDefense,
+            accent: theme.colorScheme.secondary,
+            positions: _defense,
+            lineup: lineup,
+            controller: controller,
+            onSlotTap: onSlotTap,
+          ),
+          const SizedBox(height: 10),
+          _ZoneSection(
+            title: context.l10n.clashLineupZoneGoalkeeper,
+            accent: theme.colorScheme.tertiary,
+            positions: _goalkeeper,
+            lineup: lineup,
+            controller: controller,
+            onSlotTap: onSlotTap,
+          ),
         ],
       ),
+    );
+  }
+}
+
+class _ZoneSection extends StatelessWidget {
+  const _ZoneSection({
+    required this.title,
+    required this.accent,
+    required this.positions,
+    required this.lineup,
+    required this.controller,
+    required this.onSlotTap,
+  });
+
+  final String title;
+  final Color accent;
+  final List<ClashPosition> positions;
+  final ClashLineup7v7 lineup;
+  final ClashLineupsController controller;
+  final ValueChanged<ClashPosition> onSlotTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 6),
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: accent.withValues(alpha: 0.9),
+            ),
+          ),
+        ),
+        for (var i = 0; i < positions.length; i++) ...[
+          ClashLineupSlotTile(
+            position: positions[i],
+            zoneAccent: accent,
+            entry: controller.entryForCardId(lineup.cardIdFor(positions[i])),
+            onTap: () => onSlotTap(positions[i]),
+          ),
+          if (i < positions.length - 1) const SizedBox(height: 8),
+        ],
+      ],
     );
   }
 }

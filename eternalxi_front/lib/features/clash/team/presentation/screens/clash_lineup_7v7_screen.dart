@@ -101,7 +101,10 @@ class _ClashLineup7v7ScreenState extends State<ClashLineup7v7Screen> {
     }
 
     final totalPower = controller.totalPower(lineup);
+    final filled = controller.filledSlotCount(lineup);
     final missing = lineup.missingPositions;
+    final isComplete = lineup.isComplete;
+    final missingGk = controller.isMissingGoalkeeper(lineup);
 
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -129,7 +132,16 @@ class _ClashLineup7v7ScreenState extends State<ClashLineup7v7Screen> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
+        _LineupSummaryHeader(
+          lineupName: lineup.name,
+          isActive: lineup.isActive,
+          totalPower: totalPower,
+          filled: filled,
+          isComplete: isComplete,
+          missingGoalkeeper: missingGk,
+        ),
+        const SizedBox(height: 12),
         SegmentedButton<int>(
           segments: List.generate(controller.lineups.length, (index) {
             final item = controller.lineups[index];
@@ -148,12 +160,10 @@ class _ClashLineup7v7ScreenState extends State<ClashLineup7v7Screen> {
           onSlotTap: (slot) => _openPicker(controller, slot),
         ),
         const SizedBox(height: 16),
-        _StatusCard(
-          isComplete: lineup.isComplete,
-          totalPower: totalPower,
-          missing: missing,
-        ),
-        const SizedBox(height: 12),
+        if (!isComplete) ...[
+          _MissingPositionsCard(missing: missing),
+          const SizedBox(height: 12),
+        ],
         FilledButton.icon(
           onPressed: lineup.isActive ? null : controller.setSelectedAsActive,
           icon: const Icon(Icons.check_circle_outline_rounded),
@@ -164,21 +174,34 @@ class _ClashLineup7v7ScreenState extends State<ClashLineup7v7Screen> {
   }
 }
 
-class _StatusCard extends StatelessWidget {
-  const _StatusCard({
-    required this.isComplete,
+class _LineupSummaryHeader extends StatelessWidget {
+  const _LineupSummaryHeader({
+    required this.lineupName,
+    required this.isActive,
     required this.totalPower,
-    required this.missing,
+    required this.filled,
+    required this.isComplete,
+    required this.missingGoalkeeper,
   });
 
-  final bool isComplete;
+  final String lineupName;
+  final bool isActive;
   final int totalPower;
-  final List<ClashPosition> missing;
+  final int filled;
+  final bool isComplete;
+  final bool missingGoalkeeper;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+
+    final statusLabel = isComplete
+        ? l10n.clashLineupReadyToPlay
+        : missingGoalkeeper
+        ? l10n.clashLineupNoGoalkeeper
+        : l10n.clashLineupIncomplete;
+    final statusColor = isComplete ? Colors.green : theme.colorScheme.error;
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -188,39 +211,98 @@ class _StatusCard extends StatelessWidget {
         border: Border.all(color: context.xiDivider),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            '${l10n.clashLineupTotalPower}: $totalPower',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  lineupName,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              if (isActive)
+                Chip(
+                  label: Text(l10n.clashTeamActiveLineup),
+                  visualDensity: VisualDensity.compact,
+                  avatar: const Icon(Icons.star_rounded, size: 16),
+                ),
+            ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.clashLineupSlotsFilled(filled),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: context.xiTextSecondary,
+                  ),
+                ),
+              ),
+              Text(
+                '${l10n.clashLineupTotalPower}: $totalPower',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
           Text(
-            isComplete ? l10n.clashLineupComplete : l10n.clashLineupIncomplete,
+            statusLabel,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: isComplete ? Colors.green : theme.colorScheme.error,
+              color: statusColor,
               fontWeight: FontWeight.w700,
             ),
           ),
-          if (!isComplete) ...[
-            const SizedBox(height: 8),
-            Text(l10n.clashLineupMissingTitle),
-            const SizedBox(height: 4),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: missing
-                  .map(
-                    (position) => Chip(
-                      label: Text(position.displayNameEs),
-                      visualDensity: VisualDensity.compact,
-                    ),
-                  )
-                  .toList(),
-            ),
-          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _MissingPositionsCard extends StatelessWidget {
+  const _MissingPositionsCard({required this.missing});
+
+  final List<ClashPosition> missing;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: context.xiChipBackground.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.xiDivider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.clashLineupMissingTitle,
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: missing
+                .map(
+                  (position) => Chip(
+                    label: Text(position.displayNameEs),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                )
+                .toList(),
+          ),
         ],
       ),
     );

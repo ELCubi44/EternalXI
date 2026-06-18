@@ -2,16 +2,54 @@ import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_material_inventory_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_technique_book_inventory_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
+import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/inventory/data/clash_inventory_repository.dart';
 import 'package:eternal_xi/features/clash/inventory/domain/clash_inventory_category.dart';
 import 'package:eternal_xi/features/clash/inventory/presentation/screens/clash_inventory_screen.dart';
+import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
+import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
 import 'package:eternal_xi/features/clash/team/presentation/clash_team_screen.dart';
+import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../cards/clash_test_support.dart';
+
+class _EmptyCardsDataSource extends ClashCardsLocalDataSource {
+  @override
+  Future<List<ClashCardCatalogEntry>> loadCards() async => const [];
+}
+
+Future<ClashLineupsController> _teamLineupsController() async {
+  final cardsRepo = ClashCardsRepository(_EmptyCardsDataSource());
+  final controller = ClashLineupsController(
+    lineupsRepository: ClashLineupsRepository(
+      storage: InMemoryClashLineupsBackend(),
+      cardsRepository: cardsRepo,
+    ),
+    collectionRepository: createTestCollectionRepository(
+      cardsRepository: cardsRepo,
+    ),
+  );
+  await controller.load();
+  return controller;
+}
+
+Widget _teamScreenApp(ClashLineupsController controller) {
+  return ChangeNotifierProvider<ClashLineupsController>.value(
+    value: controller,
+    child: MaterialApp(
+      locale: const Locale('es'),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      home: const Scaffold(body: ClashTeamScreen()),
+    ),
+  );
+}
 
 void main() {
   group('ClashInventoryRepository', () {
@@ -251,26 +289,24 @@ void main() {
     testWidgets('desde pantalla Equipo aparece tarjeta Inventario', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('es'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          home: const Scaffold(body: ClashTeamScreen()),
-        ),
-      );
+      final controller = await _teamLineupsController();
+      await tester.pumpWidget(_teamScreenApp(controller));
       await tester.pumpAndSettle();
       expect(find.text('Inventario'), findsOneWidget);
     });
 
     testWidgets('pulsar Inventario navega a /clash/inventory', (tester) async {
+      final controller = await _teamLineupsController();
       final router = GoRouter(
         initialLocation: AppRoutes.clash,
         routes: [
           GoRoute(
             path: AppRoutes.clash,
             builder: (context, state) =>
-                const Scaffold(body: ClashTeamScreen()),
+                ChangeNotifierProvider<ClashLineupsController>.value(
+                  value: controller,
+                  child: const Scaffold(body: ClashTeamScreen()),
+                ),
             routes: [
               GoRoute(
                 path: 'inventory',

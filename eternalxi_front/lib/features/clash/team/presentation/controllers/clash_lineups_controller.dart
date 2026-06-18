@@ -8,6 +8,9 @@ import 'package:flutter/foundation.dart';
 
 enum ClashLineupsLoadState { idle, loading, ready, error }
 
+/// Motivo visual de bloqueo en el selector (sin cambiar reglas de asignación).
+enum ClashLineupPickerBlockLabel { wrongPosition, duplicatePlayer, alreadyUsed }
+
 /// Estado de alineaciones 7vs7 Clash.
 class ClashLineupsController extends ChangeNotifier {
   ClashLineupsController({
@@ -168,5 +171,61 @@ class ClashLineupsController extends ChangeNotifier {
     required ClashCardCatalogEntry entry,
   }) {
     return pickerBlockReason(slot: slot, entry: entry) == null;
+  }
+
+  int filledSlotCount(ClashLineup7v7 lineup) => lineup.assignedCardIds.length;
+
+  bool isMissingGoalkeeper(ClashLineup7v7 lineup) {
+    final gk = lineup.cardIdFor(ClashPosition.goalkeeper);
+    return gk == null || gk.isEmpty;
+  }
+
+  bool isCardIdUsedElsewhere({
+    required ClashLineup7v7 lineup,
+    required String cardId,
+    ClashPosition? excludingSlot,
+  }) {
+    for (final position in ClashLineup7v7.slotOrder) {
+      if (excludingSlot != null && position == excludingSlot) {
+        continue;
+      }
+      final assigned = lineup.cardIdFor(position);
+      if (assigned != null && assigned.isNotEmpty && assigned == cardId) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// Etiqueta de bloqueo para el selector (incluye carta ya asignada en otro slot).
+  ClashLineupPickerBlockLabel? pickerBlockLabel({
+    required ClashPosition slot,
+    required ClashCardCatalogEntry entry,
+  }) {
+    final lineup = selectedLineup;
+    if (lineup == null) {
+      return null;
+    }
+    if (isCardIdUsedElsewhere(
+      lineup: lineup,
+      cardId: entry.id,
+      excludingSlot: slot,
+    )) {
+      return ClashLineupPickerBlockLabel.alreadyUsed;
+    }
+    return switch (pickerBlockReason(slot: slot, entry: entry)) {
+      ClashLineupAssignBlockReason.wrongPosition =>
+        ClashLineupPickerBlockLabel.wrongPosition,
+      ClashLineupAssignBlockReason.duplicatePlayer =>
+        ClashLineupPickerBlockLabel.duplicatePlayer,
+      null => null,
+    };
+  }
+
+  bool canPickEntryForPicker({
+    required ClashPosition slot,
+    required ClashCardCatalogEntry entry,
+  }) {
+    return pickerBlockLabel(slot: slot, entry: entry) == null;
   }
 }

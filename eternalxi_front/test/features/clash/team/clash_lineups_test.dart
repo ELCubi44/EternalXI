@@ -346,5 +346,35 @@ void main() {
         ClashLineupAssignBlockReason.wrongPosition,
       );
     });
+
+    test('filledSlotCount e isMissingGoalkeeper', () async {
+      final controller = await _controller();
+      await controller.load();
+      final lineup = controller.selectedLineup!;
+      expect(controller.filledSlotCount(lineup), 0);
+      expect(controller.isMissingGoalkeeper(lineup), isTrue);
+
+      await controller.assignCard(
+        slot: ClashPosition.goalkeeper,
+        cardId: 'gk-1',
+      );
+      final updated = controller.selectedLineup!;
+      expect(controller.filledSlotCount(updated), 1);
+      expect(controller.isMissingGoalkeeper(updated), isFalse);
+    });
+
+    test('pickerBlockLabel marca carta ya usada', () async {
+      final controller = await _controller();
+      await controller.load();
+      await controller.assignCard(
+        slot: ClashPosition.goalkeeper,
+        cardId: 'gk-1',
+      );
+      final gk = controller.catalogById['gk-1']!;
+      expect(
+        controller.pickerBlockLabel(slot: ClashPosition.striker, entry: gk),
+        ClashLineupPickerBlockLabel.alreadyUsed,
+      );
+    });
   });
 }

@@ -14,7 +14,10 @@ import 'package:eternal_xi/features/clash/story/presentation/clash_story_gate.da
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_map_screen.dart';
 import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_level_reader_screen.dart';
+import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
+import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
 import 'package:eternal_xi/features/clash/team/presentation/clash_team_screen.dart';
+import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
 import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -413,13 +416,42 @@ void main() {
       expect(find.text('Nivel bloqueado'), findsOneWidget);
     });
 
+    Future<ClashLineupsController> _lineupsController() async {
+      final cardsRepo = ClashCardsRepository(_FakeCardsDataSource(const []));
+      final controller = ClashLineupsController(
+        lineupsRepository: ClashLineupsRepository(
+          storage: InMemoryClashLineupsBackend(),
+          cardsRepository: cardsRepo,
+        ),
+        collectionRepository: createTestCollectionRepository(
+          cardsRepository: cardsRepo,
+        ),
+      );
+      await controller.load();
+      return controller;
+    }
+
+    Future<Widget> _teamApp(ClashStoryController controller) async {
+      final lineups = await _lineupsController();
+      return MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ClashStoryController>.value(value: controller),
+          ChangeNotifierProvider<ClashLineupsController>.value(value: lineups),
+        ],
+        child: MaterialApp(
+          locale: const Locale('es'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: const Scaffold(body: ClashTeamScreen()),
+        ),
+      );
+    }
+
     testWidgets('Equipo muestra bloqueo antes del Nivel 3', (tester) async {
       final setup = await _setup();
       final controller = ClashStoryController(storyRepository: setup.storyRepo);
 
-      await tester.pumpWidget(
-        await _app(controller: controller, child: const ClashTeamScreen()),
-      );
+      await tester.pumpWidget(await _teamApp(controller));
       await tester.pumpAndSettle();
 
       expect(
@@ -441,9 +473,7 @@ void main() {
       final controller = ClashStoryController(storyRepository: setup.storyRepo);
       await controller.load();
 
-      await tester.pumpWidget(
-        await _app(controller: controller, child: const ClashTeamScreen()),
-      );
+      await tester.pumpWidget(await _teamApp(controller));
       await tester.pumpAndSettle();
 
       expect(

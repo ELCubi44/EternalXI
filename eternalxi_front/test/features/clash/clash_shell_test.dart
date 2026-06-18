@@ -25,6 +25,9 @@ import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_re
 import 'package:eternal_xi/features/clash/story/domain/clash_story_completion_unlocks.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_progress.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
+import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
+import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
+import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
 import 'package:eternal_xi/features/mode/screens/mode_selection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -56,6 +59,7 @@ Future<
     ClashNewsRepository newsRepository,
     ClashGiftsRepository giftsRepository,
     ClashCharacterEventsRepository eventsRepository,
+    ClashLineupsController lineupsController,
   })
 >
 _shellDeps() async {
@@ -104,6 +108,15 @@ _shellDeps() async {
   final newsSetup = await createTestNewsSetup();
   final giftsSetup = await createTestGiftsSetup();
   final eventsSetup = await createTestEventsSetup();
+  final lineupsRepo = ClashLineupsRepository(
+    storage: InMemoryClashLineupsBackend(),
+    cardsRepository: cardsRepo,
+  );
+  final lineupsController = ClashLineupsController(
+    lineupsRepository: lineupsRepo,
+    collectionRepository: collectionRepo,
+  );
+  await lineupsController.load();
   return (
     storyController: ClashStoryController(storyRepository: storyRepo),
     gachaRepository: gachaRepo,
@@ -115,6 +128,7 @@ _shellDeps() async {
     newsRepository: newsSetup.news,
     giftsRepository: giftsSetup.gifts,
     eventsRepository: eventsSetup.events,
+    lineupsController: lineupsController,
   );
 }
 
@@ -151,6 +165,9 @@ Future<(Widget app, ClashNavigationController nav)> _shellApp(
           ChangeNotifierProvider<ClashCardsController>.value(
             value: deps.cardsController,
           ),
+          ChangeNotifierProvider<ClashLineupsController>.value(
+            value: deps.lineupsController,
+          ),
         ],
         child: MaterialApp(
           locale: const Locale('es'),
@@ -183,6 +200,9 @@ Future<Widget> _routerApp(GoRouter router, AuthController auth) async {
             Provider<ClashShopRepository>.value(value: deps.shopRepository),
             ChangeNotifierProvider<ClashCardsController>.value(
               value: deps.cardsController,
+            ),
+            ChangeNotifierProvider<ClashLineupsController>.value(
+              value: deps.lineupsController,
             ),
           ],
           child: child ?? const SizedBox.shrink(),
@@ -278,6 +298,10 @@ void main() {
     });
 
     testWidgets('cambiar a Equipo muestra alineaciones', (tester) async {
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
       final (app, _) = await _shellApp(auth());
       await tester.pumpWidget(app);
       await tester.pumpAndSettle();
@@ -285,6 +309,7 @@ void main() {
       await tester.tap(find.text('Equipo').last);
       await tester.pumpAndSettle();
 
+      expect(find.text('Resumen del equipo'), findsOneWidget);
       expect(find.text('Alineación 7vs7'), findsOneWidget);
       expect(find.text('Alineación 11vs11'), findsOneWidget);
     });

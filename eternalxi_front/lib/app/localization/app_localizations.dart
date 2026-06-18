@@ -445,7 +445,29 @@ class AppLocalizations {
           'No hay cartas compatibles para esta posición.',
       'clashLineupBlockWrongPosition': 'Posición incompatible',
       'clashLineupBlockDuplicatePlayer': 'Jugador ya en la alineación',
-      'clashStoryLoadError': 'No se pudo cargar la historia.',
+      'clashLineupBlockAlreadyUsed': 'Ya usada',
+      'clashLineupChooseSlot': 'Elegir',
+      'clashLineupSlotsFilled': '{filled}/7 posiciones',
+      'clashLineupReadyToPlay': 'Listo para jugar',
+      'clashLineupNoGoalkeeper': 'Sin portero',
+      'clashLineupZoneAttack': 'Ataque',
+      'clashLineupZoneMidfield': 'Medio',
+      'clashLineupZoneDefense': 'Defensa',
+      'clashLineupZoneGoalkeeper': 'Portería',
+      'clashLineupPickerCompatible': 'Compatibles',
+      'clashLineupPickerAll': 'Todas',
+      'clashLineupPickerByRarity': 'Rareza',
+      'clashLineupCardCompatible': 'Compatible',
+      'clashLineupCardIncompatible': 'Incompatible',
+      'clashLineupNoOwnedCards': 'No tienes cartas en tu colección.',
+      'clashTeamSummaryTitle': 'Resumen del equipo',
+      'clashTeamActiveLineup': 'Alineación activa',
+      'clashTeamNoActiveLineup': 'Sin alineación activa',
+      'clashTeamUpgradeCards': 'Mejorar cartas',
+      'clashTeamComingSoonBadge': 'Próximamente',
+      'clashTeamTactics': 'Tácticas',
+      'clashTeamAdvancedFormations': 'Formaciones avanzadas',
+      'clashTeamComingSoonSection': 'Próximamente',
       'clashStoryTypeStory': 'Historia',
       'clashStoryTypeMatch': 'Partido',
       'clashStoryTypeMixed': 'Mixto',
@@ -1189,6 +1211,29 @@ class AppLocalizations {
       'clashLineupNoCompatibleCards': 'No compatible cards for this position.',
       'clashLineupBlockWrongPosition': 'Incompatible position',
       'clashLineupBlockDuplicatePlayer': 'Player already in lineup',
+      'clashLineupBlockAlreadyUsed': 'Already used',
+      'clashLineupChooseSlot': 'Choose',
+      'clashLineupSlotsFilled': '{filled}/7 positions',
+      'clashLineupReadyToPlay': 'Ready to play',
+      'clashLineupNoGoalkeeper': 'No goalkeeper',
+      'clashLineupZoneAttack': 'Attack',
+      'clashLineupZoneMidfield': 'Midfield',
+      'clashLineupZoneDefense': 'Defense',
+      'clashLineupZoneGoalkeeper': 'Goal',
+      'clashLineupPickerCompatible': 'Compatible',
+      'clashLineupPickerAll': 'All',
+      'clashLineupPickerByRarity': 'Rarity',
+      'clashLineupCardCompatible': 'Compatible',
+      'clashLineupCardIncompatible': 'Incompatible',
+      'clashLineupNoOwnedCards': 'You do not own any cards yet.',
+      'clashTeamSummaryTitle': 'Team summary',
+      'clashTeamActiveLineup': 'Active lineup',
+      'clashTeamNoActiveLineup': 'No active lineup',
+      'clashTeamUpgradeCards': 'Upgrade cards',
+      'clashTeamComingSoonBadge': 'Coming soon',
+      'clashTeamTactics': 'Tactics',
+      'clashTeamAdvancedFormations': 'Advanced formations',
+      'clashTeamComingSoonSection': 'Coming soon',
       'clashStoryLoadError': 'Could not load story.',
       'clashStoryTypeStory': 'Story',
       'clashStoryTypeMatch': 'Match',
@@ -2074,6 +2119,30 @@ class AppLocalizations {
       _t('clashLineupBlockWrongPosition');
   String get clashLineupBlockDuplicatePlayer =>
       _t('clashLineupBlockDuplicatePlayer');
+  String get clashLineupBlockAlreadyUsed => _t('clashLineupBlockAlreadyUsed');
+  String get clashLineupChooseSlot => _t('clashLineupChooseSlot');
+  String clashLineupSlotsFilled(int filled) =>
+      _t('clashLineupSlotsFilled').replaceAll('{filled}', '$filled');
+  String get clashLineupReadyToPlay => _t('clashLineupReadyToPlay');
+  String get clashLineupNoGoalkeeper => _t('clashLineupNoGoalkeeper');
+  String get clashLineupZoneAttack => _t('clashLineupZoneAttack');
+  String get clashLineupZoneMidfield => _t('clashLineupZoneMidfield');
+  String get clashLineupZoneDefense => _t('clashLineupZoneDefense');
+  String get clashLineupZoneGoalkeeper => _t('clashLineupZoneGoalkeeper');
+  String get clashLineupPickerCompatible => _t('clashLineupPickerCompatible');
+  String get clashLineupPickerAll => _t('clashLineupPickerAll');
+  String get clashLineupPickerByRarity => _t('clashLineupPickerByRarity');
+  String get clashLineupCardCompatible => _t('clashLineupCardCompatible');
+  String get clashLineupCardIncompatible => _t('clashLineupCardIncompatible');
+  String get clashLineupNoOwnedCards => _t('clashLineupNoOwnedCards');
+  String get clashTeamSummaryTitle => _t('clashTeamSummaryTitle');
+  String get clashTeamActiveLineup => _t('clashTeamActiveLineup');
+  String get clashTeamNoActiveLineup => _t('clashTeamNoActiveLineup');
+  String get clashTeamUpgradeCards => _t('clashTeamUpgradeCards');
+  String get clashTeamComingSoonBadge => _t('clashTeamComingSoonBadge');
+  String get clashTeamTactics => _t('clashTeamTactics');
+  String get clashTeamAdvancedFormations => _t('clashTeamAdvancedFormations');
+  String get clashTeamComingSoonSection => _t('clashTeamComingSoonSection');
 
   String clashLineupPickCard(String position) {
     final en = locale.languageCode.toLowerCase() == 'en';
