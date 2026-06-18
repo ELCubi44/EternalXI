@@ -25,6 +25,10 @@ import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_local_datasourc
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_engine.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_ticket.dart';
+import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
+import 'package:eternal_xi/features/clash/shop/data/clash_shop_local_datasource.dart';
+import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
+import 'package:eternal_xi/features/clash/shop/domain/clash_shop_product.dart';
 import 'package:eternal_xi/features/clash/inventory/data/clash_inventory_repository.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_local_datasource.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
@@ -380,5 +384,114 @@ ClashPlayerCollectionRepository createTestCollectionRepository({
     evolutionMaterialsRepository:
         evolutionMaterialsRepository ??
         createTestEvolutionMaterialsRepository(),
+  );
+}
+
+const clashTestShopProductsJson = '''
+{
+  "products": [
+    {
+      "id": "shop-basic-training-pack",
+      "name": "Pack entrenamiento básico",
+      "description": "Dos manuales básicos.",
+      "costCoins": 300,
+      "grants": [
+        {
+          "type": "expMaterial",
+          "id": "basic-training-manual",
+          "quantity": 2,
+          "label": "Manual básico de entrenamiento"
+        }
+      ]
+    },
+    {
+      "id": "shop-basic-technique-book",
+      "name": "Libro técnico básico",
+      "description": "Un libro técnico.",
+      "costCoins": 500,
+      "grants": [
+        {
+          "type": "techniqueBook",
+          "id": "basic-technique-book",
+          "quantity": 1,
+          "label": "Libro técnico básico"
+        }
+      ]
+    },
+    {
+      "id": "shop-insignia-r",
+      "name": "Insignia R",
+      "description": "Insignia de evolución.",
+      "costCoins": 800,
+      "grants": [
+        {
+          "type": "evolutionMaterial",
+          "id": "insignia-r",
+          "quantity": 1,
+          "label": "Insignia R"
+        }
+      ]
+    },
+    {
+      "id": "shop-starter-ticket",
+      "name": "Ticket de invocación inicial",
+      "description": "Un ticket.",
+      "costCoins": 1000,
+      "grants": [
+        {
+          "type": "ticket",
+          "id": "starter-single-ticket",
+          "quantity": 1,
+          "label": "Ticket de invocación inicial"
+        }
+      ]
+    }
+  ]
+}
+''';
+
+class TestShopDataSource extends ClashShopLocalDataSource {
+  @override
+  Future<List<ClashShopProduct>> loadProducts() async {
+    return parseProductsJson(clashTestShopProductsJson);
+  }
+}
+
+Future<ClashShopRepository> createTestShopRepository({
+  ClashStoryRepository? storyRepository,
+  ClashPlayerCollectionRepository? collectionRepository,
+  ClashGachaTicketRepository? ticketRepository,
+  ClashShopGrantService? grantService,
+  int initialCoins = 2000,
+  int initialGems = 100,
+}) async {
+  final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
+  final collection =
+      collectionRepository ??
+      createTestCollectionRepository(cardsRepository: cardsRepo);
+  final storyProgress = InMemoryClashStoryProgressBackend();
+  final story =
+      storyRepository ??
+      ClashStoryRepository(
+        dataSource: ClashStoryLocalDataSource(),
+        progressStorage: storyProgress,
+        collectionRepository: collection,
+        ticketRepository: ticketRepository ?? createTestTicketRepository(),
+      );
+  if (storyRepository == null) {
+    await storyProgress.writeProgress(
+      ClashStoryProgress(walletCoins: initialCoins, walletGems: initialGems),
+    );
+  }
+  final tickets = ticketRepository ?? createTestTicketRepository();
+  return ClashShopRepository(
+    dataSource: TestShopDataSource(),
+    storyRepository: story,
+    grantService:
+        grantService ??
+        ClashShopGrantService(
+          collectionRepository: collection,
+          ticketRepository: tickets,
+        ),
   );
 }

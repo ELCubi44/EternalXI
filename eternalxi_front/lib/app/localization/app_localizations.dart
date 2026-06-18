@@ -192,6 +192,17 @@ class AppLocalizations {
       'clashShopExchange': 'Intercambio',
       'clashShopGems': 'Gemas',
       'clashShopPacks': 'Packs',
+      'clashShopLocalDisclaimer':
+          'Tienda local de prueba · sin compras reales',
+      'clashShopWalletCoins': 'Monedas: {count}',
+      'clashShopProductCost': '{count} monedas',
+      'clashShopIncludes': 'Incluye:',
+      'clashShopGrantLine': '{label} ×{count}',
+      'clashShopBuyButton': 'Comprar',
+      'clashShopConfirmTitle': 'Confirmar compra',
+      'clashShopConfirmMessage': '¿Comprar {name} por {cost} monedas?',
+      'clashShopPurchaseSuccess': 'Compra realizada',
+      'clashShopInsufficientCoins': 'Monedas insuficientes',
       'clashBack': 'Volver',
       'clashCollectionTitle': 'Personajes',
       'clashSearchHint': 'Buscar por nombre',
@@ -774,6 +785,17 @@ class AppLocalizations {
       'clashShopExchange': 'Exchange',
       'clashShopGems': 'Gems',
       'clashShopPacks': 'Packs',
+      'clashShopLocalDisclaimer':
+          'Local test shop · no real purchases',
+      'clashShopWalletCoins': 'Coins: {count}',
+      'clashShopProductCost': '{count} coins',
+      'clashShopIncludes': 'Includes:',
+      'clashShopGrantLine': '{label} ×{count}',
+      'clashShopBuyButton': 'Buy',
+      'clashShopConfirmTitle': 'Confirm purchase',
+      'clashShopConfirmMessage': 'Buy {name} for {cost} coins?',
+      'clashShopPurchaseSuccess': 'Purchase completed',
+      'clashShopInsufficientCoins': 'Insufficient coins',
       'clashBack': 'Back',
       'clashCollectionTitle': 'Characters',
       'clashSearchHint': 'Search by name',
@@ -1392,6 +1414,22 @@ class AppLocalizations {
   String get clashShopExchange => _t('clashShopExchange');
   String get clashShopGems => _t('clashShopGems');
   String get clashShopPacks => _t('clashShopPacks');
+  String get clashShopLocalDisclaimer => _t('clashShopLocalDisclaimer');
+  String clashShopWalletCoins(int count) =>
+      _t('clashShopWalletCoins').replaceAll('{count}', '$count');
+  String clashShopProductCost(int count) =>
+      _t('clashShopProductCost').replaceAll('{count}', '$count');
+  String get clashShopIncludes => _t('clashShopIncludes');
+  String clashShopGrantLine(String label, int count) => _t(
+    'clashShopGrantLine',
+  ).replaceAll('{label}', label).replaceAll('{count}', '$count');
+  String get clashShopBuyButton => _t('clashShopBuyButton');
+  String get clashShopConfirmTitle => _t('clashShopConfirmTitle');
+  String clashShopConfirmMessage(String name, int cost) => _t(
+    'clashShopConfirmMessage',
+  ).replaceAll('{name}', name).replaceAll('{cost}', '$cost');
+  String get clashShopPurchaseSuccess => _t('clashShopPurchaseSuccess');
+  String get clashShopInsufficientCoins => _t('clashShopInsufficientCoins');
   String get clashBack => _t('clashBack');
   String get clashCollectionTitle => _t('clashCollectionTitle');
   String get clashSearchHint => _t('clashSearchHint');

@@ -1,0 +1,60 @@
+{
+  "products": [
+    {
+      "id": "shop-basic-training-pack",
+      "name": "Pack entrenamiento básico",
+      "description": "Dos manuales básicos para subir EXP de tus cartas.",
+      "costCoins": 300,
+      "grants": [
+        {
+          "type": "expMaterial",
+          "id": "basic-training-manual",
+          "quantity": 2,
+          "label": "Manual básico de entrenamiento"
+        }
+      ]
+    },
+    {
+      "id": "shop-basic-technique-book",
+      "name": "Libro técnico básico",
+      "description": "Un libro para mejorar una supertécnica.",
+      "costCoins": 500,
+      "grants": [
+        {
+          "type": "techniqueBook",
+          "id": "basic-technique-book",
+          "quantity": 1,
+          "label": "Libro técnico básico"
+        }
+      ]
+    },
+    {
+      "id": "shop-insignia-r",
+      "name": "Insignia R",
+      "description": "Material para evolucionar cartas N a R.",
+      "costCoins": 800,
+      "grants": [
+        {
+          "type": "evolutionMaterial",
+          "id": "insignia-r",
+          "quantity": 1,
+          "label": "Insignia R"
+        }
+      ]
+    },
+    {
+      "id": "shop-starter-ticket",
+      "name": "Ticket de invocación inicial",
+      "description": "Un ticket para el banner de invocación inicial.",
+      "costCoins": 1000,
+      "grants": [
+        {
+          "type": "ticket",
+          "id": "starter-single-ticket",
+          "quantity": 1,
+          "label": "Ticket de invocación inicial"
+        }
+      ]
+    }
+  ]
+}

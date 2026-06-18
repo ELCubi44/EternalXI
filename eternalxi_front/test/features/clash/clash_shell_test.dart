@@ -13,6 +13,7 @@ import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_re
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
+import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
 import 'package:eternal_xi/features/clash/presentation/clash_navigation_controller.dart';
 import 'package:eternal_xi/features/clash/presentation/clash_shell_screen.dart';
 import 'package:eternal_xi/features/clash/presentation/clash_tab_host.dart';
@@ -46,11 +47,15 @@ class _EmptyCardsDataSource extends ClashCardsLocalDataSource {
   Future<List<ClashCardCatalogEntry>> loadCards() async => const [];
 }
 
-Future<({
-  ClashStoryController storyController,
-  ClashGachaRepository gachaRepository,
-  ClashCardsController cardsController,
-})> _shellDeps() async {
+Future<
+  ({
+    ClashStoryController storyController,
+    ClashGachaRepository gachaRepository,
+    ClashCardsController cardsController,
+    ClashShopRepository shopRepository,
+  })
+>
+_shellDeps() async {
   final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
   final collectionRepo = createTestCollectionRepository(
     cardsRepository: cardsRepo,
@@ -75,10 +80,17 @@ Future<({
   );
   final cardsController = ClashCardsController(cardsRepo, collectionRepo);
   await cardsController.load();
+  final shopRepo = await createTestShopRepository(
+    storyRepository: storyRepo,
+    collectionRepository: collectionRepo,
+    initialCoins: 1500,
+    initialGems: 50,
+  );
   return (
     storyController: ClashStoryController(storyRepository: storyRepo),
     gachaRepository: gachaRepo,
     cardsController: cardsController,
+    shopRepository: shopRepo,
   );
 }
 
@@ -97,6 +109,7 @@ Future<(Widget app, ClashNavigationController nav)> _shellApp(
             value: deps.storyController,
           ),
           Provider<ClashGachaRepository>.value(value: deps.gachaRepository),
+          Provider<ClashShopRepository>.value(value: deps.shopRepository),
           ChangeNotifierProvider<ClashCardsController>.value(
             value: deps.cardsController,
           ),
@@ -129,6 +142,7 @@ Future<Widget> _routerApp(GoRouter router, AuthController auth) async {
               value: deps.storyController,
             ),
             Provider<ClashGachaRepository>.value(value: deps.gachaRepository),
+            Provider<ClashShopRepository>.value(value: deps.shopRepository),
             ChangeNotifierProvider<ClashCardsController>.value(
               value: deps.cardsController,
             ),
@@ -236,7 +250,7 @@ void main() {
       expect(find.textContaining('95 gemas'), findsOneWidget);
     });
 
-    testWidgets('cambiar a Tienda muestra Gemas y Packs', (tester) async {
+    testWidgets('cambiar a Tienda muestra productos locales', (tester) async {
       final (app, _) = await _shellApp(auth());
       await tester.pumpWidget(app);
       await tester.pumpAndSettle();
@@ -244,8 +258,9 @@ void main() {
       await tester.tap(find.text('Tienda'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Gemas'), findsWidgets);
-      expect(find.text('Packs'), findsOneWidget);
+      expect(find.textContaining('Tienda local de prueba'), findsOneWidget);
+      expect(find.textContaining('Monedas:'), findsOneWidget);
+      expect(find.text('Comprar'), findsWidgets);
     });
 
     testWidgets('volver al selector funciona', (tester) async {

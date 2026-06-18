@@ -148,6 +148,15 @@ R ──→ SR
 | Categoría Tickets en inventario central | |
 | Adaptador recompensa historia → tickets | |
 
+**Implementación Fase 27 (Flutter):** tienda local con monedas Clash.
+
+| Incluido (Fase 27) | Pendiente |
+|---|---|
+| Compra con monedas locales | Backend tienda |
+| Materiales EXP, libros, insignias, tickets | Compras reales |
+| Confirmación y SnackBar de compra | Límites diarios/semanales |
+| Gemas solo informativas | Economía/legal final |
+
 ---
 
 ## 4. Arte de cartas

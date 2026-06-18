@@ -32,6 +32,9 @@ import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_tickets_local_d
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_local_datasource.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/inventory/data/clash_inventory_repository.dart';
+import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
+import 'package:eternal_xi/features/clash/shop/data/clash_shop_local_datasource.dart';
+import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
 import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
 import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
@@ -278,6 +281,17 @@ Future<void> main() async {
         ChangeNotifierProvider<ClashStoryController>(
           create: (context) => ClashStoryController(
             storyRepository: context.read<ClashStoryRepository>(),
+          ),
+        ),
+        Provider<ClashShopRepository>(
+          create: (context) => ClashShopRepository(
+            dataSource: ClashShopLocalDataSource(),
+            storyRepository: context.read<ClashStoryRepository>(),
+            grantService: ClashShopGrantService(
+              collectionRepository: context
+                  .read<ClashPlayerCollectionRepository>(),
+              ticketRepository: context.read<ClashGachaTicketRepository>(),
+            ),
           ),
         ),
         Provider<ClashGachaDailyStorageBackend>.value(

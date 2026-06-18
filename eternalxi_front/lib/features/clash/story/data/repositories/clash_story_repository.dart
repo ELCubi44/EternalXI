@@ -378,6 +378,15 @@ class ClashStoryRepository {
 
   int walletGems() => loadProgress().walletGems;
 
+  int walletCoins() => loadProgress().walletCoins;
+
+  bool canSpendCoins(int amount) {
+    if (amount <= 0) {
+      return true;
+    }
+    return loadProgress().walletCoins >= amount;
+  }
+
   Future<bool> spendGems(int amount) async {
     if (amount <= 0) {
       return true;
@@ -390,6 +399,30 @@ class ClashStoryRepository {
       progress.copyWith(walletGems: progress.walletGems - amount),
     );
     return true;
+  }
+
+  Future<bool> spendCoins(int amount) async {
+    if (amount <= 0) {
+      return true;
+    }
+    final progress = loadProgress();
+    if (progress.walletCoins < amount) {
+      return false;
+    }
+    await _saveProgress(
+      progress.copyWith(walletCoins: progress.walletCoins - amount),
+    );
+    return true;
+  }
+
+  Future<void> addCoins(int amount) async {
+    if (amount <= 0) {
+      return;
+    }
+    final progress = loadProgress();
+    await _saveProgress(
+      progress.copyWith(walletCoins: progress.walletCoins + amount),
+    );
   }
 
   void clearCacheForTests() {

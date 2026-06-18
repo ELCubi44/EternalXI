@@ -405,6 +405,7 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 | **24** | Historial local de invocaciones (`/clash/summon/history`) |
 | **25** | Pity SR local cada 30 cartas por banner |
 | **26** | Tickets locales de invocación |
+| **27** | Tienda local con monedas |
 
 ### Fase 22 — Inventario Clash
 
@@ -458,6 +459,16 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 - Adaptador de recompensas de historia preparado (`starter-single-ticket`).
 
 **Pendiente:** backend tickets, compras reales, economía/legal final.
+
+### Fase 27 — Tienda local con monedas
+
+- Tienda local en pestaña **Tienda** (`shop_products.json`).
+- Compra con `walletCoins` de historia Clash.
+- Productos: EXP, libro técnica, insignia R, ticket inicial.
+- Sin compras reales ni backend.
+- Reembolso de monedas si falla la concesión de recompensas.
+
+**Pendiente:** límites, tienda eventos, backend, economía final.
 
 ---
 
