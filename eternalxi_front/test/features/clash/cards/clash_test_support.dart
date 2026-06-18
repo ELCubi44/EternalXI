@@ -44,6 +44,10 @@ import 'package:eternal_xi/features/clash/missions/data/clash_weekly_mission_eve
 import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_local_datasource.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_repository.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_storage.dart';
+import 'package:eternal_xi/features/clash/news/data/clash_news_local_datasource.dart';
+import 'package:eternal_xi/features/clash/news/data/clash_news_read_storage.dart';
+import 'package:eternal_xi/features/clash/news/data/clash_news_repository.dart';
+import 'package:eternal_xi/features/clash/news/domain/clash_news_item.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_weekly_mission.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_local_datasource.dart';
@@ -959,4 +963,85 @@ createTestWeeklyMissionsSetup({
     story: story,
     collection: collection,
   );
+}
+
+const clashTestNewsJson = '''
+{
+  "news": [
+    {
+      "id": "news-pinned-old",
+      "title": "Pinned antigua",
+      "summary": "Resumen pinned antigua",
+      "body": "Cuerpo pinned antigua",
+      "type": "update",
+      "publishedAt": "2026-06-01",
+      "isPinned": true
+    },
+    {
+      "id": "news-pinned-new",
+      "title": "Pinned reciente",
+      "summary": "Resumen pinned reciente",
+      "body": "Cuerpo pinned reciente",
+      "type": "update",
+      "publishedAt": "2026-06-05",
+      "isPinned": true
+    },
+    {
+      "id": "news-latest",
+      "title": "Última noticia",
+      "summary": "Resumen última",
+      "body": "Cuerpo última",
+      "type": "event",
+      "publishedAt": "2026-06-10",
+      "isPinned": false
+    },
+    {
+      "id": "news-banner",
+      "title": "Banner local",
+      "summary": "Resumen banner",
+      "body": "Cuerpo banner",
+      "type": "banner",
+      "publishedAt": "2026-05-28",
+      "isPinned": false
+    },
+    {
+      "id": "news-maintenance",
+      "title": "Aviso mantenimiento",
+      "summary": "Resumen aviso",
+      "body": "Cuerpo aviso",
+      "type": "maintenance",
+      "publishedAt": "2026-06-09",
+      "isPinned": false
+    },
+    {
+      "id": "news-gift",
+      "title": "Regalo de prueba",
+      "summary": "Resumen regalo",
+      "body": "Cuerpo regalo",
+      "type": "gift",
+      "publishedAt": "2026-06-07",
+      "isPinned": false
+    }
+  ]
+}
+''';
+
+class TestNewsDataSource extends ClashNewsLocalDataSource {
+  @override
+  Future<List<ClashNewsItem>> loadNews() async {
+    return parseNewsJson(clashTestNewsJson);
+  }
+}
+
+Future<({ClashNewsRepository news, ClashNewsReadStorageBackend storage})>
+createTestNewsSetup({
+  ClashNewsReadStorageBackend? storage,
+  ClashNewsLocalDataSource? dataSource,
+}) async {
+  final readStorage = storage ?? InMemoryClashNewsReadBackend();
+  final news = ClashNewsRepository(
+    dataSource: dataSource ?? TestNewsDataSource(),
+    storage: readStorage,
+  );
+  return (news: news, storage: readStorage);
 }

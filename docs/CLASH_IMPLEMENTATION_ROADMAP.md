@@ -505,4 +505,18 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 31 — Noticias / avisos locales
+
+**Estado:** implementada (local).
+
+- Catálogo en `assets/data/clash/news.json` (actualizaciones, eventos, banners, avisos).
+- Sin backend, CMS ni push reales.
+- Lectura persistida en `clash_news_read_v1` (`readNewsIds`, `lastOpenedAt` opcional).
+- Pantalla `/clash/news` con filtros y expansión inline al pulsar.
+- Tarjeta compacta “Noticias” en Inicio con contador de no leídas.
+
+**Pendiente:** noticias remotas, panel admin, push notifications, imágenes remotas, deep links.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

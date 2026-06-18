@@ -1,0 +1,58 @@
+{
+  "news": [
+    {
+      "id": "news-7v7-matches",
+      "title": "Clash ya tiene partidos 7v7",
+      "summary": "Forma tu alineación 7vs7 y disputa partidos locales.",
+      "body": "El modo Clash incorpora partidos 7vs7 con simulación local. Configura tu equipo, elige nivel y completa objetivos para ganar recompensas. Más modos de juego llegarán en futuras actualizaciones.",
+      "type": "update",
+      "publishedAt": "2026-06-01",
+      "isPinned": true
+    },
+    {
+      "id": "news-daily-weekly-missions",
+      "title": "Misiones diarias y semanales disponibles",
+      "summary": "Completa objetivos cada día y cada semana para obtener recompensas.",
+      "body": "Las misiones diarias se reinician a medianoche local. Las semanales se reinician cada lunes. Revisa el progreso en Inicio y reclama monedas y gemas al completarlas.",
+      "type": "update",
+      "publishedAt": "2026-06-05",
+      "isPinned": true
+    },
+    {
+      "id": "news-starter-summon",
+      "title": "Invocación inicial abierta",
+      "summary": "Banner de bienvenida con tiradas locales de prueba.",
+      "body": "La invocación inicial está activa en la pestaña Invocar. Es una simulación local sin compras reales: usa gemas de prueba para obtener cartas y construir tu colección.",
+      "type": "banner",
+      "publishedAt": "2026-05-28",
+      "isPinned": false
+    },
+    {
+      "id": "news-local-shop",
+      "title": "Tienda local de prueba",
+      "summary": "Compra packs y materiales con monedas y gemas locales.",
+      "body": "La tienda Clash ofrece productos de prueba financiados con tu monedero local. Los precios y el catálogo pueden cambiar mientras el modo está en desarrollo.",
+      "type": "update",
+      "publishedAt": "2026-05-20",
+      "isPinned": false
+    },
+    {
+      "id": "news-character-events-soon",
+      "title": "Próximamente: eventos de personaje",
+      "summary": "Eventos temporales con cartas exclusivas en el roadmap.",
+      "body": "Estamos preparando eventos de personaje con recompensas temáticas. Por ahora son avisos locales; cuando haya backend, podrás participar en temporadas limitadas.",
+      "type": "event",
+      "publishedAt": "2026-06-08",
+      "isPinned": false
+    },
+    {
+      "id": "news-clash-dev-mode",
+      "title": "Aviso: modo Clash en desarrollo",
+      "summary": "Algunas funciones son prototipos locales sin servidor.",
+      "body": "Clash es un modo experimental dentro de Eternal XI. El progreso, las noticias y las recompensas actuales son locales y pueden resetearse antes del lanzamiento oficial.",
+      "type": "maintenance",
+      "publishedAt": "2026-06-10",
+      "isPinned": false
+    }
+  ]
+}

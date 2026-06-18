@@ -181,6 +181,25 @@ class AppLocalizations {
       'clashWeeklyMissionsRewardCoins': '{count} monedas',
       'clashWeeklyMissionsRewardGems': '{count} gemas',
       'clashWeeklyMissionsProgress': '{current}/{target}',
+      'clashNewsTitle': 'Noticias',
+      'clashNewsMarkAllRead': 'Marcar todas como leídas',
+      'clashNewsFilterAll': 'Todas',
+      'clashNewsFilterUnread': 'No leídas',
+      'clashNewsFilterUpdates': 'Actualizaciones',
+      'clashNewsFilterEvents': 'Eventos',
+      'clashNewsFilterBanners': 'Banners',
+      'clashNewsFilterNotices': 'Avisos',
+      'clashNewsEmptyFilter': 'Sin noticias en este filtro',
+      'clashNewsBadgeNew': 'Nuevo',
+      'clashNewsTypeUpdate': 'Actualización',
+      'clashNewsTypeEvent': 'Evento',
+      'clashNewsTypeBanner': 'Banner',
+      'clashNewsTypeMaintenance': 'Mantenimiento',
+      'clashNewsTypeGift': 'Regalo',
+      'clashNewsHomeTitle': 'Noticias',
+      'clashNewsHomeUnread': '{count} sin leer',
+      'clashNewsHomeAllCaughtUp': 'Todo al día',
+      'clashNewsHomeView': 'Ver',
       'clashTeamLineup7': 'Alineación 7vs7',
       'clashTeamLineup11': 'Alineación 11vs11',
       'clashTeamCharacters': 'Personajes',
@@ -825,6 +844,25 @@ class AppLocalizations {
       'clashWeeklyMissionsRewardCoins': '{count} coins',
       'clashWeeklyMissionsRewardGems': '{count} gems',
       'clashWeeklyMissionsProgress': '{current}/{target}',
+      'clashNewsTitle': 'News',
+      'clashNewsMarkAllRead': 'Mark all as read',
+      'clashNewsFilterAll': 'All',
+      'clashNewsFilterUnread': 'Unread',
+      'clashNewsFilterUpdates': 'Updates',
+      'clashNewsFilterEvents': 'Events',
+      'clashNewsFilterBanners': 'Banners',
+      'clashNewsFilterNotices': 'Notices',
+      'clashNewsEmptyFilter': 'No news in this filter',
+      'clashNewsBadgeNew': 'New',
+      'clashNewsTypeUpdate': 'Update',
+      'clashNewsTypeEvent': 'Event',
+      'clashNewsTypeBanner': 'Banner',
+      'clashNewsTypeMaintenance': 'Maintenance',
+      'clashNewsTypeGift': 'Gift',
+      'clashNewsHomeTitle': 'News',
+      'clashNewsHomeUnread': '{count} unread',
+      'clashNewsHomeAllCaughtUp': 'All caught up',
+      'clashNewsHomeView': 'View',
       'clashTeamLineup7': '7v7 lineup',
       'clashTeamLineup11': '11v11 lineup',
       'clashTeamCharacters': 'Characters',
@@ -1525,6 +1563,26 @@ class AppLocalizations {
   String clashWeeklyMissionsProgress(int current, int target) => _t(
     'clashWeeklyMissionsProgress',
   ).replaceAll('{current}', '$current').replaceAll('{target}', '$target');
+  String get clashNewsTitle => _t('clashNewsTitle');
+  String get clashNewsMarkAllRead => _t('clashNewsMarkAllRead');
+  String get clashNewsFilterAll => _t('clashNewsFilterAll');
+  String get clashNewsFilterUnread => _t('clashNewsFilterUnread');
+  String get clashNewsFilterUpdates => _t('clashNewsFilterUpdates');
+  String get clashNewsFilterEvents => _t('clashNewsFilterEvents');
+  String get clashNewsFilterBanners => _t('clashNewsFilterBanners');
+  String get clashNewsFilterNotices => _t('clashNewsFilterNotices');
+  String get clashNewsEmptyFilter => _t('clashNewsEmptyFilter');
+  String get clashNewsBadgeNew => _t('clashNewsBadgeNew');
+  String get clashNewsTypeUpdate => _t('clashNewsTypeUpdate');
+  String get clashNewsTypeEvent => _t('clashNewsTypeEvent');
+  String get clashNewsTypeBanner => _t('clashNewsTypeBanner');
+  String get clashNewsTypeMaintenance => _t('clashNewsTypeMaintenance');
+  String get clashNewsTypeGift => _t('clashNewsTypeGift');
+  String get clashNewsHomeTitle => _t('clashNewsHomeTitle');
+  String clashNewsHomeUnread(int count) =>
+      _t('clashNewsHomeUnread').replaceAll('{count}', '$count');
+  String get clashNewsHomeAllCaughtUp => _t('clashNewsHomeAllCaughtUp');
+  String get clashNewsHomeView => _t('clashNewsHomeView');
   String get clashTeamLineup7 => _t('clashTeamLineup7');
   String get clashTeamLineup11 => _t('clashTeamLineup11');
   String get clashTeamCharacters => _t('clashTeamCharacters');

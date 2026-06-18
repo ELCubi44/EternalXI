@@ -14,6 +14,7 @@ import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_c
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_repository.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_repository.dart';
+import 'package:eternal_xi/features/clash/news/data/clash_news_repository.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
@@ -59,6 +60,7 @@ Future<
     ClashDailyMissionsRepository missionsRepository,
     ClashWeeklyMissionsRepository weeklyMissionsRepository,
     ClashAchievementsRepository achievementsRepository,
+    ClashNewsRepository newsRepository,
   })
 >
 _shellDeps() async {
@@ -104,6 +106,7 @@ _shellDeps() async {
     initialCoins: 1500,
     initialGems: 50,
   );
+  final newsSetup = await createTestNewsSetup();
   return (
     storyController: ClashStoryController(storyRepository: storyRepo),
     gachaRepository: gachaRepo,
@@ -112,6 +115,7 @@ _shellDeps() async {
     missionsRepository: missionsSetup.missions,
     weeklyMissionsRepository: weeklySetup.weekly,
     achievementsRepository: achievementsSetup.achievements,
+    newsRepository: newsSetup.news,
   );
 }
 
@@ -140,6 +144,7 @@ Future<(Widget app, ClashNavigationController nav)> _shellApp(
           Provider<ClashAchievementsRepository>.value(
             value: deps.achievementsRepository,
           ),
+          Provider<ClashNewsRepository>.value(value: deps.newsRepository),
           ChangeNotifierProvider<ClashCardsController>.value(
             value: deps.cardsController,
           ),
@@ -255,6 +260,12 @@ void main() {
       expect(find.text('Misiones diarias'), findsOneWidget);
       expect(find.text('Misiones semanales'), findsOneWidget);
       expect(find.text('Logros'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Noticias'),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Noticias'), findsOneWidget);
     });
 
     testWidgets('cambiar a Equipo muestra alineaciones', (tester) async {

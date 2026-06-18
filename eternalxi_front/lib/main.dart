@@ -51,6 +51,9 @@ import 'package:eternal_xi/features/clash/missions/data/clash_weekly_mission_eve
 import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_local_datasource.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_repository.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_storage.dart';
+import 'package:eternal_xi/features/clash/news/data/clash_news_local_datasource.dart';
+import 'package:eternal_xi/features/clash/news/data/clash_news_read_storage.dart';
+import 'package:eternal_xi/features/clash/news/data/clash_news_repository.dart';
 import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
@@ -118,6 +121,8 @@ Future<void> main() async {
       await SharedPreferencesClashAchievementsBackend.create();
   final clashWeeklyMissionsBackend =
       await SharedPreferencesClashWeeklyMissionsBackend.create();
+  final clashNewsReadBackend =
+      await SharedPreferencesClashNewsReadBackend.create();
   final clashGachaTicketInventoryBackend =
       await SharedPreferencesClashGachaTicketInventoryBackend.create();
   final clashGachaTicketRepository = ClashGachaTicketRepository(
@@ -261,6 +266,9 @@ Future<void> main() async {
         Provider<ClashWeeklyMissionsStorageBackend>.value(
           value: clashWeeklyMissionsBackend,
         ),
+        Provider<ClashNewsReadStorageBackend>.value(
+          value: clashNewsReadBackend,
+        ),
         Provider<ClashDailyMissionEventSink>(
           create: (_) => ClashDailyMissionEventSink(),
         ),
@@ -370,6 +378,12 @@ Future<void> main() async {
             context.read<ClashWeeklyMissionEventSink>().bind(repository);
             return repository;
           },
+        ),
+        Provider<ClashNewsRepository>(
+          create: (context) => ClashNewsRepository(
+            dataSource: ClashNewsLocalDataSource(),
+            storage: context.read<ClashNewsReadStorageBackend>(),
+          ),
         ),
         Provider<ClashShopRepository>(
           create: (context) => ClashShopRepository(
