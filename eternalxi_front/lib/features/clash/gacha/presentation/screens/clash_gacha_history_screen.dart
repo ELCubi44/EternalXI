@@ -63,7 +63,7 @@ class _ClashGachaHistoryScreenState extends State<ClashGachaHistoryScreen> {
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
               itemCount: _entries.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              separatorBuilder: (context, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 return _HistoryEntryCard(entry: _entries[index]);
               },

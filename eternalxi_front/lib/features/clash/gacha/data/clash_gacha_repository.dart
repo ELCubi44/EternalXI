@@ -293,8 +293,9 @@ class ClashGachaRepository {
       ),
     );
 
-    if (_progressEventHub != null) {
-      await _progressEventHub!.recordSummon(
+    final progressHub = _progressEventHub;
+    if (progressHub != null) {
+      await progressHub.recordSummon(
         dailyWeeklyAmount: 1,
         achievementCards: items.length,
       );

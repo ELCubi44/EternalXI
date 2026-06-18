@@ -68,8 +68,9 @@ class ClashPlayerCollectionRepository {
 
   Future<void> _syncCollectCardsAchievement() async {
     final count = loadOwnedCardIds().length;
-    if (_progressEventHub != null) {
-      await _progressEventHub!.syncCollectCards(count);
+    final progressHub = _progressEventHub;
+    if (progressHub != null) {
+      await progressHub.syncCollectCards(count);
       return;
     }
     await _achievementEventSink?.record(
@@ -992,24 +993,27 @@ class ClashPlayerCollectionRepository {
   }
 
   Future<void> _recordUnlockSkillNode() async {
-    if (_progressEventHub != null) {
-      await _progressEventHub!.recordUnlockSkillNode();
+    final progressHub = _progressEventHub;
+    if (progressHub != null) {
+      await progressHub.recordUnlockSkillNode();
       return;
     }
     await _achievementEventSink?.record(ClashAchievementType.unlockSkillNode);
   }
 
   Future<void> _recordEvolveCard() async {
-    if (_progressEventHub != null) {
-      await _progressEventHub!.recordEvolveCard();
+    final progressHub = _progressEventHub;
+    if (progressHub != null) {
+      await progressHub.recordEvolveCard();
       return;
     }
     await _achievementEventSink?.record(ClashAchievementType.evolveCard);
   }
 
   Future<void> _recordLevelUpCard(int amount) async {
-    if (_progressEventHub != null) {
-      await _progressEventHub!.recordLevelUpCard(amount: amount);
+    final progressHub = _progressEventHub;
+    if (progressHub != null) {
+      await progressHub.recordLevelUpCard(amount: amount);
       return;
     }
     await _achievementEventSink?.record(
@@ -1019,8 +1023,9 @@ class ClashPlayerCollectionRepository {
   }
 
   Future<void> _recordUpgradeTechnique(bool didLevelUp) async {
-    if (_progressEventHub != null) {
-      await _progressEventHub!.recordUpgradeTechnique(didLevelUp: didLevelUp);
+    final progressHub = _progressEventHub;
+    if (progressHub != null) {
+      await progressHub.recordUpgradeTechnique(didLevelUp: didLevelUp);
       return;
     }
     await _missionEventSink?.record(ClashDailyMissionType.upgradeTechnique);
@@ -1032,8 +1037,9 @@ class ClashPlayerCollectionRepository {
   }
 
   Future<void> _recordUseExpMaterial(bool didLevelUp) async {
-    if (_progressEventHub != null) {
-      await _progressEventHub!.recordUseExpMaterial(didLevelUp: didLevelUp);
+    final progressHub = _progressEventHub;
+    if (progressHub != null) {
+      await progressHub.recordUseExpMaterial(didLevelUp: didLevelUp);
       return;
     }
     await _missionEventSink?.record(ClashDailyMissionType.useExpMaterial);

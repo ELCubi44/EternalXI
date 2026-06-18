@@ -80,7 +80,7 @@ class ClashMiniPitch extends StatelessWidget {
                 child: CustomPaint(
                   painter: _ShotGoalLinePainter(
                     attackerX: _markerX(
-                      duel!.attacker.squadIndex,
+                      duel.attacker.squadIndex,
                       duel.attacker.teamSide,
                     ),
                     attackerY: _markerY(

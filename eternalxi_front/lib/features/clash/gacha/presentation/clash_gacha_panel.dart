@@ -81,6 +81,9 @@ class _ClashGachaPanelState extends State<ClashGachaPanel> {
     }
     if (outcome.result != null) {
       await context.read<ClashCardsController>().reloadOwnedCards();
+      if (!mounted) {
+        return;
+      }
       await ClashGachaResultSheet.show(context, outcome.result!);
     }
   }

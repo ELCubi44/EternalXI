@@ -37,10 +37,13 @@ class _ClashEventMatchPrepareScreenState
 
   Future<void> _load() async {
     final lineups = context.read<ClashLineupsController>();
+    final repo = context.read<ClashCharacterEventsRepository>();
     if (lineups.state == ClashLineupsLoadState.idle) {
       await lineups.load();
     }
-    final repo = context.read<ClashCharacterEventsRepository>();
+    if (!mounted) {
+      return;
+    }
     final stage = await repo.findStage(widget.eventId, widget.stageId);
     if (mounted) {
       setState(() {

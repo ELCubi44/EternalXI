@@ -122,6 +122,9 @@ class _ClashEventMatchScreenState extends State<ClashEventMatchScreen> {
     }
 
     if (userWon && result != null && !result.rewardsGranted.isEmpty) {
+      if (!mounted) {
+        return;
+      }
       await Navigator.of(context).push<void>(
         MaterialPageRoute(
           builder: (_) => Provider<ClashCharacterEventsRepository>.value(

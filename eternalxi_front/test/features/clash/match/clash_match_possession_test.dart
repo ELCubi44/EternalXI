@@ -4,7 +4,6 @@ import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_player_style.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_stats.dart';
-import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_chance_resolver.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_event.dart';

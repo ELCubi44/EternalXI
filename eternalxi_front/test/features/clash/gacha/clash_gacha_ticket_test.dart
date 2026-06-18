@@ -6,7 +6,6 @@ import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_c
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_pity_storage.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_ticket_inventory_storage.dart';
-import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_ticket_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_tickets_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pity_state.dart';
@@ -244,17 +243,11 @@ void main() {
   });
 
   group('ClashGachaTicket UI', () {
-    setUp(() {
-      final binding = TestWidgetsFlutterBinding.ensureInitialized();
-      binding.window.physicalSizeTestValue = const Size(800, 2400);
-      binding.window.devicePixelRatioTestValue = 1.0;
-    });
-
-    tearDown(() {
-      final binding = TestWidgetsFlutterBinding.ensureInitialized();
-      binding.window.clearPhysicalSizeTestValue();
-      binding.window.clearDevicePixelRatioTestValue();
-    });
+    void configureViewport(WidgetTester tester) {
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+    }
 
     Future<Widget> panelApp(ClashGachaRepository repo) async {
       final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
@@ -278,6 +271,7 @@ void main() {
     }
 
     testWidgets('Invocar muestra botón Usar ticket', (tester) async {
+      configureViewport(tester);
       final repo = await createTestGachaRepository(initialGems: 120);
       await tester.pumpWidget(await panelApp(repo));
       await tester.pumpAndSettle();
@@ -285,6 +279,7 @@ void main() {
     });
 
     testWidgets('muestra cantidad disponible', (tester) async {
+      configureViewport(tester);
       final repo = await createTestGachaRepository(initialGems: 120);
       await tester.pumpWidget(await panelApp(repo));
       await tester.pumpAndSettle();
@@ -292,6 +287,7 @@ void main() {
     });
 
     testWidgets('botón deshabilitado con 0 tickets', (tester) async {
+      configureViewport(tester);
       final tickets = createTestTicketRepository(
         inventoryStorage: InMemoryClashGachaTicketInventoryBackend(
           initial: const {'starter-single-ticket': 0},
@@ -310,6 +306,7 @@ void main() {
     });
 
     testWidgets('usar ticket muestra resultado', (tester) async {
+      configureViewport(tester);
       final repo = await createTestGachaRepository(
         initialGems: 50,
         engine: ClashGachaEngine(random: _FixedRandom(0)),
@@ -325,6 +322,7 @@ void main() {
     });
 
     testWidgets('saldo de gemas no cambia', (tester) async {
+      configureViewport(tester);
       final repo = await createTestGachaRepository(
         initialGems: 50,
         engine: ClashGachaEngine(random: _FixedRandom(0)),
@@ -340,6 +338,7 @@ void main() {
     });
 
     testWidgets('historial muestra tipo Ticket', (tester) async {
+      configureViewport(tester);
       final repo = await createTestGachaRepository(
         engine: ClashGachaEngine(random: _FixedRandom(0)),
       );
@@ -366,6 +365,7 @@ void main() {
     });
 
     testWidgets('resultado muestra Ticket', (tester) async {
+      configureViewport(tester);
       final result = ClashGachaPullResult(
         bannerId: 'starter-banner-001',
         pullType: ClashGachaPullType.ticketSingle,
@@ -404,6 +404,7 @@ void main() {
     testWidgets('Inventario muestra categoría Tickets y ticket inicial', (
       tester,
     ) async {
+      configureViewport(tester);
       await tester.pumpWidget(
         Provider<ClashInventoryRepository>.value(
           value: createTestInventoryRepository(),

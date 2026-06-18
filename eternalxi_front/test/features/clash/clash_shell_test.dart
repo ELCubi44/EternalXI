@@ -6,11 +6,7 @@ import 'package:eternal_xi/data/models/user_model.dart';
 import 'package:eternal_xi/data/services/auth_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
-import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
-import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
-import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
-import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_repository.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_repository.dart';
@@ -46,11 +42,6 @@ AuthController _authWithUser(UserModel? user) {
   );
   auth.currentUser = user;
   return auth;
-}
-
-class _EmptyCardsDataSource extends ClashCardsLocalDataSource {
-  @override
-  Future<List<ClashCardCatalogEntry>> loadCards() async => const [];
 }
 
 Future<

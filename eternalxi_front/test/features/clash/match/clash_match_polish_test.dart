@@ -38,7 +38,7 @@ const _matchLevel = ClashStoryLevel(
   energyCost: 8,
   recommendedPower: 120,
   rewards: ClashStoryReward(gems: 1, coins: 500),
-  scenes: const [],
+  scenes: [],
   requirements: ClashStoryLevelRequirements(
     clashTeamUnlocked: true,
     completeActiveLineup: true,

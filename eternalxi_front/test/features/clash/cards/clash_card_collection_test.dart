@@ -154,7 +154,8 @@ void main() {
 
   group('ClashCardCollectionScreen', () {
     testWidgets('renderiza cartas cargadas', (tester) async {
-      final (controller, _, __, ___, ____) = await _readyController();
+      final ready = await _readyController();
+      final controller = ready.$1;
       await tester.pumpWidget(
         ChangeNotifierProvider<ClashCardsController>.value(
           value: controller,

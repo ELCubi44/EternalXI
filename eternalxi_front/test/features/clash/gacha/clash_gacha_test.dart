@@ -14,7 +14,6 @@ import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_error.da
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_type.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_rarity_rates.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/clash_gacha_panel.dart';
-import 'package:eternal_xi/features/clash/gacha/presentation/widgets/clash_gacha_result_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -280,20 +279,14 @@ void main() {
   });
 
   group('ClashGachaPanel UI', () {
-    setUp(() {
-      final binding = TestWidgetsFlutterBinding.ensureInitialized();
-      binding.window.physicalSizeTestValue = const Size(800, 2000);
-      binding.window.devicePixelRatioTestValue = 1.0;
-    });
-
-    tearDown(() {
-      TestWidgetsFlutterBinding.ensureInitialized().window
-          .clearPhysicalSizeTestValue();
-      TestWidgetsFlutterBinding.ensureInitialized().window
-          .clearDevicePixelRatioTestValue();
-    });
+    void configureViewport(WidgetTester tester) {
+      tester.view.physicalSize = const Size(800, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+    }
 
     testWidgets('muestra saldo, banner y probabilidades', (tester) async {
+      configureViewport(tester);
       final repo = await createTestGachaRepository(initialGems: 120);
       await tester.pumpWidget(await _gachaTestApp(gachaRepo: repo));
       await tester.pumpAndSettle();
@@ -308,6 +301,7 @@ void main() {
     });
 
     testWidgets('botones single y multi muestran coste', (tester) async {
+      configureViewport(tester);
       final repo = await createTestGachaRepository(initialGems: 120);
       await tester.pumpWidget(await _gachaTestApp(gachaRepo: repo));
       await tester.pumpAndSettle();
@@ -320,6 +314,7 @@ void main() {
     });
 
     testWidgets('gemas insuficientes muestra SnackBar', (tester) async {
+      configureViewport(tester);
       final repo = await createTestGachaRepository(initialGems: 0);
       await tester.pumpWidget(await _gachaTestApp(gachaRepo: repo));
       await tester.pumpAndSettle();
@@ -333,6 +328,7 @@ void main() {
     testWidgets('pull exitoso muestra resultados y actualiza saldo', (
       tester,
     ) async {
+      configureViewport(tester);
       final repo = await createTestGachaRepository(
         initialGems: 50,
         engine: ClashGachaEngine(random: _FixedRandom(0)),
@@ -351,6 +347,7 @@ void main() {
     });
 
     testWidgets('duplicado aparece como duplicado', (tester) async {
+      configureViewport(tester);
       final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
       final collectionRepo = createTestCollectionRepository(
         cardsRepository: cardsRepo,
@@ -381,6 +378,7 @@ void main() {
     });
 
     testWidgets('multi muestra 10 resultados', (tester) async {
+      configureViewport(tester);
       final repo = await createTestGachaRepository(
         initialGems: 200,
         engine: ClashGachaEngine(random: _FixedRandom(0)),

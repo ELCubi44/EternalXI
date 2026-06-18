@@ -90,8 +90,9 @@ class ClashShopRepository {
       );
     }
 
-    if (_progressEventHub != null) {
-      await _progressEventHub!.recordShopPurchase();
+    final progressHub = _progressEventHub;
+    if (progressHub != null) {
+      await progressHub.recordShopPurchase();
     } else {
       await _missionEventSink?.record(ClashDailyMissionType.shopPurchase);
     }

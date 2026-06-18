@@ -93,6 +93,7 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
 
     final userWon = state.winner == MatchTeamSide.user;
     final lineups = context.read<ClashLineupsController>();
+    final progressHub = context.read<ClashMissionProgressEventHub>();
     final lineupCardIds = lineups.activeLineup?.assignedCardIds ?? const [];
     final result = await story.finishMatchLevel(
       levelId: widget.levelId,
@@ -101,7 +102,6 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
       lineupCardIds: lineupCardIds,
     );
 
-    final progressHub = context.read<ClashMissionProgressEventHub>();
     await progressHub.recordPlayMatch();
     if (userWon) {
       await progressHub.recordWinMatch();
@@ -123,6 +123,9 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
     }
 
     if (userWon && result != null && result.firstCompletion) {
+      if (!mounted) {
+        return;
+      }
       await Navigator.of(context).push<void>(
         MaterialPageRoute(
           builder: (_) => ChangeNotifierProvider<ClashStoryController>.value(

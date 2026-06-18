@@ -281,18 +281,11 @@ void main() {
   });
 
   group('ClashGachaPity UI', () {
-    setUp(() {
-      final binding = TestWidgetsFlutterBinding.ensureInitialized();
-      binding.window.physicalSizeTestValue = const Size(800, 2000);
-      binding.window.devicePixelRatioTestValue = 1.0;
-    });
-
-    tearDown(() {
-      TestWidgetsFlutterBinding.ensureInitialized().window
-          .clearPhysicalSizeTestValue();
-      TestWidgetsFlutterBinding.ensureInitialized().window
-          .clearDevicePixelRatioTestValue();
-    });
+    void configureViewport(WidgetTester tester) {
+      tester.view.physicalSize = const Size(800, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+    }
 
     Future<Widget> panelApp(ClashGachaRepository repo) async {
       final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
@@ -316,6 +309,7 @@ void main() {
     }
 
     testWidgets('Invocar muestra Pity SR X/30', (tester) async {
+      configureViewport(tester);
       final repo = await createTestGachaRepository(initialGems: 120);
       await tester.pumpWidget(await panelApp(repo));
       await tester.pumpAndSettle();
@@ -323,6 +317,7 @@ void main() {
     });
 
     testWidgets('tras single se actualiza contador', (tester) async {
+      configureViewport(tester);
       final repo = await createTestGachaRepository(
         initialGems: 50,
         engine: ClashGachaEngine(random: _FixedRandom(0)),
@@ -338,6 +333,7 @@ void main() {
     });
 
     testWidgets('contador cercano al pity muestra Faltan X', (tester) async {
+      configureViewport(tester);
       final pity = InMemoryClashGachaPityBackend();
       await pity.writeState(
         ClashGachaPityState.initial(
@@ -355,6 +351,7 @@ void main() {
     });
 
     testWidgets('resultado muestra chip Pity SR', (tester) async {
+      configureViewport(tester);
       final result = ClashGachaPullResult(
         bannerId: 'starter-banner-001',
         pullType: ClashGachaPullType.single,
@@ -390,6 +387,7 @@ void main() {
     });
 
     testWidgets('historial muestra chip Pity SR', (tester) async {
+      configureViewport(tester);
       final history = InMemoryClashGachaHistoryBackend();
       await history.appendEntry(
         ClashGachaHistoryEntry(
@@ -435,6 +433,7 @@ void main() {
     testWidgets('multi con garantía muestra chip Garantía multi', (
       tester,
     ) async {
+      configureViewport(tester);
       final result = ClashGachaPullResult(
         bannerId: 'starter-banner-001',
         pullType: ClashGachaPullType.multi,

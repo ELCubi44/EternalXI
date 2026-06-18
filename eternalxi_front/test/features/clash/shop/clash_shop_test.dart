@@ -1,10 +1,5 @@
 import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
-import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
-import 'package:eternal_xi/features/clash/cards/data/repositories/clash_evolution_materials_repository.dart';
-import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
-import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_ticket_repository.dart';
-import 'package:eternal_xi/features/clash/inventory/data/clash_inventory_repository.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_local_datasource.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
@@ -187,17 +182,11 @@ void main() {
   });
 
   group('ClashShop UI', () {
-    setUp(() {
-      final binding = TestWidgetsFlutterBinding.ensureInitialized();
-      binding.window.physicalSizeTestValue = const Size(800, 2400);
-      binding.window.devicePixelRatioTestValue = 1.0;
-    });
-
-    tearDown(() {
-      final binding = TestWidgetsFlutterBinding.ensureInitialized();
-      binding.window.clearPhysicalSizeTestValue();
-      binding.window.clearDevicePixelRatioTestValue();
-    });
+    void configureViewport(WidgetTester tester) {
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+    }
 
     Future<Widget> shopApp(ClashShopRepository repo) async {
       return Provider<ClashShopRepository>.value(
@@ -212,6 +201,7 @@ void main() {
     }
 
     testWidgets('tienda muestra saldo monedas/gemas', (tester) async {
+      configureViewport(tester);
       final repo = await createTestShopRepository(
         initialCoins: 1500,
         initialGems: 80,
@@ -223,6 +213,7 @@ void main() {
     });
 
     testWidgets('tienda muestra productos', (tester) async {
+      configureViewport(tester);
       final repo = await createTestShopRepository();
       await tester.pumpWidget(await shopApp(repo));
       await tester.pumpAndSettle();
@@ -231,6 +222,7 @@ void main() {
     });
 
     testWidgets('botón Comprar visible', (tester) async {
+      configureViewport(tester);
       final repo = await createTestShopRepository();
       await tester.pumpWidget(await shopApp(repo));
       await tester.pumpAndSettle();
@@ -238,6 +230,7 @@ void main() {
     });
 
     testWidgets('monedas insuficientes bloquea compra', (tester) async {
+      configureViewport(tester);
       final repo = await createTestShopRepository(initialCoins: 50);
       await tester.pumpWidget(await shopApp(repo));
       await tester.pumpAndSettle();
@@ -248,6 +241,7 @@ void main() {
     });
 
     testWidgets('confirmar compra muestra diálogo', (tester) async {
+      configureViewport(tester);
       final repo = await createTestShopRepository(initialCoins: 1500);
       await tester.pumpWidget(await shopApp(repo));
       await tester.pumpAndSettle();
@@ -258,6 +252,7 @@ void main() {
     });
 
     testWidgets('compra exitosa muestra SnackBar', (tester) async {
+      configureViewport(tester);
       final repo = await createTestShopRepository(initialCoins: 1500);
       await tester.pumpWidget(await shopApp(repo));
       await tester.pumpAndSettle();
@@ -269,6 +264,7 @@ void main() {
     });
 
     testWidgets('saldo se actualiza tras compra', (tester) async {
+      configureViewport(tester);
       final repo = await createTestShopRepository(initialCoins: 1500);
       await tester.pumpWidget(await shopApp(repo));
       await tester.pumpAndSettle();

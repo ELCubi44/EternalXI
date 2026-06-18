@@ -1,10 +1,8 @@
 import 'dart:math';
 
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
-import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
-import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_prepare_validation.dart';
 import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
@@ -13,7 +11,6 @@ import 'package:eternal_xi/features/clash/match/domain/match_score.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_status.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
-import 'package:eternal_xi/features/clash/match/domain/match_pitch_layout.dart';
 import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_mini_pitch.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_local_datasource.dart';
@@ -41,7 +38,7 @@ const _matchLevel = ClashStoryLevel(
   energyCost: 8,
   recommendedPower: 120,
   rewards: ClashStoryReward(gems: 1, coins: 500),
-  scenes: const [],
+  scenes: [],
   requirements: ClashStoryLevelRequirements(
     clashTeamUnlocked: true,
     completeActiveLineup: true,
