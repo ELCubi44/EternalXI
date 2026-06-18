@@ -16,6 +16,7 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_serv
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_use_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_level.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_progress_resolver.dart';
+import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_grant_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_service.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_unlock_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
@@ -160,6 +161,104 @@ class ClashPlayerCollectionRepository {
     progressMap[cardId] = updated;
     await _save(snapshot.copyWith(cardProgress: progressMap));
     return count;
+  }
+
+  /// Concede una carta obtenida por gacha local (Fase 23).
+  Future<ClashGachaGrantResult> grantGachaCard({
+    required String cardId,
+    required ClashRarity rarity,
+  }) async {
+    final entry = await _cardsRepository.findById(cardId);
+    if (entry == null) {
+      throw ArgumentError('Carta desconocida: $cardId');
+    }
+
+    final snapshot = _loadSnapshot();
+    final owned = Set<String>.from(snapshot.ownedCardIds);
+    final progressMap = Map<String, ClashCardProgress>.from(
+      snapshot.cardProgress,
+    );
+    final card = entry.card;
+
+    if (!owned.contains(cardId)) {
+      var progress = ClashCardXpService.initialProgress(cardId);
+      final evolved = _resolvedEvolvedRarity(
+        baseRarity: card.rarity,
+        currentEvolved: null,
+        pullRarity: rarity,
+      );
+      if (evolved != null) {
+        progress = progress.copyWith(evolvedRarity: evolved);
+      }
+      owned.add(cardId);
+      progressMap[cardId] = progress;
+      await _save(
+        snapshot.copyWith(ownedCardIds: owned, cardProgress: progressMap),
+      );
+      return ClashGachaGrantResult(
+        cardId: cardId,
+        grantedRarity: rarity,
+        isNew: true,
+        isDuplicate: false,
+        upgradedRarity: evolved != null,
+        duplicateCopiesAfter: progress.duplicateCopies,
+      );
+    }
+
+    final current =
+        progressMap[cardId] ?? ClashCardXpService.initialProgress(cardId);
+    final effective = ClashCardEvolutionResolver.effectiveRarity(card, current);
+
+    if (_rarityTier(rarity) > _rarityTier(effective)) {
+      final evolved = _resolvedEvolvedRarity(
+        baseRarity: card.rarity,
+        currentEvolved: current.evolvedRarity,
+        pullRarity: rarity,
+      );
+      final updated = current.copyWith(evolvedRarity: evolved);
+      progressMap[cardId] = updated;
+      await _save(snapshot.copyWith(cardProgress: progressMap));
+      return ClashGachaGrantResult(
+        cardId: cardId,
+        grantedRarity: rarity,
+        isNew: false,
+        isDuplicate: false,
+        upgradedRarity: true,
+        duplicateCopiesAfter: updated.duplicateCopies,
+      );
+    }
+
+    final updated = current.copyWith(
+      duplicateCopies: current.duplicateCopies + 1,
+    );
+    progressMap[cardId] = updated;
+    await _save(snapshot.copyWith(cardProgress: progressMap));
+    return ClashGachaGrantResult(
+      cardId: cardId,
+      grantedRarity: rarity,
+      isNew: false,
+      isDuplicate: true,
+      upgradedRarity: false,
+      duplicateCopiesAfter: updated.duplicateCopies,
+    );
+  }
+
+  static int _rarityTier(ClashRarity rarity) =>
+      ClashRarity.values.indexOf(rarity);
+
+  static ClashRarity? _resolvedEvolvedRarity({
+    required ClashRarity baseRarity,
+    required ClashRarity? currentEvolved,
+    required ClashRarity pullRarity,
+  }) {
+    if (_rarityTier(pullRarity) <= _rarityTier(baseRarity)) {
+      return currentEvolved;
+    }
+    final effective = currentEvolved ?? baseRarity;
+    if (_rarityTier(pullRarity) > _rarityTier(effective)) {
+      return pullRarity;
+    }
+    return currentEvolved;
   }
 
   /// Desbloquea un nodo del árbol de habilidades (Fase 21).

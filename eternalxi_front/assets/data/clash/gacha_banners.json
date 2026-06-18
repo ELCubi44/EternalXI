@@ -1,0 +1,21 @@
+{
+  "rates": {
+    "n": 60,
+    "r": 30,
+    "sr": 10,
+    "lr": 0,
+    "xi": 0
+  },
+  "banners": [
+    {
+      "id": "starter-banner-001",
+      "name": "Invocación inicial",
+      "description": "Primer banner local de prueba",
+      "singleCost": 10,
+      "multiCost": 95,
+      "multiCount": 10,
+      "dailyDiscountCost": 1,
+      "dailyDiscountAvailable": true
+    }
+  ]
+}

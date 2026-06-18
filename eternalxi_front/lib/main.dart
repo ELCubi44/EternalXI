@@ -23,6 +23,9 @@ import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_loc
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_daily_storage.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_local_datasource.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/inventory/data/clash_inventory_repository.dart';
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
 import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
@@ -82,6 +85,8 @@ Future<void> main() async {
   await clashEvolutionMaterialsRepository.seedDefaultInventoryIfEmpty();
   final clashStoryProgressBackend =
       await SharedPreferencesClashStoryProgressBackend.create();
+  final clashGachaDailyBackend =
+      await SharedPreferencesClashGachaDailyBackend.create();
   final apiClient = ApiClient(
     acceptLanguage: AppLocaleResolver.apiLanguageTag(),
     secureStorage: secureStorageService,
@@ -247,6 +252,19 @@ Future<void> main() async {
         ChangeNotifierProvider<ClashStoryController>(
           create: (context) => ClashStoryController(
             storyRepository: context.read<ClashStoryRepository>(),
+          ),
+        ),
+        Provider<ClashGachaDailyStorageBackend>.value(
+          value: clashGachaDailyBackend,
+        ),
+        Provider<ClashGachaRepository>(
+          create: (context) => ClashGachaRepository(
+            dataSource: ClashGachaLocalDataSource(),
+            dailyStorage: context.read<ClashGachaDailyStorageBackend>(),
+            storyRepository: context.read<ClashStoryRepository>(),
+            collectionRepository: context
+                .read<ClashPlayerCollectionRepository>(),
+            cardsRepository: context.read<ClashCardsRepository>(),
           ),
         ),
         Provider<ClashLineupsStorageBackend>.value(value: clashLineupsBackend),

@@ -112,7 +112,7 @@ Implementar `XiBottomNav` (o variante Clash) con:
 |---|---|
 | Inicio | Stub cabecera recursos + botones Historia/Eventos/Desafíos/Noticias |
 | Equipo | Placeholder |
-| Invocar | Placeholder |
+| Invocar | **Fase 23:** gacha local MVP (ver sección 22 incremental) |
 | Tienda | Placeholder |
 
 Estado de tab en shell Clash; **independiente** de LeagueShell.
@@ -401,6 +401,7 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 |---|---|
 | **21** | Duplicados y árbol de habilidades lineal SR/LR/XI (`CLASH_CARD_SYSTEM.md`) |
 | **22** | Pantalla central `/clash/inventory` — solo visualización |
+| **23** | Invocar — gacha local MVP (banner, rates, gemas historia) |
 
 ### Fase 22 — Inventario Clash
 
@@ -412,6 +413,15 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
   - objetos de partido (kit provisional desde `match_items.json` / `defaultKit`)
 - **Solo lectura:** los usos siguen en detalle de carta (EXP, libros, evolución) o descanso de partido (objetos).
 - Objetos de partido: UI indica **«Kit provisional por partido»**; sin inventario global ni cambio de reglas de uso.
+
+### Fase 23 — Invocar (gacha local)
+
+- Tab **Invocar** funcional con simulación local (sin backend ni compras reales).
+- Banner `starter-banner-001`, probabilidades provisionales, single/multi/daily discount.
+- Gemas desde progreso de Historia (`walletGems`).
+- Concesión de cartas vía `grantGachaCard` (nueva / duplicado / `evolvedRarity`).
+
+**Pendiente:** backend gacha, banners reales, pity definitivo, animaciones, economía real y tienda.
 
 ---
 

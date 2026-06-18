@@ -365,6 +365,22 @@ class ClashStoryRepository {
     await _progressStorage.writeProgress(progress);
   }
 
+  int walletGems() => loadProgress().walletGems;
+
+  Future<bool> spendGems(int amount) async {
+    if (amount <= 0) {
+      return true;
+    }
+    final progress = loadProgress();
+    if (progress.walletGems < amount) {
+      return false;
+    }
+    await _saveProgress(
+      progress.copyWith(walletGems: progress.walletGems - amount),
+    );
+    return true;
+  }
+
   void clearCacheForTests() {
     _sagasCache = null;
     _chaptersCache.clear();

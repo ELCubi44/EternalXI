@@ -148,6 +148,21 @@ class AppLocalizations {
       'clashInventoryUseDuringHalftime': 'Usar durante el descanso',
       'clashInventoryMatchKitProvisional': 'Kit provisional por partido',
       'clashInventoryEmptyCategory': 'Sin unidades en esta categoría',
+      'clashGachaLocalDisclaimer': 'Simulación local sin compras reales',
+      'clashGachaWalletGems': 'Gemas: {count}',
+      'clashGachaSingleButton': 'Single ×{cost} gemas',
+      'clashGachaMultiButton': 'Multi ×{cost} gemas ({count} cartas)',
+      'clashGachaDailyButton': 'Single diario ×{cost} gema',
+      'clashGachaDailyUsed': 'Single diario ya usado hoy',
+      'clashGachaInsufficientGems': 'Gemas insuficientes',
+      'clashGachaEarnGemsHint': 'Consigue gemas en Historia',
+      'clashGachaMultiGuarantee': 'Multi: al menos 1 SR garantizado',
+      'clashGachaResultTitle': 'Resultado de invocación',
+      'clashGachaResultSpent': 'Gastadas: {spent} · Restantes: {remaining}',
+      'clashGachaResultNew': 'Nueva',
+      'clashGachaResultDuplicate': 'Duplicado',
+      'clashGachaResultUpgraded': 'Rareza mejorada',
+      'clashGachaResultDuplicates': 'Duplicados: {count}',
       'clashSummonBanners': 'Banners',
       'clashSummonSingle': 'Single',
       'clashSummonMulti': 'Multi',
@@ -696,6 +711,21 @@ class AppLocalizations {
       'clashInventoryUseDuringHalftime': 'Use during halftime',
       'clashInventoryMatchKitProvisional': 'Provisional kit per match',
       'clashInventoryEmptyCategory': 'No units in this category',
+      'clashGachaLocalDisclaimer': 'Local simulation without real purchases',
+      'clashGachaWalletGems': 'Gems: {count}',
+      'clashGachaSingleButton': 'Single ×{cost} gems',
+      'clashGachaMultiButton': 'Multi ×{cost} gems ({count} cards)',
+      'clashGachaDailyButton': 'Daily single ×{cost} gem',
+      'clashGachaDailyUsed': 'Daily single already used today',
+      'clashGachaInsufficientGems': 'Insufficient gems',
+      'clashGachaEarnGemsHint': 'Earn gems in Story',
+      'clashGachaMultiGuarantee': 'Multi: at least 1 SR guaranteed',
+      'clashGachaResultTitle': 'Summon result',
+      'clashGachaResultSpent': 'Spent: {spent} · Remaining: {remaining}',
+      'clashGachaResultNew': 'New',
+      'clashGachaResultDuplicate': 'Duplicate',
+      'clashGachaResultUpgraded': 'Rarity upgraded',
+      'clashGachaResultDuplicates': 'Duplicates: {count}',
       'clashSummonBanners': 'Banners',
       'clashSummonSingle': 'Single',
       'clashSummonMulti': 'Multi',
@@ -1264,6 +1294,29 @@ class AppLocalizations {
   String get clashInventoryMatchKitProvisional =>
       _t('clashInventoryMatchKitProvisional');
   String get clashInventoryEmptyCategory => _t('clashInventoryEmptyCategory');
+  String get clashGachaLocalDisclaimer => _t('clashGachaLocalDisclaimer');
+  String clashGachaWalletGems(int count) =>
+      _t('clashGachaWalletGems').replaceAll('{count}', '$count');
+  String clashGachaSingleButton(int cost) =>
+      _t('clashGachaSingleButton').replaceAll('{cost}', '$cost');
+  String clashGachaMultiButton(int cost, int count) => _t('clashGachaMultiButton')
+      .replaceAll('{cost}', '$cost')
+      .replaceAll('{count}', '$count');
+  String clashGachaDailyButton(int cost) =>
+      _t('clashGachaDailyButton').replaceAll('{cost}', '$cost');
+  String get clashGachaDailyUsed => _t('clashGachaDailyUsed');
+  String get clashGachaInsufficientGems => _t('clashGachaInsufficientGems');
+  String get clashGachaEarnGemsHint => _t('clashGachaEarnGemsHint');
+  String get clashGachaMultiGuarantee => _t('clashGachaMultiGuarantee');
+  String get clashGachaResultTitle => _t('clashGachaResultTitle');
+  String clashGachaResultSpent(int spent, int remaining) => _t(
+    'clashGachaResultSpent',
+  ).replaceAll('{spent}', '$spent').replaceAll('{remaining}', '$remaining');
+  String get clashGachaResultNew => _t('clashGachaResultNew');
+  String get clashGachaResultDuplicate => _t('clashGachaResultDuplicate');
+  String get clashGachaResultUpgraded => _t('clashGachaResultUpgraded');
+  String clashGachaResultDuplicates(int count) =>
+      _t('clashGachaResultDuplicates').replaceAll('{count}', '$count');
   String get clashSummonBanners => _t('clashSummonBanners');
   String get clashSummonSingle => _t('clashSummonSingle');
   String get clashSummonMulti => _t('clashSummonMulti');

@@ -110,6 +110,23 @@ R ──→ SR
 
 **Orden de stats efectivas:** base → bonus rareza evolucionada → escalado por nivel → bonus árbol (`ClashCardLevelScaling` + `ClashSkillTreeBonusResolver`).
 
+**Implementación Fase 23 (Flutter):** gacha local provisional en pestaña **Invocar**.
+
+| Incluido (Fase 23) | Pendiente |
+|---|---|
+| Banner local `starter-banner-001` (`gacha_banners.json`) | Backend gacha |
+| Single 10 gemas, Multi 95 gemas (10 cartas), daily 1 gema | Compras reales / Play Billing |
+| Probabilidades N 60 % / R 30 % / SR 10 % / LR 0 % / XI 0 % | Pity definitivo |
+| Garantía multi: al menos 1 SR | Banners complejos y rotación |
+| Gasto de gemas desde `ClashStoryProgress.walletGems` | Economía real |
+| `grantGachaCard(cardId, rarity)` con `evolvedRarity` provisional | Variantes LR/XI con arte real |
+| Duplicados integrados con árbol (Fase 21) | Animación completa de invocación |
+
+**Notas gacha provisional:**
+- Sin pagos reales ni servidor; texto UI: «Simulación local sin compras reales».
+- Pool base: cartas de `cards.json`. Si el pull asigna rareza superior a la poseída, se actualiza `evolvedRarity` sin materiales; si ya está en esa rareza o superior, suma `duplicateCopies`.
+- Artes/variantes reales por rareza gacha vendrán en fases posteriores.
+
 ---
 
 ## 4. Arte de cartas
