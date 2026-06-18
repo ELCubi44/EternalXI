@@ -1,8 +1,10 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
-import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/gifts/data/clash_gifts_repository.dart';
 import 'package:eternal_xi/features/clash/gifts/presentation/controllers/clash_gifts_controller.dart';
 import 'package:eternal_xi/features/clash/gifts/presentation/widgets/clash_gift_card.dart';
+import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_claim_button.dart';
+import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_empty_state_card.dart';
+import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_progress_summary_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -69,7 +71,6 @@ class _ClashGiftsScreenState extends State<ClashGiftsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
 
     return AnimatedBuilder(
       animation: _controller,
@@ -80,6 +81,9 @@ class _ClashGiftsScreenState extends State<ClashGiftsScreen> {
             _controller.state == ClashGiftsLoadState.loading &&
             _controller.entries.isEmpty;
         final entries = _controller.entries;
+        final progress = summary.totalGifts == 0
+            ? 0.0
+            : summary.claimedCount / summary.totalGifts;
 
         return Scaffold(
           appBar: AppBar(title: Text(l10n.clashGiftsTitle)),
@@ -91,49 +95,28 @@ class _ClashGiftsScreenState extends State<ClashGiftsScreen> {
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(16),
                     children: [
-                      Text(
-                        l10n.clashGiftsPendingSummary(summary.pendingCount),
-                        style: theme.textTheme.labelLarge,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        l10n.clashGiftsClaimedSummary(
-                          summary.claimedCount,
-                          summary.totalGifts,
-                        ),
-                        style: theme.textTheme.labelLarge,
-                      ),
-                      if (summary.pendingCount == 0) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          l10n.clashGiftsEmptyPending,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: context.xiTextSecondary,
+                      ClashProgressSummaryCard(
+                        lines: [
+                          l10n.clashGiftsPendingSummary(summary.pendingCount),
+                          l10n.clashGiftsClaimedSummary(
+                            summary.claimedCount,
+                            summary.totalGifts,
                           ),
-                        ),
-                      ],
-                      if (summary.pendingCount > 0) ...[
-                        const SizedBox(height: 12),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: FilledButton(
-                            onPressed: isClaiming ? null : _claimAll,
-                            child: Text(l10n.clashGiftsClaimAll),
-                          ),
-                        ),
-                      ],
+                        ],
+                        progress: progress,
+                        action: summary.pendingCount > 0
+                            ? ClashClaimButton(
+                                label: l10n.clashGiftsClaimAll,
+                                loading: isClaiming,
+                                onPressed: _claimAll,
+                              )
+                            : null,
+                      ),
                       const SizedBox(height: 16),
                       if (entries.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 24),
-                          child: Center(
-                            child: Text(
-                              l10n.clashGiftsEmptyPending,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: context.xiTextSecondary,
-                              ),
-                            ),
-                          ),
+                        ClashEmptyStateCard(
+                          message: l10n.clashGiftsEmptyPending,
+                          icon: Icons.card_giftcard_outlined,
                         )
                       else
                         ...entries.map(

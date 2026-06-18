@@ -1,8 +1,9 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
-import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/news/data/clash_news_repository.dart';
 import 'package:eternal_xi/features/clash/news/presentation/controllers/clash_news_controller.dart';
 import 'package:eternal_xi/features/clash/news/presentation/widgets/clash_news_card.dart';
+import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_empty_state_card.dart';
+import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_progress_summary_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -40,7 +41,6 @@ class _ClashNewsScreenState extends State<ClashNewsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
 
     return AnimatedBuilder(
       animation: _controller,
@@ -49,19 +49,10 @@ class _ClashNewsScreenState extends State<ClashNewsScreen> {
             _controller.state == ClashNewsLoadState.loading &&
             _controller.entries.isEmpty;
         final filtered = _controller.filteredEntries;
+        final unread = _controller.summary.unreadCount;
 
         return Scaffold(
-          appBar: AppBar(
-            title: Text(l10n.clashNewsTitle),
-            actions: [
-              TextButton(
-                onPressed: _controller.summary.unreadCount == 0
-                    ? null
-                    : _markAllAsRead,
-                child: Text(l10n.clashNewsMarkAllRead),
-              ),
-            ],
-          ),
+          appBar: AppBar(title: Text(l10n.clashNewsTitle)),
           body: isLoading
               ? const Center(child: CircularProgressIndicator())
               : RefreshIndicator(
@@ -70,6 +61,23 @@ class _ClashNewsScreenState extends State<ClashNewsScreen> {
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(16),
                     children: [
+                      ClashProgressSummaryCard(
+                        lines: [
+                          unread == 0
+                              ? l10n.clashNewsHomeAllCaughtUp
+                              : l10n.clashNewsUnreadSummary(unread),
+                        ],
+                        action: unread > 0
+                            ? SizedBox(
+                                width: double.infinity,
+                                child: FilledButton.tonal(
+                                  onPressed: _markAllAsRead,
+                                  child: Text(l10n.clashNewsMarkAllRead),
+                                ),
+                              )
+                            : null,
+                      ),
+                      const SizedBox(height: 16),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -87,18 +95,11 @@ class _ClashNewsScreenState extends State<ClashNewsScreen> {
                           }).toList(),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       if (filtered.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 32),
-                          child: Center(
-                            child: Text(
-                              l10n.clashNewsEmptyFilter,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: context.xiTextSecondary,
-                              ),
-                            ),
-                          ),
+                        ClashEmptyStateCard(
+                          message: l10n.clashNewsEmptyFilter,
+                          icon: Icons.newspaper_outlined,
                         )
                       else
                         ...filtered.map((entry) {

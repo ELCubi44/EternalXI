@@ -1,8 +1,10 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
-import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_repository.dart';
 import 'package:eternal_xi/features/clash/missions/presentation/controllers/clash_weekly_missions_controller.dart';
 import 'package:eternal_xi/features/clash/missions/presentation/widgets/clash_weekly_mission_card.dart';
+import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_claim_button.dart';
+import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_empty_state_card.dart';
+import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_progress_summary_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -68,7 +70,6 @@ class _ClashWeeklyMissionsScreenState extends State<ClashWeeklyMissionsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
 
     return AnimatedBuilder(
       animation: _controller,
@@ -79,6 +80,9 @@ class _ClashWeeklyMissionsScreenState extends State<ClashWeeklyMissionsScreen> {
         final isLoading =
             _controller.state == ClashWeeklyMissionsLoadState.loading &&
             _controller.missions.isEmpty;
+        final progress = summary.totalMissions == 0
+            ? 0.0
+            : summary.completedCount / summary.totalMissions;
 
         return Scaffold(
           appBar: AppBar(title: Text(l10n.clashWeeklyMissionsTitle)),
@@ -90,55 +94,47 @@ class _ClashWeeklyMissionsScreenState extends State<ClashWeeklyMissionsScreen> {
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(16),
                     children: [
-                      Text(
-                        l10n.clashWeeklyMissionsResetHint,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: context.xiTextSecondary,
+                      ClashProgressSummaryCard(
+                        hint: l10n.clashWeeklyMissionsResetHint,
+                        secondaryHint: l10n.clashWeeklyMissionsWeekLabel(
+                          summary.weekKey,
                         ),
+                        lines: [
+                          l10n.clashWeeklyMissionsCompletedSummary(
+                            summary.completedCount,
+                            summary.totalMissions,
+                          ),
+                          l10n.clashWeeklyMissionsClaimedSummary(
+                            summary.claimedCount,
+                            summary.totalMissions,
+                          ),
+                        ],
+                        progress: progress,
+                        action: summary.claimableCount > 0
+                            ? ClashClaimButton(
+                                label: l10n.clashWeeklyMissionsClaimAll,
+                                loading: isClaiming,
+                                onPressed: _claimAll,
+                              )
+                            : null,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        l10n.clashWeeklyMissionsWeekLabel(summary.weekKey),
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: context.xiTextSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        l10n.clashWeeklyMissionsCompletedSummary(
-                          summary.completedCount,
-                          summary.totalMissions,
-                        ),
-                        style: theme.textTheme.labelLarge,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        l10n.clashWeeklyMissionsClaimedSummary(
-                          summary.claimedCount,
-                          summary.totalMissions,
-                        ),
-                        style: theme.textTheme.labelLarge,
-                      ),
-                      if (summary.claimableCount > 0) ...[
-                        const SizedBox(height: 12),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: FilledButton(
-                            onPressed: isClaiming ? null : _claimAll,
-                            child: Text(l10n.clashWeeklyMissionsClaimAll),
+                      const SizedBox(height: 16),
+                      if (_controller.missions.isEmpty)
+                        ClashEmptyStateCard(
+                          message: l10n.clashWeeklyMissionsEmpty,
+                          icon: Icons.date_range_outlined,
+                        )
+                      else
+                        ..._controller.missions.map(
+                          (item) => ClashWeeklyMissionCard(
+                            progress: item,
+                            isClaiming: isClaiming,
+                            highlightRewards: true,
+                            onClaim: item.canClaim
+                                ? () => _claimMission(item.mission.id)
+                                : null,
                           ),
                         ),
-                      ],
-                      const SizedBox(height: 16),
-                      ..._controller.missions.map(
-                        (item) => ClashWeeklyMissionCard(
-                          progress: item,
-                          isClaiming: isClaiming,
-                          onClaim: item.canClaim
-                              ? () => _claimMission(item.mission.id)
-                              : null,
-                        ),
-                      ),
                     ],
                   ),
                 ),

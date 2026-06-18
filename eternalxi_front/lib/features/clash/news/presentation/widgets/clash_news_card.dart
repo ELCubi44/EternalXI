@@ -27,115 +27,142 @@ class ClashNewsCard extends StatelessWidget {
     final dateLabel = MaterialLocalizations.of(
       context,
     ).formatShortDate(item.publishedAt);
+    final typeColor = _typeColor(theme.colorScheme, item.type);
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (item.isPinned) ...[
-                    Icon(
-                      Icons.push_pin_rounded,
-                      size: 16,
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(width: 6),
-                  ],
-                  Expanded(
-                    child: Text(
-                      item.title,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
+      decoration: BoxDecoration(
+        color: !entry.isRead
+            ? theme.colorScheme.primary.withValues(alpha: 0.04)
+            : context.xiCardSurface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: !entry.isRead
+              ? theme.colorScheme.primary.withValues(alpha: 0.35)
+              : context.xiDivider,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (item.isPinned) ...[
+                      Icon(
+                        Icons.push_pin_rounded,
+                        size: 16,
+                        color: theme.colorScheme.primary,
                       ),
-                    ),
-                  ),
-                  if (!entry.isRead)
-                    Container(
-                      margin: const EdgeInsets.only(left: 8),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
+                      const SizedBox(width: 6),
+                    ],
+                    Expanded(
                       child: Text(
-                        l10n.clashNewsBadgeNew,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onPrimaryContainer,
-                          fontWeight: FontWeight.w700,
+                        item.title,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  _TypeChip(label: typeLabel),
-                  Text(
-                    dateLabel,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: context.xiTextSecondary,
+                    if (!entry.isRead)
+                      Container(
+                        margin: const EdgeInsets.only(left: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          l10n.clashNewsBadgeNew,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    _TypeChip(label: typeLabel, color: typeColor),
+                    Text(
+                      dateLabel,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: context.xiTextSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  item.summary,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: context.xiTextSecondary,
+                    height: 1.4,
+                  ),
+                ),
+                if (expanded) ...[
+                  const SizedBox(height: 12),
+                  Divider(color: context.xiDivider, height: 1),
+                  const SizedBox(height: 12),
+                  Text(
+                    item.body,
+                    style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
                   ),
                 ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                item.summary,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: context.xiTextSecondary,
-                  height: 1.4,
-                ),
-              ),
-              if (expanded) ...[
-                const SizedBox(height: 12),
-                Divider(color: context.xiDivider, height: 1),
-                const SizedBox(height: 12),
-                Text(
-                  item.body,
-                  style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
-                ),
               ],
-            ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  static Color _typeColor(ColorScheme scheme, ClashNewsType type) {
+    return switch (type) {
+      ClashNewsType.update => scheme.primary,
+      ClashNewsType.event => scheme.secondary,
+      ClashNewsType.banner => scheme.tertiary,
+      ClashNewsType.maintenance => scheme.error,
+      ClashNewsType.gift => scheme.primaryContainer,
+    };
+  }
 }
 
 class _TypeChip extends StatelessWidget {
-  const _TypeChip({required this.label});
+  const _TypeChip({required this.label, required this.color});
 
   final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: context.xiDivider),
       ),
       child: Text(
         label,
-        style: theme.textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w600,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: color,
         ),
       ),
     );

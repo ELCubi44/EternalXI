@@ -46,6 +46,7 @@ class _ClashAchievementsHomeCardState extends State<ClashAchievementsHomeCard> {
       icon: Icons.emoji_events_rounded,
       title: l10n.clashAchievementsHomeTitle,
       subtitle: subtitle,
+      badgeCount: summary?.claimableCount,
       viewLabel: l10n.clashAchievementsHomeView,
       onView: () => context.push(AppRoutes.clashAchievements),
     );

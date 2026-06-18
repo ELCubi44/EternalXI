@@ -216,6 +216,13 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
+    testWidgets('tarjetas compactas muestran botón Ver', (tester) async {
+      configureViewport(tester);
+      await tester.pumpWidget(await homeApp());
+      await tester.pumpAndSettle();
+      expect(find.text('Ver'), findsWidgets);
+    });
+
     testWidgets('pulsar Historia navega a pantalla historia', (tester) async {
       configureViewport(tester);
       final deps = await homeDeps();

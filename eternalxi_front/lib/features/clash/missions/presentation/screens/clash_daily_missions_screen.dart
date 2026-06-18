@@ -1,8 +1,10 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
-import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_repository.dart';
 import 'package:eternal_xi/features/clash/missions/presentation/controllers/clash_daily_missions_controller.dart';
 import 'package:eternal_xi/features/clash/missions/presentation/widgets/clash_daily_mission_card.dart';
+import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_claim_button.dart';
+import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_empty_state_card.dart';
+import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_progress_summary_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -68,7 +70,6 @@ class _ClashDailyMissionsScreenState extends State<ClashDailyMissionsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
 
     return AnimatedBuilder(
       animation: _controller,
@@ -79,6 +80,9 @@ class _ClashDailyMissionsScreenState extends State<ClashDailyMissionsScreen> {
         final isLoading =
             _controller.state == ClashDailyMissionsLoadState.loading &&
             _controller.missions.isEmpty;
+        final progress = summary.totalMissions == 0
+            ? 0.0
+            : summary.completedCount / summary.totalMissions;
 
         return Scaffold(
           appBar: AppBar(title: Text(l10n.clashDailyMissionsTitle)),
@@ -90,48 +94,43 @@ class _ClashDailyMissionsScreenState extends State<ClashDailyMissionsScreen> {
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(16),
                     children: [
-                      Text(
-                        l10n.clashDailyMissionsResetHint,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: context.xiTextSecondary,
-                        ),
+                      ClashProgressSummaryCard(
+                        hint: l10n.clashDailyMissionsResetHint,
+                        lines: [
+                          l10n.clashDailyMissionsCompletedSummary(
+                            summary.completedCount,
+                            summary.totalMissions,
+                          ),
+                          l10n.clashDailyMissionsClaimedSummary(
+                            summary.claimedCount,
+                            summary.totalMissions,
+                          ),
+                        ],
+                        progress: progress,
+                        action: summary.claimableCount > 0
+                            ? ClashClaimButton(
+                                label: l10n.clashDailyMissionsClaimAll,
+                                loading: isClaiming,
+                                onPressed: _claimAll,
+                              )
+                            : null,
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        l10n.clashDailyMissionsCompletedSummary(
-                          summary.completedCount,
-                          summary.totalMissions,
-                        ),
-                        style: theme.textTheme.labelLarge,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        l10n.clashDailyMissionsClaimedSummary(
-                          summary.claimedCount,
-                          summary.totalMissions,
-                        ),
-                        style: theme.textTheme.labelLarge,
-                      ),
-                      if (summary.claimableCount > 0) ...[
-                        const SizedBox(height: 12),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: FilledButton(
-                            onPressed: isClaiming ? null : _claimAll,
-                            child: Text(l10n.clashDailyMissionsClaimAll),
+                      const SizedBox(height: 16),
+                      if (_controller.missions.isEmpty)
+                        ClashEmptyStateCard(
+                          message: l10n.clashDailyMissionsEmpty,
+                          icon: Icons.assignment_turned_in_outlined,
+                        )
+                      else
+                        ..._controller.missions.map(
+                          (item) => ClashDailyMissionCard(
+                            progress: item,
+                            isClaiming: isClaiming,
+                            onClaim: item.canClaim
+                                ? () => _claimMission(item.mission.id)
+                                : null,
                           ),
                         ),
-                      ],
-                      const SizedBox(height: 16),
-                      ..._controller.missions.map(
-                        (item) => ClashDailyMissionCard(
-                          progress: item,
-                          isClaiming: isClaiming,
-                          onClaim: item.canClaim
-                              ? () => _claimMission(item.mission.id)
-                              : null,
-                        ),
-                      ),
                     ],
                   ),
                 ),

@@ -282,6 +282,24 @@ void main() {
       expect(find.text('Nuevo'), findsNothing);
     });
 
+    testWidgets('cabecera muestra no leídas', (tester) async {
+      final setup = await createTestNewsSetup();
+      await tester.pumpWidget(await newsApp(setup.news));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('sin leer'), findsOneWidget);
+    });
+
+    testWidgets('filtro vacío muestra empty state', (tester) async {
+      final setup = await createTestNewsSetup();
+      await tester.pumpWidget(await newsApp(setup.news));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Marcar todas como leídas'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('No leídas'));
+      await tester.pumpAndSettle();
+      expect(find.text('Sin noticias en este filtro'), findsOneWidget);
+    });
+
     testWidgets('filtros funcionan', (tester) async {
       final setup = await createTestNewsSetup();
       await tester.pumpWidget(await newsApp(setup.news));

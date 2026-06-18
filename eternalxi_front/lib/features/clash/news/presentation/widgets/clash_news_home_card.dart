@@ -55,6 +55,9 @@ class _ClashNewsHomeCardState extends State<ClashNewsHomeCard> {
       icon: Icons.newspaper_rounded,
       title: l10n.clashNewsHomeTitle,
       subtitle: detail,
+      badgeCount: summary != null && !summary.allCaughtUp
+          ? summary.unreadCount
+          : null,
       viewLabel: l10n.clashNewsHomeView,
       onView: () => context.push(AppRoutes.clashNews),
     );

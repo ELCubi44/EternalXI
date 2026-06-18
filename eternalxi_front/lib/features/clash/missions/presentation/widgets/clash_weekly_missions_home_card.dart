@@ -47,6 +47,7 @@ class _ClashWeeklyMissionsHomeCardState
       icon: Icons.date_range_rounded,
       title: l10n.clashWeeklyMissionsHomeTitle,
       subtitle: subtitle,
+      badgeCount: summary?.claimableCount,
       viewLabel: l10n.clashWeeklyMissionsHomeView,
       onView: () => context.push(AppRoutes.clashWeeklyMissions),
     );

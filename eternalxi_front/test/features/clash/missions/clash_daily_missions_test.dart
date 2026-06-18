@@ -398,6 +398,25 @@ void main() {
       expect(find.text('0/1'), findsWidgets);
     });
 
+    testWidgets('muestra cabecera y progreso global', (tester) async {
+      final setup = await createTestMissionsSetup();
+      await tester.pumpWidget(await _missionsApp(setup.missions));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Completadas'), findsOneWidget);
+      expect(find.textContaining('Reclamadas'), findsOneWidget);
+      expect(find.text('Se reinician mañana'), findsOneWidget);
+      expect(find.byType(LinearProgressIndicator), findsWidgets);
+    });
+
+    testWidgets('tarjeta muestra recompensa y estado', (tester) async {
+      final setup = await createTestMissionsSetup();
+      await tester.pumpWidget(await _missionsApp(setup.missions));
+      await tester.pumpAndSettle();
+      expect(find.text('Recompensa'), findsWidgets);
+      expect(find.text('En progreso'), findsWidgets);
+      expect(find.textContaining('monedas'), findsWidgets);
+    });
+
     testWidgets('misión completada muestra Reclamar', (tester) async {
       final setup = await createTestMissionsSetup();
       await setup.missions.recordDailyMissionEvent(
@@ -444,7 +463,8 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Reclamar todas'));
       await tester.pumpAndSettle();
-      expect(find.text('Reclamada'), findsNWidgets(2));
+      expect(find.textContaining('Reclamadas 2'), findsOneWidget);
+      expect(find.text('Reclamada'), findsWidgets);
     });
 
     testWidgets('reset diario muestra progreso nuevo', (tester) async {

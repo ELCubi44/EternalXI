@@ -2,6 +2,9 @@ import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission_reward.dart';
+import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_claim_button.dart';
+import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_progress_status_chip.dart';
+import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_reward_preview_row.dart';
 import 'package:flutter/material.dart';
 
 class ClashDailyMissionCard extends StatelessWidget {
@@ -21,84 +24,97 @@ class ClashDailyMissionCard extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final mission = progress.mission;
+    final fraction = mission.target <= 0
+        ? 0.0
+        : (progress.current / mission.target).clamp(0.0, 1.0);
 
-    final statusLabel = progress.claimed
-        ? l10n.clashDailyMissionsStatusClaimed
+    final status = progress.claimed
+        ? ClashProgressStatus.claimed
         : progress.isCompleted
-        ? l10n.clashDailyMissionsStatusClaim
-        : l10n.clashDailyMissionsStatusInProgress;
+        ? ClashProgressStatus.claimable
+        : ClashProgressStatus.inProgress;
 
-    final statusColor = progress.claimed
-        ? context.xiTextSecondary
-        : progress.isCompleted
-        ? theme.colorScheme.primary
-        : context.xiTextSecondary;
+    final statusLabel = switch (status) {
+      ClashProgressStatus.claimed => l10n.clashDailyMissionsStatusClaimed,
+      ClashProgressStatus.claimable => l10n.clashDailyMissionsStatusClaim,
+      ClashProgressStatus.inProgress => l10n.clashDailyMissionsStatusInProgress,
+    };
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              mission.title,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              mission.description,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: context.xiTextSecondary,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    l10n.clashDailyMissionsProgress(
-                      progress.current,
-                      mission.target,
-                    ),
-                    style: theme.textTheme.labelLarge,
-                  ),
-                ),
-                Text(
-                  statusLabel,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: statusColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _rewardLabel(context, mission.reward),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: context.xiTextSecondary,
-              ),
-            ),
-            if (progress.canClaim) ...[
-              const SizedBox(height: 12),
-              Align(
-                alignment: Alignment.centerRight,
-                child: FilledButton(
-                  onPressed: isClaiming ? null : onClaim,
-                  child: Text(l10n.clashDailyMissionsStatusClaim),
-                ),
-              ),
-            ],
-          ],
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: progress.canClaim
+            ? theme.colorScheme.primary.withValues(alpha: 0.06)
+            : context.xiCardSurface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: progress.canClaim
+              ? theme.colorScheme.primary
+              : context.xiDivider,
+          width: progress.canClaim ? 1.5 : 1,
         ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  mission.title,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              ClashProgressStatusChip(label: statusLabel, status: status),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            mission.description,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: context.xiTextSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: LinearProgressIndicator(
+              value: fraction,
+              minHeight: 6,
+              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.clashDailyMissionsProgress(progress.current, mission.target),
+            style: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ClashRewardPreviewRow(rewards: _rewardParts(context, mission.reward)),
+          if (progress.canClaim) ...[
+            const SizedBox(height: 14),
+            ClashClaimButton(
+              label: l10n.clashDailyMissionsStatusClaim,
+              loading: isClaiming,
+              onPressed: onClaim,
+            ),
+          ],
+        ],
       ),
     );
   }
 
-  String _rewardLabel(BuildContext context, ClashDailyMissionReward reward) {
+  List<String> _rewardParts(
+    BuildContext context,
+    ClashDailyMissionReward reward,
+  ) {
     final l10n = context.l10n;
     final parts = <String>[];
     if (reward.coins > 0) {
@@ -123,6 +139,6 @@ class ClashDailyMissionCard extends StatelessWidget {
         ),
       );
     }
-    return parts.join(' · ');
+    return parts;
   }
 }

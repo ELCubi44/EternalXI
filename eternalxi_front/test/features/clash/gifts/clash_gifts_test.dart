@@ -284,13 +284,7 @@ void main() {
         120,
         scrollable: find.byType(Scrollable).first,
       );
-      final thanksCard = find.ancestor(
-        of: find.text('Gracias por probar el modo Clash'),
-        matching: find.byType(Card),
-      );
-      await tester.tap(
-        find.descendant(of: thanksCard, matching: find.text('Reclamar')),
-      );
+      await tester.tap(find.widgetWithText(FilledButton, 'Reclamar').first);
       await tester.pumpAndSettle();
       expect(find.text('Reclamado'), findsWidgets);
     });
@@ -318,7 +312,24 @@ void main() {
       await setup.gifts.claimAllPending();
       await tester.pumpWidget(await giftsApp(setup.gifts));
       await tester.pumpAndSettle();
-      expect(find.text('No hay regalos pendientes'), findsOneWidget);
+      expect(find.text('Pendientes 0'), findsOneWidget);
+      expect(find.text('Reclamado'), findsWidgets);
+    });
+
+    testWidgets('cabecera muestra pendientes y reclamados', (tester) async {
+      final setup = await createTestGiftsSetup();
+      await tester.pumpWidget(await giftsApp(setup.gifts));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Pendientes'), findsOneWidget);
+      expect(find.textContaining('Reclamados'), findsOneWidget);
+    });
+
+    testWidgets('regalo disponible destaca', (tester) async {
+      final setup = await createTestGiftsSetup();
+      await tester.pumpWidget(await giftsApp(setup.gifts));
+      await tester.pumpAndSettle();
+      expect(find.text('Disponible'), findsWidgets);
+      expect(find.text('Recompensa'), findsWidgets);
     });
 
     testWidgets('wallet se actualiza tras claim', (tester) async {

@@ -450,6 +450,16 @@ void main() {
       expect(find.text('Gana 3 partidos'), findsOneWidget);
     });
 
+    testWidgets('muestra cabecera y progreso global', (tester) async {
+      final setup = await createTestWeeklyMissionsSetup();
+      await tester.pumpWidget(await weeklyApp(setup.weekly));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Completadas'), findsOneWidget);
+      expect(find.textContaining('Semana actual'), findsOneWidget);
+      expect(find.text('Se reinician el lunes'), findsOneWidget);
+      expect(find.byType(LinearProgressIndicator), findsWidgets);
+    });
+
     testWidgets('muestra progreso', (tester) async {
       final setup = await createTestWeeklyMissionsSetup();
       await tester.pumpWidget(await weeklyApp(setup.weekly));

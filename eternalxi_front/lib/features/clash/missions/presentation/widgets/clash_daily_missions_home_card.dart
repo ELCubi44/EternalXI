@@ -47,6 +47,7 @@ class _ClashDailyMissionsHomeCardState
       icon: Icons.assignment_turned_in_rounded,
       title: l10n.clashDailyMissionsHomeTitle,
       subtitle: subtitle,
+      badgeCount: summary?.claimableCount,
       viewLabel: l10n.clashDailyMissionsHomeView,
       onView: () => context.push(AppRoutes.clashMissions),
     );

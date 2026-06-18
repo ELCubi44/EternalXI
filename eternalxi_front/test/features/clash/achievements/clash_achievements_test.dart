@@ -751,6 +751,19 @@ void main() {
       expect(find.text('Reclamado'), findsWidgets);
     });
 
+    testWidgets('logro completado pendiente destaca visualmente', (
+      tester,
+    ) async {
+      final setup = await createTestAchievementsSetup();
+      await setup.achievements.recordAchievementEvent(
+        ClashAchievementType.playMatch,
+      );
+      await tester.pumpWidget(await _achievementsApp(setup.achievements));
+      await tester.pumpAndSettle();
+      expect(find.text('Reclamar'), findsWidgets);
+      expect(find.byType(LinearProgressIndicator), findsWidgets);
+    });
+
     testWidgets('recompensa visible', (tester) async {
       final setup = await createTestAchievementsSetup();
       await tester.pumpWidget(await _achievementsApp(setup.achievements));

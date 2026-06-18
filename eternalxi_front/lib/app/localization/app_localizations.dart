@@ -159,6 +159,8 @@ class AppLocalizations {
       'clashDailyMissionsRewardCoins': '{count} monedas',
       'clashDailyMissionsRewardGems': '{count} gemas',
       'clashDailyMissionsProgress': '{current}/{target}',
+      'clashDailyMissionsEmpty': 'No hay misiones disponibles',
+      'clashEngagementRewardsLabel': 'Recompensa',
       'clashAchievementsTitle': 'Logros',
       'clashAchievementsPermanentHint':
           'Progreso permanente. No se reinician cada día.',
@@ -196,6 +198,7 @@ class AppLocalizations {
       'clashWeeklyMissionsRewardCoins': '{count} monedas',
       'clashWeeklyMissionsRewardGems': '{count} gemas',
       'clashWeeklyMissionsProgress': '{current}/{target}',
+      'clashWeeklyMissionsEmpty': 'No hay misiones semanales disponibles',
       'clashNewsTitle': 'Noticias',
       'clashNewsMarkAllRead': 'Marcar todas como leídas',
       'clashNewsFilterAll': 'Todas',
@@ -215,6 +218,7 @@ class AppLocalizations {
       'clashNewsHomeUnread': '{count} sin leer',
       'clashNewsHomeAllCaughtUp': 'Todo al día',
       'clashNewsHomeView': 'Ver',
+      'clashNewsUnreadSummary': '{count} sin leer',
       'clashGiftsTitle': 'Regalos',
       'clashGiftsPendingSummary': 'Pendientes {count}',
       'clashGiftsClaimedSummary': 'Reclamados {claimed}/{total}',
@@ -959,6 +963,8 @@ class AppLocalizations {
       'clashDailyMissionsRewardCoins': '{count} coins',
       'clashDailyMissionsRewardGems': '{count} gems',
       'clashDailyMissionsProgress': '{current}/{target}',
+      'clashDailyMissionsEmpty': 'No missions available',
+      'clashEngagementRewardsLabel': 'Reward',
       'clashAchievementsTitle': 'Achievements',
       'clashAchievementsPermanentHint':
           'Permanent progress. They do not reset daily.',
@@ -996,6 +1002,7 @@ class AppLocalizations {
       'clashWeeklyMissionsRewardCoins': '{count} coins',
       'clashWeeklyMissionsRewardGems': '{count} gems',
       'clashWeeklyMissionsProgress': '{current}/{target}',
+      'clashWeeklyMissionsEmpty': 'No weekly missions available',
       'clashNewsTitle': 'News',
       'clashNewsMarkAllRead': 'Mark all as read',
       'clashNewsFilterAll': 'All',
@@ -1015,6 +1022,7 @@ class AppLocalizations {
       'clashNewsHomeUnread': '{count} unread',
       'clashNewsHomeAllCaughtUp': 'All caught up',
       'clashNewsHomeView': 'View',
+      'clashNewsUnreadSummary': '{count} unread',
       'clashGiftsTitle': 'Gifts',
       'clashGiftsPendingSummary': 'Pending {count}',
       'clashGiftsClaimedSummary': 'Claimed {claimed}/{total}',
@@ -1790,6 +1798,8 @@ class AppLocalizations {
   String clashDailyMissionsProgress(int current, int target) => _t(
     'clashDailyMissionsProgress',
   ).replaceAll('{current}', '$current').replaceAll('{target}', '$target');
+  String get clashDailyMissionsEmpty => _t('clashDailyMissionsEmpty');
+  String get clashEngagementRewardsLabel => _t('clashEngagementRewardsLabel');
   String get clashAchievementsTitle => _t('clashAchievementsTitle');
   String get clashAchievementsPermanentHint =>
       _t('clashAchievementsPermanentHint');
@@ -1856,6 +1866,7 @@ class AppLocalizations {
   String clashWeeklyMissionsProgress(int current, int target) => _t(
     'clashWeeklyMissionsProgress',
   ).replaceAll('{current}', '$current').replaceAll('{target}', '$target');
+  String get clashWeeklyMissionsEmpty => _t('clashWeeklyMissionsEmpty');
   String get clashNewsTitle => _t('clashNewsTitle');
   String get clashNewsMarkAllRead => _t('clashNewsMarkAllRead');
   String get clashNewsFilterAll => _t('clashNewsFilterAll');
@@ -1876,6 +1887,8 @@ class AppLocalizations {
       _t('clashNewsHomeUnread').replaceAll('{count}', '$count');
   String get clashNewsHomeAllCaughtUp => _t('clashNewsHomeAllCaughtUp');
   String get clashNewsHomeView => _t('clashNewsHomeView');
+  String clashNewsUnreadSummary(int count) =>
+      _t('clashNewsUnreadSummary').replaceAll('{count}', '$count');
   String get clashGiftsTitle => _t('clashGiftsTitle');
   String clashGiftsPendingSummary(int count) =>
       _t('clashGiftsPendingSummary').replaceAll('{count}', '$count');

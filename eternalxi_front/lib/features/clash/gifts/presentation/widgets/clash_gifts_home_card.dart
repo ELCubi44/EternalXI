@@ -55,6 +55,9 @@ class _ClashGiftsHomeCardState extends State<ClashGiftsHomeCard> {
       icon: Icons.card_giftcard_rounded,
       title: l10n.clashGiftsHomeTitle,
       subtitle: detail,
+      badgeCount: summary != null && summary.hasPending
+          ? summary.pendingCount
+          : null,
       viewLabel: l10n.clashGiftsHomeView,
       onView: () => context.push(AppRoutes.clashGifts),
     );

@@ -620,4 +620,19 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 40 — Pulido visual Misiones, Logros, Noticias y Regalos
+
+**Estado:** implementada (local).
+
+- Widgets compartidos: resumen de progreso, chips de estado, recompensas, botón reclamar y empty state.
+- Misiones diarias/semanales con cabecera, barra global y tarjetas con progreso y destacado al reclamar.
+- Logros con filtros horizontales, iconos por categoría y pendientes destacados.
+- Noticias con cabecera de no leídas, marcar todas visible y cards con tipo/fecha/pin/Nuevo.
+- Regalos con cabecera pendientes/reclamados, disponibles destacados y reclamar todos.
+- Home cards compactas con badge, altura mínima e icono en contenedor.
+
+**Pendiente:** backend, sincronización servidor, notificaciones push, admin panel.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*
