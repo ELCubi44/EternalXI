@@ -29,6 +29,8 @@ import 'package:eternal_xi/features/clash/team/domain/clash_lineup_7v7.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../cards/clash_test_support.dart';
+
 const _matchLevel = ClashStoryLevel(
   id: 'chapter_01_level_04',
   chapterId: 'chapter-01',
@@ -179,8 +181,7 @@ void main() {
   group('ClashStoryRepository match completion', () {
     Future<ClashStoryRepository> repo() async {
       final cardsRepo = ClashCardsRepository(_EmptyCardsDataSource());
-      final collectionRepo = ClashPlayerCollectionRepository(
-        storage: InMemoryClashPlayerCollectionBackend(),
+      final collectionRepo = createTestCollectionRepository(
         cardsRepository: cardsRepo,
       );
       return ClashStoryRepository(

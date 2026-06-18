@@ -8,7 +8,10 @@ import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/data/services/user_progress_api_service.dart';
 import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_material_inventory_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_materials_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_local_datasource.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
@@ -49,6 +52,13 @@ Future<void> main() async {
       await SharedPreferencesClashLineupsBackend.create();
   final clashCollectionBackend =
       await SharedPreferencesClashPlayerCollectionBackend.create();
+  final clashExpMaterialInventoryBackend =
+      await SharedPreferencesClashExpMaterialInventoryBackend.create();
+  final clashExpMaterialsRepository = ClashExpMaterialsRepository(
+    dataSource: ClashExpMaterialsLocalDataSource(),
+    inventoryStorage: clashExpMaterialInventoryBackend,
+  );
+  await clashExpMaterialsRepository.seedDefaultInventoryIfEmpty();
   final clashStoryProgressBackend =
       await SharedPreferencesClashStoryProgressBackend.create();
   final apiClient = ApiClient(
@@ -146,10 +156,20 @@ Future<void> main() async {
         Provider<ClashPlayerCollectionStorageBackend>.value(
           value: clashCollectionBackend,
         ),
+        Provider<ClashExpMaterialInventoryStorageBackend>.value(
+          value: clashExpMaterialInventoryBackend,
+        ),
+        Provider<ClashExpMaterialsLocalDataSource>(
+          create: (_) => ClashExpMaterialsLocalDataSource(),
+        ),
+        Provider<ClashExpMaterialsRepository>.value(
+          value: clashExpMaterialsRepository,
+        ),
         Provider<ClashPlayerCollectionRepository>(
           create: (context) => ClashPlayerCollectionRepository(
             storage: context.read<ClashPlayerCollectionStorageBackend>(),
             cardsRepository: context.read<ClashCardsRepository>(),
+            expMaterialsRepository: context.read<ClashExpMaterialsRepository>(),
           ),
         ),
         ChangeNotifierProvider<ClashCardsController>(

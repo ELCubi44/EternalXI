@@ -22,6 +22,8 @@ import 'package:eternal_xi/features/clash/presentation/clash_tab_host.dart';
 import 'package:eternal_xi/features/mode/screens/mode_selection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../clash/cards/clash_test_support.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -34,8 +36,7 @@ class _EmptyCardsDataSource extends ClashCardsLocalDataSource {
 
 ClashStoryController _storyController() {
   final cardsRepo = ClashCardsRepository(_EmptyCardsDataSource());
-  final collectionRepo = ClashPlayerCollectionRepository(
-    storage: InMemoryClashPlayerCollectionBackend(),
+  final collectionRepo = createTestCollectionRepository(
     cardsRepository: cardsRepo,
   );
   final storyRepo = ClashStoryRepository(

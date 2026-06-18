@@ -3,6 +3,7 @@ import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_loc
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_level_scaling.dart';
@@ -30,6 +31,8 @@ import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_c
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+
+import 'clash_test_support.dart';
 
 const _card = ClashCard(
   id: 'xp-test-card',
@@ -81,6 +84,7 @@ class _FakeCardsDataSource extends ClashCardsLocalDataSource {
 
 Future<Widget> _detailTestApp(
   ClashPlayerCollectionRepository collectionRepo,
+  ClashExpMaterialsRepository materialsRepo,
 ) async {
   final cardsRepo = ClashCardsRepository(_FakeCardsDataSource());
   final controller = ClashCardsController(cardsRepo, collectionRepo);
@@ -89,6 +93,7 @@ Future<Widget> _detailTestApp(
     providers: [
       ChangeNotifierProvider<ClashCardsController>.value(value: controller),
       Provider<ClashPlayerCollectionRepository>.value(value: collectionRepo),
+      Provider<ClashExpMaterialsRepository>.value(value: materialsRepo),
     ],
     child: MaterialApp(
       locale: const Locale('es'),
@@ -103,9 +108,9 @@ Future<ClashStoryRepository> _storyRepo(
   InMemoryClashPlayerCollectionBackend storage,
 ) async {
   final cardsRepo = ClashCardsRepository(_FakeCardsDataSource());
-  final collectionRepo = ClashPlayerCollectionRepository(
-    storage: storage,
+  final collectionRepo = createTestCollectionRepository(
     cardsRepository: cardsRepo,
+    storage: storage,
   );
   await collectionRepo.grantMissingCardIds([_card.id]);
   return ClashStoryRepository(
@@ -249,9 +254,9 @@ void main() {
     test('progreso persiste nivel y XP', () async {
       final storage = InMemoryClashPlayerCollectionBackend();
       final cardsRepo = ClashCardsRepository(_FakeCardsDataSource());
-      final repo = ClashPlayerCollectionRepository(
-        storage: storage,
+      final repo = createTestCollectionRepository(
         cardsRepository: cardsRepo,
+        storage: storage,
       );
       await repo.grantMissingCardIds([_card.id]);
 
@@ -264,9 +269,9 @@ void main() {
     test('colección devuelve nivel persistido', () async {
       final storage = InMemoryClashPlayerCollectionBackend();
       final cardsRepo = ClashCardsRepository(_FakeCardsDataSource());
-      final repo = ClashPlayerCollectionRepository(
-        storage: storage,
+      final repo = createTestCollectionRepository(
         cardsRepository: cardsRepo,
+        storage: storage,
       );
       await repo.grantMissingCardIds([_card.id]);
       await repo.grantMatchXp(cardIds: [_card.id], xpPerCard: 200);
@@ -326,13 +331,18 @@ void main() {
   group('UI card XP', () {
     testWidgets('detalle muestra barra XP', (tester) async {
       final storage = InMemoryClashPlayerCollectionBackend();
-      final collectionRepo = ClashPlayerCollectionRepository(
+      final cardsRepo = ClashCardsRepository(_FakeCardsDataSource());
+      final materialsRepo = createTestExpMaterialsRepository();
+      final collectionRepo = createTestCollectionRepository(
+        cardsRepository: cardsRepo,
         storage: storage,
-        cardsRepository: ClashCardsRepository(_FakeCardsDataSource()),
+        expMaterialsRepository: materialsRepo,
       );
       await collectionRepo.grantMissingCardIds([_card.id]);
 
-      await tester.pumpWidget(await _detailTestApp(collectionRepo));
+      await tester.pumpWidget(
+        await _detailTestApp(collectionRepo, materialsRepo),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Experiencia'), findsOneWidget);
@@ -341,14 +351,19 @@ void main() {
 
     testWidgets('detalle muestra nivel máximo si aplica', (tester) async {
       final storage = InMemoryClashPlayerCollectionBackend();
-      final collectionRepo = ClashPlayerCollectionRepository(
+      final cardsRepo = ClashCardsRepository(_FakeCardsDataSource());
+      final materialsRepo = createTestExpMaterialsRepository();
+      final collectionRepo = createTestCollectionRepository(
+        cardsRepository: cardsRepo,
         storage: storage,
-        cardsRepository: ClashCardsRepository(_FakeCardsDataSource()),
+        expMaterialsRepository: materialsRepo,
       );
       await collectionRepo.grantMissingCardIds([_card.id]);
       await collectionRepo.grantMatchXp(cardIds: [_card.id], xpPerCard: 50000);
 
-      await tester.pumpWidget(await _detailTestApp(collectionRepo));
+      await tester.pumpWidget(
+        await _detailTestApp(collectionRepo, materialsRepo),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Nivel máximo'), findsOneWidget);

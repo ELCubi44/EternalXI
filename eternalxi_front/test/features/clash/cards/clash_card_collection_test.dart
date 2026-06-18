@@ -2,9 +2,9 @@ import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
-import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
-import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/screens/clash_card_collection_screen.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/screens/clash_card_detail_screen.dart';
@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
+import 'clash_test_support.dart';
 
 const _sampleJson = '''
 {
@@ -62,18 +64,25 @@ class _FakeDataSource extends ClashCardsLocalDataSource {
   Future<List<ClashCardCatalogEntry>> loadCards() async => _cards;
 }
 
-Future<(ClashCardsController, ClashPlayerCollectionRepository)>
+Future<
+  (
+    ClashCardsController,
+    ClashPlayerCollectionRepository,
+    ClashExpMaterialsRepository,
+  )
+>
 _readyController() async {
   final cards = ClashCardsLocalDataSource().parseCardsJson(_sampleJson);
   final cardsRepo = ClashCardsRepository(_FakeDataSource(cards));
-  final collectionRepo = ClashPlayerCollectionRepository(
-    storage: InMemoryClashPlayerCollectionBackend(),
+  final materialsRepo = createTestExpMaterialsRepository();
+  final collectionRepo = createTestCollectionRepository(
     cardsRepository: cardsRepo,
+    expMaterialsRepository: materialsRepo,
   );
   await collectionRepo.grantMissingCardIds(['ui-test-1']);
   final controller = ClashCardsController(cardsRepo, collectionRepo);
   await controller.load();
-  return (controller, collectionRepo);
+  return (controller, collectionRepo, materialsRepo);
 }
 
 GoRouter _cardsRouter(ClashCardsController controller) {
@@ -103,11 +112,13 @@ Widget _routerApp(
   GoRouter router,
   ClashCardsController controller,
   ClashPlayerCollectionRepository collectionRepo,
+  ClashExpMaterialsRepository materialsRepo,
 ) {
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<ClashCardsController>.value(value: controller),
       Provider<ClashPlayerCollectionRepository>.value(value: collectionRepo),
+      Provider<ClashExpMaterialsRepository>.value(value: materialsRepo),
     ],
     child: MaterialApp.router(
       locale: const Locale('es'),
@@ -123,7 +134,7 @@ void main() {
 
   group('ClashCardCollectionScreen', () {
     testWidgets('renderiza cartas cargadas', (tester) async {
-      final (controller, _) = await _readyController();
+      final (controller, _, __) = await _readyController();
       await tester.pumpWidget(
         ChangeNotifierProvider<ClashCardsController>.value(
           value: controller,
@@ -142,9 +153,12 @@ void main() {
     });
 
     testWidgets('pulsar carta abre detalle', (tester) async {
-      final (controller, collectionRepo) = await _readyController();
+      final (controller, collectionRepo, materialsRepo) =
+          await _readyController();
       final router = _cardsRouter(controller);
-      await tester.pumpWidget(_routerApp(router, controller, collectionRepo));
+      await tester.pumpWidget(
+        _routerApp(router, controller, collectionRepo, materialsRepo),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(ClashCardTile));
@@ -158,7 +172,8 @@ void main() {
 
   group('ClashCardDetailScreen', () {
     testWidgets('carta inexistente muestra error seguro', (tester) async {
-      final (controller, collectionRepo) = await _readyController();
+      final (controller, collectionRepo, materialsRepo) =
+          await _readyController();
       final router = GoRouter(
         initialLocation: AppRoutes.clashCardDetail('missing-id'),
         routes: [
@@ -173,7 +188,9 @@ void main() {
         ],
       );
 
-      await tester.pumpWidget(_routerApp(router, controller, collectionRepo));
+      await tester.pumpWidget(
+        _routerApp(router, controller, collectionRepo, materialsRepo),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Carta no encontrada.'), findsOneWidget);

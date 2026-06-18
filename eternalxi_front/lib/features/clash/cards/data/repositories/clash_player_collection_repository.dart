@@ -1,9 +1,11 @@
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_progress.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_service.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_use_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 
 /// Colección de cartas poseídas por el jugador (local, sin backend).
@@ -11,11 +13,14 @@ class ClashPlayerCollectionRepository {
   ClashPlayerCollectionRepository({
     required ClashPlayerCollectionStorageBackend storage,
     required ClashCardsRepository cardsRepository,
+    required ClashExpMaterialsRepository expMaterialsRepository,
   }) : _storage = storage,
-       _cardsRepository = cardsRepository;
+       _cardsRepository = cardsRepository,
+       _expMaterialsRepository = expMaterialsRepository;
 
   final ClashPlayerCollectionStorageBackend _storage;
   final ClashCardsRepository _cardsRepository;
+  final ClashExpMaterialsRepository _expMaterialsRepository;
 
   ClashPlayerCollectionSnapshot? _cache;
 
@@ -243,6 +248,214 @@ class ClashPlayerCollectionRepository {
   }
 
   bool ownsCard(String cardId) => loadOwnedCardIds().contains(cardId);
+
+  Future<void> grantExpMaterials(Map<String, int> additions) {
+    return _expMaterialsRepository.grantMaterials(additions);
+  }
+
+  /// Usa materiales EXP sobre una carta poseída (Fase 18).
+  Future<ClashExpMaterialUseResult> useExpMaterialOnCard({
+    required String cardId,
+    required String materialId,
+    int quantity = 1,
+  }) async {
+    if (quantity <= 0) {
+      return ClashExpMaterialUseResult(
+        cardId: cardId,
+        materialId: materialId,
+        quantityUsed: 0,
+        xpGained: 0,
+        previousLevel: 1,
+        newLevel: 1,
+        previousXp: 0,
+        newXp: 0,
+        didLevelUp: false,
+        reachedMaxLevel: false,
+        error: ClashExpMaterialUseError.insufficientQuantity,
+      );
+    }
+
+    final snapshot = _loadSnapshot();
+    if (!snapshot.ownedCardIds.contains(cardId)) {
+      return _failedMaterialUse(
+        cardId: cardId,
+        materialId: materialId,
+        error: ClashExpMaterialUseError.cardNotOwned,
+      );
+    }
+
+    final entry = await _cardsRepository.findById(cardId);
+    if (entry == null) {
+      return _failedMaterialUse(
+        cardId: cardId,
+        materialId: materialId,
+        error: ClashExpMaterialUseError.cardNotFound,
+      );
+    }
+
+    final material = await _expMaterialsRepository.findById(materialId);
+    if (material == null) {
+      return _failedMaterialUse(
+        cardId: cardId,
+        materialId: materialId,
+        error: ClashExpMaterialUseError.materialNotFound,
+      );
+    }
+
+    final available = _expMaterialsRepository.quantityFor(materialId);
+    if (available <= 0) {
+      final progress =
+          snapshot.cardProgress[cardId] ??
+          ClashCardXpService.initialProgress(cardId);
+      return ClashExpMaterialUseResult(
+        cardId: cardId,
+        materialId: materialId,
+        quantityUsed: 0,
+        xpGained: 0,
+        previousLevel: progress.currentLevel,
+        newLevel: progress.currentLevel,
+        previousXp: progress.currentExperience,
+        newXp: progress.currentExperience,
+        didLevelUp: false,
+        reachedMaxLevel: ClashCardXpService.isAtMaxLevel(
+          progress,
+          entry.card.rarity,
+        ),
+        error: ClashExpMaterialUseError.insufficientQuantity,
+      );
+    }
+
+    if (available < quantity) {
+      final progress =
+          snapshot.cardProgress[cardId] ??
+          ClashCardXpService.initialProgress(cardId);
+      return ClashExpMaterialUseResult(
+        cardId: cardId,
+        materialId: materialId,
+        quantityUsed: 0,
+        xpGained: 0,
+        previousLevel: progress.currentLevel,
+        newLevel: progress.currentLevel,
+        previousXp: progress.currentExperience,
+        newXp: progress.currentExperience,
+        didLevelUp: false,
+        reachedMaxLevel: ClashCardXpService.isAtMaxLevel(
+          progress,
+          entry.card.rarity,
+        ),
+        error: ClashExpMaterialUseError.insufficientQuantity,
+      );
+    }
+
+    final current =
+        snapshot.cardProgress[cardId] ??
+        ClashCardXpService.initialProgress(cardId);
+    final previousLevel = current.currentLevel;
+    final previousXp = current.currentExperience;
+
+    if (ClashCardXpService.isAtMaxLevel(current, entry.card.rarity)) {
+      return ClashExpMaterialUseResult(
+        cardId: cardId,
+        materialId: materialId,
+        quantityUsed: 0,
+        xpGained: 0,
+        previousLevel: previousLevel,
+        newLevel: previousLevel,
+        previousXp: previousXp,
+        newXp: previousXp,
+        didLevelUp: false,
+        reachedMaxLevel: true,
+        error: ClashExpMaterialUseError.cardAtMaxLevel,
+      );
+    }
+
+    final xpAmount = material.xpAmount * quantity;
+    final xpResult = ClashCardXpService.applyXp(
+      progress: current,
+      rarity: entry.card.rarity,
+      cardName: entry.name,
+      xpAmount: xpAmount,
+    );
+
+    if (xpResult.xpGained <= 0) {
+      return ClashExpMaterialUseResult(
+        cardId: cardId,
+        materialId: materialId,
+        quantityUsed: 0,
+        xpGained: 0,
+        previousLevel: previousLevel,
+        newLevel: previousLevel,
+        previousXp: previousXp,
+        newXp: previousXp,
+        didLevelUp: false,
+        reachedMaxLevel: xpResult.reachedMaxLevel,
+        error: ClashExpMaterialUseError.cannotGainXp,
+      );
+    }
+
+    final consumed = await _expMaterialsRepository.consumeMaterial(
+      materialId: materialId,
+      quantity: quantity,
+    );
+    if (!consumed) {
+      return ClashExpMaterialUseResult(
+        cardId: cardId,
+        materialId: materialId,
+        quantityUsed: 0,
+        xpGained: 0,
+        previousLevel: previousLevel,
+        newLevel: previousLevel,
+        previousXp: previousXp,
+        newXp: previousXp,
+        didLevelUp: false,
+        reachedMaxLevel: xpResult.reachedMaxLevel,
+        error: ClashExpMaterialUseError.insufficientQuantity,
+      );
+    }
+
+    final updatedProgress = ClashCardXpService.progressAfterResult(
+      current,
+      xpResult,
+    );
+    final progressMap = Map<String, ClashCardProgress>.from(
+      snapshot.cardProgress,
+    );
+    progressMap[cardId] = updatedProgress;
+    await _save(snapshot.copyWith(cardProgress: progressMap));
+
+    return ClashExpMaterialUseResult(
+      cardId: cardId,
+      materialId: materialId,
+      quantityUsed: quantity,
+      xpGained: xpResult.xpGained,
+      previousLevel: previousLevel,
+      newLevel: xpResult.newLevel,
+      previousXp: previousXp,
+      newXp: xpResult.newXp,
+      didLevelUp: xpResult.didLevelUp,
+      reachedMaxLevel: xpResult.reachedMaxLevel,
+    );
+  }
+
+  ClashExpMaterialUseResult _failedMaterialUse({
+    required String cardId,
+    required String materialId,
+    required ClashExpMaterialUseError error,
+  }) {
+    return ClashExpMaterialUseResult(
+      cardId: cardId,
+      materialId: materialId,
+      quantityUsed: 0,
+      xpGained: 0,
+      previousLevel: 1,
+      newLevel: 1,
+      previousXp: 0,
+      newXp: 0,
+      didLevelUp: false,
+      reachedMaxLevel: false,
+      error: error,
+    );
+  }
 
   Future<void> _save(ClashPlayerCollectionSnapshot snapshot) async {
     _cache = snapshot;

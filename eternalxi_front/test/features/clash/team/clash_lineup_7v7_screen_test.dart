@@ -10,6 +10,8 @@ import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_li
 import 'package:eternal_xi/features/clash/team/presentation/screens/clash_lineup_7v7_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../cards/clash_test_support.dart';
 import 'package:provider/provider.dart';
 
 class _FakeCardsDataSource extends ClashCardsLocalDataSource {
@@ -60,8 +62,7 @@ void main() {
 ''');
 
     final cardsRepo = ClashCardsRepository(_FakeCardsDataSource(cards));
-    final collectionRepo = ClashPlayerCollectionRepository(
-      storage: InMemoryClashPlayerCollectionBackend(),
+    final collectionRepo = createTestCollectionRepository(
       cardsRepository: cardsRepo,
     );
     await collectionRepo.grantMissingCardIds(['gk-1']);

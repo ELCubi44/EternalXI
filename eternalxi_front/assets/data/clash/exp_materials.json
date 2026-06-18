@@ -1,0 +1,28 @@
+{
+  "materials": [
+    {
+      "id": "basic-training-manual",
+      "name": "Manual básico de entrenamiento",
+      "description": "Manual introductorio que otorga experiencia básica a una carta.",
+      "xpAmount": 50,
+      "rarity": "common",
+      "iconKey": "book_basic"
+    },
+    {
+      "id": "advanced-training-manual",
+      "name": "Manual avanzado de entrenamiento",
+      "description": "Manual intermedio con técnicas de entrenamiento más exigentes.",
+      "xpAmount": 200,
+      "rarity": "uncommon",
+      "iconKey": "book_advanced"
+    },
+    {
+      "id": "master-training-manual",
+      "name": "Manual maestro de entrenamiento",
+      "description": "Manual experto que transmite una gran cantidad de experiencia.",
+      "xpAmount": 800,
+      "rarity": "rare",
+      "iconKey": "book_master"
+    }
+  ]
+}

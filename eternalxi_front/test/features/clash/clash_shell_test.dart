@@ -25,6 +25,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../firebase_test_setup.dart';
+import '../clash/cards/clash_test_support.dart';
 
 class _EmptyCardsDataSource extends ClashCardsLocalDataSource {
   @override
@@ -33,8 +34,7 @@ class _EmptyCardsDataSource extends ClashCardsLocalDataSource {
 
 ClashStoryController _storyController() {
   final cardsRepo = ClashCardsRepository(_EmptyCardsDataSource());
-  final collectionRepo = ClashPlayerCollectionRepository(
-    storage: InMemoryClashPlayerCollectionBackend(),
+  final collectionRepo = createTestCollectionRepository(
     cardsRepository: cardsRepo,
   );
   final storyRepo = ClashStoryRepository(

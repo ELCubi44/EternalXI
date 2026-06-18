@@ -181,6 +181,12 @@ class AppLocalizations {
       'clashTechniquePtCost': 'Coste PT',
       'clashTechniqueLevel': 'Nivel',
       'clashActionUpgrade': 'Mejorar',
+      'clashExpMaterialXp': '+{xp} EXP',
+      'clashExpMaterialQuantity': 'Cantidad: {count}',
+      'clashExpMaterialUseOne': 'Usar 1',
+      'clashExpMaterialLevelUp': 'Sube de nivel: {from} → {to}',
+      'clashUpgradeMaxLevelHint':
+          'Nivel máximo alcanzado. No se pueden usar materiales.',
       'clashActionEvolve': 'Evolución',
       'clashActionTree': 'Árbol',
       'clashLineupSlotEmpty': 'Vacío',
@@ -681,6 +687,12 @@ class AppLocalizations {
       'clashTechniquePtCost': 'TP cost',
       'clashTechniqueLevel': 'Level',
       'clashActionUpgrade': 'Upgrade',
+      'clashExpMaterialXp': '+{xp} XP',
+      'clashExpMaterialQuantity': 'Quantity: {count}',
+      'clashExpMaterialUseOne': 'Use 1',
+      'clashExpMaterialLevelUp': 'Level up: {from} → {to}',
+      'clashUpgradeMaxLevelHint':
+          'Max level reached. Materials cannot be used.',
       'clashActionEvolve': 'Evolution',
       'clashActionTree': 'Tree',
       'clashLineupSlotEmpty': 'Empty',
@@ -1198,6 +1210,15 @@ class AppLocalizations {
   String get clashTechniquePtCost => _t('clashTechniquePtCost');
   String get clashTechniqueLevel => _t('clashTechniqueLevel');
   String get clashActionUpgrade => _t('clashActionUpgrade');
+  String clashExpMaterialXp(int xp) =>
+      _t('clashExpMaterialXp').replaceAll('{xp}', '$xp');
+  String clashExpMaterialQuantity(int count) =>
+      _t('clashExpMaterialQuantity').replaceAll('{count}', '$count');
+  String get clashExpMaterialUseOne => _t('clashExpMaterialUseOne');
+  String clashExpMaterialLevelUp(int from, int to) => _t(
+    'clashExpMaterialLevelUp',
+  ).replaceAll('{from}', '$from').replaceAll('{to}', '$to');
+  String get clashUpgradeMaxLevelHint => _t('clashUpgradeMaxLevelHint');
   String get clashActionEvolve => _t('clashActionEvolve');
   String get clashActionTree => _t('clashActionTree');
   String get clashLineupSlotEmpty => _t('clashLineupSlotEmpty');

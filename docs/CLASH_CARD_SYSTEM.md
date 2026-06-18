@@ -270,13 +270,29 @@ Tras completar árbol o sin carta compatible:
 
 ## 10. Subida de nivel
 
-### 10.0 Implementación Fase 17 (Flutter)
+### 10.0 Implementación Fase 17–18 (Flutter)
 
-La **Fase 17** implementa EXP y subida de nivel por victorias en partidos match:
+La **Fase 17** implementa EXP y subida de nivel por victorias en partidos match.
+
+La **Fase 18** añade **materiales de EXP** consumibles desde el detalle de carta:
+
+| Incluido (Fase 18) | Pendiente |
+|---|---|
+| `ClashExpMaterial`, inventario local (`clash_exp_material_inventory_v1`) | Cartas como material |
+| Catálogo `assets/data/clash/exp_materials.json` (3 manuales) | Backend / tienda real |
+| `useExpMaterialOnCard` en colección | Evolución / árbol |
+| UI sección **Mejorar** en detalle de carta | Gacha |
+| Adaptador `basic-book` → manual básico (recompensa Nivel 4) | Duplicados |
+
+**Inventario provisional inicial:** manual básico ×5, avanzado ×2, maestro ×1.
+
+**Uso:** solo desde detalle de carta; botón «Usar 1»; no se puede usar con cantidad 0 ni en carta al nivel máximo; el material no se consume si la carta no puede ganar EXP.
+
+**Fase 17 — incluido:**
 
 | Incluido | Pendiente |
 |---|---|
-| `ClashCardXpTable`, `ClashCardXpService`, persistencia v2 | Objetos de entrenamiento |
+| `ClashCardXpTable`, `ClashCardXpService`, persistencia v2 | Objetos de entrenamiento (**Fase 18:** manuales locales) |
 | EXP por nivel (`cardXpReward` en JSON de historia) | Cartas como material |
 | UI barra XP + resumen en fin de partido | Backend |
 | Escalado provisional stats/potencia por nivel | Evolución / árbol |

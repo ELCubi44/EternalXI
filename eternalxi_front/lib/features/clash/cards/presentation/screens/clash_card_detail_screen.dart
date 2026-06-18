@@ -1,8 +1,11 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_table.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_inventory_entry.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_use_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_type.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
@@ -24,8 +27,10 @@ class ClashCardDetailScreen extends StatefulWidget {
 
 class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
   ClashCardCatalogEntry? _entry;
+  List<ClashExpMaterialInventoryEntry> _materials = const [];
   bool _loading = true;
   bool _notFound = false;
+  bool _usingMaterial = false;
 
   @override
   void initState() {
@@ -36,18 +41,74 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
   Future<void> _loadCard() async {
     final controller = context.read<ClashCardsController>();
     final collection = context.read<ClashPlayerCollectionRepository>();
+    final materialsRepo = context.read<ClashExpMaterialsRepository>();
     if (controller.state == ClashCardsLoadState.idle) {
       await controller.load();
     }
     final entry = await controller.findCard(widget.cardId);
+    final inventory = await materialsRepo.fetchInventoryEntries();
     if (!mounted) {
       return;
     }
     setState(() {
       _entry = entry == null ? null : collection.enrichEntry(entry);
+      _materials = inventory;
       _notFound = entry == null;
       _loading = false;
     });
+  }
+
+  Future<void> _useMaterial(String materialId) async {
+    if (_usingMaterial || _entry == null || _entry!.isMaxLevel) {
+      return;
+    }
+
+    setState(() => _usingMaterial = true);
+    final collection = context.read<ClashPlayerCollectionRepository>();
+    final materialsRepo = context.read<ClashExpMaterialsRepository>();
+    final controller = context.read<ClashCardsController>();
+
+    final result = await collection.useExpMaterialOnCard(
+      cardId: widget.cardId,
+      materialId: materialId,
+      quantity: 1,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (result.succeeded) {
+      final entry = await controller.findCard(widget.cardId);
+      final inventory = await materialsRepo.fetchInventoryEntries();
+      setState(() {
+        _entry = entry == null ? null : collection.enrichEntry(entry);
+        _materials = inventory;
+        _usingMaterial = false;
+      });
+      await controller.reloadOwnedCards();
+      _showUseResultSnackBar(result);
+    } else {
+      setState(() => _usingMaterial = false);
+    }
+  }
+
+  void _showUseResultSnackBar(ClashExpMaterialUseResult result) {
+    final l10n = context.l10n;
+    final message = StringBuffer(l10n.clashExpMaterialXp(result.xpGained));
+    if (result.didLevelUp) {
+      message
+        ..write('\n')
+        ..write(
+          l10n.clashExpMaterialLevelUp(result.previousLevel, result.newLevel),
+        );
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(message.toString()),
+      ),
+    );
   }
 
   @override
@@ -139,10 +200,11 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
           _TechniquePanel(technique: technique),
         ],
         const SizedBox(height: 16),
-        ClashSectionTile(
-          icon: Icons.trending_up_rounded,
-          title: l10n.clashActionUpgrade,
-          onTap: () => _showComingSoon(context),
+        _UpgradePanel(
+          entry: entry,
+          materials: _materials,
+          isBusy: _usingMaterial,
+          onUseMaterial: _useMaterial,
         ),
         const SizedBox(height: 10),
         ClashSectionTile(
@@ -376,6 +438,143 @@ class _XpPanel extends StatelessWidget {
             style: theme.textTheme.bodySmall?.copyWith(
               color: context.xiTextSecondary,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _UpgradePanel extends StatelessWidget {
+  const _UpgradePanel({
+    required this.entry,
+    required this.materials,
+    required this.isBusy,
+    required this.onUseMaterial,
+  });
+
+  final ClashCardCatalogEntry entry;
+  final List<ClashExpMaterialInventoryEntry> materials;
+  final bool isBusy;
+  final ValueChanged<String> onUseMaterial;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final atMax = entry.isMaxLevel;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.xiCardSurface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.xiDivider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            l10n.clashActionUpgrade,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 8),
+          _MetaRow(
+            label: l10n.clashCardLevel,
+            value: '${entry.displayLevel} / ${entry.card.rarity.maxLevel}',
+          ),
+          if (atMax) ...[
+            const SizedBox(height: 8),
+            Text(
+              l10n.clashUpgradeMaxLevelHint,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: context.xiTextSecondary,
+              ),
+            ),
+          ],
+          const SizedBox(height: 12),
+          for (final item in materials) ...[
+            _MaterialRow(
+              entry: item,
+              disabled: atMax || item.quantity <= 0 || isBusy,
+              onUse: () => onUseMaterial(item.material.id),
+            ),
+            if (item != materials.last) const SizedBox(height: 10),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _MaterialRow extends StatelessWidget {
+  const _MaterialRow({
+    required this.entry,
+    required this.disabled,
+    required this.onUse,
+  });
+
+  final ClashExpMaterialInventoryEntry entry;
+  final bool disabled;
+  final VoidCallback onUse;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final material = entry.material;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: context.xiChipBackground.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.xiDivider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  material.name,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                ),
+              ),
+              Text(
+                l10n.clashExpMaterialXp(material.xpAmount),
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            material.description,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: context.xiTextSecondary),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.clashExpMaterialQuantity(entry.quantity),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+              FilledButton.tonal(
+                onPressed: disabled ? null : onUse,
+                child: Text(l10n.clashExpMaterialUseOne),
+              ),
+            ],
           ),
         ],
       ),

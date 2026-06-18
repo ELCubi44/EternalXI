@@ -19,6 +19,8 @@ import 'package:eternal_xi/features/clash/team/presentation/clash_team_screen.da
 import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../cards/clash_test_support.dart';
 import 'package:provider/provider.dart';
 
 const _sagasJson = '''
@@ -191,8 +193,7 @@ Future<
 _setup() async {
   final cards = ClashCardsLocalDataSource().parseCardsJson(_cardsJson);
   final cardsRepo = ClashCardsRepository(_FakeCardsDataSource(cards));
-  final collectionRepo = ClashPlayerCollectionRepository(
-    storage: InMemoryClashPlayerCollectionBackend(),
+  final collectionRepo = createTestCollectionRepository(
     cardsRepository: cardsRepo,
   );
   final progressStorage = InMemoryClashStoryProgressBackend();

@@ -11,6 +11,8 @@ import 'package:eternal_xi/features/clash/team/domain/clash_lineup_rules.dart';
 import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../cards/clash_test_support.dart';
+
 const _cardsJson = '''
 {
   "cards": [
@@ -104,8 +106,7 @@ Future<ClashLineupsRepository> _repository() async {
 Future<ClashLineupsController> _controller() async {
   final cards = ClashCardsLocalDataSource().parseCardsJson(_cardsJson);
   final cardsRepo = ClashCardsRepository(_FakeCardsDataSource(cards));
-  final collectionRepo = ClashPlayerCollectionRepository(
-    storage: InMemoryClashPlayerCollectionBackend(),
+  final collectionRepo = createTestCollectionRepository(
     cardsRepository: cardsRepo,
   );
   await collectionRepo.grantMissingCardIds(['gk-1', 'st-1', 'cb-1', 'gk-dup']);

@@ -27,6 +27,8 @@ import 'package:eternal_xi/features/clash/story/domain/clash_story_reward.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../cards/clash_test_support.dart';
+
 const _objectives = [
   ClashMatchObjective(
     id: 'win_match',
@@ -305,8 +307,7 @@ void main() {
       InMemoryClashStoryProgressBackend storage,
     ) async {
       final cardsRepo = ClashCardsRepository(_EmptyCardsDataSource());
-      final collectionRepo = ClashPlayerCollectionRepository(
-        storage: InMemoryClashPlayerCollectionBackend(),
+      final collectionRepo = createTestCollectionRepository(
         cardsRepository: cardsRepo,
       );
       return ClashStoryRepository(
