@@ -1,3 +1,4 @@
+import 'package:eternal_xi/features/clash/missions/data/clash_mission_progress_event_hub.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission_type.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
@@ -14,15 +15,18 @@ class ClashShopRepository {
     required ClashStoryRepository storyRepository,
     required ClashShopGrantService grantService,
     ClashDailyMissionEventSink? missionEventSink,
+    ClashMissionProgressEventHub? progressEventHub,
   }) : _dataSource = dataSource,
        _storyRepository = storyRepository,
        _grantService = grantService,
-       _missionEventSink = missionEventSink;
+       _missionEventSink = missionEventSink,
+       _progressEventHub = progressEventHub;
 
   final ClashShopLocalDataSource _dataSource;
   final ClashStoryRepository _storyRepository;
   final ClashShopGrantService _grantService;
   final ClashDailyMissionEventSink? _missionEventSink;
+  final ClashMissionProgressEventHub? _progressEventHub;
 
   List<ClashShopProduct>? _productsCache;
 
@@ -86,7 +90,11 @@ class ClashShopRepository {
       );
     }
 
-    await _missionEventSink?.record(ClashDailyMissionType.shopPurchase);
+    if (_progressEventHub != null) {
+      await _progressEventHub!.recordShopPurchase();
+    } else {
+      await _missionEventSink?.record(ClashDailyMissionType.shopPurchase);
+    }
 
     return ClashShopPurchaseResult(
       success: true,

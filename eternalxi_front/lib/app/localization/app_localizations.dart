@@ -165,6 +165,22 @@ class AppLocalizations {
       'clashAchievementsRewardCoins': '{count} monedas',
       'clashAchievementsRewardGems': '{count} gemas',
       'clashAchievementsProgress': '{current}/{target}',
+      'clashWeeklyMissionsTitle': 'Misiones semanales',
+      'clashWeeklyMissionsResetHint': 'Se reinician el lunes',
+      'clashWeeklyMissionsWeekLabel': 'Semana actual: {weekKey}',
+      'clashWeeklyMissionsCompletedSummary': 'Completadas {completed}/{total}',
+      'clashWeeklyMissionsClaimedSummary': 'Reclamadas {claimed}/{total}',
+      'clashWeeklyMissionsStatusInProgress': 'En progreso',
+      'clashWeeklyMissionsStatusClaim': 'Reclamar',
+      'clashWeeklyMissionsStatusClaimed': 'Reclamada',
+      'clashWeeklyMissionsClaimAll': 'Reclamar todas',
+      'clashWeeklyMissionsClaimSuccess': 'Recompensa reclamada',
+      'clashWeeklyMissionsHomeTitle': 'Misiones semanales',
+      'clashWeeklyMissionsHomePending': '{count} pendientes de reclamar',
+      'clashWeeklyMissionsHomeView': 'Ver',
+      'clashWeeklyMissionsRewardCoins': '{count} monedas',
+      'clashWeeklyMissionsRewardGems': '{count} gemas',
+      'clashWeeklyMissionsProgress': '{current}/{target}',
       'clashTeamLineup7': 'Alineación 7vs7',
       'clashTeamLineup11': 'Alineación 11vs11',
       'clashTeamCharacters': 'Personajes',
@@ -793,6 +809,22 @@ class AppLocalizations {
       'clashAchievementsRewardCoins': '{count} coins',
       'clashAchievementsRewardGems': '{count} gems',
       'clashAchievementsProgress': '{current}/{target}',
+      'clashWeeklyMissionsTitle': 'Weekly missions',
+      'clashWeeklyMissionsResetHint': 'They reset on Monday',
+      'clashWeeklyMissionsWeekLabel': 'Current week: {weekKey}',
+      'clashWeeklyMissionsCompletedSummary': 'Completed {completed}/{total}',
+      'clashWeeklyMissionsClaimedSummary': 'Claimed {claimed}/{total}',
+      'clashWeeklyMissionsStatusInProgress': 'In progress',
+      'clashWeeklyMissionsStatusClaim': 'Claim',
+      'clashWeeklyMissionsStatusClaimed': 'Claimed',
+      'clashWeeklyMissionsClaimAll': 'Claim all',
+      'clashWeeklyMissionsClaimSuccess': 'Reward claimed',
+      'clashWeeklyMissionsHomeTitle': 'Weekly missions',
+      'clashWeeklyMissionsHomePending': '{count} ready to claim',
+      'clashWeeklyMissionsHomeView': 'View',
+      'clashWeeklyMissionsRewardCoins': '{count} coins',
+      'clashWeeklyMissionsRewardGems': '{count} gems',
+      'clashWeeklyMissionsProgress': '{current}/{target}',
       'clashTeamLineup7': '7v7 lineup',
       'clashTeamLineup11': '11v11 lineup',
       'clashTeamCharacters': 'Characters',
@@ -1462,6 +1494,36 @@ class AppLocalizations {
       _t('clashAchievementsRewardGems').replaceAll('{count}', '$count');
   String clashAchievementsProgress(int current, int target) => _t(
     'clashAchievementsProgress',
+  ).replaceAll('{current}', '$current').replaceAll('{target}', '$target');
+  String get clashWeeklyMissionsTitle => _t('clashWeeklyMissionsTitle');
+  String get clashWeeklyMissionsResetHint => _t('clashWeeklyMissionsResetHint');
+  String clashWeeklyMissionsWeekLabel(String weekKey) =>
+      _t('clashWeeklyMissionsWeekLabel').replaceAll('{weekKey}', weekKey);
+  String clashWeeklyMissionsCompletedSummary(int completed, int total) => _t(
+    'clashWeeklyMissionsCompletedSummary',
+  ).replaceAll('{completed}', '$completed').replaceAll('{total}', '$total');
+  String clashWeeklyMissionsClaimedSummary(int claimed, int total) => _t(
+    'clashWeeklyMissionsClaimedSummary',
+  ).replaceAll('{claimed}', '$claimed').replaceAll('{total}', '$total');
+  String get clashWeeklyMissionsStatusInProgress =>
+      _t('clashWeeklyMissionsStatusInProgress');
+  String get clashWeeklyMissionsStatusClaim =>
+      _t('clashWeeklyMissionsStatusClaim');
+  String get clashWeeklyMissionsStatusClaimed =>
+      _t('clashWeeklyMissionsStatusClaimed');
+  String get clashWeeklyMissionsClaimAll => _t('clashWeeklyMissionsClaimAll');
+  String get clashWeeklyMissionsClaimSuccess =>
+      _t('clashWeeklyMissionsClaimSuccess');
+  String get clashWeeklyMissionsHomeTitle => _t('clashWeeklyMissionsHomeTitle');
+  String clashWeeklyMissionsHomePending(int count) =>
+      _t('clashWeeklyMissionsHomePending').replaceAll('{count}', '$count');
+  String get clashWeeklyMissionsHomeView => _t('clashWeeklyMissionsHomeView');
+  String clashWeeklyMissionsRewardCoins(int count) =>
+      _t('clashWeeklyMissionsRewardCoins').replaceAll('{count}', '$count');
+  String clashWeeklyMissionsRewardGems(int count) =>
+      _t('clashWeeklyMissionsRewardGems').replaceAll('{count}', '$count');
+  String clashWeeklyMissionsProgress(int current, int target) => _t(
+    'clashWeeklyMissionsProgress',
   ).replaceAll('{current}', '$current').replaceAll('{target}', '$target');
   String get clashTeamLineup7 => _t('clashTeamLineup7');
   String get clashTeamLineup11 => _t('clashTeamLineup11');

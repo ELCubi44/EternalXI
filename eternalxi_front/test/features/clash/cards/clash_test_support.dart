@@ -39,11 +39,17 @@ import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_l
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_repository.dart';
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_storage.dart';
 import 'package:eternal_xi/features/clash/achievements/domain/clash_achievement.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_mission_progress_event_hub.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_weekly_mission_event_sink.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_local_datasource.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_repository.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_storage.dart';
+import 'package:eternal_xi/features/clash/missions/domain/clash_weekly_mission.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_local_datasource.dart';
-import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_repository.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_storage.dart';
+import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission.dart';
 import 'package:eternal_xi/features/clash/match/data/datasources/clash_match_items_local_datasource.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_item_inventory_entry.dart';
 
@@ -323,6 +329,7 @@ Future<ClashGachaRepository> createTestGachaRepository({
   ClashGachaEngine? engine,
   ClashDailyMissionEventSink? missionEventSink,
   ClashAchievementEventSink? achievementEventSink,
+  ClashMissionProgressEventHub? progressEventHub,
   DateTime Function()? now,
   int initialGems = 200,
 }) async {
@@ -357,6 +364,7 @@ Future<ClashGachaRepository> createTestGachaRepository({
     engine: engine,
     missionEventSink: missionEventSink,
     achievementEventSink: achievementEventSink,
+    progressEventHub: progressEventHub,
     now: now,
   );
 }
@@ -389,6 +397,7 @@ ClashPlayerCollectionRepository createTestCollectionRepository({
   ClashEvolutionMaterialsRepository? evolutionMaterialsRepository,
   ClashDailyMissionEventSink? missionEventSink,
   ClashAchievementEventSink? achievementEventSink,
+  ClashMissionProgressEventHub? progressEventHub,
 }) {
   return ClashPlayerCollectionRepository(
     storage: storage ?? InMemoryClashPlayerCollectionBackend(),
@@ -402,6 +411,7 @@ ClashPlayerCollectionRepository createTestCollectionRepository({
         createTestEvolutionMaterialsRepository(),
     missionEventSink: missionEventSink,
     achievementEventSink: achievementEventSink,
+    progressEventHub: progressEventHub,
   );
 }
 
@@ -481,6 +491,7 @@ Future<ClashShopRepository> createTestShopRepository({
   ClashGachaTicketRepository? ticketRepository,
   ClashShopGrantService? grantService,
   ClashDailyMissionEventSink? missionEventSink,
+  ClashMissionProgressEventHub? progressEventHub,
   int initialCoins = 2000,
   int initialGems = 100,
 }) async {
@@ -513,6 +524,7 @@ Future<ClashShopRepository> createTestShopRepository({
           ticketRepository: tickets,
         ),
     missionEventSink: missionEventSink,
+    progressEventHub: progressEventHub,
   );
 }
 
@@ -776,6 +788,174 @@ createTestAchievementsSetup({
   return (
     achievements: achievements,
     sink: sink,
+    story: story,
+    collection: collection,
+  );
+}
+
+const clashTestWeeklyMissionsJson = '''
+{
+  "missions": [
+    {
+      "id": "weekly-play-matches",
+      "title": "Juega 5 partidos",
+      "description": "Completa 5 partidos esta semana.",
+      "type": "playMatch",
+      "target": 5,
+      "reward": { "coins": 2000 }
+    },
+    {
+      "id": "weekly-win-matches",
+      "title": "Gana 3 partidos",
+      "description": "Consigue 3 victorias esta semana.",
+      "type": "winMatch",
+      "target": 3,
+      "reward": { "gems": 5 }
+    },
+    {
+      "id": "weekly-summon",
+      "title": "Haz 10 invocaciones",
+      "description": "Realiza 10 invocaciones.",
+      "type": "summon",
+      "target": 10,
+      "reward": {
+        "ticket": {
+          "id": "starter-single-ticket",
+          "quantity": 2
+        }
+      }
+    },
+    {
+      "id": "weekly-shop-purchase",
+      "title": "Compra 3 veces en tienda",
+      "description": "Compra en tienda 3 veces.",
+      "type": "shopPurchase",
+      "target": 3,
+      "reward": {
+        "expMaterial": {
+          "id": "advanced-training-manual",
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "weekly-level-up-cards",
+      "title": "Sube 10 niveles de cartas",
+      "description": "Sube de nivel cartas 10 veces.",
+      "type": "levelUpCard",
+      "target": 10,
+      "reward": {
+        "expMaterial": {
+          "id": "advanced-training-manual",
+          "quantity": 2
+        }
+      }
+    },
+    {
+      "id": "weekly-upgrade-technique",
+      "title": "Mejora 5 supertécnicas",
+      "description": "Mejora supertécnicas 5 veces.",
+      "type": "upgradeTechnique",
+      "target": 5,
+      "reward": {
+        "techniqueBook": {
+          "id": "advanced-technique-book",
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "weekly-evolve-cards",
+      "title": "Evoluciona 2 cartas",
+      "description": "Evoluciona cartas 2 veces.",
+      "type": "evolveCard",
+      "target": 2,
+      "reward": {
+        "evolutionMaterial": {
+          "id": "insignia-sr",
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "weekly-unlock-skill-nodes",
+      "title": "Desbloquea 3 nodos de árbol",
+      "description": "Desbloquea nodos del árbol 3 veces.",
+      "type": "unlockSkillNode",
+      "target": 3,
+      "reward": { "coins": 3000 }
+    }
+  ]
+}
+''';
+
+class TestWeeklyMissionsDataSource extends ClashWeeklyMissionsLocalDataSource {
+  @override
+  Future<List<ClashWeeklyMission>> loadMissions() async {
+    return parseMissionsJson(clashTestWeeklyMissionsJson);
+  }
+}
+
+ClashMissionProgressEventHub createTestProgressEventHub({
+  required ClashDailyMissionEventSink daily,
+  ClashWeeklyMissionEventSink? weekly,
+  ClashAchievementEventSink? achievements,
+}) {
+  return ClashMissionProgressEventHub(
+    daily: daily,
+    weekly: weekly ?? ClashWeeklyMissionEventSink(),
+    achievements: achievements ?? ClashAchievementEventSink(),
+  );
+}
+
+Future<
+  ({
+    ClashWeeklyMissionsRepository weekly,
+    ClashWeeklyMissionEventSink weeklySink,
+    ClashStoryRepository story,
+    ClashPlayerCollectionRepository collection,
+  })
+>
+createTestWeeklyMissionsSetup({
+  ClashWeeklyMissionsStorageBackend? storage,
+  DateTime Function()? now,
+  int initialCoins = 0,
+  int initialGems = 0,
+}) async {
+  final weeklySink = ClashWeeklyMissionEventSink();
+  final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
+  final collection = createTestCollectionRepository(
+    cardsRepository: cardsRepo,
+    progressEventHub: createTestProgressEventHub(
+      daily: ClashDailyMissionEventSink(),
+      weekly: weeklySink,
+    ),
+  );
+  final storyProgress = InMemoryClashStoryProgressBackend();
+  await storyProgress.writeProgress(
+    ClashStoryProgress(walletCoins: initialCoins, walletGems: initialGems),
+  );
+  final story = ClashStoryRepository(
+    dataSource: ClashStoryLocalDataSource(),
+    progressStorage: storyProgress,
+    collectionRepository: collection,
+    ticketRepository: createTestTicketRepository(),
+  );
+  final tickets = createTestTicketRepository();
+  final weekly = ClashWeeklyMissionsRepository(
+    dataSource: TestWeeklyMissionsDataSource(),
+    storage: storage ?? InMemoryClashWeeklyMissionsBackend(),
+    storyRepository: story,
+    grantService: ClashShopGrantService(
+      collectionRepository: collection,
+      ticketRepository: tickets,
+    ),
+    now: now,
+  );
+  weeklySink.bind(weekly);
+  return (
+    weekly: weekly,
+    weeklySink: weeklySink,
     story: story,
     collection: collection,
   );

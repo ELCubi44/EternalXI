@@ -492,6 +492,17 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 **Pendiente:** backend de logros, Google Play Games, logros secretos, logros de eventos reales, cinemáticas, notificaciones, pase de batalla.
 
+### Fase 30 — Misiones semanales locales
+
+- Submódulo semanal en `lib/features/clash/missions/` con catálogo `weekly_missions.json`.
+- Persistencia local `clash_weekly_missions_v1` con `weekKey` (lunes local `yyyy-MM-dd`).
+- Reset automático al cambiar de semana local (sin servidor).
+- Objetivos más largos y recompensas mejores que las diarias.
+- `ClashMissionProgressEventHub` distribuye eventos a diarias, semanales y logros.
+- Pantalla `/clash/weekly-missions` y tarjeta resumen en Inicio Clash.
+
+**Pendiente:** backend, calendario servidor, misiones mensuales, eventos temporales reales, pase de batalla, notificaciones.
+
 ---
 
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

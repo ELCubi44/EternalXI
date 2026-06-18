@@ -16,6 +16,7 @@ import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_rarity_rates.
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_ticket.dart';
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievement_event_sink.dart';
 import 'package:eternal_xi/features/clash/achievements/domain/clash_achievement_type.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_mission_progress_event_hub.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission_type.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
@@ -35,6 +36,7 @@ class ClashGachaRepository {
     ClashGachaEngine? engine,
     ClashDailyMissionEventSink? missionEventSink,
     ClashAchievementEventSink? achievementEventSink,
+    ClashMissionProgressEventHub? progressEventHub,
     DateTime Function()? now,
   }) : _dataSource = dataSource,
        _dailyStorage = dailyStorage,
@@ -47,6 +49,7 @@ class ClashGachaRepository {
        _engine = engine ?? ClashGachaEngine(),
        _missionEventSink = missionEventSink,
        _achievementEventSink = achievementEventSink,
+       _progressEventHub = progressEventHub,
        _now = now ?? DateTime.now;
 
   final ClashGachaLocalDataSource _dataSource;
@@ -60,6 +63,7 @@ class ClashGachaRepository {
   final ClashGachaEngine _engine;
   final ClashDailyMissionEventSink? _missionEventSink;
   final ClashAchievementEventSink? _achievementEventSink;
+  final ClashMissionProgressEventHub? _progressEventHub;
   final DateTime Function() _now;
 
   ClashGachaCatalog? _catalogCache;
@@ -289,11 +293,18 @@ class ClashGachaRepository {
       ),
     );
 
-    await _missionEventSink?.record(ClashDailyMissionType.summon);
-    await _achievementEventSink?.record(
-      ClashAchievementType.summon,
-      amount: items.length,
-    );
+    if (_progressEventHub != null) {
+      await _progressEventHub!.recordSummon(
+        dailyWeeklyAmount: 1,
+        achievementCards: items.length,
+      );
+    } else {
+      await _missionEventSink?.record(ClashDailyMissionType.summon);
+      await _achievementEventSink?.record(
+        ClashAchievementType.summon,
+        amount: items.length,
+      );
+    }
 
     return ClashGachaPullOutcome(result: result);
   }

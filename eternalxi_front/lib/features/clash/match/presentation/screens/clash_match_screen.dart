@@ -4,10 +4,7 @@ import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_result.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
-import 'package:eternal_xi/features/clash/achievements/data/clash_achievement_event_sink.dart';
-import 'package:eternal_xi/features/clash/achievements/domain/clash_achievement_type.dart';
-import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
-import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission_type.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_mission_progress_event_hub.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_evaluator.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_progress.dart';
 import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
@@ -104,13 +101,10 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
       lineupCardIds: lineupCardIds,
     );
 
-    final missionSink = context.read<ClashDailyMissionEventSink>();
-    final achievementSink = context.read<ClashAchievementEventSink>();
-    await missionSink.record(ClashDailyMissionType.playMatch);
-    await achievementSink.record(ClashAchievementType.playMatch);
+    final progressHub = context.read<ClashMissionProgressEventHub>();
+    await progressHub.recordPlayMatch();
     if (userWon) {
-      await missionSink.record(ClashDailyMissionType.winMatch);
-      await achievementSink.record(ClashAchievementType.winMatch);
+      await progressHub.recordWinMatch();
     }
 
     if (!mounted) {

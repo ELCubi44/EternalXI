@@ -13,6 +13,7 @@ import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_re
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_repository.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_repository.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
@@ -56,6 +57,7 @@ Future<
     ClashCardsController cardsController,
     ClashShopRepository shopRepository,
     ClashDailyMissionsRepository missionsRepository,
+    ClashWeeklyMissionsRepository weeklyMissionsRepository,
     ClashAchievementsRepository achievementsRepository,
   })
 >
@@ -98,12 +100,17 @@ _shellDeps() async {
     initialCoins: 1500,
     initialGems: 50,
   );
+  final weeklySetup = await createTestWeeklyMissionsSetup(
+    initialCoins: 1500,
+    initialGems: 50,
+  );
   return (
     storyController: ClashStoryController(storyRepository: storyRepo),
     gachaRepository: gachaRepo,
     cardsController: cardsController,
     shopRepository: shopRepo,
     missionsRepository: missionsSetup.missions,
+    weeklyMissionsRepository: weeklySetup.weekly,
     achievementsRepository: achievementsSetup.achievements,
   );
 }
@@ -126,6 +133,9 @@ Future<(Widget app, ClashNavigationController nav)> _shellApp(
           Provider<ClashShopRepository>.value(value: deps.shopRepository),
           Provider<ClashDailyMissionsRepository>.value(
             value: deps.missionsRepository,
+          ),
+          Provider<ClashWeeklyMissionsRepository>.value(
+            value: deps.weeklyMissionsRepository,
           ),
           Provider<ClashAchievementsRepository>.value(
             value: deps.achievementsRepository,
@@ -243,6 +253,7 @@ void main() {
       expect(find.text('Historia'), findsOneWidget);
       expect(find.text('Eventos'), findsOneWidget);
       expect(find.text('Misiones diarias'), findsOneWidget);
+      expect(find.text('Misiones semanales'), findsOneWidget);
       expect(find.text('Logros'), findsOneWidget);
     });
 

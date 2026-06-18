@@ -15,6 +15,7 @@ class AppRoutes {
   static const clashSummonHistory = '/clash/summon/history';
   static const clashMissions = '/clash/missions';
   static const clashAchievements = '/clash/achievements';
+  static const clashWeeklyMissions = '/clash/weekly-missions';
   static const clashStory = '/clash/story';
 
   static String clashStoryLevel(String levelId) =>

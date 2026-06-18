@@ -16,6 +16,7 @@ import 'package:eternal_xi/features/clash/presentation/clash_tab_host.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/screens/clash_gacha_history_screen.dart';
 import 'package:eternal_xi/features/clash/inventory/presentation/screens/clash_inventory_screen.dart';
 import 'package:eternal_xi/features/clash/achievements/presentation/screens/clash_achievements_screen.dart';
+import 'package:eternal_xi/features/clash/missions/presentation/screens/clash_weekly_missions_screen.dart';
 import 'package:eternal_xi/features/clash/missions/presentation/screens/clash_daily_missions_screen.dart';
 import 'package:eternal_xi/features/clash/match/presentation/screens/clash_match_prepare_screen.dart';
 import 'package:eternal_xi/features/clash/match/presentation/screens/clash_match_screen.dart';
@@ -134,6 +135,10 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: 'missions',
               builder: (context, state) => const ClashDailyMissionsScreen(),
+            ),
+            GoRoute(
+              path: 'weekly-missions',
+              builder: (context, state) => const ClashWeeklyMissionsScreen(),
             ),
             GoRoute(
               path: 'achievements',
