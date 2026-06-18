@@ -103,6 +103,8 @@ La **Fase 11** añade **supertécnicas normales** dentro de los duelos existente
 - El **nivel** de técnica aumenta `effectivePower`, **no** reduce `ptCost`.
 - El estilo de la supertécnica activa se usa en la rueda de afinidad.
 
+**Fase 19:** `MatchSquadBuilder` aplica los niveles persistidos de `ClashCardProgress.techniqueLevels` al construir la plantilla; los duelos usan la potencia efectiva mejorada.
+
 ---
 
 ## Implementación Fase 12 (Flutter)

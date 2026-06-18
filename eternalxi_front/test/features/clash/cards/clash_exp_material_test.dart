@@ -7,6 +7,7 @@ import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_e
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_level_scaling.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_progress.dart';
@@ -61,6 +62,7 @@ Future<
   ({
     ClashPlayerCollectionRepository collection,
     ClashExpMaterialsRepository materials,
+    ClashTechniqueBooksRepository techniqueBooks,
     ClashCardsController controller,
   })
 >
@@ -72,10 +74,12 @@ _setupRepos({
   final materialsRepo = createTestExpMaterialsRepository(
     inventoryStorage: inventoryStorage,
   );
+  final techniqueBooksRepo = createTestTechniqueBooksRepository();
   final collectionRepo = createTestCollectionRepository(
     cardsRepository: cardsRepo,
     storage: collectionStorage ?? InMemoryClashPlayerCollectionBackend(),
     expMaterialsRepository: materialsRepo,
+    techniqueBooksRepository: techniqueBooksRepo,
   );
   await collectionRepo.grantMissingCardIds([_card.id]);
   final controller = ClashCardsController(cardsRepo, collectionRepo);
@@ -83,6 +87,7 @@ _setupRepos({
   return (
     collection: collectionRepo,
     materials: materialsRepo,
+    techniqueBooks: techniqueBooksRepo,
     controller: controller,
   );
 }
@@ -90,6 +95,7 @@ _setupRepos({
 Future<Widget> _detailApp({
   required ClashPlayerCollectionRepository collection,
   required ClashExpMaterialsRepository materials,
+  required ClashTechniqueBooksRepository techniqueBooks,
   required ClashCardsController controller,
 }) {
   return Future.value(
@@ -98,6 +104,7 @@ Future<Widget> _detailApp({
         ChangeNotifierProvider<ClashCardsController>.value(value: controller),
         Provider<ClashPlayerCollectionRepository>.value(value: collection),
         Provider<ClashExpMaterialsRepository>.value(value: materials),
+        Provider<ClashTechniqueBooksRepository>.value(value: techniqueBooks),
       ],
       child: MaterialApp(
         locale: const Locale('es'),
@@ -326,6 +333,7 @@ void main() {
         await _detailApp(
           collection: setup.collection,
           materials: setup.materials,
+          techniqueBooks: setup.techniqueBooks,
           controller: setup.controller,
         ),
       );
@@ -341,6 +349,7 @@ void main() {
         await _detailApp(
           collection: setup.collection,
           materials: setup.materials,
+          techniqueBooks: setup.techniqueBooks,
           controller: setup.controller,
         ),
       );
@@ -363,16 +372,14 @@ void main() {
         await _detailApp(
           collection: setup.collection,
           materials: setup.materials,
+          techniqueBooks: setup.techniqueBooks,
           controller: setup.controller,
         ),
       );
       await tester.pumpAndSettle();
 
       final useButtons = find.widgetWithText(FilledButton, 'Usar 1');
-      expect(
-        tester.widget<FilledButton>(useButtons.first).onPressed,
-        isNull,
-      );
+      expect(tester.widget<FilledButton>(useButtons.first).onPressed, isNull);
     });
 
     testWidgets('usar material actualiza EXP/nivel', (tester) async {
@@ -388,6 +395,7 @@ void main() {
         await _detailApp(
           collection: setup.collection,
           materials: setup.materials,
+          techniqueBooks: setup.techniqueBooks,
           controller: setup.controller,
         ),
       );
@@ -434,6 +442,7 @@ void main() {
         await _detailApp(
           collection: refreshed.collection,
           materials: refreshed.materials,
+          techniqueBooks: refreshed.techniqueBooks,
           controller: refreshed.controller,
         ),
       );
@@ -444,9 +453,7 @@ void main() {
         120,
         scrollable: find.byType(Scrollable).first,
       );
-      await tester.tap(
-        find.widgetWithText(FilledButton, 'Usar 1').first,
-      );
+      await tester.tap(find.widgetWithText(FilledButton, 'Usar 1').first);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
@@ -467,6 +474,7 @@ void main() {
         await _detailApp(
           collection: setup.collection,
           materials: setup.materials,
+          techniqueBooks: setup.techniqueBooks,
           controller: setup.controller,
         ),
       );

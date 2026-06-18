@@ -201,6 +201,19 @@ La pasiva XI es permanente en partido (efecto por definir en balance; no consume
 
 **Implementación Fase 3 (provisional):** multiplicadores Normal 1.00, I 1.05, V 1.10, X 1.15, XI 1.20 sobre `basePower`.
 
+**Implementación Fase 19 (Flutter):** libros de técnica consumibles desde el detalle de carta.
+
+| Libro | Efecto |
+|---|---|
+| Libro técnico básico | +1 paso de nivel |
+| Libro técnico avanzado | +2 pasos |
+| Libro técnico maestro | +4 pasos (sin superar XI) |
+
+- Inventario local: `clash_technique_book_inventory_v1` (provisional: básico ×3, avanzado ×1, maestro ×0).
+- Progreso en `ClashCardProgress.techniqueLevels`.
+- Recompensa futura: `technique-basic-book` → libro técnico básico (`basic-book` sigue mapeado a manual EXP).
+- Duplicados/cartas como material: pendiente.
+
 ---
 
 ## 8. Estilos
@@ -409,5 +422,5 @@ ClashDuplicateMaterial
 | Efecto exacto pasiva XI | Pendiente |
 | Tasas de drop N por equipo | Pendiente |
 | Conversión de nivel al evolucionar N→R→SR | Pendiente |
-| Coste de subir nivel de supertécnica | Pendiente |
+| Coste de subir nivel de supertécnica | **Fase 19:** libros locales (sin tienda) |
 | Curva penalización resistencia < 100 | Pendiente |

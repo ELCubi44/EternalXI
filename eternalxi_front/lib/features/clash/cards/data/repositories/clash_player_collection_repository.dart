@@ -2,11 +2,17 @@ import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_co
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_progress.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_service.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_use_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_service.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_use_result.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_level.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_progress_resolver.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
 
 /// Colección de cartas poseídas por el jugador (local, sin backend).
 class ClashPlayerCollectionRepository {
@@ -14,13 +20,16 @@ class ClashPlayerCollectionRepository {
     required ClashPlayerCollectionStorageBackend storage,
     required ClashCardsRepository cardsRepository,
     required ClashExpMaterialsRepository expMaterialsRepository,
+    required ClashTechniqueBooksRepository techniqueBooksRepository,
   }) : _storage = storage,
        _cardsRepository = cardsRepository,
-       _expMaterialsRepository = expMaterialsRepository;
+       _expMaterialsRepository = expMaterialsRepository,
+       _techniqueBooksRepository = techniqueBooksRepository;
 
   final ClashPlayerCollectionStorageBackend _storage;
   final ClashCardsRepository _cardsRepository;
   final ClashExpMaterialsRepository _expMaterialsRepository;
+  final ClashTechniqueBooksRepository _techniqueBooksRepository;
 
   ClashPlayerCollectionSnapshot? _cache;
 
@@ -251,6 +260,184 @@ class ClashPlayerCollectionRepository {
 
   Future<void> grantExpMaterials(Map<String, int> additions) {
     return _expMaterialsRepository.grantMaterials(additions);
+  }
+
+  Future<void> grantTechniqueBooks(Map<String, int> additions) {
+    return _techniqueBooksRepository.grantBooks(additions);
+  }
+
+  /// Usa un libro de técnica sobre una supertécnica (Fase 19).
+  Future<ClashTechniqueBookUseResult> useTechniqueBookOnCard({
+    required String cardId,
+    required String techniqueId,
+    required String bookId,
+    int quantity = 1,
+  }) async {
+    if (quantity <= 0) {
+      return _failedTechniqueBookUse(
+        cardId: cardId,
+        techniqueId: techniqueId,
+        bookId: bookId,
+        error: ClashTechniqueBookUseError.insufficientQuantity,
+      );
+    }
+
+    final snapshot = _loadSnapshot();
+    if (!snapshot.ownedCardIds.contains(cardId)) {
+      return _failedTechniqueBookUse(
+        cardId: cardId,
+        techniqueId: techniqueId,
+        bookId: bookId,
+        error: ClashTechniqueBookUseError.cardNotOwned,
+      );
+    }
+
+    final entry = await _cardsRepository.findById(cardId);
+    if (entry == null) {
+      return _failedTechniqueBookUse(
+        cardId: cardId,
+        techniqueId: techniqueId,
+        bookId: bookId,
+        error: ClashTechniqueBookUseError.cardNotFound,
+      );
+    }
+
+    final technique = _findTechnique(entry, techniqueId);
+    if (technique == null) {
+      return _failedTechniqueBookUse(
+        cardId: cardId,
+        techniqueId: techniqueId,
+        bookId: bookId,
+        error: ClashTechniqueBookUseError.techniqueNotFound,
+      );
+    }
+
+    final book = await _techniqueBooksRepository.findById(bookId);
+    if (book == null) {
+      final progress =
+          snapshot.cardProgress[cardId] ??
+          ClashCardXpService.initialProgress(cardId);
+      final previousLevel = ClashTechniqueProgressResolver.resolvedLevel(
+        technique: technique,
+        progress: progress,
+      );
+      return ClashTechniqueBookUseResult(
+        cardId: cardId,
+        techniqueId: techniqueId,
+        bookId: bookId,
+        quantityUsed: 0,
+        previousLevel: previousLevel,
+        newLevel: previousLevel,
+        previousEffectivePower: ClashTechniqueProgressResolver.effectivePower(
+          technique: technique,
+          progress: progress,
+        ),
+        newEffectivePower: ClashTechniqueProgressResolver.effectivePower(
+          technique: technique,
+          progress: progress,
+        ),
+        didLevelUp: false,
+        reachedMaxLevel: previousLevel.isMax,
+        error: ClashTechniqueBookUseError.bookNotFound,
+      );
+    }
+
+    final available = _techniqueBooksRepository.quantityFor(bookId);
+    if (available <= 0 || available < quantity) {
+      final progress =
+          snapshot.cardProgress[cardId] ??
+          ClashCardXpService.initialProgress(cardId);
+      final previousLevel = ClashTechniqueProgressResolver.resolvedLevel(
+        technique: technique,
+        progress: progress,
+      );
+      return ClashTechniqueBookUseResult(
+        cardId: cardId,
+        techniqueId: techniqueId,
+        bookId: bookId,
+        quantityUsed: 0,
+        previousLevel: previousLevel,
+        newLevel: previousLevel,
+        previousEffectivePower: ClashTechniqueProgressResolver.effectivePower(
+          technique: technique,
+          progress: progress,
+        ),
+        newEffectivePower: ClashTechniqueProgressResolver.effectivePower(
+          technique: technique,
+          progress: progress,
+        ),
+        didLevelUp: false,
+        reachedMaxLevel: previousLevel.isMax,
+        error: ClashTechniqueBookUseError.insufficientQuantity,
+      );
+    }
+
+    final current =
+        snapshot.cardProgress[cardId] ??
+        ClashCardXpService.initialProgress(cardId);
+    final preview = ClashTechniqueBookService.applyBook(
+      cardId: cardId,
+      technique: technique,
+      book: book,
+      progress: current,
+      quantity: quantity,
+    );
+
+    if (!preview.succeeded) {
+      return preview;
+    }
+
+    final consumed = await _techniqueBooksRepository.consumeBook(
+      bookId: bookId,
+      quantity: quantity,
+    );
+    if (!consumed) {
+      return preview.withError(ClashTechniqueBookUseError.insufficientQuantity);
+    }
+
+    final progressMap = Map<String, ClashCardProgress>.from(
+      snapshot.cardProgress,
+    );
+    progressMap[cardId] = ClashTechniqueBookService.progressAfterResult(
+      progress: current,
+      result: preview,
+    );
+    await _save(snapshot.copyWith(cardProgress: progressMap));
+
+    return preview.withQuantityUsed(quantity);
+  }
+
+  ClashSuperTechnique? _findTechnique(
+    ClashCardCatalogEntry entry,
+    String techniqueId,
+  ) {
+    for (final technique in entry.card.superTechniques) {
+      if (technique.id == techniqueId) {
+        return technique;
+      }
+    }
+    return null;
+  }
+
+  ClashTechniqueBookUseResult _failedTechniqueBookUse({
+    required String cardId,
+    required String techniqueId,
+    required String bookId,
+    required ClashTechniqueBookUseError error,
+  }) {
+    return ClashTechniqueBookUseResult(
+      cardId: cardId,
+      techniqueId: techniqueId,
+      bookId: bookId,
+      quantityUsed: 0,
+      previousLevel: ClashTechniqueLevel.normal,
+      newLevel: ClashTechniqueLevel.normal,
+      previousEffectivePower: 0,
+      newEffectivePower: 0,
+      didLevelUp: false,
+      reachedMaxLevel: false,
+      error: error,
+    );
   }
 
   /// Usa materiales EXP sobre una carta poseída (Fase 18).

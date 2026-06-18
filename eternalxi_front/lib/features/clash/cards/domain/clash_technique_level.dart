@@ -19,6 +19,34 @@ enum ClashTechniqueLevel {
 
   String toJson() => name;
 
+  /// Índice ordinal del nivel (Normal=0 … XI=4).
+  int get stepIndex => ClashTechniqueLevel.values.indexOf(this);
+
+  bool get isMax => this == ClashTechniqueLevel.xi;
+
+  /// Etiqueta legible para UI (Normal, I, V, X, XI).
+  String get displayLabel => switch (this) {
+    ClashTechniqueLevel.normal => 'Normal',
+    ClashTechniqueLevel.i => 'I',
+    ClashTechniqueLevel.v => 'V',
+    ClashTechniqueLevel.x => 'X',
+    ClashTechniqueLevel.xi => 'XI',
+  };
+
+  static ClashTechniqueLevel fromStepIndex(int index) {
+    final values = ClashTechniqueLevel.values;
+    final clamped = index.clamp(0, values.length - 1);
+    return values[clamped];
+  }
+
+  /// Avanza [steps] niveles sin superar XI.
+  ClashTechniqueLevel advancedBy(int steps) {
+    if (steps <= 0 || isMax) {
+      return this;
+    }
+    return fromStepIndex(stepIndex + steps);
+  }
+
   static ClashTechniqueLevel fromJson(Object? value) {
     final raw = value?.toString().trim().toLowerCase();
     return switch (raw) {

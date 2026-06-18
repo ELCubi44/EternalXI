@@ -1,5 +1,6 @@
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_reward_adapter.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_reward_adapter.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_result.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_evaluator.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_progress.dart';
@@ -348,6 +349,12 @@ class ClashStoryRepository {
         ClashExpMaterialRewardAdapter.quantitiesFromStoryReward(rewards);
     if (materialGrants.isNotEmpty) {
       await _collectionRepository.grantExpMaterials(materialGrants);
+    }
+
+    final bookGrants =
+        ClashTechniqueBookRewardAdapter.quantitiesFromStoryReward(rewards);
+    if (bookGrants.isNotEmpty) {
+      await _collectionRepository.grantTechniqueBooks(bookGrants);
     }
 
     return granted;

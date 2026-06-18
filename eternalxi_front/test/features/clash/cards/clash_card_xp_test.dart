@@ -4,6 +4,7 @@ import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_co
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_level_scaling.dart';
@@ -85,6 +86,7 @@ class _FakeCardsDataSource extends ClashCardsLocalDataSource {
 Future<Widget> _detailTestApp(
   ClashPlayerCollectionRepository collectionRepo,
   ClashExpMaterialsRepository materialsRepo,
+  ClashTechniqueBooksRepository techniqueBooksRepo,
 ) async {
   final cardsRepo = ClashCardsRepository(_FakeCardsDataSource());
   final controller = ClashCardsController(cardsRepo, collectionRepo);
@@ -94,6 +96,7 @@ Future<Widget> _detailTestApp(
       ChangeNotifierProvider<ClashCardsController>.value(value: controller),
       Provider<ClashPlayerCollectionRepository>.value(value: collectionRepo),
       Provider<ClashExpMaterialsRepository>.value(value: materialsRepo),
+      Provider<ClashTechniqueBooksRepository>.value(value: techniqueBooksRepo),
     ],
     child: MaterialApp(
       locale: const Locale('es'),
@@ -333,15 +336,17 @@ void main() {
       final storage = InMemoryClashPlayerCollectionBackend();
       final cardsRepo = ClashCardsRepository(_FakeCardsDataSource());
       final materialsRepo = createTestExpMaterialsRepository();
+      final techniqueBooksRepo = createTestTechniqueBooksRepository();
       final collectionRepo = createTestCollectionRepository(
         cardsRepository: cardsRepo,
         storage: storage,
         expMaterialsRepository: materialsRepo,
+        techniqueBooksRepository: techniqueBooksRepo,
       );
       await collectionRepo.grantMissingCardIds([_card.id]);
 
       await tester.pumpWidget(
-        await _detailTestApp(collectionRepo, materialsRepo),
+        await _detailTestApp(collectionRepo, materialsRepo, techniqueBooksRepo),
       );
       await tester.pumpAndSettle();
 
@@ -353,16 +358,18 @@ void main() {
       final storage = InMemoryClashPlayerCollectionBackend();
       final cardsRepo = ClashCardsRepository(_FakeCardsDataSource());
       final materialsRepo = createTestExpMaterialsRepository();
+      final techniqueBooksRepo = createTestTechniqueBooksRepository();
       final collectionRepo = createTestCollectionRepository(
         cardsRepository: cardsRepo,
         storage: storage,
         expMaterialsRepository: materialsRepo,
+        techniqueBooksRepository: techniqueBooksRepo,
       );
       await collectionRepo.grantMissingCardIds([_card.id]);
       await collectionRepo.grantMatchXp(cardIds: [_card.id], xpPerCard: 50000);
 
       await tester.pumpWidget(
-        await _detailTestApp(collectionRepo, materialsRepo),
+        await _detailTestApp(collectionRepo, materialsRepo, techniqueBooksRepo),
       );
       await tester.pumpAndSettle();
 

@@ -1,0 +1,25 @@
+{
+  "books": [
+    {
+      "id": "basic-technique-book",
+      "name": "Libro técnico básico",
+      "description": "Manual genérico que sube una supertécnica un paso de nivel.",
+      "levelUpSteps": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "advanced-technique-book",
+      "name": "Libro técnico avanzado",
+      "description": "Manual avanzado que sube una supertécnica dos pasos de nivel.",
+      "levelUpSteps": 2,
+      "rarity": "uncommon"
+    },
+    {
+      "id": "master-technique-book",
+      "name": "Libro técnico maestro",
+      "description": "Manual experto que sube una supertécnica cuatro pasos de nivel.",
+      "levelUpSteps": 4,
+      "rarity": "rare"
+    }
+  ]
+}

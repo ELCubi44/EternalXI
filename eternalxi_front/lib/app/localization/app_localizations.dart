@@ -177,9 +177,14 @@ class AppLocalizations {
       'clashStatStamina': 'Resistencia',
       'clashTechniqueSection': 'Supertécnica',
       'clashTechniqueType': 'Tipo',
-      'clashTechniquePower': 'Potencia',
+      'clashTechniqueBasePower': 'Potencia base',
+      'clashTechniquePower': 'Potencia efectiva',
       'clashTechniquePtCost': 'Coste PT',
       'clashTechniqueLevel': 'Nivel',
+      'clashTechniqueUpgradeTitle': 'Mejorar técnica',
+      'clashTechniqueBookEffect': '+{steps} nivel',
+      'clashTechniqueBookUse': 'Usar',
+      'clashTechniqueLevelUpSnack': '{name}: {from} → {to}',
       'clashActionUpgrade': 'Mejorar',
       'clashExpMaterialXp': '+{xp} EXP',
       'clashExpMaterialQuantity': 'Cantidad: {count}',
@@ -683,9 +688,14 @@ class AppLocalizations {
       'clashStatStamina': 'Stamina',
       'clashTechniqueSection': 'Super technique',
       'clashTechniqueType': 'Type',
-      'clashTechniquePower': 'Power',
+      'clashTechniqueBasePower': 'Base power',
+      'clashTechniquePower': 'Effective power',
       'clashTechniquePtCost': 'TP cost',
       'clashTechniqueLevel': 'Level',
+      'clashTechniqueUpgradeTitle': 'Upgrade technique',
+      'clashTechniqueBookEffect': '+{steps} level',
+      'clashTechniqueBookUse': 'Use',
+      'clashTechniqueLevelUpSnack': '{name}: {from} → {to}',
       'clashActionUpgrade': 'Upgrade',
       'clashExpMaterialXp': '+{xp} XP',
       'clashExpMaterialQuantity': 'Quantity: {count}',
@@ -1206,9 +1216,19 @@ class AppLocalizations {
   String get clashStatStamina => _t('clashStatStamina');
   String get clashTechniqueSection => _t('clashTechniqueSection');
   String get clashTechniqueType => _t('clashTechniqueType');
+  String get clashTechniqueBasePower => _t('clashTechniqueBasePower');
   String get clashTechniquePower => _t('clashTechniquePower');
   String get clashTechniquePtCost => _t('clashTechniquePtCost');
   String get clashTechniqueLevel => _t('clashTechniqueLevel');
+  String get clashTechniqueUpgradeTitle => _t('clashTechniqueUpgradeTitle');
+  String clashTechniqueBookEffect(int steps) =>
+      _t('clashTechniqueBookEffect').replaceAll('{steps}', '$steps');
+  String get clashTechniqueBookUse => _t('clashTechniqueBookUse');
+  String clashTechniqueLevelUpSnack(String name, String from, String to) =>
+      _t('clashTechniqueLevelUpSnack')
+          .replaceAll('{name}', name)
+          .replaceAll('{from}', from)
+          .replaceAll('{to}', to);
   String get clashActionUpgrade => _t('clashActionUpgrade');
   String clashExpMaterialXp(int xp) =>
       _t('clashExpMaterialXp').replaceAll('{xp}', '$xp');

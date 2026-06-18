@@ -31,6 +31,23 @@ class ClashSuperTechnique {
   /// Potencia efectiva según el nivel de la técnica.
   int get effectivePower => (basePower * level.powerMultiplier).round();
 
+  ClashSuperTechnique withLevel(ClashTechniqueLevel value) {
+    if (value == level) {
+      return this;
+    }
+    return ClashSuperTechnique(
+      id: id,
+      name: name,
+      description: description,
+      type: type,
+      style: style,
+      basePower: basePower,
+      ptCost: ptCost,
+      level: value,
+      specialArtPath: specialArtPath,
+    );
+  }
+
   /// Indica si hay PT suficientes para activar la técnica.
   bool canBeUsed(int currentPt) => currentPt >= ptCost;
 

@@ -4,9 +4,14 @@ import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_e
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_table.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_card_progress.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_inventory_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_use_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_inventory_entry.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_use_result.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_progress_resolver.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_type.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_portrait.dart';
@@ -28,9 +33,11 @@ class ClashCardDetailScreen extends StatefulWidget {
 class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
   ClashCardCatalogEntry? _entry;
   List<ClashExpMaterialInventoryEntry> _materials = const [];
+  List<ClashTechniqueBookInventoryEntry> _techniqueBooks = const [];
   bool _loading = true;
   bool _notFound = false;
   bool _usingMaterial = false;
+  String? _usingTechniqueBookFor;
 
   @override
   void initState() {
@@ -42,20 +49,79 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
     final controller = context.read<ClashCardsController>();
     final collection = context.read<ClashPlayerCollectionRepository>();
     final materialsRepo = context.read<ClashExpMaterialsRepository>();
+    final techniqueBooksRepo = context.read<ClashTechniqueBooksRepository>();
     if (controller.state == ClashCardsLoadState.idle) {
       await controller.load();
     }
     final entry = await controller.findCard(widget.cardId);
     final inventory = await materialsRepo.fetchInventoryEntries();
+    final techniqueBooks = await techniqueBooksRepo.fetchInventoryEntries();
     if (!mounted) {
       return;
     }
     setState(() {
       _entry = entry == null ? null : collection.enrichEntry(entry);
       _materials = inventory;
+      _techniqueBooks = techniqueBooks;
       _notFound = entry == null;
       _loading = false;
     });
+  }
+
+  Future<void> _useTechniqueBook(String techniqueId, String bookId) async {
+    if (_usingTechniqueBookFor != null || _entry == null) {
+      return;
+    }
+
+    setState(() => _usingTechniqueBookFor = techniqueId);
+    final collection = context.read<ClashPlayerCollectionRepository>();
+    final techniqueBooksRepo = context.read<ClashTechniqueBooksRepository>();
+    final controller = context.read<ClashCardsController>();
+
+    final result = await collection.useTechniqueBookOnCard(
+      cardId: widget.cardId,
+      techniqueId: techniqueId,
+      bookId: bookId,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (result.succeeded) {
+      final entry = await controller.findCard(widget.cardId);
+      final books = await techniqueBooksRepo.fetchInventoryEntries();
+      setState(() {
+        _entry = entry == null ? null : collection.enrichEntry(entry);
+        _techniqueBooks = books;
+        _usingTechniqueBookFor = null;
+      });
+      await controller.reloadOwnedCards();
+      _showTechniqueBookResultSnackBar(result);
+    } else {
+      setState(() => _usingTechniqueBookFor = null);
+    }
+  }
+
+  void _showTechniqueBookResultSnackBar(ClashTechniqueBookUseResult result) {
+    final l10n = context.l10n;
+    final technique = _entry?.card.superTechniques.firstWhere(
+      (item) => item.id == result.techniqueId,
+      orElse: () => _entry!.card.superTechniques.first,
+    );
+    final name = technique?.name ?? result.techniqueId;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(
+          l10n.clashTechniqueLevelUpSnack(
+            name,
+            result.previousLevel.displayLabel,
+            result.newLevel.displayLabel,
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _useMaterial(String materialId) async {
@@ -125,9 +191,6 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
 
     final entry = _entry!;
     final card = entry.card;
-    final technique = card.superTechniques.isNotEmpty
-        ? card.superTechniques.first
-        : null;
 
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -195,9 +258,15 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
             );
           },
         ),
-        if (technique != null) ...[
+        for (final technique in card.superTechniques) ...[
           const SizedBox(height: 20),
-          _TechniquePanel(technique: technique),
+          _TechniquePanel(
+            baseTechnique: technique,
+            progress: entry.progress,
+            books: _techniqueBooks,
+            isBusy: _usingTechniqueBookFor == technique.id,
+            onUseBook: (bookId) => _useTechniqueBook(technique.id, bookId),
+          ),
         ],
         const SizedBox(height: 16),
         _UpgradePanel(
@@ -583,9 +652,19 @@ class _MaterialRow extends StatelessWidget {
 }
 
 class _TechniquePanel extends StatelessWidget {
-  const _TechniquePanel({required this.technique});
+  const _TechniquePanel({
+    required this.baseTechnique,
+    required this.progress,
+    required this.books,
+    required this.isBusy,
+    required this.onUseBook,
+  });
 
-  final ClashSuperTechnique technique;
+  final ClashSuperTechnique baseTechnique;
+  final ClashCardProgress? progress;
+  final List<ClashTechniqueBookInventoryEntry> books;
+  final bool isBusy;
+  final ValueChanged<String> onUseBook;
 
   static String _typeLabel(ClashTechniqueType type) => switch (type) {
     ClashTechniqueType.save => 'Parada',
@@ -597,6 +676,11 @@ class _TechniquePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final resolved = ClashTechniqueProgressResolver.withResolvedLevel(
+      technique: baseTechnique,
+      progress: progress,
+    );
+    final atMax = resolved.level.isMax;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -616,33 +700,135 @@ class _TechniquePanel extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            technique.name,
+            resolved.name,
             style: Theme.of(
               context,
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 4),
-          Text(technique.description),
+          Text(resolved.description),
           const SizedBox(height: 10),
           _MetaRow(
             label: l10n.clashTechniqueType,
-            value: _typeLabel(technique.type),
+            value: _typeLabel(resolved.type),
           ),
           _MetaRow(
             label: l10n.clashCardStyle,
-            value: technique.style.displayNameEs,
-          ),
-          _MetaRow(
-            label: l10n.clashTechniquePower,
-            value: '${technique.effectivePower}',
-          ),
-          _MetaRow(
-            label: l10n.clashTechniquePtCost,
-            value: '${technique.ptCost}',
+            value: resolved.style.displayNameEs,
           ),
           _MetaRow(
             label: l10n.clashTechniqueLevel,
-            value: technique.level.name.toUpperCase(),
+            value: resolved.level.displayLabel,
+          ),
+          _MetaRow(
+            label: l10n.clashTechniqueBasePower,
+            value: '${baseTechnique.basePower}',
+          ),
+          _MetaRow(
+            label: l10n.clashTechniquePower,
+            value: '${resolved.effectivePower}',
+          ),
+          _MetaRow(
+            label: l10n.clashTechniquePtCost,
+            value: '${resolved.ptCost}',
+          ),
+          const SizedBox(height: 14),
+          Text(
+            l10n.clashTechniqueUpgradeTitle,
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          if (atMax) ...[
+            const SizedBox(height: 8),
+            Text(
+              l10n.clashCardMaxLevel,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: context.xiTextSecondary),
+            ),
+          ],
+          const SizedBox(height: 10),
+          for (final item in books) ...[
+            _TechniqueBookRow(
+              entry: item,
+              disabled: atMax || item.quantity <= 0 || isBusy,
+              onUse: () => onUseBook(item.book.id),
+            ),
+            if (item != books.last) const SizedBox(height: 10),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _TechniqueBookRow extends StatelessWidget {
+  const _TechniqueBookRow({
+    required this.entry,
+    required this.disabled,
+    required this.onUse,
+  });
+
+  final ClashTechniqueBookInventoryEntry entry;
+  final bool disabled;
+  final VoidCallback onUse;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final book = entry.book;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: context.xiChipBackground.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.xiDivider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  book.name,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                ),
+              ),
+              Text(
+                l10n.clashTechniqueBookEffect(book.levelUpSteps),
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            book.description,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: context.xiTextSecondary),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.clashExpMaterialQuantity(entry.quantity),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+              FilledButton.tonal(
+                onPressed: disabled ? null : onUse,
+                child: Text(l10n.clashTechniqueBookUse),
+              ),
+            ],
           ),
         ],
       ),

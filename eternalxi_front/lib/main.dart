@@ -11,7 +11,10 @@ import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.da
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_material_inventory_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_materials_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_technique_book_inventory_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_technique_books_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_local_datasource.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
@@ -59,6 +62,13 @@ Future<void> main() async {
     inventoryStorage: clashExpMaterialInventoryBackend,
   );
   await clashExpMaterialsRepository.seedDefaultInventoryIfEmpty();
+  final clashTechniqueBookInventoryBackend =
+      await SharedPreferencesClashTechniqueBookInventoryBackend.create();
+  final clashTechniqueBooksRepository = ClashTechniqueBooksRepository(
+    dataSource: ClashTechniqueBooksLocalDataSource(),
+    inventoryStorage: clashTechniqueBookInventoryBackend,
+  );
+  await clashTechniqueBooksRepository.seedDefaultInventoryIfEmpty();
   final clashStoryProgressBackend =
       await SharedPreferencesClashStoryProgressBackend.create();
   final apiClient = ApiClient(
@@ -165,11 +175,22 @@ Future<void> main() async {
         Provider<ClashExpMaterialsRepository>.value(
           value: clashExpMaterialsRepository,
         ),
+        Provider<ClashTechniqueBookInventoryStorageBackend>.value(
+          value: clashTechniqueBookInventoryBackend,
+        ),
+        Provider<ClashTechniqueBooksLocalDataSource>(
+          create: (_) => ClashTechniqueBooksLocalDataSource(),
+        ),
+        Provider<ClashTechniqueBooksRepository>.value(
+          value: clashTechniqueBooksRepository,
+        ),
         Provider<ClashPlayerCollectionRepository>(
           create: (context) => ClashPlayerCollectionRepository(
             storage: context.read<ClashPlayerCollectionStorageBackend>(),
             cardsRepository: context.read<ClashCardsRepository>(),
             expMaterialsRepository: context.read<ClashExpMaterialsRepository>(),
+            techniqueBooksRepository: context
+                .read<ClashTechniqueBooksRepository>(),
           ),
         ),
         ChangeNotifierProvider<ClashCardsController>(

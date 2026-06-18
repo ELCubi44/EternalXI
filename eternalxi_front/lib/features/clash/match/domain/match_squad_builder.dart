@@ -4,6 +4,7 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_stats.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_level.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_progress_resolver.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_type.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_pitch_layout.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_player_marker.dart';
@@ -41,7 +42,10 @@ class MatchSquadBuilder {
             power: entry.power,
             currentStamina: entry.card.stats.stamina,
             style: entry.card.style,
-            superTechniques: entry.card.superTechniques,
+            superTechniques: ClashTechniqueProgressResolver.resolvedTechniques(
+              techniques: entry.card.superTechniques,
+              progress: entry.progress,
+            ),
             maxPt: entry.card.stats.techniquePoints,
             currentPt: entry.card.stats.techniquePoints,
           ),

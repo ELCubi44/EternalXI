@@ -1,10 +1,14 @@
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_material_inventory_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_materials_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_technique_book_inventory_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_technique_books_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book.dart';
 
 const clashTestExpMaterialsJson = '''
 {
@@ -31,10 +35,42 @@ const clashTestExpMaterialsJson = '''
 }
 ''';
 
+const clashTestTechniqueBooksJson = '''
+{
+  "books": [
+    {
+      "id": "basic-technique-book",
+      "name": "Libro técnico básico",
+      "description": "Sube una supertécnica un paso.",
+      "levelUpSteps": 1
+    },
+    {
+      "id": "advanced-technique-book",
+      "name": "Libro técnico avanzado",
+      "description": "Sube una supertécnica dos pasos.",
+      "levelUpSteps": 2
+    },
+    {
+      "id": "master-technique-book",
+      "name": "Libro técnico maestro",
+      "description": "Sube una supertécnica cuatro pasos.",
+      "levelUpSteps": 4
+    }
+  ]
+}
+''';
+
 class TestExpMaterialsDataSource extends ClashExpMaterialsLocalDataSource {
   @override
   Future<List<ClashExpMaterial>> loadMaterials() async {
     return parseMaterialsJson(clashTestExpMaterialsJson);
+  }
+}
+
+class TestTechniqueBooksDataSource extends ClashTechniqueBooksLocalDataSource {
+  @override
+  Future<List<ClashTechniqueBook>> loadBooks() async {
+    return parseBooksJson(clashTestTechniqueBooksJson);
   }
 }
 
@@ -48,15 +84,28 @@ ClashExpMaterialsRepository createTestExpMaterialsRepository({
   );
 }
 
+ClashTechniqueBooksRepository createTestTechniqueBooksRepository({
+  ClashTechniqueBookInventoryStorageBackend? inventoryStorage,
+}) {
+  return ClashTechniqueBooksRepository(
+    dataSource: TestTechniqueBooksDataSource(),
+    inventoryStorage:
+        inventoryStorage ?? InMemoryClashTechniqueBookInventoryBackend(),
+  );
+}
+
 ClashPlayerCollectionRepository createTestCollectionRepository({
   required ClashCardsRepository cardsRepository,
   ClashPlayerCollectionStorageBackend? storage,
   ClashExpMaterialsRepository? expMaterialsRepository,
+  ClashTechniqueBooksRepository? techniqueBooksRepository,
 }) {
   return ClashPlayerCollectionRepository(
     storage: storage ?? InMemoryClashPlayerCollectionBackend(),
     cardsRepository: cardsRepository,
     expMaterialsRepository:
         expMaterialsRepository ?? createTestExpMaterialsRepository(),
+    techniqueBooksRepository:
+        techniqueBooksRepository ?? createTestTechniqueBooksRepository(),
   );
 }

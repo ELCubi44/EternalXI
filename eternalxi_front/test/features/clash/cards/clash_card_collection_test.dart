@@ -4,6 +4,7 @@ import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_loc
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/screens/clash_card_collection_screen.dart';
@@ -69,20 +70,23 @@ Future<
     ClashCardsController,
     ClashPlayerCollectionRepository,
     ClashExpMaterialsRepository,
+    ClashTechniqueBooksRepository,
   )
 >
 _readyController() async {
   final cards = ClashCardsLocalDataSource().parseCardsJson(_sampleJson);
   final cardsRepo = ClashCardsRepository(_FakeDataSource(cards));
   final materialsRepo = createTestExpMaterialsRepository();
+  final techniqueBooksRepo = createTestTechniqueBooksRepository();
   final collectionRepo = createTestCollectionRepository(
     cardsRepository: cardsRepo,
     expMaterialsRepository: materialsRepo,
+    techniqueBooksRepository: techniqueBooksRepo,
   );
   await collectionRepo.grantMissingCardIds(['ui-test-1']);
   final controller = ClashCardsController(cardsRepo, collectionRepo);
   await controller.load();
-  return (controller, collectionRepo, materialsRepo);
+  return (controller, collectionRepo, materialsRepo, techniqueBooksRepo);
 }
 
 GoRouter _cardsRouter(ClashCardsController controller) {
@@ -113,12 +117,14 @@ Widget _routerApp(
   ClashCardsController controller,
   ClashPlayerCollectionRepository collectionRepo,
   ClashExpMaterialsRepository materialsRepo,
+  ClashTechniqueBooksRepository techniqueBooksRepo,
 ) {
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<ClashCardsController>.value(value: controller),
       Provider<ClashPlayerCollectionRepository>.value(value: collectionRepo),
       Provider<ClashExpMaterialsRepository>.value(value: materialsRepo),
+      Provider<ClashTechniqueBooksRepository>.value(value: techniqueBooksRepo),
     ],
     child: MaterialApp.router(
       locale: const Locale('es'),
@@ -134,7 +140,7 @@ void main() {
 
   group('ClashCardCollectionScreen', () {
     testWidgets('renderiza cartas cargadas', (tester) async {
-      final (controller, _, __) = await _readyController();
+      final (controller, _, __, ___) = await _readyController();
       await tester.pumpWidget(
         ChangeNotifierProvider<ClashCardsController>.value(
           value: controller,
@@ -153,11 +159,17 @@ void main() {
     });
 
     testWidgets('pulsar carta abre detalle', (tester) async {
-      final (controller, collectionRepo, materialsRepo) =
+      final (controller, collectionRepo, materialsRepo, techniqueBooksRepo) =
           await _readyController();
       final router = _cardsRouter(controller);
       await tester.pumpWidget(
-        _routerApp(router, controller, collectionRepo, materialsRepo),
+        _routerApp(
+          router,
+          controller,
+          collectionRepo,
+          materialsRepo,
+          techniqueBooksRepo,
+        ),
       );
       await tester.pumpAndSettle();
 
@@ -172,7 +184,7 @@ void main() {
 
   group('ClashCardDetailScreen', () {
     testWidgets('carta inexistente muestra error seguro', (tester) async {
-      final (controller, collectionRepo, materialsRepo) =
+      final (controller, collectionRepo, materialsRepo, techniqueBooksRepo) =
           await _readyController();
       final router = GoRouter(
         initialLocation: AppRoutes.clashCardDetail('missing-id'),
@@ -189,7 +201,13 @@ void main() {
       );
 
       await tester.pumpWidget(
-        _routerApp(router, controller, collectionRepo, materialsRepo),
+        _routerApp(
+          router,
+          controller,
+          collectionRepo,
+          materialsRepo,
+          techniqueBooksRepo,
+        ),
       );
       await tester.pumpAndSettle();
 
