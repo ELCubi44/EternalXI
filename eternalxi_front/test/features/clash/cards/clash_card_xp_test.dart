@@ -160,7 +160,6 @@ void main() {
         cardId: _card.id,
         currentLevel: 1,
         currentExperience: 30,
-        unlockedDuplicateNodes: 0,
         techniqueLevels: const {},
       );
       final result = ClashCardXpService.applyXp(
@@ -189,7 +188,6 @@ void main() {
         cardId: _card.id,
         currentLevel: ClashRarity.n.maxLevel,
         currentExperience: 0,
-        unlockedDuplicateNodes: 0,
         techniqueLevels: const {},
       );
       final result = ClashCardXpService.applyXp(
@@ -207,7 +205,6 @@ void main() {
         cardId: _card.id,
         currentLevel: 60,
         currentExperience: 0,
-        unlockedDuplicateNodes: 0,
         techniqueLevels: const {},
       );
       final updated = ClashCardXpService.progressAfterResult(
@@ -231,7 +228,6 @@ void main() {
         cardId: _card.id,
         currentLevel: 30,
         currentExperience: 0,
-        unlockedDuplicateNodes: 0,
         techniqueLevels: const {},
       );
       final scaled = ClashCardLevelScaling.effectivePower(_card, progress);

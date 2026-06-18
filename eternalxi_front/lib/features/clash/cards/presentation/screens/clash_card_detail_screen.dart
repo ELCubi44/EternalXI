@@ -4,6 +4,7 @@ import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_e
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_evolution_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_card.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_evolution_resolver.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_table.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
@@ -19,10 +20,13 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_inve
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_use_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_progress_resolver.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_type.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_definition.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_node.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_service.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_unlock_result.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_portrait.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_rarity_badge.dart';
-import 'package:eternal_xi/features/clash/presentation/widgets/clash_section_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -45,6 +49,7 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
   bool _notFound = false;
   bool _usingMaterial = false;
   bool _evolving = false;
+  bool _unlockingSkillNode = false;
   String? _usingTechniqueBookFor;
 
   @override
@@ -181,6 +186,48 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
             ClashCardEvolutionResolver.rarityLabel(result.newRarity),
           ),
         ),
+      ),
+    );
+  }
+
+  Future<void> _unlockSkillTreeNode(String nodeId) async {
+    if (_unlockingSkillNode || _entry == null) {
+      return;
+    }
+
+    setState(() => _unlockingSkillNode = true);
+    final collection = context.read<ClashPlayerCollectionRepository>();
+    final controller = context.read<ClashCardsController>();
+
+    final result = await collection.unlockSkillTreeNode(
+      cardId: widget.cardId,
+      nodeId: nodeId,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (result.succeeded) {
+      final entry = await controller.findCard(widget.cardId);
+      setState(() {
+        _entry = entry == null ? null : collection.enrichEntry(entry);
+        _unlockingSkillNode = false;
+      });
+      await controller.reloadOwnedCards();
+      _showSkillTreeUnlockSnackBar(result);
+    } else {
+      setState(() => _unlockingSkillNode = false);
+    }
+  }
+
+  void _showSkillTreeUnlockSnackBar(ClashSkillTreeUnlockResult result) {
+    final l10n = context.l10n;
+    final boost = result.boostLabel ?? result.nodeId;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(l10n.clashSkillTreeUnlockSnack(boost)),
       ),
     );
   }
@@ -343,22 +390,13 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
           isBusy: _evolving,
           onEvolve: _evolveCard,
         ),
-        const SizedBox(height: 10),
-        ClashSectionTile(
-          icon: Icons.account_tree_rounded,
-          title: l10n.clashActionTree,
-          onTap: () => _showComingSoon(context),
+        const SizedBox(height: 16),
+        _SkillTreePanel(
+          entry: entry,
+          isBusy: _unlockingSkillNode,
+          onUnlock: _unlockSkillTreeNode,
         ),
       ],
-    );
-  }
-
-  void _showComingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        content: Text(context.l10n.clashComingSoon),
-      ),
     );
   }
 }
@@ -509,7 +547,6 @@ class _XpPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final card = entry.displayCard;
     final progress = entry.progress;
     final currentXp = progress?.currentExperience ?? 0;
 
@@ -1050,7 +1087,6 @@ class _EvolutionActionButton extends StatelessWidget {
           cardId: entry.id,
           currentLevel: entry.displayLevel,
           currentExperience: 0,
-          unlockedDuplicateNodes: 0,
           techniqueLevels: const {},
         );
     final quantities = {
@@ -1094,5 +1130,156 @@ class _EvolutionActionButton extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class _SkillTreePanel extends StatelessWidget {
+  const _SkillTreePanel({
+    required this.entry,
+    required this.isBusy,
+    required this.onUnlock,
+  });
+
+  final ClashCardCatalogEntry entry;
+  final bool isBusy;
+  final ValueChanged<String> onUnlock;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final card = entry.card;
+    final progress = entry.progress;
+    final eligible = entry.hasSkillTree;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.xiCardSurface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.xiDivider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.clashSkillTreeTitle,
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 10),
+          if (!eligible) ...[
+            Text(
+              l10n.clashSkillTreeLockedRarity,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: context.xiTextSecondary),
+            ),
+          ] else if (progress == null) ...[
+            Text(
+              l10n.clashSkillTreeLockedRarity,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: context.xiTextSecondary),
+            ),
+          ] else ...[
+            Text(l10n.clashSkillTreeDuplicates(progress.duplicateCopies)),
+            const SizedBox(height: 6),
+            Text(
+              l10n.clashSkillTreeProgress(
+                progress.unlockedDuplicateNodes,
+                ClashSkillTreeDefinition.nodeCount,
+              ),
+            ),
+            const SizedBox(height: 14),
+            for (final node in ClashSkillTreeDefinition.nodesFor(card.position))
+              _SkillTreeNodeRow(
+                node: node,
+                progress: progress,
+                card: card,
+                isBusy: isBusy,
+                onUnlock: onUnlock,
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+enum _SkillTreeNodeVisualState { locked, available, unlocked }
+
+class _SkillTreeNodeRow extends StatelessWidget {
+  const _SkillTreeNodeRow({
+    required this.node,
+    required this.progress,
+    required this.card,
+    required this.isBusy,
+    required this.onUnlock,
+  });
+
+  final ClashSkillTreeNode node;
+  final ClashCardProgress progress;
+  final ClashCard card;
+  final bool isBusy;
+  final ValueChanged<String> onUnlock;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final state = _resolveState();
+
+    final statusLabel = switch (state) {
+      _SkillTreeNodeVisualState.unlocked => l10n.clashSkillTreeNodeUnlocked,
+      _SkillTreeNodeVisualState.available => l10n.clashSkillTreeNodeAvailable,
+      _SkillTreeNodeVisualState.locked => l10n.clashSkillTreeNodeLocked,
+    };
+
+    final canUnlock = state == _SkillTreeNodeVisualState.available && !isBusy;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            node.title,
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 2),
+          Text(node.description),
+          const SizedBox(height: 4),
+          Text(
+            '${node.boostLabel} · $statusLabel',
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: context.xiTextSecondary),
+          ),
+          if (canUnlock) ...[
+            const SizedBox(height: 8),
+            FilledButton.tonal(
+              onPressed: () => onUnlock(node.id),
+              child: Text(l10n.clashSkillTreeUnlock),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  _SkillTreeNodeVisualState _resolveState() {
+    if (ClashSkillTreeService.isNodeUnlocked(progress, node.id)) {
+      return _SkillTreeNodeVisualState.unlocked;
+    }
+    if (ClashSkillTreeService.canUnlockNode(
+      card: card,
+      progress: progress,
+      node: node,
+    )) {
+      return _SkillTreeNodeVisualState.available;
+    }
+    return _SkillTreeNodeVisualState.locked;
   }
 }

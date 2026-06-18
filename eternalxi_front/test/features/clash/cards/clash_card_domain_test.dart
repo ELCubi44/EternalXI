@@ -310,7 +310,13 @@ void main() {
         cardId: 'card-1',
         currentLevel: 10,
         currentExperience: 0,
-        unlockedDuplicateNodes: 5,
+        unlockedSkillNodeIds: {
+          'skill-1',
+          'skill-2',
+          'skill-3',
+          'skill-4',
+          'skill-5',
+        },
         techniqueLevels: {},
       );
       expect(progress.isTreeMaximized, isTrue);
@@ -320,7 +326,14 @@ void main() {
         cardId: 'card-1',
         currentLevel: 10,
         currentExperience: 0,
-        unlockedDuplicateNodes: 6,
+        unlockedSkillNodeIds: {
+          'skill-1',
+          'skill-2',
+          'skill-3',
+          'skill-4',
+          'skill-5',
+          'skill-6',
+        },
         techniqueLevels: {},
       );
       expect(
@@ -334,7 +347,7 @@ void main() {
         cardId: 'card-1',
         currentLevel: 5,
         currentExperience: 100,
-        unlockedDuplicateNodes: 1,
+        unlockedSkillNodeIds: {'skill-1'},
         techniqueLevels: {},
       );
 
@@ -355,7 +368,7 @@ void main() {
         cardId: 'card-1',
         currentLevel: 10,
         currentExperience: 0,
-        unlockedDuplicateNodes: 3,
+        unlockedSkillNodeIds: {'skill-1', 'skill-2', 'skill-3'},
         techniqueLevels: {'tech-1': ClashTechniqueLevel.v},
       );
 
@@ -419,7 +432,8 @@ void main() {
         cardId: 'card-abc',
         currentLevel: 25,
         currentExperience: 1500,
-        unlockedDuplicateNodes: 2,
+        duplicateCopies: 3,
+        unlockedSkillNodeIds: {'skill-1', 'skill-2'},
         techniqueLevels: {
           'tech-1': ClashTechniqueLevel.i,
           'tech-2': ClashTechniqueLevel.v,

@@ -10,8 +10,9 @@ class ClashCardProgress {
     required this.cardId,
     required this.currentLevel,
     required this.currentExperience,
-    required this.unlockedDuplicateNodes,
     required this.techniqueLevels,
+    this.duplicateCopies = 0,
+    this.unlockedSkillNodeIds = const {},
     this.evolvedRarity,
   });
 
@@ -22,14 +23,22 @@ class ClashCardProgress {
   final int currentLevel;
   final int currentExperience;
 
-  /// Nodos del árbol desbloqueados mediante duplicados (0–5).
-  final int unlockedDuplicateNodes;
+  /// Copias extra además de la carta base (0 = 1 copia total).
+  final int duplicateCopies;
+
+  /// Nodos del árbol desbloqueados (Fase 21).
+  final Set<String> unlockedSkillNodeIds;
 
   /// Nivel de mejora por supertécnica (independiente entre técnicas).
   final Map<String, ClashTechniqueLevel> techniqueLevels;
 
   /// Rareza alcanzada por evolución local (misma cardId en assets).
   final ClashRarity? evolvedRarity;
+
+  /// Nodos desbloqueados (alias legacy).
+  int get unlockedDuplicateNodes => unlockedSkillNodeIds.length;
+
+  int get totalCopies => 1 + duplicateCopies;
 
   /// Valida reglas de progreso según la rareza de la carta.
   void validateForRarity(ClashRarity rarity) {
@@ -42,6 +51,10 @@ class ClashCardProgress {
 
     if (currentExperience < 0) {
       throw ArgumentError('La experiencia no puede ser negativa');
+    }
+
+    if (duplicateCopies < 0) {
+      throw ArgumentError('duplicateCopies no puede ser negativo');
     }
 
     if (unlockedDuplicateNodes < 0 ||
@@ -62,7 +75,8 @@ class ClashCardProgress {
   ClashCardProgress copyWith({
     int? currentLevel,
     int? currentExperience,
-    int? unlockedDuplicateNodes,
+    int? duplicateCopies,
+    Set<String>? unlockedSkillNodeIds,
     Map<String, ClashTechniqueLevel>? techniqueLevels,
     ClashRarity? evolvedRarity,
   }) {
@@ -70,8 +84,8 @@ class ClashCardProgress {
       cardId: cardId,
       currentLevel: currentLevel ?? this.currentLevel,
       currentExperience: currentExperience ?? this.currentExperience,
-      unlockedDuplicateNodes:
-          unlockedDuplicateNodes ?? this.unlockedDuplicateNodes,
+      duplicateCopies: duplicateCopies ?? this.duplicateCopies,
+      unlockedSkillNodeIds: unlockedSkillNodeIds ?? this.unlockedSkillNodeIds,
       techniqueLevels: techniqueLevels ?? this.techniqueLevels,
       evolvedRarity: evolvedRarity ?? this.evolvedRarity,
     );
@@ -91,10 +105,8 @@ class ClashCardProgress {
         json['currentExperience'],
         'currentExperience',
       ),
-      unlockedDuplicateNodes: clashRequireInt(
-        json['unlockedDuplicateNodes'],
-        'unlockedDuplicateNodes',
-      ),
+      duplicateCopies: json['duplicateCopies'] as int? ?? 0,
+      unlockedSkillNodeIds: _parseUnlockedSkillNodeIds(json),
       techniqueLevels: Map<String, ClashTechniqueLevel>.unmodifiable(
         techniqueLevels,
       ),
@@ -104,10 +116,24 @@ class ClashCardProgress {
     );
   }
 
+  static Set<String> _parseUnlockedSkillNodeIds(Map<String, dynamic> json) {
+    final raw = json['unlockedSkillNodeIds'] as List?;
+    if (raw != null) {
+      return raw.map((id) => id.toString()).toSet();
+    }
+    final legacy = json['unlockedDuplicateNodes'] as int? ?? 0;
+    if (legacy <= 0) {
+      return const {};
+    }
+    return {for (var i = 1; i <= legacy; i++) 'skill-$i'};
+  }
+
   Map<String, dynamic> toJson() => {
     'cardId': cardId,
     'currentLevel': currentLevel,
     'currentExperience': currentExperience,
+    'duplicateCopies': duplicateCopies,
+    'unlockedSkillNodeIds': unlockedSkillNodeIds.toList(),
     'unlockedDuplicateNodes': unlockedDuplicateNodes,
     'techniqueLevels': techniqueLevels.map(
       (key, value) => MapEntry(key, value.toJson()),

@@ -204,6 +204,18 @@ class AppLocalizations {
       'clashEvolutionMissingLevel': 'Nivel insuficiente',
       'clashEvolutionMissingMaterial': 'Faltan materiales',
       'clashEvolutionSnack': 'Carta evolucionada: {from} → {to}',
+      'clashSkillTreeTitle': 'Árbol de habilidades',
+      'clashSkillTreeLockedRarity': 'Disponible al alcanzar SR',
+      'clashSkillTreeDuplicates': 'Duplicados disponibles: {count}',
+      'clashSkillTreeProgress': 'Nodos desbloqueados: {current}/{max}',
+      'clashSkillTreeNodeLocked': 'Bloqueado',
+      'clashSkillTreeNodeAvailable': 'Disponible',
+      'clashSkillTreeNodeUnlocked': 'Desbloqueado',
+      'clashSkillTreeUnlock': 'Desbloquear',
+      'clashSkillTreeNoDuplicates': 'Sin duplicados',
+      'clashSkillTreeUnlockSnack': 'Nodo desbloqueado: {boost}',
+      'clashCardDuplicateCopies': '+{count} copias',
+      'clashCardSkillTreeShort': 'Árbol {current}/{max}',
       'clashActionTree': 'Árbol',
       'clashLineupSlotEmpty': 'Vacío',
       'clashLineupTotalPower': 'Potencia total',
@@ -726,6 +738,18 @@ class AppLocalizations {
       'clashEvolutionMissingLevel': 'Insufficient level',
       'clashEvolutionMissingMaterial': 'Missing materials',
       'clashEvolutionSnack': 'Card evolved: {from} → {to}',
+      'clashSkillTreeTitle': 'Skill tree',
+      'clashSkillTreeLockedRarity': 'Available when reaching SR',
+      'clashSkillTreeDuplicates': 'Available duplicates: {count}',
+      'clashSkillTreeProgress': 'Unlocked nodes: {current}/{max}',
+      'clashSkillTreeNodeLocked': 'Locked',
+      'clashSkillTreeNodeAvailable': 'Available',
+      'clashSkillTreeNodeUnlocked': 'Unlocked',
+      'clashSkillTreeUnlock': 'Unlock',
+      'clashSkillTreeNoDuplicates': 'No duplicates',
+      'clashSkillTreeUnlockSnack': 'Node unlocked: {boost}',
+      'clashCardDuplicateCopies': '+{count} copies',
+      'clashCardSkillTreeShort': 'Tree {current}/{max}',
       'clashActionTree': 'Tree',
       'clashLineupSlotEmpty': 'Empty',
       'clashLineupTotalPower': 'Total power',
@@ -1287,6 +1311,25 @@ class AppLocalizations {
   String clashEvolutionSnack(String from, String to) => _t(
     'clashEvolutionSnack',
   ).replaceAll('{from}', from).replaceAll('{to}', to);
+  String get clashSkillTreeTitle => _t('clashSkillTreeTitle');
+  String get clashSkillTreeLockedRarity => _t('clashSkillTreeLockedRarity');
+  String clashSkillTreeDuplicates(int count) =>
+      _t('clashSkillTreeDuplicates').replaceAll('{count}', '$count');
+  String clashSkillTreeProgress(int current, int max) => _t(
+    'clashSkillTreeProgress',
+  ).replaceAll('{current}', '$current').replaceAll('{max}', '$max');
+  String get clashSkillTreeNodeLocked => _t('clashSkillTreeNodeLocked');
+  String get clashSkillTreeNodeAvailable => _t('clashSkillTreeNodeAvailable');
+  String get clashSkillTreeNodeUnlocked => _t('clashSkillTreeNodeUnlocked');
+  String get clashSkillTreeUnlock => _t('clashSkillTreeUnlock');
+  String get clashSkillTreeNoDuplicates => _t('clashSkillTreeNoDuplicates');
+  String clashSkillTreeUnlockSnack(String boost) =>
+      _t('clashSkillTreeUnlockSnack').replaceAll('{boost}', boost);
+  String clashCardDuplicateCopies(int count) =>
+      _t('clashCardDuplicateCopies').replaceAll('{count}', '$count');
+  String clashCardSkillTreeShort(int current, int max) => _t(
+    'clashCardSkillTreeShort',
+  ).replaceAll('{current}', '$current').replaceAll('{max}', '$max');
   String get clashActionTree => _t('clashActionTree');
   String get clashLineupSlotEmpty => _t('clashLineupSlotEmpty');
   String get clashLineupTotalPower => _t('clashLineupTotalPower');

@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_portrait.dart';
@@ -79,6 +80,28 @@ class ClashCardTile extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 4),
+              if (entry.hasDuplicateCopies || entry.hasSkillTree) ...[
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: [
+                    if (entry.hasDuplicateCopies)
+                      _ChipLabel(
+                        text: context.l10n.clashCardDuplicateCopies(
+                          entry.duplicateCopies,
+                        ),
+                      ),
+                    if (entry.hasSkillTree)
+                      _ChipLabel(
+                        text: context.l10n.clashCardSkillTreeShort(
+                          entry.unlockedSkillTreeCount,
+                          5,
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+              ],
               Text(
                 '${entry.power} PWR',
                 style: theme.textTheme.labelLarge?.copyWith(

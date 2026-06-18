@@ -38,6 +38,14 @@ class ClashCardCatalogEntry {
 
   int get power => ClashCardLevelScaling.effectivePower(card, progress);
 
+  int get duplicateCopies => progress?.duplicateCopies ?? 0;
+
+  int get unlockedSkillTreeCount => progress?.unlockedDuplicateNodes ?? 0;
+
+  bool get hasDuplicateCopies => duplicateCopies > 0;
+
+  bool get hasSkillTree => effectiveRarity.hasDuplicateTree;
+
   int? get xpToNextLevel {
     final p = progress;
     if (p == null || displayLevel >= effectiveRarity.maxLevel) {

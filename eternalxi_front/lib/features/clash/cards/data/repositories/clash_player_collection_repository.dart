@@ -16,6 +16,8 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_serv
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_use_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_level.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_progress_resolver.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_service.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_unlock_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
 
 /// Colección de cartas poseídas por el jugador (local, sin backend).
@@ -70,19 +72,34 @@ class ClashPlayerCollectionRepository {
   }
 
   Future<void> grantCardIds(Iterable<String> cardIds) async {
-    final owned = loadOwnedCardIds();
-    final before = owned.length;
-    owned.addAll(cardIds);
-    if (owned.length == before) {
+    if (cardIds.isEmpty) {
       return;
     }
-    final progress = loadCardProgress();
+
+    final snapshot = _loadSnapshot();
+    final owned = Set<String>.from(snapshot.ownedCardIds);
+    final progress = Map<String, ClashCardProgress>.from(snapshot.cardProgress);
+    var changed = false;
+
     for (final id in cardIds) {
-      progress.putIfAbsent(id, () => ClashCardXpService.initialProgress(id));
+      if (owned.contains(id)) {
+        final current = progress[id] ?? ClashCardXpService.initialProgress(id);
+        progress[id] = current.copyWith(
+          duplicateCopies: current.duplicateCopies + 1,
+        );
+        changed = true;
+      } else {
+        owned.add(id);
+        progress[id] = ClashCardXpService.initialProgress(id);
+        changed = true;
+      }
     }
-    await _save(
-      _loadSnapshot().copyWith(ownedCardIds: owned, cardProgress: progress),
-    );
+
+    if (changed) {
+      await _save(
+        snapshot.copyWith(ownedCardIds: owned, cardProgress: progress),
+      );
+    }
   }
 
   Future<List<String>> grantMissingCardIds(Iterable<String> cardIds) async {
@@ -114,6 +131,89 @@ class ClashPlayerCollectionRepository {
         .map((entry) => entry.id)
         .toList(growable: false);
     return grantMissingCardIds(starterIds);
+  }
+
+  /// Concede una copia duplicada de una carta ya poseída (tests/recompensas).
+  Future<int> grantCardCopy(String cardId) {
+    return grantCardCopies(cardId, 1);
+  }
+
+  Future<int> grantCardCopies(String cardId, int count) async {
+    if (count <= 0) {
+      return 0;
+    }
+
+    final snapshot = _loadSnapshot();
+    if (!snapshot.ownedCardIds.contains(cardId)) {
+      return 0;
+    }
+
+    final current =
+        snapshot.cardProgress[cardId] ??
+        ClashCardXpService.initialProgress(cardId);
+    final updated = current.copyWith(
+      duplicateCopies: current.duplicateCopies + count,
+    );
+    final progressMap = Map<String, ClashCardProgress>.from(
+      snapshot.cardProgress,
+    );
+    progressMap[cardId] = updated;
+    await _save(snapshot.copyWith(cardProgress: progressMap));
+    return count;
+  }
+
+  /// Desbloquea un nodo del árbol de habilidades (Fase 21).
+  Future<ClashSkillTreeUnlockResult> unlockSkillTreeNode({
+    required String cardId,
+    required String nodeId,
+  }) async {
+    final snapshot = _loadSnapshot();
+    if (!snapshot.ownedCardIds.contains(cardId)) {
+      return ClashSkillTreeUnlockResult(
+        cardId: cardId,
+        nodeId: nodeId,
+        duplicateConsumed: false,
+        remainingDuplicates: 0,
+        unlocked: false,
+        error: ClashSkillTreeUnlockError.cardNotOwned,
+      );
+    }
+
+    final entry = await _cardsRepository.findById(cardId);
+    if (entry == null) {
+      return ClashSkillTreeUnlockResult(
+        cardId: cardId,
+        nodeId: nodeId,
+        duplicateConsumed: false,
+        remainingDuplicates: 0,
+        unlocked: false,
+        error: ClashSkillTreeUnlockError.cardNotFound,
+      );
+    }
+
+    final current =
+        snapshot.cardProgress[cardId] ??
+        ClashCardXpService.initialProgress(cardId);
+    final preview = ClashSkillTreeService.previewUnlock(
+      cardId: cardId,
+      card: entry.card,
+      progress: current,
+      nodeId: nodeId,
+    );
+
+    if (!preview.succeeded) {
+      return preview;
+    }
+
+    final progressMap = Map<String, ClashCardProgress>.from(
+      snapshot.cardProgress,
+    );
+    progressMap[cardId] = ClashSkillTreeService.progressAfterUnlock(
+      progress: current,
+      nodeId: nodeId,
+    );
+    await _save(snapshot.copyWith(cardProgress: progressMap));
+    return preview;
   }
 
   Future<List<ClashCardCatalogEntry>> fetchOwnedCards() async {

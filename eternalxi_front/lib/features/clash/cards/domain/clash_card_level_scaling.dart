@@ -2,6 +2,7 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_card.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_evolution_resolver.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_progress.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_bonus_resolver.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_stats.dart';
 
 /// Escalado provisional de stats por nivel de carta (Fase 17).
@@ -31,7 +32,8 @@ class ClashCardLevelScaling {
     final rarity = ClashCardEvolutionResolver.effectiveRarity(card, progress);
     final levelMult = levelMultiplier(level, rarity);
     final rarityMult = ClashCardEvolutionResolver.rarityStatMultiplier(rarity);
-    return card.stats.scaled(levelMult * rarityMult);
+    final scaled = card.stats.scaled(levelMult * rarityMult);
+    return ClashSkillTreeBonusResolver.applyTreeBonuses(scaled, card, progress);
   }
 
   static int effectivePower(ClashCard card, ClashCardProgress? progress) {

@@ -177,7 +177,6 @@ ClashCardProgress _progress({
     cardId: _card.id,
     currentLevel: level,
     currentExperience: xp,
-    unlockedDuplicateNodes: 0,
     techniqueLevels: {'evo-tech': ClashTechniqueLevel.i},
     evolvedRarity: evolvedRarity,
   );
@@ -259,7 +258,6 @@ void main() {
               cardId: 'lr-card',
               currentLevel: 50,
               currentExperience: 0,
-              unlockedDuplicateNodes: 0,
               techniqueLevels: const {},
             ),
           },

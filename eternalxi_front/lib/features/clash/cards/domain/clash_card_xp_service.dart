@@ -12,7 +12,6 @@ class ClashCardXpService {
       cardId: cardId,
       currentLevel: 1,
       currentExperience: 0,
-      unlockedDuplicateNodes: 0,
       techniqueLevels: const {},
     );
   }

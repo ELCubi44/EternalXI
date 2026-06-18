@@ -85,6 +85,31 @@ R ──→ SR
 - Coste en monedas documentado pero **pendiente** (wallet historia no acoplada).
 - LR/XI no se obtienen por evolución. Salto directo N→SR no implementado en esta fase.
 
+**Implementación Fase 21 (Flutter):** duplicados y árbol de habilidades lineal inicial.
+
+| Incluido (Fase 21) | Pendiente |
+|---|---|
+| `duplicateCopies` en `ClashCardProgress` (0 = 1 copia total) | LR/XI reales por gacha |
+| Conceder carta repetida suma duplicado (`grantCardIds`) | Árbol visual complejo tipo Dokkan |
+| Árbol lineal de 5 nodos (SR/LR/XI) | Ramas avanzadas |
+| Consumo de 1 duplicado por nodo | Pasivas XI |
+| Bonus planos de stats tras rareza + nivel | Duplicados para supertécnicas |
+| UI en detalle y chips en colección | Backend / tienda real |
+
+**Reglas duplicados:**
+- Carta nueva → `ownedCardIds` + `duplicateCopies = 0` (1 copia).
+- Carta repetida → `duplicateCopies + 1`.
+- Starters Eternal XI (`grantEternalXiStarterNCards`) no duplican al reclamar otra vez.
+- Completar árbol requiere 5 duplicados (6 copias totales).
+
+**Árbol (provisional lineal):**
+- N y R: sin árbol.
+- SR, LR, XI: árbol disponible (incluye cartas evolucionadas a SR).
+- Campo: +5 Defensa → +5 Regate → +5 Tiro → +5 PT → +8 Resistencia.
+- Portero: +5 Parada → +5 Defensa → +5 PT → +8 Resistencia → +5 Parada.
+
+**Orden de stats efectivas:** base → bonus rareza evolucionada → escalado por nivel → bonus árbol (`ClashCardLevelScaling` + `ClashSkillTreeBonusResolver`).
+
 ---
 
 ## 4. Arte de cartas
@@ -432,7 +457,7 @@ ClashDuplicateMaterial
 | Tema | Estado |
 |---|---|
 | Tabla XP por nivel y rareza | Pendiente |
-| Nodos concretos del árbol SR/LR/XI | Pendiente |
+| Nodos concretos del árbol SR/LR/XI | **Fase 21:** 5 nodos lineales provisionales |
 | Efecto exacto pasiva XI | Pendiente |
 | Tasas de drop N por equipo | Pendiente |
 | Conversión de nivel al evolucionar N→R→SR | Pendiente |
