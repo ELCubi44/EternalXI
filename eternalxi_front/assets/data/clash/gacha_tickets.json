@@ -1,0 +1,13 @@
+{
+  "tickets": [
+    {
+      "id": "starter-single-ticket",
+      "name": "Ticket de invocación inicial",
+      "description": "Permite una invocación single en el banner inicial",
+      "compatibleBannerIds": ["starter-banner-001"],
+      "pullCount": 1,
+      "rarityGuarantee": null,
+      "iconKey": null
+    }
+  ]
+}

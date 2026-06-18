@@ -79,6 +79,7 @@ flutter:
     - assets/data/clash/evolution_materials.json
     - assets/data/clash/match_items.json
     - assets/data/clash/gacha_banners.json
+    - assets/data/clash/gacha_tickets.json
     - assets/data/clash/story/sagas.json
     - assets/data/clash/story/chapter_01.json
 

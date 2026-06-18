@@ -93,6 +93,7 @@ class ClashInventoryItemTile extends StatelessWidget {
       ClashInventoryCategory.technique => Icons.menu_book_rounded,
       ClashInventoryCategory.evolution => Icons.military_tech_rounded,
       ClashInventoryCategory.match => Icons.medical_services_rounded,
+      ClashInventoryCategory.tickets => Icons.confirmation_number_rounded,
     };
   }
 
@@ -102,6 +103,7 @@ class ClashInventoryItemTile extends StatelessWidget {
       ClashInventoryCategory.technique => l10n.clashInventoryTechnique,
       ClashInventoryCategory.evolution => l10n.clashInventoryEvolution,
       ClashInventoryCategory.match => l10n.clashInventoryMatch,
+      ClashInventoryCategory.tickets => l10n.clashInventoryTickets,
     };
   }
 
@@ -111,6 +113,7 @@ class ClashInventoryItemTile extends StatelessWidget {
         l10n.clashInventoryUseFromCardDetail,
       ClashInventoryUsageHint.duringHalftime =>
         l10n.clashInventoryUseDuringHalftime,
+      ClashInventoryUsageHint.useInSummon => l10n.clashInventoryUseInSummon,
     };
   }
 }

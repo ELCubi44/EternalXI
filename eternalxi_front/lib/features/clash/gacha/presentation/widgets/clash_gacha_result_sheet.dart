@@ -40,10 +40,12 @@ class ClashGachaResultSheet extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              l10n.clashGachaResultSpent(
-                result.spentGems,
-                result.remainingGems,
-              ),
+              result.usedTicket
+                  ? l10n.clashGachaResultTicket(result.remainingGems)
+                  : l10n.clashGachaResultSpent(
+                      result.spentGems,
+                      result.remainingGems,
+                    ),
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: context.xiTextSecondary),

@@ -85,6 +85,7 @@ class _HistoryEntryCard extends StatelessWidget {
       ClashGachaPullType.single => l10n.clashGachaHistoryPullSingle,
       ClashGachaPullType.multi => l10n.clashGachaHistoryPullMulti,
       ClashGachaPullType.dailySingle => l10n.clashGachaHistoryPullDaily,
+      ClashGachaPullType.ticketSingle => l10n.clashGachaHistoryPullTicket,
     };
 
     return Container(
@@ -111,7 +112,9 @@ class _HistoryEntryCard extends StatelessWidget {
               Text(dateText),
               const SizedBox(height: 2),
               Text(
-                '$pullLabel · ${l10n.clashGachaHistorySpent(entry.spentGems)}',
+                entry.pullType == ClashGachaPullType.ticketSingle
+                    ? pullLabel
+                    : '$pullLabel · ${l10n.clashGachaHistorySpent(entry.spentGems)}',
               ),
               const SizedBox(height: 2),
               Text(

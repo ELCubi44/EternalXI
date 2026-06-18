@@ -1,6 +1,7 @@
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_evolution_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_ticket_repository.dart';
 import 'package:eternal_xi/features/clash/inventory/domain/clash_inventory_category.dart';
 import 'package:eternal_xi/features/clash/inventory/domain/clash_inventory_item.dart';
 import 'package:eternal_xi/features/clash/match/data/datasources/clash_match_items_local_datasource.dart';
@@ -11,16 +12,19 @@ class ClashInventoryRepository {
     required ClashExpMaterialsRepository expMaterialsRepository,
     required ClashTechniqueBooksRepository techniqueBooksRepository,
     required ClashEvolutionMaterialsRepository evolutionMaterialsRepository,
+    required ClashGachaTicketRepository ticketRepository,
     ClashMatchItemsLocalDataSource? matchItemsDataSource,
   }) : _expMaterialsRepository = expMaterialsRepository,
        _techniqueBooksRepository = techniqueBooksRepository,
        _evolutionMaterialsRepository = evolutionMaterialsRepository,
+       _ticketRepository = ticketRepository,
        _matchItemsDataSource =
            matchItemsDataSource ?? ClashMatchItemsLocalDataSource();
 
   final ClashExpMaterialsRepository _expMaterialsRepository;
   final ClashTechniqueBooksRepository _techniqueBooksRepository;
   final ClashEvolutionMaterialsRepository _evolutionMaterialsRepository;
+  final ClashGachaTicketRepository _ticketRepository;
   final ClashMatchItemsLocalDataSource _matchItemsDataSource;
 
   Future<List<ClashInventoryItem>> fetchAllItems() async {
@@ -29,6 +33,7 @@ class ClashInventoryRepository {
     final evolutionEntries = await _evolutionMaterialsRepository
         .fetchInventoryEntries();
     final matchKit = await _matchItemsDataSource.loadDefaultKit();
+    final ticketEntries = await _ticketRepository.fetchInventoryEntries();
 
     final items = <ClashInventoryItem>[
       for (final entry in expEntries)
@@ -67,6 +72,15 @@ class ClashInventoryRepository {
           category: ClashInventoryCategory.match,
           usageHint: ClashInventoryUsageHint.duringHalftime,
           isProvisionalMatchKit: true,
+        ),
+      for (final entry in ticketEntries)
+        ClashInventoryItem(
+          id: entry.ticket.id,
+          name: entry.ticket.name,
+          description: entry.ticket.description,
+          quantity: entry.quantity,
+          category: ClashInventoryCategory.tickets,
+          usageHint: ClashInventoryUsageHint.useInSummon,
         ),
     ];
 

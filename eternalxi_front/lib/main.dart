@@ -26,6 +26,9 @@ import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_s
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_daily_storage.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_history_storage.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_pity_storage.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_ticket_inventory_storage.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_ticket_repository.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_tickets_local_datasource.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_local_datasource.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/inventory/data/clash_inventory_repository.dart';
@@ -93,6 +96,12 @@ Future<void> main() async {
       await SharedPreferencesClashGachaHistoryBackend.create();
   final clashGachaPityBackend =
       await SharedPreferencesClashGachaPityBackend.create();
+  final clashGachaTicketInventoryBackend =
+      await SharedPreferencesClashGachaTicketInventoryBackend.create();
+  final clashGachaTicketRepository = ClashGachaTicketRepository(
+    dataSource: ClashGachaTicketsLocalDataSource(),
+    inventoryStorage: clashGachaTicketInventoryBackend,
+  );
   final apiClient = ApiClient(
     acceptLanguage: AppLocaleResolver.apiLanguageTag(),
     secureStorage: secureStorageService,
@@ -215,6 +224,12 @@ Future<void> main() async {
         Provider<ClashEvolutionMaterialsRepository>.value(
           value: clashEvolutionMaterialsRepository,
         ),
+        Provider<ClashGachaTicketInventoryStorageBackend>.value(
+          value: clashGachaTicketInventoryBackend,
+        ),
+        Provider<ClashGachaTicketRepository>.value(
+          value: clashGachaTicketRepository,
+        ),
         Provider<ClashInventoryRepository>(
           create: (context) => ClashInventoryRepository(
             expMaterialsRepository: context.read<ClashExpMaterialsRepository>(),
@@ -222,6 +237,7 @@ Future<void> main() async {
                 .read<ClashTechniqueBooksRepository>(),
             evolutionMaterialsRepository: context
                 .read<ClashEvolutionMaterialsRepository>(),
+            ticketRepository: context.read<ClashGachaTicketRepository>(),
           ),
         ),
         Provider<ClashPlayerCollectionRepository>(
@@ -247,12 +263,16 @@ Future<void> main() async {
         Provider<ClashStoryProgressStorageBackend>.value(
           value: clashStoryProgressBackend,
         ),
+        Provider<ClashGachaPityStorageBackend>.value(
+          value: clashGachaPityBackend,
+        ),
         Provider<ClashStoryRepository>(
           create: (context) => ClashStoryRepository(
             dataSource: context.read<ClashStoryLocalDataSource>(),
             progressStorage: context.read<ClashStoryProgressStorageBackend>(),
             collectionRepository: context
                 .read<ClashPlayerCollectionRepository>(),
+            ticketRepository: context.read<ClashGachaTicketRepository>(),
           ),
         ),
         ChangeNotifierProvider<ClashStoryController>(
@@ -266,15 +286,13 @@ Future<void> main() async {
         Provider<ClashGachaHistoryStorageBackend>.value(
           value: clashGachaHistoryBackend,
         ),
-        Provider<ClashGachaPityStorageBackend>.value(
-          value: clashGachaPityBackend,
-        ),
         Provider<ClashGachaRepository>(
           create: (context) => ClashGachaRepository(
             dataSource: ClashGachaLocalDataSource(),
             dailyStorage: context.read<ClashGachaDailyStorageBackend>(),
             historyStorage: context.read<ClashGachaHistoryStorageBackend>(),
             pityStorage: context.read<ClashGachaPityStorageBackend>(),
+            ticketRepository: context.read<ClashGachaTicketRepository>(),
             storyRepository: context.read<ClashStoryRepository>(),
             collectionRepository: context
                 .read<ClashPlayerCollectionRepository>(),

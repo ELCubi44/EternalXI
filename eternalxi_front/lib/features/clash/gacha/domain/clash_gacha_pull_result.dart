@@ -35,6 +35,7 @@ class ClashGachaPullResult {
     required this.createdAt,
     required this.remainingGems,
     this.pityTriggered = false,
+    this.ticketId,
   });
 
   final String bannerId;
@@ -44,6 +45,9 @@ class ClashGachaPullResult {
   final DateTime createdAt;
   final int remainingGems;
   final bool pityTriggered;
+  final String? ticketId;
+
+  bool get usedTicket => pullType == ClashGachaPullType.ticketSingle;
 }
 
 class ClashGachaPullOutcome {

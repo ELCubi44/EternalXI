@@ -137,6 +137,17 @@ R ──→ SR
 | Compatible con garantía multi SR | Economía/legal final |
 | Chips Pity SR / Garantía multi en UI e historial | |
 
+**Implementación Fase 26 (Flutter):** tickets locales de invocación.
+
+| Incluido (Fase 26) | Pendiente |
+|---|---|
+| Ticket `starter-single-ticket` ×3 inicial | Backend tickets |
+| Pull `ticketSingle` sin gastar gemas | Compras reales |
+| Tickets cuentan para pity SR | Economía/legal final |
+| Botón Usar ticket en Invocar | Tickets por evento |
+| Categoría Tickets en inventario central | |
+| Adaptador recompensa historia → tickets | |
+
 ---
 
 ## 4. Arte de cartas

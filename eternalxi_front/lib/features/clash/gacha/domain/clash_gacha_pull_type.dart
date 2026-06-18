@@ -1,1 +1,1 @@
-enum ClashGachaPullType { single, multi, dailySingle }
+enum ClashGachaPullType { single, multi, dailySingle, ticketSingle }

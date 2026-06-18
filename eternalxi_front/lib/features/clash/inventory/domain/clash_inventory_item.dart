@@ -1,7 +1,6 @@
 import 'package:eternal_xi/features/clash/inventory/domain/clash_inventory_category.dart';
 
-/// Dónde se puede usar un ítem (solo informativo en Fase 22).
-enum ClashInventoryUsageHint { fromCardDetail, duringHalftime }
+enum ClashInventoryUsageHint { fromCardDetail, duringHalftime, useInSummon }
 
 /// Ítem unificado para la pantalla de inventario Clash.
 class ClashInventoryItem {

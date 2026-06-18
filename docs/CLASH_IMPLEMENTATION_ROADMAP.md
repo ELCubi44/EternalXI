@@ -404,6 +404,7 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 | **23** | Invocar — gacha local MVP (banner, rates, gemas historia) |
 | **24** | Historial local de invocaciones (`/clash/summon/history`) |
 | **25** | Pity SR local cada 30 cartas por banner |
+| **26** | Tickets locales de invocación |
 
 ### Fase 22 — Inventario Clash
 
@@ -446,6 +447,17 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 - UI: contador Pity SR, chips en resultado e historial.
 
 **Pendiente:** backend pity, LR/XI, soft pity, economía/legal final.
+
+### Fase 26 — Tickets locales
+
+- Tickets de invocación locales (`clash_gacha_ticket_inventory_v1`).
+- Ticket inicial: `starter-single-ticket` ×3 para banner inicial.
+- Pull type `ticketSingle`: consume 1 ticket, no gasta gemas, genera 1 carta.
+- **Los tickets cuentan para pity** (+1 al contador del banner).
+- Inventario central: categoría Tickets con filtro dedicado.
+- Adaptador de recompensas de historia preparado (`starter-single-ticket`).
+
+**Pendiente:** backend tickets, compras reales, economía/legal final.
 
 ---
 

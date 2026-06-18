@@ -141,11 +141,13 @@ class AppLocalizations {
       'clashInventoryTechnique': 'Libros de técnica',
       'clashInventoryEvolution': 'Materiales de evolución',
       'clashInventoryMatch': 'Objetos de partido',
+      'clashInventoryTickets': 'Tickets',
       'clashInventorySummaryTitle': 'Resumen',
       'clashInventoryTotalItems': 'Total de unidades: {count}',
       'clashInventoryCategoryCount': '{category}: {count}',
       'clashInventoryUseFromCardDetail': 'Usar desde detalle de carta',
       'clashInventoryUseDuringHalftime': 'Usar durante el descanso',
+      'clashInventoryUseInSummon': 'Usar en Invocar',
       'clashInventoryMatchKitProvisional': 'Kit provisional por partido',
       'clashInventoryEmptyCategory': 'Sin unidades en esta categoría',
       'clashGachaLocalDisclaimer': 'Simulación local sin compras reales',
@@ -175,6 +177,11 @@ class AppLocalizations {
       'clashGachaPityRemaining': 'Faltan {count} invocaciones',
       'clashGachaPityChip': 'Pity SR',
       'clashGachaMultiGuaranteeChip': 'Garantía multi',
+      'clashGachaTicketsAvailable': 'Tickets disponibles',
+      'clashGachaUseTicketButton': 'Usar ticket (×{count})',
+      'clashGachaNoTickets': 'No tienes tickets',
+      'clashGachaResultTicket': 'Ticket · Restantes gemas: {remaining}',
+      'clashGachaHistoryPullTicket': 'Ticket',
       'clashSummonBanners': 'Banners',
       'clashSummonSingle': 'Single',
       'clashSummonMulti': 'Multi',
@@ -716,11 +723,13 @@ class AppLocalizations {
       'clashInventoryTechnique': 'Technique books',
       'clashInventoryEvolution': 'Evolution materials',
       'clashInventoryMatch': 'Match items',
+      'clashInventoryTickets': 'Tickets',
       'clashInventorySummaryTitle': 'Summary',
       'clashInventoryTotalItems': 'Total units: {count}',
       'clashInventoryCategoryCount': '{category}: {count}',
       'clashInventoryUseFromCardDetail': 'Use from card detail',
       'clashInventoryUseDuringHalftime': 'Use during halftime',
+      'clashInventoryUseInSummon': 'Use in Summon',
       'clashInventoryMatchKitProvisional': 'Provisional kit per match',
       'clashInventoryEmptyCategory': 'No units in this category',
       'clashGachaLocalDisclaimer': 'Local simulation without real purchases',
@@ -750,6 +759,11 @@ class AppLocalizations {
       'clashGachaPityRemaining': '{count} summons remaining',
       'clashGachaPityChip': 'SR pity',
       'clashGachaMultiGuaranteeChip': 'Multi guarantee',
+      'clashGachaTicketsAvailable': 'Available tickets',
+      'clashGachaUseTicketButton': 'Use ticket (×{count})',
+      'clashGachaNoTickets': 'You have no tickets',
+      'clashGachaResultTicket': 'Ticket · Gems remaining: {remaining}',
+      'clashGachaHistoryPullTicket': 'Ticket',
       'clashSummonBanners': 'Banners',
       'clashSummonSingle': 'Single',
       'clashSummonMulti': 'Multi',
@@ -1305,6 +1319,7 @@ class AppLocalizations {
   String get clashInventoryTechnique => _t('clashInventoryTechnique');
   String get clashInventoryEvolution => _t('clashInventoryEvolution');
   String get clashInventoryMatch => _t('clashInventoryMatch');
+  String get clashInventoryTickets => _t('clashInventoryTickets');
   String get clashInventorySummaryTitle => _t('clashInventorySummaryTitle');
   String clashInventoryTotalItems(int count) =>
       _t('clashInventoryTotalItems').replaceAll('{count}', '$count');
@@ -1315,6 +1330,7 @@ class AppLocalizations {
       _t('clashInventoryUseFromCardDetail');
   String get clashInventoryUseDuringHalftime =>
       _t('clashInventoryUseDuringHalftime');
+  String get clashInventoryUseInSummon => _t('clashInventoryUseInSummon');
   String get clashInventoryMatchKitProvisional =>
       _t('clashInventoryMatchKitProvisional');
   String get clashInventoryEmptyCategory => _t('clashInventoryEmptyCategory');
@@ -1359,6 +1375,13 @@ class AppLocalizations {
       _t('clashGachaPityRemaining').replaceAll('{count}', '$count');
   String get clashGachaPityChip => _t('clashGachaPityChip');
   String get clashGachaMultiGuaranteeChip => _t('clashGachaMultiGuaranteeChip');
+  String get clashGachaTicketsAvailable => _t('clashGachaTicketsAvailable');
+  String clashGachaUseTicketButton(int count) =>
+      _t('clashGachaUseTicketButton').replaceAll('{count}', '$count');
+  String get clashGachaNoTickets => _t('clashGachaNoTickets');
+  String clashGachaResultTicket(int remaining) =>
+      _t('clashGachaResultTicket').replaceAll('{remaining}', '$remaining');
+  String get clashGachaHistoryPullTicket => _t('clashGachaHistoryPullTicket');
   String get clashSummonBanners => _t('clashSummonBanners');
   String get clashSummonSingle => _t('clashSummonSingle');
   String get clashSummonMulti => _t('clashSummonMulti');

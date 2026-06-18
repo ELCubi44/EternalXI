@@ -2,6 +2,8 @@ import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_c
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_reward_adapter.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_reward_adapter.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_result.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_ticket_repository.dart';
+import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_ticket_reward_adapter.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_evaluator.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_progress.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
@@ -31,13 +33,16 @@ class ClashStoryRepository {
     required ClashStoryLocalDataSource dataSource,
     required ClashStoryProgressStorageBackend progressStorage,
     required ClashPlayerCollectionRepository collectionRepository,
+    ClashGachaTicketRepository? ticketRepository,
   }) : _dataSource = dataSource,
        _progressStorage = progressStorage,
-       _collectionRepository = collectionRepository;
+       _collectionRepository = collectionRepository,
+       _ticketRepository = ticketRepository;
 
   final ClashStoryLocalDataSource _dataSource;
   final ClashStoryProgressStorageBackend _progressStorage;
   final ClashPlayerCollectionRepository _collectionRepository;
+  final ClashGachaTicketRepository? _ticketRepository;
 
   List<ClashStorySaga>? _sagasCache;
   final Map<String, ClashStoryChapter> _chaptersCache = {};
@@ -355,6 +360,12 @@ class ClashStoryRepository {
         ClashTechniqueBookRewardAdapter.quantitiesFromStoryReward(rewards);
     if (bookGrants.isNotEmpty) {
       await _collectionRepository.grantTechniqueBooks(bookGrants);
+    }
+
+    final ticketGrants =
+        ClashGachaTicketRewardAdapter.quantitiesFromStoryReward(rewards);
+    if (ticketGrants.isNotEmpty && _ticketRepository != null) {
+      await _ticketRepository.grantTickets(ticketGrants);
     }
 
     return granted;

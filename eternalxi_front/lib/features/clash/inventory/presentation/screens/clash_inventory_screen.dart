@@ -189,6 +189,7 @@ class _SummaryCard extends StatelessWidget {
       ClashInventoryCategory.technique => l10n.clashInventoryTechnique,
       ClashInventoryCategory.evolution => l10n.clashInventoryEvolution,
       ClashInventoryCategory.match => l10n.clashInventoryMatch,
+      ClashInventoryCategory.tickets => l10n.clashInventoryTickets,
     };
   }
 }
@@ -248,6 +249,7 @@ class _FilterChips extends StatelessWidget {
       ClashInventoryFilter.technique => l10n.clashInventoryTechnique,
       ClashInventoryFilter.evolution => l10n.clashInventoryEvolution,
       ClashInventoryFilter.match => l10n.clashInventoryMatch,
+      ClashInventoryFilter.tickets => l10n.clashInventoryTickets,
     };
   }
 }

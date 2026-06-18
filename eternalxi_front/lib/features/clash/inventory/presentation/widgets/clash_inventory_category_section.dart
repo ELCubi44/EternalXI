@@ -60,6 +60,7 @@ class ClashInventoryCategorySection extends StatelessWidget {
       ClashInventoryCategory.technique => l10n.clashInventoryTechnique,
       ClashInventoryCategory.evolution => l10n.clashInventoryEvolution,
       ClashInventoryCategory.match => l10n.clashInventoryMatch,
+      ClashInventoryCategory.tickets => l10n.clashInventoryTickets,
     };
   }
 }

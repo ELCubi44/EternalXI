@@ -65,6 +65,16 @@ void main() {
       expect(categories, contains(ClashInventoryCategory.technique));
       expect(categories, contains(ClashInventoryCategory.evolution));
       expect(categories, contains(ClashInventoryCategory.match));
+      expect(categories, contains(ClashInventoryCategory.tickets));
+    });
+
+    test('carga tickets de invocación', () async {
+      final items = await repository.fetchAllItems();
+      final tickets = items.where(
+        (item) => item.category == ClashInventoryCategory.tickets,
+      );
+      expect(tickets, hasLength(1));
+      expect(tickets.single.quantity, 3);
     });
 
     test('respeta cantidades persistidas', () async {
@@ -171,6 +181,7 @@ void main() {
       expect(find.text('Libros de técnica'), findsWidgets);
       expect(find.text('Materiales de evolución'), findsWidgets);
       expect(find.text('Objetos de partido'), findsWidgets);
+      expect(find.text('Tickets'), findsWidgets);
     });
 
     testWidgets('muestra materiales EXP', (tester) async {

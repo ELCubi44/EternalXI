@@ -18,9 +18,13 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book.dart
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_daily_storage.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_history_storage.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_pity_storage.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_ticket_inventory_storage.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_ticket_repository.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_tickets_local_datasource.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_local_datasource.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_engine.dart';
+import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_ticket.dart';
 import 'package:eternal_xi/features/clash/inventory/data/clash_inventory_repository.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_local_datasource.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
@@ -179,6 +183,31 @@ const clashTestGachaBannersJson = '''
 }
 ''';
 
+const clashTestGachaTicketsJson = '''
+{
+  "tickets": [
+    {
+      "id": "starter-single-ticket",
+      "name": "Ticket de invocación inicial",
+      "description": "Permite una invocación single en el banner inicial",
+      "compatibleBannerIds": ["starter-banner-001"],
+      "pullCount": 1,
+      "rarityGuarantee": null,
+      "iconKey": null
+    },
+    {
+      "id": "other-banner-ticket",
+      "name": "Ticket otro banner",
+      "description": "Solo para otro banner",
+      "compatibleBannerIds": ["other-banner-999"],
+      "pullCount": 1,
+      "rarityGuarantee": null,
+      "iconKey": null
+    }
+  ]
+}
+''';
+
 class TestMatchItemsDataSource extends ClashMatchItemsLocalDataSource {
   @override
   Future<List<ClashMatchItemInventoryEntry>> loadDefaultKit() async {
@@ -198,6 +227,23 @@ class TestGachaDataSource extends ClashGachaLocalDataSource {
   Future<ClashGachaCatalog> loadCatalog() async {
     return parseCatalogJson(clashTestGachaBannersJson);
   }
+}
+
+class TestGachaTicketsDataSource extends ClashGachaTicketsLocalDataSource {
+  @override
+  Future<List<ClashGachaTicket>> loadTickets() async {
+    return parseTicketsJson(clashTestGachaTicketsJson);
+  }
+}
+
+ClashGachaTicketRepository createTestTicketRepository({
+  ClashGachaTicketInventoryStorageBackend? inventoryStorage,
+}) {
+  return ClashGachaTicketRepository(
+    dataSource: TestGachaTicketsDataSource(),
+    inventoryStorage:
+        inventoryStorage ?? InMemoryClashGachaTicketInventoryBackend(),
+  );
 }
 
 class TestExpMaterialsDataSource extends ClashExpMaterialsLocalDataSource {
@@ -259,6 +305,7 @@ Future<ClashGachaRepository> createTestGachaRepository({
   ClashGachaDailyStorageBackend? dailyStorage,
   ClashGachaHistoryStorageBackend? historyStorage,
   ClashGachaPityStorageBackend? pityStorage,
+  ClashGachaTicketRepository? ticketRepository,
   ClashGachaEngine? engine,
   DateTime Function()? now,
   int initialGems = 200,
@@ -281,11 +328,13 @@ Future<ClashGachaRepository> createTestGachaRepository({
         progressStorage: storyProgress,
         collectionRepository: collection,
       );
+  final tickets = ticketRepository ?? createTestTicketRepository();
   return ClashGachaRepository(
     dataSource: TestGachaDataSource(),
     dailyStorage: dailyStorage ?? InMemoryClashGachaDailyBackend(),
     historyStorage: historyStorage ?? InMemoryClashGachaHistoryBackend(),
     pityStorage: pityStorage ?? InMemoryClashGachaPityBackend(),
+    ticketRepository: tickets,
     storyRepository: story,
     collectionRepository: collection,
     cardsRepository: cardsRepo,
@@ -298,6 +347,7 @@ ClashInventoryRepository createTestInventoryRepository({
   ClashExpMaterialsRepository? expMaterialsRepository,
   ClashTechniqueBooksRepository? techniqueBooksRepository,
   ClashEvolutionMaterialsRepository? evolutionMaterialsRepository,
+  ClashGachaTicketRepository? ticketRepository,
   ClashMatchItemsLocalDataSource? matchItemsDataSource,
 }) {
   return ClashInventoryRepository(
@@ -308,6 +358,7 @@ ClashInventoryRepository createTestInventoryRepository({
     evolutionMaterialsRepository:
         evolutionMaterialsRepository ??
         createTestEvolutionMaterialsRepository(),
+    ticketRepository: ticketRepository ?? createTestTicketRepository(),
     matchItemsDataSource: matchItemsDataSource ?? TestMatchItemsDataSource(),
   );
 }

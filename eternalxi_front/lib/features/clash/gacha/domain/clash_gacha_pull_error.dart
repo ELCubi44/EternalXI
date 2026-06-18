@@ -1,1 +1,7 @@
-enum ClashGachaPullError { insufficientGems, dailyAlreadyUsed, bannerNotFound }
+enum ClashGachaPullError {
+  insufficientGems,
+  dailyAlreadyUsed,
+  bannerNotFound,
+  noTickets,
+  ticketNotCompatible,
+}

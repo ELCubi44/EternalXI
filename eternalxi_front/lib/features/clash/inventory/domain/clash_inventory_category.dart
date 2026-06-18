@@ -3,13 +3,15 @@ enum ClashInventoryCategory {
   exp,
   technique,
   evolution,
-  match;
+  match,
+  tickets;
 
   String get l10nKey => switch (this) {
     ClashInventoryCategory.exp => 'clashInventoryExp',
     ClashInventoryCategory.technique => 'clashInventoryTechnique',
     ClashInventoryCategory.evolution => 'clashInventoryEvolution',
     ClashInventoryCategory.match => 'clashInventoryMatch',
+    ClashInventoryCategory.tickets => 'clashInventoryTickets',
   };
 }
 
@@ -19,7 +21,8 @@ enum ClashInventoryFilter {
   exp,
   technique,
   evolution,
-  match;
+  match,
+  tickets;
 
   ClashInventoryCategory? get category => switch (this) {
     ClashInventoryFilter.all => null,
@@ -27,5 +30,6 @@ enum ClashInventoryFilter {
     ClashInventoryFilter.technique => ClashInventoryCategory.technique,
     ClashInventoryFilter.evolution => ClashInventoryCategory.evolution,
     ClashInventoryFilter.match => ClashInventoryCategory.match,
+    ClashInventoryFilter.tickets => ClashInventoryCategory.tickets,
   };
 }

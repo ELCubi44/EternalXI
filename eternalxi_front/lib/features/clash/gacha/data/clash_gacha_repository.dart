@@ -4,6 +4,7 @@ import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_daily_storage.d
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_history_storage.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_local_datasource.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_pity_storage.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_ticket_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_history_entry.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_banner.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_engine.dart';
@@ -12,15 +13,18 @@ import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_error.da
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_result.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_type.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_rarity_rates.dart';
+import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_ticket.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 
-/// Orquesta tiradas gacha locales (Fase 23), historial (Fase 24) y pity (Fase 25).
+/// Orquesta tiradas gacha locales (Fase 23), historial (Fase 24), pity (Fase 25)
+/// y tickets (Fase 26).
 class ClashGachaRepository {
   ClashGachaRepository({
     required ClashGachaLocalDataSource dataSource,
     required ClashGachaDailyStorageBackend dailyStorage,
     required ClashGachaHistoryStorageBackend historyStorage,
     required ClashGachaPityStorageBackend pityStorage,
+    required ClashGachaTicketRepository ticketRepository,
     required ClashStoryRepository storyRepository,
     required ClashPlayerCollectionRepository collectionRepository,
     required ClashCardsRepository cardsRepository,
@@ -30,6 +34,7 @@ class ClashGachaRepository {
        _dailyStorage = dailyStorage,
        _historyStorage = historyStorage,
        _pityStorage = pityStorage,
+       _ticketRepository = ticketRepository,
        _storyRepository = storyRepository,
        _collectionRepository = collectionRepository,
        _cardsRepository = cardsRepository,
@@ -40,6 +45,7 @@ class ClashGachaRepository {
   final ClashGachaDailyStorageBackend _dailyStorage;
   final ClashGachaHistoryStorageBackend _historyStorage;
   final ClashGachaPityStorageBackend _pityStorage;
+  final ClashGachaTicketRepository _ticketRepository;
   final ClashStoryRepository _storyRepository;
   final ClashPlayerCollectionRepository _collectionRepository;
   final ClashCardsRepository _cardsRepository;
@@ -48,6 +54,8 @@ class ClashGachaRepository {
 
   ClashGachaCatalog? _catalogCache;
   List<String>? _defaultPoolCache;
+
+  ClashGachaTicketRepository get ticketRepository => _ticketRepository;
 
   Future<ClashGachaCatalog> fetchCatalog() async {
     _catalogCache ??= await _dataSource.loadCatalog();
@@ -89,11 +97,18 @@ class ClashGachaRepository {
     return _dailyStorage.readLastUsedDate(bannerId) != today;
   }
 
+  Future<List<ClashGachaTicketInventoryEntry>> compatibleTicketsForBanner(
+    String bannerId,
+  ) {
+    return _ticketRepository.compatibleTicketsForBanner(bannerId);
+  }
+
   int costFor(ClashGachaBanner banner, ClashGachaPullType type) {
     return switch (type) {
       ClashGachaPullType.single => banner.singleCost,
       ClashGachaPullType.multi => banner.multiCost,
       ClashGachaPullType.dailySingle => banner.dailyDiscountCost,
+      ClashGachaPullType.ticketSingle => 0,
     };
   }
 
@@ -101,6 +116,7 @@ class ClashGachaRepository {
     return switch (type) {
       ClashGachaPullType.single => 1,
       ClashGachaPullType.dailySingle => 1,
+      ClashGachaPullType.ticketSingle => 1,
       ClashGachaPullType.multi => banner.multiCount,
     };
   }
@@ -108,12 +124,17 @@ class ClashGachaRepository {
   Future<ClashGachaPullOutcome> pull({
     required String bannerId,
     required ClashGachaPullType type,
+    String? ticketId,
   }) async {
     final banner = await findBanner(bannerId);
     if (banner == null) {
       return const ClashGachaPullOutcome(
         error: ClashGachaPullError.bannerNotFound,
       );
+    }
+
+    if (type == ClashGachaPullType.ticketSingle) {
+      return _pullWithTicket(banner: banner, ticketId: ticketId);
     }
 
     if (type == ClashGachaPullType.dailySingle) {
@@ -147,15 +168,70 @@ class ClashGachaRepository {
       await _dailyStorage.writeLastUsedDate(bannerId, _todayKey());
     }
 
+    return _executePull(
+      banner: banner,
+      type: type,
+      spentGems: cost,
+      cardCount: _cardCountFor(type, banner),
+      applyMultiGuarantee:
+          type == ClashGachaPullType.multi && banner.multiCount > 1,
+    );
+  }
+
+  Future<ClashGachaPullOutcome> _pullWithTicket({
+    required ClashGachaBanner banner,
+    required String? ticketId,
+  }) async {
+    if (ticketId == null || ticketId.isEmpty) {
+      return const ClashGachaPullOutcome(error: ClashGachaPullError.noTickets);
+    }
+
+    final ticket = await _ticketRepository.findTicket(ticketId);
+    if (ticket == null) {
+      return const ClashGachaPullOutcome(error: ClashGachaPullError.noTickets);
+    }
+
+    if (!ticket.isCompatibleWith(banner.id)) {
+      return const ClashGachaPullOutcome(
+        error: ClashGachaPullError.ticketNotCompatible,
+      );
+    }
+
+    if (_ticketRepository.quantityFor(ticketId) < 1) {
+      return const ClashGachaPullOutcome(error: ClashGachaPullError.noTickets);
+    }
+
+    final consumed = await _ticketRepository.consume(ticketId);
+    if (!consumed) {
+      return const ClashGachaPullOutcome(error: ClashGachaPullError.noTickets);
+    }
+
+    return _executePull(
+      banner: banner,
+      type: ClashGachaPullType.ticketSingle,
+      spentGems: 0,
+      cardCount: ticket.pullCount,
+      applyMultiGuarantee: false,
+      ticketId: ticketId,
+    );
+  }
+
+  Future<ClashGachaPullOutcome> _executePull({
+    required ClashGachaBanner banner,
+    required ClashGachaPullType type,
+    required int spentGems,
+    required int cardCount,
+    required bool applyMultiGuarantee,
+    String? ticketId,
+  }) async {
     final catalog = await fetchCatalog();
     final pool = await _resolvePool(banner);
-    final cardCount = _cardCountFor(type, banner);
-    final pityState = loadPityState(bannerId);
+    final pityState = loadPityState(banner.id);
 
     final rollOutcome = _engine.rollWithPity(
       rates: catalog.rates,
       cardCount: cardCount,
-      applyMultiGuarantee: type == ClashGachaPullType.multi && cardCount > 1,
+      applyMultiGuarantee: applyMultiGuarantee,
       pityState: pityState,
     );
 
@@ -185,13 +261,14 @@ class ClashGachaRepository {
     }
 
     final result = ClashGachaPullResult(
-      bannerId: bannerId,
+      bannerId: banner.id,
       pullType: type,
-      spentGems: cost,
+      spentGems: spentGems,
       results: items,
       createdAt: _now(),
       remainingGems: _storyRepository.walletGems(),
       pityTriggered: rollOutcome.pityTriggered,
+      ticketId: ticketId,
     );
 
     await _historyStorage.appendEntry(

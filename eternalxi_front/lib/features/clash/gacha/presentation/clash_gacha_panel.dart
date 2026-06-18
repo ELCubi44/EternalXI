@@ -6,6 +6,7 @@ import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_error.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_type.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_rarity_rates.dart';
+import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_ticket.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/controllers/clash_gacha_controller.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/widgets/clash_gacha_banner_card.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/widgets/clash_gacha_pity_card.dart';
@@ -39,8 +40,10 @@ class _ClashGachaPanelState extends State<ClashGachaPanel> {
     super.dispose();
   }
 
-  Future<void> _pull(ClashGachaPullType type) async {
-    final outcome = await _controller.pull(type);
+  Future<void> _pull(ClashGachaPullType type, {String? ticketId}) async {
+    final outcome = ticketId == null
+        ? await _controller.pull(type)
+        : await _controller.pullWithTicket(ticketId);
     if (!mounted) {
       return;
     }
@@ -67,6 +70,15 @@ class _ClashGachaPanelState extends State<ClashGachaPanel> {
       );
       return;
     }
+    if (outcome.error == ClashGachaPullError.noTickets) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(l10n.clashGachaNoTickets),
+        ),
+      );
+      return;
+    }
     if (outcome.result != null) {
       await context.read<ClashCardsController>().reloadOwnedCards();
       await ClashGachaResultSheet.show(context, outcome.result!);
@@ -85,7 +97,8 @@ class _ClashGachaPanelState extends State<ClashGachaPanel> {
 class _ClashGachaBody extends StatelessWidget {
   const _ClashGachaBody({required this.onPull});
 
-  final Future<void> Function(ClashGachaPullType type) onPull;
+  final Future<void> Function(ClashGachaPullType type, {String? ticketId})
+  onPull;
 
   @override
   Widget build(BuildContext context) {
@@ -139,6 +152,27 @@ class _ClashGachaBody extends StatelessWidget {
         if (controller.pityState != null) ...[
           const SizedBox(height: 12),
           ClashGachaPityCard(pityState: controller.pityState!),
+        ],
+        if (controller.compatibleTickets.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Text(
+            l10n.clashGachaTicketsAvailable,
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 8),
+          for (final entry in controller.compatibleTickets) ...[
+            _TicketUseButton(
+              entry: entry,
+              pulling: pulling,
+              onUse: () => onPull(
+                ClashGachaPullType.ticketSingle,
+                ticketId: entry.ticket.id,
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
         ],
         const SizedBox(height: 16),
         Text(
@@ -271,6 +305,30 @@ class _RateRow extends StatelessWidget {
           Expanded(child: Text('$value %')),
         ],
       ),
+    );
+  }
+}
+
+class _TicketUseButton extends StatelessWidget {
+  const _TicketUseButton({
+    required this.entry,
+    required this.pulling,
+    required this.onUse,
+  });
+
+  final ClashGachaTicketInventoryEntry entry;
+  final bool pulling;
+  final VoidCallback onUse;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final enabled = !pulling && entry.quantity > 0;
+
+    return OutlinedButton.icon(
+      onPressed: enabled ? onUse : null,
+      icon: const Icon(Icons.confirmation_number_rounded),
+      label: Text(l10n.clashGachaUseTicketButton(entry.quantity)),
     );
   }
 }
