@@ -395,4 +395,24 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## 22. Implementación incremental Flutter (post-roadmap)
+
+| Fase | Entregable |
+|---|---|
+| **21** | Duplicados y árbol de habilidades lineal SR/LR/XI (`CLASH_CARD_SYSTEM.md`) |
+| **22** | Pantalla central `/clash/inventory` — solo visualización |
+
+### Fase 22 — Inventario Clash
+
+- Pantalla **Inventario** accesible desde **Equipo** (`/clash/inventory`).
+- Agrega sin duplicar almacenamiento:
+  - materiales EXP (`clash_exp_material_inventory_v1`)
+  - libros de técnica (`clash_technique_book_inventory_v1`)
+  - materiales de evolución (`clash_evolution_material_inventory_v1`)
+  - objetos de partido (kit provisional desde `match_items.json` / `defaultKit`)
+- **Solo lectura:** los usos siguen en detalle de carta (EXP, libros, evolución) o descanso de partido (objetos).
+- Objetos de partido: UI indica **«Kit provisional por partido»**; sin inventario global ni cambio de reglas de uso.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

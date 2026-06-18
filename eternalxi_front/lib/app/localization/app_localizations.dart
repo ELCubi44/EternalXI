@@ -134,6 +134,20 @@ class AppLocalizations {
       'clashTeamCharacters': 'Personajes',
       'clashTeamUpgrade': 'Mejorar',
       'clashTeamSkillTree': 'Árbol de habilidades',
+      'clashTeamInventory': 'Inventario',
+      'clashInventoryTitle': 'Inventario',
+      'clashInventoryAll': 'Todos',
+      'clashInventoryExp': 'Materiales EXP',
+      'clashInventoryTechnique': 'Libros de técnica',
+      'clashInventoryEvolution': 'Materiales de evolución',
+      'clashInventoryMatch': 'Objetos de partido',
+      'clashInventorySummaryTitle': 'Resumen',
+      'clashInventoryTotalItems': 'Total de unidades: {count}',
+      'clashInventoryCategoryCount': '{category}: {count}',
+      'clashInventoryUseFromCardDetail': 'Usar desde detalle de carta',
+      'clashInventoryUseDuringHalftime': 'Usar durante el descanso',
+      'clashInventoryMatchKitProvisional': 'Kit provisional por partido',
+      'clashInventoryEmptyCategory': 'Sin unidades en esta categoría',
       'clashSummonBanners': 'Banners',
       'clashSummonSingle': 'Single',
       'clashSummonMulti': 'Multi',
@@ -668,6 +682,20 @@ class AppLocalizations {
       'clashTeamCharacters': 'Characters',
       'clashTeamUpgrade': 'Upgrade',
       'clashTeamSkillTree': 'Skill tree',
+      'clashTeamInventory': 'Inventory',
+      'clashInventoryTitle': 'Inventory',
+      'clashInventoryAll': 'All',
+      'clashInventoryExp': 'EXP materials',
+      'clashInventoryTechnique': 'Technique books',
+      'clashInventoryEvolution': 'Evolution materials',
+      'clashInventoryMatch': 'Match items',
+      'clashInventorySummaryTitle': 'Summary',
+      'clashInventoryTotalItems': 'Total units: {count}',
+      'clashInventoryCategoryCount': '{category}: {count}',
+      'clashInventoryUseFromCardDetail': 'Use from card detail',
+      'clashInventoryUseDuringHalftime': 'Use during halftime',
+      'clashInventoryMatchKitProvisional': 'Provisional kit per match',
+      'clashInventoryEmptyCategory': 'No units in this category',
       'clashSummonBanners': 'Banners',
       'clashSummonSingle': 'Single',
       'clashSummonMulti': 'Multi',
@@ -1216,6 +1244,26 @@ class AppLocalizations {
   String get clashTeamCharacters => _t('clashTeamCharacters');
   String get clashTeamUpgrade => _t('clashTeamUpgrade');
   String get clashTeamSkillTree => _t('clashTeamSkillTree');
+  String get clashTeamInventory => _t('clashTeamInventory');
+  String get clashInventoryTitle => _t('clashInventoryTitle');
+  String get clashInventoryAll => _t('clashInventoryAll');
+  String get clashInventoryExp => _t('clashInventoryExp');
+  String get clashInventoryTechnique => _t('clashInventoryTechnique');
+  String get clashInventoryEvolution => _t('clashInventoryEvolution');
+  String get clashInventoryMatch => _t('clashInventoryMatch');
+  String get clashInventorySummaryTitle => _t('clashInventorySummaryTitle');
+  String clashInventoryTotalItems(int count) =>
+      _t('clashInventoryTotalItems').replaceAll('{count}', '$count');
+  String clashInventoryCategoryCount(String category, int count) => _t(
+    'clashInventoryCategoryCount',
+  ).replaceAll('{category}', category).replaceAll('{count}', '$count');
+  String get clashInventoryUseFromCardDetail =>
+      _t('clashInventoryUseFromCardDetail');
+  String get clashInventoryUseDuringHalftime =>
+      _t('clashInventoryUseDuringHalftime');
+  String get clashInventoryMatchKitProvisional =>
+      _t('clashInventoryMatchKitProvisional');
+  String get clashInventoryEmptyCategory => _t('clashInventoryEmptyCategory');
   String get clashSummonBanners => _t('clashSummonBanners');
   String get clashSummonSingle => _t('clashSummonSingle');
   String get clashSummonMulti => _t('clashSummonMulti');

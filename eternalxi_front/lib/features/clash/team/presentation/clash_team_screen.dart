@@ -50,6 +50,12 @@ class ClashTeamScreen extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         ClashSectionTile(
+          icon: Icons.inventory_2_rounded,
+          title: l10n.clashTeamInventory,
+          onTap: () => context.push(AppRoutes.clashInventory),
+        ),
+        const SizedBox(height: 10),
+        ClashSectionTile(
           icon: Icons.trending_up_rounded,
           title: l10n.clashTeamUpgrade,
         ),

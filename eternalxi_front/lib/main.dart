@@ -23,6 +23,7 @@ import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_loc
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
+import 'package:eternal_xi/features/clash/inventory/data/clash_inventory_repository.dart';
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
 import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
 import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
@@ -202,6 +203,15 @@ Future<void> main() async {
         ),
         Provider<ClashEvolutionMaterialsRepository>.value(
           value: clashEvolutionMaterialsRepository,
+        ),
+        Provider<ClashInventoryRepository>(
+          create: (context) => ClashInventoryRepository(
+            expMaterialsRepository: context.read<ClashExpMaterialsRepository>(),
+            techniqueBooksRepository: context
+                .read<ClashTechniqueBooksRepository>(),
+            evolutionMaterialsRepository: context
+                .read<ClashEvolutionMaterialsRepository>(),
+          ),
         ),
         Provider<ClashPlayerCollectionRepository>(
           create: (context) => ClashPlayerCollectionRepository(

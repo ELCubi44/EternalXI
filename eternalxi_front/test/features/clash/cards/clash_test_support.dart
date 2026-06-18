@@ -13,6 +13,9 @@ import 'package:eternal_xi/features/clash/cards/data/repositories/clash_techniqu
 import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_material.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book.dart';
+import 'package:eternal_xi/features/clash/inventory/data/clash_inventory_repository.dart';
+import 'package:eternal_xi/features/clash/match/data/datasources/clash_match_items_local_datasource.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_match_item_inventory_entry.dart';
 
 const clashTestExpMaterialsJson = '''
 {
@@ -83,6 +86,42 @@ const clashTestEvolutionMaterialsJson = '''
 }
 ''';
 
+const clashTestMatchItemsJson = '''
+{
+  "items": [
+    {
+      "id": "test-item-pt",
+      "name": "Bebida técnica test",
+      "description": "Recupera PT de un jugador.",
+      "type": "recoverPtSingle",
+      "amount": 20,
+      "targetCount": 1,
+      "category": "pt"
+    },
+    {
+      "id": "test-item-stamina",
+      "name": "Venda test",
+      "description": "Recupera resistencia.",
+      "type": "recoverStaminaSingle",
+      "amount": 15,
+      "targetCount": 1,
+      "category": "stamina"
+    }
+  ],
+  "defaultKit": {
+    "test-item-pt": 2,
+    "test-item-stamina": 1
+  }
+}
+''';
+
+class TestMatchItemsDataSource extends ClashMatchItemsLocalDataSource {
+  @override
+  Future<List<ClashMatchItemInventoryEntry>> loadDefaultKit() async {
+    return parseDefaultKitJson(clashTestMatchItemsJson);
+  }
+}
+
 class TestExpMaterialsDataSource extends ClashExpMaterialsLocalDataSource {
   @override
   Future<List<ClashExpMaterial>> loadMaterials() async {
@@ -132,6 +171,24 @@ ClashEvolutionMaterialsRepository createTestEvolutionMaterialsRepository({
     dataSource: TestEvolutionMaterialsDataSource(),
     inventoryStorage:
         inventoryStorage ?? InMemoryClashEvolutionMaterialInventoryBackend(),
+  );
+}
+
+ClashInventoryRepository createTestInventoryRepository({
+  ClashExpMaterialsRepository? expMaterialsRepository,
+  ClashTechniqueBooksRepository? techniqueBooksRepository,
+  ClashEvolutionMaterialsRepository? evolutionMaterialsRepository,
+  ClashMatchItemsLocalDataSource? matchItemsDataSource,
+}) {
+  return ClashInventoryRepository(
+    expMaterialsRepository:
+        expMaterialsRepository ?? createTestExpMaterialsRepository(),
+    techniqueBooksRepository:
+        techniqueBooksRepository ?? createTestTechniqueBooksRepository(),
+    evolutionMaterialsRepository:
+        evolutionMaterialsRepository ??
+        createTestEvolutionMaterialsRepository(),
+    matchItemsDataSource: matchItemsDataSource ?? TestMatchItemsDataSource(),
   );
 }
 
