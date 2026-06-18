@@ -19,6 +19,9 @@ class ClashGachaPityCard extends StatelessWidget {
     final background = nearPity
         ? theme.colorScheme.primaryContainer.withValues(alpha: 0.35)
         : context.xiCardSurface;
+    final ratio = pityState.threshold <= 0
+        ? 0.0
+        : (pityState.pullsSinceLastPity / pityState.threshold).clamp(0.0, 1.0);
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -28,19 +31,52 @@ class ClashGachaPityCard extends StatelessWidget {
         border: Border.all(color: borderColor, width: nearPity ? 1.5 : 1),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            l10n.clashGachaPityProgress(
-              pityState.pullsSinceLastPity,
-              pityState.threshold,
-            ),
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: nearPity ? theme.colorScheme.primary : null,
+          Row(
+            children: [
+              Icon(
+                Icons.favorite_rounded,
+                size: 18,
+                color: nearPity
+                    ? theme.colorScheme.primary
+                    : context.xiTextSecondary,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.clashGachaPityProgress(
+                    pityState.pullsSinceLastPity,
+                    pityState.threshold,
+                  ),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: nearPity ? theme.colorScheme.primary : null,
+                  ),
+                ),
+              ),
+              Text(
+                '${pityState.pullsSinceLastPity}/${pityState.threshold}',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: nearPity ? theme.colorScheme.primary : null,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: LinearProgressIndicator(
+              value: ratio,
+              minHeight: 10,
+              backgroundColor: context.xiChipBackground,
+              color: nearPity
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.primary.withValues(alpha: 0.7),
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 8),
           Text(
             l10n.clashGachaPityRemaining(pityState.pullsRemaining),
             style: theme.textTheme.bodySmall?.copyWith(

@@ -39,6 +39,20 @@ class ClashGachaController extends ChangeNotifier {
   List<ClashGachaTicketInventoryEntry> get compatibleTickets =>
       _compatibleTickets;
 
+  bool get canAffordSingle =>
+      _banner != null && _walletGems >= _banner!.singleCost;
+
+  bool get canAffordMulti =>
+      _banner != null && _walletGems >= _banner!.multiCost;
+
+  bool get canAffordDaily =>
+      _banner != null &&
+      _dailyAvailable &&
+      _walletGems >= _banner!.dailyDiscountCost;
+
+  int get totalTicketCount =>
+      _compatibleTickets.fold(0, (sum, entry) => sum + entry.quantity);
+
   Future<void> load() async {
     _state = ClashGachaLoadState.loading;
     notifyListeners();

@@ -4,6 +4,7 @@ import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_history_storage.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
@@ -261,6 +262,65 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Todavía no has hecho invocaciones'), findsOneWidget);
+      expect(find.byIcon(Icons.history_rounded), findsOneWidget);
+    });
+
+    testWidgets('historial muestra filtros y total', (tester) async {
+      final history = InMemoryClashGachaHistoryBackend();
+      await history.appendEntry(
+        _sampleEntry(
+          id: 'single-1',
+          createdAt: DateTime(2026, 6, 11, 15, 30),
+          pullType: ClashGachaPullType.single,
+        ),
+      );
+      final repo = await createTestGachaRepository(historyStorage: history);
+      await tester.pumpWidget(await _historyScreenApp(repo));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('1 tiradas guardadas'), findsOneWidget);
+      expect(find.text('Todas'), findsOneWidget);
+      expect(find.text('Ticket'), findsWidgets);
+    });
+
+    testWidgets('filtro Ticket funciona', (tester) async {
+      final history = InMemoryClashGachaHistoryBackend();
+      await history.appendEntry(
+        _sampleEntry(
+          id: 'single-1',
+          createdAt: DateTime(2026, 6, 11),
+          pullType: ClashGachaPullType.single,
+        ),
+      );
+      await history.appendEntry(
+        ClashGachaHistoryEntry(
+          id: 'ticket-1',
+          bannerId: 'starter-banner-001',
+          bannerName: 'Invocación inicial',
+          pullType: ClashGachaPullType.ticketSingle,
+          spentGems: 0,
+          createdAt: DateTime(2026, 6, 12),
+          results: const [
+            ClashGachaHistoryResultItem(
+              cardId: 'a',
+              cardName: 'Ticket pull',
+              rarity: ClashRarity.n,
+              isNew: true,
+              isDuplicate: false,
+              upgradedRarity: false,
+              duplicateCopiesAfter: 0,
+            ),
+          ],
+        ),
+      );
+      final repo = await createTestGachaRepository(historyStorage: history);
+      await tester.pumpWidget(await _historyScreenApp(repo));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.widgetWithText(FilterChip, 'Ticket'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ExpansionTile), findsOneWidget);
+      expect(find.text('10 gemas'), findsNothing);
     });
 
     testWidgets('historial con single muestra 1 resultado', (tester) async {

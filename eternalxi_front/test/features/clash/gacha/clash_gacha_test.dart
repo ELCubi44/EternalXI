@@ -293,11 +293,12 @@ void main() {
 
       expect(find.textContaining('Gemas: 120'), findsOneWidget);
       expect(find.text('Invocación inicial'), findsOneWidget);
-      expect(find.textContaining('60 %'), findsOneWidget);
+      expect(find.textContaining('60%'), findsWidgets);
       expect(
-        find.textContaining('Simulación local sin compras reales'),
+        find.textContaining('Simulación local · sin compras reales'),
         findsOneWidget,
       );
+      expect(find.textContaining('Tickets:'), findsOneWidget);
     });
 
     testWidgets('botones single y multi muestran coste', (tester) async {
@@ -313,16 +314,17 @@ void main() {
       );
     });
 
-    testWidgets('gemas insuficientes muestra SnackBar', (tester) async {
+    testWidgets('gemas insuficientes deshabilita single', (tester) async {
       configureViewport(tester);
       final repo = await createTestGachaRepository(initialGems: 0);
       await tester.pumpWidget(await _gachaTestApp(gachaRepo: repo));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Single ×10 gemas'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Consigue gemas en Historia'), findsOneWidget);
+      expect(find.textContaining('Gemas insuficientes'), findsWidgets);
+      final button = tester.widget<FilledButton>(
+        find.byType(FilledButton).first,
+      );
+      expect(button.onPressed, isNull);
     });
 
     testWidgets('pull exitoso muestra resultados y actualiza saldo', (
@@ -394,6 +396,8 @@ void main() {
         findsOneWidget,
       );
       expect(find.textContaining('Gastadas: 95'), findsOneWidget);
+      expect(find.textContaining('Mejor rareza:'), findsOneWidget);
+      expect(find.text('Cerrar'), findsOneWidget);
     });
   });
 }

@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
@@ -5,9 +6,9 @@ import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_c
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_error.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_type.dart';
-import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_rarity_rates.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_ticket.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/controllers/clash_gacha_controller.dart';
+import 'package:eternal_xi/features/clash/gacha/presentation/widgets/clash_gacha_action_button.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/widgets/clash_gacha_banner_card.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/widgets/clash_gacha_pity_card.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/widgets/clash_gacha_result_sheet.dart';
@@ -141,20 +142,83 @@ class _ClashGachaBody extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        Text(
-          l10n.clashGachaLocalDisclaimer,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: context.xiTextSecondary,
-            fontStyle: FontStyle.italic,
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: context.xiChipBackground.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: context.xiDivider),
+          ),
+          child: Text(
+            l10n.clashGachaLocalDisclaimer,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: context.xiTextSecondary,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         const SizedBox(height: 16),
-        _WalletCard(gems: controller.walletGems),
+        _WalletCard(
+          gems: controller.walletGems,
+          tickets: controller.totalTicketCount,
+        ),
         const SizedBox(height: 16),
-        ClashGachaBannerCard(banner: banner, rates: controller.rates),
+        ClashGachaBannerCard(
+          banner: banner,
+          rates: controller.rates,
+          pityState: controller.pityState,
+          dailyAvailable: controller.dailyAvailable,
+        ),
         if (controller.pityState != null) ...[
           const SizedBox(height: 12),
           ClashGachaPityCard(pityState: controller.pityState!),
+        ],
+        const SizedBox(height: 20),
+        ClashGachaActionButton(
+          label: l10n.clashGachaSingleButton(banner.singleCost),
+          loading: pulling,
+          onPressed: !pulling && controller.canAffordSingle
+              ? () => onPull(ClashGachaPullType.single)
+              : null,
+          subtitle: !controller.canAffordSingle && !pulling
+              ? l10n.clashGachaButtonDisabledGems
+              : null,
+        ),
+        const SizedBox(height: 10),
+        ClashGachaActionButton(
+          label: l10n.clashGachaMultiButton(
+            banner.multiCost,
+            banner.multiCount,
+          ),
+          style: ClashGachaActionStyle.tonal,
+          loading: pulling,
+          onPressed: !pulling && controller.canAffordMulti
+              ? () => onPull(ClashGachaPullType.multi)
+              : null,
+          subtitle: !controller.canAffordMulti && !pulling
+              ? l10n.clashGachaButtonDisabledGems
+              : null,
+        ),
+        if (banner.dailyDiscountAvailable) ...[
+          const SizedBox(height: 10),
+          ClashGachaActionButton(
+            label: controller.dailyAvailable
+                ? l10n.clashGachaDailyButton(banner.dailyDiscountCost)
+                : l10n.clashGachaDailyUsed,
+            style: ClashGachaActionStyle.outlined,
+            icon: Icons.today_rounded,
+            loading: pulling,
+            onPressed: !pulling && controller.canAffordDaily
+                ? () => onPull(ClashGachaPullType.dailySingle)
+                : null,
+            subtitle: !controller.dailyAvailable
+                ? l10n.clashGachaButtonDisabledDaily
+                : (!controller.canAffordDaily && !pulling
+                      ? l10n.clashGachaButtonDisabledGems
+                      : null),
+          ),
         ],
         if (controller.compatibleTickets.isNotEmpty) ...[
           const SizedBox(height: 16),
@@ -177,52 +241,21 @@ class _ClashGachaBody extends StatelessWidget {
             const SizedBox(height: 8),
           ],
         ],
-        const SizedBox(height: 16),
-        Text(
-          l10n.clashSummonRates,
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
-        ),
-        const SizedBox(height: 8),
-        _RatesCard(rates: controller.rates),
-        const SizedBox(height: 20),
-        FilledButton(
-          onPressed: pulling ? null : () => onPull(ClashGachaPullType.single),
-          child: Text(l10n.clashGachaSingleButton(banner.singleCost)),
-        ),
-        const SizedBox(height: 10),
-        FilledButton.tonal(
-          onPressed: pulling ? null : () => onPull(ClashGachaPullType.multi),
-          child: Text(
-            l10n.clashGachaMultiButton(banner.multiCost, banner.multiCount),
-          ),
-        ),
-        const SizedBox(height: 10),
-        if (banner.dailyDiscountAvailable)
-          OutlinedButton(
-            onPressed: pulling || !controller.dailyAvailable
-                ? null
-                : () => onPull(ClashGachaPullType.dailySingle),
-            child: Text(
-              controller.dailyAvailable
-                  ? l10n.clashGachaDailyButton(banner.dailyDiscountCost)
-                  : l10n.clashGachaDailyUsed,
-            ),
-          ),
       ],
     );
   }
 }
 
 class _WalletCard extends StatelessWidget {
-  const _WalletCard({required this.gems});
+  const _WalletCard({required this.gems, required this.tickets});
 
   final int gems;
+  final int tickets;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final theme = Theme.of(context);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -233,79 +266,28 @@ class _WalletCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.diamond_rounded,
-            color: Theme.of(context).colorScheme.primary,
-          ),
+          Icon(Icons.diamond_rounded, color: theme.colorScheme.primary),
           const SizedBox(width: 10),
-          Text(
-            l10n.clashGachaWalletGems(gems),
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RatesCard extends StatelessWidget {
-  const _RatesCard({required this.rates});
-
-  final ClashGachaRarityRates rates;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: context.xiCardSurface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.xiDivider),
-      ),
-      child: Column(
-        children: [
-          _RateRow(label: 'N', value: rates.nPercent),
-          _RateRow(label: 'R', value: rates.rPercent),
-          _RateRow(label: 'SR', value: rates.srPercent),
-          _RateRow(label: 'LR', value: rates.lrPercent),
-          _RateRow(label: 'XI', value: rates.xiPercent),
-          const SizedBox(height: 8),
-          Text(
-            l10n.clashGachaMultiGuarantee,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: context.xiTextSecondary),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RateRow extends StatelessWidget {
-  const _RateRow({required this.label, required this.value});
-
-  final String label;
-  final int value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 36,
+          Expanded(
             child: Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.w700),
+              l10n.clashGachaWalletGems(gems),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
-          Expanded(child: Text('$value %')),
+          Icon(
+            Icons.confirmation_number_rounded,
+            color: theme.colorScheme.tertiary,
+            size: 20,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            l10n.clashGachaWalletTickets(tickets),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
         ],
       ),
     );
@@ -328,10 +310,13 @@ class _TicketUseButton extends StatelessWidget {
     final l10n = context.l10n;
     final enabled = !pulling && entry.quantity > 0;
 
-    return OutlinedButton.icon(
+    return ClashGachaActionButton(
+      label: l10n.clashGachaUseTicketButton(entry.quantity),
+      style: ClashGachaActionStyle.outlined,
+      icon: Icons.confirmation_number_rounded,
+      loading: pulling,
       onPressed: enabled ? onUse : null,
-      icon: const Icon(Icons.confirmation_number_rounded),
-      label: Text(l10n.clashGachaUseTicketButton(entry.quantity)),
+      subtitle: enabled ? null : l10n.clashGachaButtonDisabledTickets,
     );
   }
 }

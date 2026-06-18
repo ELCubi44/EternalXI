@@ -330,7 +330,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.textContaining('Simulación local sin compras reales'),
+        find.textContaining('Simulación local · sin compras reales'),
         findsOneWidget,
       );
       expect(find.byType(FilledButton), findsAtLeastNWidgets(1));

@@ -286,8 +286,9 @@ class AppLocalizations {
       'clashInventoryUseInSummon': 'Usar en Invocar',
       'clashInventoryMatchKitProvisional': 'Kit provisional por partido',
       'clashInventoryEmptyCategory': 'Sin unidades en esta categoría',
-      'clashGachaLocalDisclaimer': 'Simulación local sin compras reales',
+      'clashGachaLocalDisclaimer': 'Simulación local · sin compras reales',
       'clashGachaWalletGems': 'Gemas: {count}',
+      'clashGachaWalletTickets': 'Tickets: {count}',
       'clashGachaSingleButton': 'Single ×{cost} gemas',
       'clashGachaMultiButton': 'Multi ×{cost} gemas ({count} cartas)',
       'clashGachaDailyButton': 'Single diario ×{cost} gema',
@@ -318,6 +319,25 @@ class AppLocalizations {
       'clashGachaNoTickets': 'No tienes tickets',
       'clashGachaResultTicket': 'Ticket · Restantes gemas: {remaining}',
       'clashGachaHistoryPullTicket': 'Ticket',
+      'clashGachaLrXiUnavailable': 'LR/XI no disponibles aún',
+      'clashGachaButtonDisabledGems': 'Gemas insuficientes',
+      'clashGachaButtonDisabledDaily': 'Diario ya usado',
+      'clashGachaButtonDisabledTickets': 'Sin tickets',
+      'clashGachaPulling': 'Invocando…',
+      'clashGachaResultBestRarity': 'Mejor rareza: {rarity}',
+      'clashGachaResultPullType': 'Tirada: {type}',
+      'clashGachaClose': 'Cerrar',
+      'clashGachaHistoryTotal': '{count} tiradas guardadas',
+      'clashGachaHistoryFilterAll': 'Todas',
+      'clashGachaHistoryFilterSingle': 'Single',
+      'clashGachaHistoryFilterMulti': 'Multi',
+      'clashGachaHistoryFilterDaily': 'Diario',
+      'clashGachaHistoryFilterTicket': 'Ticket',
+      'clashGachaChipSingle': 'Single {cost}',
+      'clashGachaChipMulti': 'Multi {cost}',
+      'clashGachaChipDaily': 'Diario {cost}',
+      'clashGachaChipPity': 'Pity {max}',
+      'clashGachaDailyStatusAvailable': 'Diario disponible',
       'clashSummonBanners': 'Banners',
       'clashSummonSingle': 'Single',
       'clashSummonMulti': 'Multi',
@@ -1054,8 +1074,9 @@ class AppLocalizations {
       'clashInventoryUseInSummon': 'Use in Summon',
       'clashInventoryMatchKitProvisional': 'Provisional kit per match',
       'clashInventoryEmptyCategory': 'No units in this category',
-      'clashGachaLocalDisclaimer': 'Local simulation without real purchases',
+      'clashGachaLocalDisclaimer': 'Local simulation · no real purchases',
       'clashGachaWalletGems': 'Gems: {count}',
+      'clashGachaWalletTickets': 'Tickets: {count}',
       'clashGachaSingleButton': 'Single ×{cost} gems',
       'clashGachaMultiButton': 'Multi ×{cost} gems ({count} cards)',
       'clashGachaDailyButton': 'Daily single ×{cost} gem',
@@ -1086,6 +1107,25 @@ class AppLocalizations {
       'clashGachaNoTickets': 'You have no tickets',
       'clashGachaResultTicket': 'Ticket · Gems remaining: {remaining}',
       'clashGachaHistoryPullTicket': 'Ticket',
+      'clashGachaLrXiUnavailable': 'LR/XI not available yet',
+      'clashGachaButtonDisabledGems': 'Insufficient gems',
+      'clashGachaButtonDisabledDaily': 'Daily already used',
+      'clashGachaButtonDisabledTickets': 'No tickets',
+      'clashGachaPulling': 'Summoning…',
+      'clashGachaResultBestRarity': 'Best rarity: {rarity}',
+      'clashGachaResultPullType': 'Pull: {type}',
+      'clashGachaClose': 'Close',
+      'clashGachaHistoryTotal': '{count} pulls saved',
+      'clashGachaHistoryFilterAll': 'All',
+      'clashGachaHistoryFilterSingle': 'Single',
+      'clashGachaHistoryFilterMulti': 'Multi',
+      'clashGachaHistoryFilterDaily': 'Daily',
+      'clashGachaHistoryFilterTicket': 'Ticket',
+      'clashGachaChipSingle': 'Single {cost}',
+      'clashGachaChipMulti': 'Multi {cost}',
+      'clashGachaChipDaily': 'Daily {cost}',
+      'clashGachaChipPity': 'Pity {max}',
+      'clashGachaDailyStatusAvailable': 'Daily available',
       'clashSummonBanners': 'Banners',
       'clashSummonSingle': 'Single',
       'clashSummonMulti': 'Multi',
@@ -1948,6 +1988,39 @@ class AppLocalizations {
   String clashGachaResultTicket(int remaining) =>
       _t('clashGachaResultTicket').replaceAll('{remaining}', '$remaining');
   String get clashGachaHistoryPullTicket => _t('clashGachaHistoryPullTicket');
+  String get clashGachaLrXiUnavailable => _t('clashGachaLrXiUnavailable');
+  String get clashGachaButtonDisabledGems => _t('clashGachaButtonDisabledGems');
+  String get clashGachaButtonDisabledDaily =>
+      _t('clashGachaButtonDisabledDaily');
+  String get clashGachaButtonDisabledTickets =>
+      _t('clashGachaButtonDisabledTickets');
+  String get clashGachaPulling => _t('clashGachaPulling');
+  String clashGachaResultBestRarity(String rarity) =>
+      _t('clashGachaResultBestRarity').replaceAll('{rarity}', rarity);
+  String clashGachaResultPullType(String type) =>
+      _t('clashGachaResultPullType').replaceAll('{type}', type);
+  String get clashGachaClose => _t('clashGachaClose');
+  String clashGachaHistoryTotal(int count) =>
+      _t('clashGachaHistoryTotal').replaceAll('{count}', '$count');
+  String get clashGachaHistoryFilterAll => _t('clashGachaHistoryFilterAll');
+  String get clashGachaHistoryFilterSingle =>
+      _t('clashGachaHistoryFilterSingle');
+  String get clashGachaHistoryFilterMulti => _t('clashGachaHistoryFilterMulti');
+  String get clashGachaHistoryFilterDaily => _t('clashGachaHistoryFilterDaily');
+  String get clashGachaHistoryFilterTicket =>
+      _t('clashGachaHistoryFilterTicket');
+  String clashGachaChipSingle(int cost) =>
+      _t('clashGachaChipSingle').replaceAll('{cost}', '$cost');
+  String clashGachaChipMulti(int cost) =>
+      _t('clashGachaChipMulti').replaceAll('{cost}', '$cost');
+  String clashGachaChipDaily(int cost) =>
+      _t('clashGachaChipDaily').replaceAll('{cost}', '$cost');
+  String clashGachaChipPity(int max) =>
+      _t('clashGachaChipPity').replaceAll('{max}', '$max');
+  String get clashGachaDailyStatusAvailable =>
+      _t('clashGachaDailyStatusAvailable');
+  String clashGachaWalletTickets(int count) =>
+      _t('clashGachaWalletTickets').replaceAll('{count}', '$count');
   String get clashSummonBanners => _t('clashSummonBanners');
   String get clashSummonSingle => _t('clashSummonSingle');
   String get clashSummonMulti => _t('clashSummonMulti');

@@ -299,10 +299,13 @@ void main() {
       );
       await tester.pumpWidget(await panelApp(repo));
       await tester.pumpAndSettle();
-      final button = tester.widget<OutlinedButton>(
-        find.widgetWithText(OutlinedButton, 'Usar ticket (×0)'),
+      expect(find.textContaining('Sin tickets'), findsOneWidget);
+      final ticketLabel = find.textContaining('Usar ticket (×0)');
+      expect(ticketLabel, findsOneWidget);
+      final ticketButton = tester.widget<OutlinedButton>(
+        find.ancestor(of: ticketLabel, matching: find.byType(OutlinedButton)),
       );
-      expect(button.onPressed, isNull);
+      expect(ticketButton.onPressed, isNull);
     });
 
     testWidgets('usar ticket muestra resultado', (tester) async {

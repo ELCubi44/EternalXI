@@ -591,4 +591,18 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 38 — Pulido visual Invocar/Gacha
+
+**Estado:** implementada (local).
+
+- Pantalla Invocar con saldo gemas/tickets, aviso local y botones con estado disabled.
+- Banner con chips de costes, probabilidades compactas y aviso LR/XI.
+- Pity card con barra de progreso; result sheet con resumen y grid scrolleable.
+- Historial con filtros por tipo, total de tiradas y cards expandibles mejoradas.
+- Sin cambios de reglas, costes, pity ni economía.
+
+**Pendiente:** animaciones de invocación, banners remotos, backend, compras reales.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

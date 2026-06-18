@@ -427,7 +427,7 @@ void main() {
       await tester.tap(find.text('Invocación inicial'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Pity SR'), findsOneWidget);
+      expect(find.text('Pity SR'), findsWidgets);
     });
 
     testWidgets('multi con garantía muestra chip Garantía multi', (

@@ -48,6 +48,21 @@ class ClashGachaPullResult {
   final String? ticketId;
 
   bool get usedTicket => pullType == ClashGachaPullType.ticketSingle;
+
+  ClashRarity get bestRarity {
+    if (results.isEmpty) {
+      return ClashRarity.n;
+    }
+    return results
+        .map((item) => item.rarity)
+        .reduce(
+          (best, current) =>
+              ClashRarity.values.indexOf(current) >
+                  ClashRarity.values.indexOf(best)
+              ? current
+              : best,
+        );
+  }
 }
 
 class ClashGachaPullOutcome {
