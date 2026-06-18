@@ -1,6 +1,4 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
-import 'package:eternal_xi/app/routes.dart';
-import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/achievements/presentation/widgets/clash_achievements_home_card.dart';
 import 'package:eternal_xi/features/clash/gifts/presentation/widgets/clash_gifts_home_card.dart';
 import 'package:eternal_xi/features/clash/home/presentation/widgets/clash_home_featured_event_card.dart';

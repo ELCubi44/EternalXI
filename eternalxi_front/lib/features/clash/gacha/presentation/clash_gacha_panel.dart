@@ -1,4 +1,3 @@
-import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';

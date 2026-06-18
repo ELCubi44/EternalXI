@@ -4,7 +4,6 @@ import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
-import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_history_storage.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
