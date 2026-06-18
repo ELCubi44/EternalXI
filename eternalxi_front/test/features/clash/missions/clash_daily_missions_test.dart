@@ -362,8 +362,7 @@ void main() {
         home: MultiProvider(
           providers: [
             ChangeNotifierProvider<ClashStoryController>(
-              create: (_) =>
-                  ClashStoryController(storyRepository: setup.story),
+              create: (_) => ClashStoryController(storyRepository: setup.story),
             ),
             Provider<ClashDailyMissionsRepository>.value(value: repo),
           ],

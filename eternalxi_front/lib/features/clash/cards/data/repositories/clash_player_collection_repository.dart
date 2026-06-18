@@ -17,6 +17,8 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_use_
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_level.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_progress_resolver.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_grant_result.dart';
+import 'package:eternal_xi/features/clash/achievements/data/clash_achievement_event_sink.dart';
+import 'package:eternal_xi/features/clash/achievements/domain/clash_achievement_type.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission_type.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_service.dart';
@@ -32,12 +34,14 @@ class ClashPlayerCollectionRepository {
     required ClashTechniqueBooksRepository techniqueBooksRepository,
     required ClashEvolutionMaterialsRepository evolutionMaterialsRepository,
     ClashDailyMissionEventSink? missionEventSink,
+    ClashAchievementEventSink? achievementEventSink,
   }) : _storage = storage,
        _cardsRepository = cardsRepository,
        _expMaterialsRepository = expMaterialsRepository,
        _techniqueBooksRepository = techniqueBooksRepository,
        _evolutionMaterialsRepository = evolutionMaterialsRepository,
-       _missionEventSink = missionEventSink;
+       _missionEventSink = missionEventSink,
+       _achievementEventSink = achievementEventSink;
 
   final ClashPlayerCollectionStorageBackend _storage;
   final ClashCardsRepository _cardsRepository;
@@ -45,6 +49,7 @@ class ClashPlayerCollectionRepository {
   final ClashTechniqueBooksRepository _techniqueBooksRepository;
   final ClashEvolutionMaterialsRepository _evolutionMaterialsRepository;
   final ClashDailyMissionEventSink? _missionEventSink;
+  final ClashAchievementEventSink? _achievementEventSink;
 
   ClashPlayerCollectionSnapshot? _cache;
 
@@ -55,6 +60,14 @@ class ClashPlayerCollectionRepository {
 
   Set<String> loadOwnedCardIds() {
     return Set<String>.from(_loadSnapshot().ownedCardIds);
+  }
+
+  Future<void> _syncCollectCardsAchievement() async {
+    await _achievementEventSink?.record(
+      ClashAchievementType.collectCards,
+      amount: loadOwnedCardIds().length,
+      absolute: true,
+    );
   }
 
   Map<String, ClashCardProgress> loadCardProgress() {
@@ -105,6 +118,7 @@ class ClashPlayerCollectionRepository {
       await _save(
         snapshot.copyWith(ownedCardIds: owned, cardProgress: progress),
       );
+      await _syncCollectCardsAchievement();
     }
   }
 
@@ -123,6 +137,7 @@ class ClashPlayerCollectionRepository {
       await _save(
         _loadSnapshot().copyWith(ownedCardIds: owned, cardProgress: progress),
       );
+      await _syncCollectCardsAchievement();
     }
     return newlyGranted;
   }
@@ -200,6 +215,7 @@ class ClashPlayerCollectionRepository {
       await _save(
         snapshot.copyWith(ownedCardIds: owned, cardProgress: progressMap),
       );
+      await _syncCollectCardsAchievement();
       return ClashGachaGrantResult(
         cardId: cardId,
         grantedRarity: rarity,
@@ -317,6 +333,7 @@ class ClashPlayerCollectionRepository {
       nodeId: nodeId,
     );
     await _save(snapshot.copyWith(cardProgress: progressMap));
+    await _achievementEventSink?.record(ClashAchievementType.unlockSkillNode);
     return preview;
   }
 
@@ -394,6 +411,13 @@ class ClashPlayerCollectionRepository {
 
     if (results.isNotEmpty) {
       await _save(snapshot.copyWith(cardProgress: progressMap));
+      final levelUps = results.where((result) => result.didLevelUp).length;
+      if (levelUps > 0) {
+        await _achievementEventSink?.record(
+          ClashAchievementType.levelUpCard,
+          amount: levelUps,
+        );
+      }
     }
 
     return results;
@@ -544,6 +568,8 @@ class ClashPlayerCollectionRepository {
       newRarity: preview.newRarity,
     );
     await _save(snapshot.copyWith(cardProgress: progressMap));
+
+    await _achievementEventSink?.record(ClashAchievementType.evolveCard);
 
     return preview;
   }
@@ -705,6 +731,11 @@ class ClashPlayerCollectionRepository {
     await _save(snapshot.copyWith(cardProgress: progressMap));
 
     await _missionEventSink?.record(ClashDailyMissionType.upgradeTechnique);
+    if (preview.didLevelUp) {
+      await _achievementEventSink?.record(
+        ClashAchievementType.upgradeTechnique,
+      );
+    }
 
     return preview.withQuantityUsed(quantity);
   }
@@ -919,6 +950,9 @@ class ClashPlayerCollectionRepository {
     await _save(snapshot.copyWith(cardProgress: progressMap));
 
     await _missionEventSink?.record(ClashDailyMissionType.useExpMaterial);
+    if (xpResult.didLevelUp) {
+      await _achievementEventSink?.record(ClashAchievementType.levelUpCard);
+    }
 
     return ClashExpMaterialUseResult(
       cardId: cardId,

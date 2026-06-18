@@ -481,6 +481,17 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 **Pendiente:** misiones semanales, logros globales, backend, sincronización, notificaciones, pase de batalla.
 
+### Fase 29 — Logros locales permanentes
+
+- Submódulo `lib/features/clash/achievements/` con catálogo `achievements.json`.
+- Persistencia local `clash_achievements_v1` **sin reset diario** (a diferencia de misiones diarias).
+- Progreso acumulado permanentemente; cada logro se reclama una sola vez.
+- Eventos: partido, victoria, invocación (cartas por tirada: single/daily/ticket +1, multi +10), colección única, subida de nivel, mejora de técnica, evolución, nodo de árbol.
+- Reclamación local vía `ClashShopGrantService` (monedas, gemas, materiales, tickets).
+- Pantalla `/clash/achievements` y tarjeta resumen en Inicio Clash.
+
+**Pendiente:** backend de logros, Google Play Games, logros secretos, logros de eventos reales, cinemáticas, notificaciones, pase de batalla.
+
 ---
 
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

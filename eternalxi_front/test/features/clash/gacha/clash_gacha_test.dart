@@ -287,8 +287,10 @@ void main() {
     });
 
     tearDown(() {
-      TestWidgetsFlutterBinding.ensureInitialized().window.clearPhysicalSizeTestValue();
-      TestWidgetsFlutterBinding.ensureInitialized().window.clearDevicePixelRatioTestValue();
+      TestWidgetsFlutterBinding.ensureInitialized().window
+          .clearPhysicalSizeTestValue();
+      TestWidgetsFlutterBinding.ensureInitialized().window
+          .clearDevicePixelRatioTestValue();
     });
 
     testWidgets('muestra saldo, banner y probabilidades', (tester) async {

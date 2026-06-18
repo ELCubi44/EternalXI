@@ -1,0 +1,88 @@
+{
+  "achievements": [
+    {
+      "id": "achievement-first-match",
+      "title": "Primer partido",
+      "description": "Completa tu primer partido de Clash.",
+      "type": "playMatch",
+      "target": 1,
+      "reward": { "coins": 500 }
+    },
+    {
+      "id": "achievement-first-win",
+      "title": "Primera victoria",
+      "description": "Consigue tu primera victoria en un partido.",
+      "type": "winMatch",
+      "target": 1,
+      "reward": { "gems": 2 }
+    },
+    {
+      "id": "achievement-summon-novice",
+      "title": "Invocador novato",
+      "description": "Obtén cartas en 5 invocaciones (cuenta cartas por tirada).",
+      "type": "summon",
+      "target": 5,
+      "reward": {
+        "ticket": {
+          "id": "starter-single-ticket",
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "achievement-collector-starter",
+      "title": "Coleccionista inicial",
+      "description": "Posee 10 cartas únicas en tu colección.",
+      "type": "collectCards",
+      "target": 10,
+      "reward": { "gems": 2 }
+    },
+    {
+      "id": "achievement-trainer-beginner",
+      "title": "Entrenador principiante",
+      "description": "Sube de nivel a 5 cartas distintas.",
+      "type": "levelUpCard",
+      "target": 5,
+      "reward": {
+        "expMaterial": {
+          "id": "advanced-training-manual",
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "achievement-technique-upgraded",
+      "title": "Técnica mejorada",
+      "description": "Mejora supertécnicas 3 veces con libros.",
+      "type": "upgradeTechnique",
+      "target": 3,
+      "reward": {
+        "techniqueBook": {
+          "id": "advanced-technique-book",
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "achievement-first-evolution",
+      "title": "Primera evolución",
+      "description": "Evoluciona una carta por primera vez.",
+      "type": "evolveCard",
+      "target": 1,
+      "reward": {
+        "evolutionMaterial": {
+          "id": "insignia-r",
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "achievement-skill-tree-unlock",
+      "title": "Árbol desbloqueado",
+      "description": "Desbloquea tu primer nodo del árbol de habilidades.",
+      "type": "unlockSkillNode",
+      "target": 1,
+      "reward": { "coins": 1000 }
+    }
+  ]
+}

@@ -34,6 +34,11 @@ import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_loc
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_progress.dart';
+import 'package:eternal_xi/features/clash/achievements/data/clash_achievement_event_sink.dart';
+import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_local_datasource.dart';
+import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_repository.dart';
+import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_storage.dart';
+import 'package:eternal_xi/features/clash/achievements/domain/clash_achievement.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_local_datasource.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission.dart';
@@ -317,6 +322,7 @@ Future<ClashGachaRepository> createTestGachaRepository({
   ClashGachaTicketRepository? ticketRepository,
   ClashGachaEngine? engine,
   ClashDailyMissionEventSink? missionEventSink,
+  ClashAchievementEventSink? achievementEventSink,
   DateTime Function()? now,
   int initialGems = 200,
 }) async {
@@ -350,6 +356,7 @@ Future<ClashGachaRepository> createTestGachaRepository({
     cardsRepository: cardsRepo,
     engine: engine,
     missionEventSink: missionEventSink,
+    achievementEventSink: achievementEventSink,
     now: now,
   );
 }
@@ -381,6 +388,7 @@ ClashPlayerCollectionRepository createTestCollectionRepository({
   ClashTechniqueBooksRepository? techniqueBooksRepository,
   ClashEvolutionMaterialsRepository? evolutionMaterialsRepository,
   ClashDailyMissionEventSink? missionEventSink,
+  ClashAchievementEventSink? achievementEventSink,
 }) {
   return ClashPlayerCollectionRepository(
     storage: storage ?? InMemoryClashPlayerCollectionBackend(),
@@ -393,6 +401,7 @@ ClashPlayerCollectionRepository createTestCollectionRepository({
         evolutionMaterialsRepository ??
         createTestEvolutionMaterialsRepository(),
     missionEventSink: missionEventSink,
+    achievementEventSink: achievementEventSink,
   );
 }
 
@@ -622,4 +631,152 @@ createTestMissionsSetup({
   );
   sink.bind(missions);
   return (missions: missions, sink: sink, story: story, collection: collection);
+}
+
+const clashTestAchievementsJson = '''
+{
+  "achievements": [
+    {
+      "id": "achievement-first-match",
+      "title": "Primer partido",
+      "description": "Completa tu primer partido de Clash.",
+      "type": "playMatch",
+      "target": 1,
+      "reward": { "coins": 500 }
+    },
+    {
+      "id": "achievement-first-win",
+      "title": "Primera victoria",
+      "description": "Consigue tu primera victoria en un partido.",
+      "type": "winMatch",
+      "target": 1,
+      "reward": { "gems": 2 }
+    },
+    {
+      "id": "achievement-summon-novice",
+      "title": "Invocador novato",
+      "description": "Obtén cartas en 5 invocaciones.",
+      "type": "summon",
+      "target": 5,
+      "reward": {
+        "ticket": {
+          "id": "starter-single-ticket",
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "achievement-collector-starter",
+      "title": "Coleccionista inicial",
+      "description": "Posee 10 cartas únicas en tu colección.",
+      "type": "collectCards",
+      "target": 10,
+      "reward": { "gems": 2 }
+    },
+    {
+      "id": "achievement-trainer-beginner",
+      "title": "Entrenador principiante",
+      "description": "Sube de nivel a 5 cartas distintas.",
+      "type": "levelUpCard",
+      "target": 5,
+      "reward": {
+        "expMaterial": {
+          "id": "advanced-training-manual",
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "achievement-technique-upgraded",
+      "title": "Técnica mejorada",
+      "description": "Mejora supertécnicas 3 veces con libros.",
+      "type": "upgradeTechnique",
+      "target": 3,
+      "reward": {
+        "techniqueBook": {
+          "id": "advanced-technique-book",
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "achievement-first-evolution",
+      "title": "Primera evolución",
+      "description": "Evoluciona una carta por primera vez.",
+      "type": "evolveCard",
+      "target": 1,
+      "reward": {
+        "evolutionMaterial": {
+          "id": "insignia-r",
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "achievement-skill-tree-unlock",
+      "title": "Árbol desbloqueado",
+      "description": "Desbloquea tu primer nodo del árbol de habilidades.",
+      "type": "unlockSkillNode",
+      "target": 1,
+      "reward": { "coins": 1000 }
+    }
+  ]
+}
+''';
+
+class TestAchievementsDataSource extends ClashAchievementsLocalDataSource {
+  @override
+  Future<List<ClashAchievement>> loadAchievements() async {
+    return parseAchievementsJson(clashTestAchievementsJson);
+  }
+}
+
+Future<
+  ({
+    ClashAchievementsRepository achievements,
+    ClashAchievementEventSink sink,
+    ClashStoryRepository story,
+    ClashPlayerCollectionRepository collection,
+  })
+>
+createTestAchievementsSetup({
+  ClashAchievementsStorageBackend? storage,
+  DateTime Function()? now,
+  int initialCoins = 0,
+  int initialGems = 0,
+}) async {
+  final sink = ClashAchievementEventSink();
+  final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
+  final collection = createTestCollectionRepository(
+    cardsRepository: cardsRepo,
+    achievementEventSink: sink,
+  );
+  final storyProgress = InMemoryClashStoryProgressBackend();
+  await storyProgress.writeProgress(
+    ClashStoryProgress(walletCoins: initialCoins, walletGems: initialGems),
+  );
+  final story = ClashStoryRepository(
+    dataSource: ClashStoryLocalDataSource(),
+    progressStorage: storyProgress,
+    collectionRepository: collection,
+    ticketRepository: createTestTicketRepository(),
+  );
+  final tickets = createTestTicketRepository();
+  final achievements = ClashAchievementsRepository(
+    dataSource: TestAchievementsDataSource(),
+    storage: storage ?? InMemoryClashAchievementsBackend(),
+    storyRepository: story,
+    grantService: ClashShopGrantService(
+      collectionRepository: collection,
+      ticketRepository: tickets,
+    ),
+    now: now,
+  );
+  sink.bind(achievements);
+  return (
+    achievements: achievements,
+    sink: sink,
+    story: story,
+    collection: collection,
+  );
 }

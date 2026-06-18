@@ -14,6 +14,8 @@ import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_result.d
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_type.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_rarity_rates.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_ticket.dart';
+import 'package:eternal_xi/features/clash/achievements/data/clash_achievement_event_sink.dart';
+import 'package:eternal_xi/features/clash/achievements/domain/clash_achievement_type.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission_type.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
@@ -32,6 +34,7 @@ class ClashGachaRepository {
     required ClashCardsRepository cardsRepository,
     ClashGachaEngine? engine,
     ClashDailyMissionEventSink? missionEventSink,
+    ClashAchievementEventSink? achievementEventSink,
     DateTime Function()? now,
   }) : _dataSource = dataSource,
        _dailyStorage = dailyStorage,
@@ -43,6 +46,7 @@ class ClashGachaRepository {
        _cardsRepository = cardsRepository,
        _engine = engine ?? ClashGachaEngine(),
        _missionEventSink = missionEventSink,
+       _achievementEventSink = achievementEventSink,
        _now = now ?? DateTime.now;
 
   final ClashGachaLocalDataSource _dataSource;
@@ -55,6 +59,7 @@ class ClashGachaRepository {
   final ClashCardsRepository _cardsRepository;
   final ClashGachaEngine _engine;
   final ClashDailyMissionEventSink? _missionEventSink;
+  final ClashAchievementEventSink? _achievementEventSink;
   final DateTime Function() _now;
 
   ClashGachaCatalog? _catalogCache;
@@ -285,6 +290,10 @@ class ClashGachaRepository {
     );
 
     await _missionEventSink?.record(ClashDailyMissionType.summon);
+    await _achievementEventSink?.record(
+      ClashAchievementType.summon,
+      amount: items.length,
+    );
 
     return ClashGachaPullOutcome(result: result);
   }

@@ -82,6 +82,7 @@ flutter:
     - assets/data/clash/gacha_tickets.json
     - assets/data/clash/shop_products.json
     - assets/data/clash/daily_missions.json
+    - assets/data/clash/achievements.json
     - assets/data/clash/story/sagas.json
     - assets/data/clash/story/chapter_01.json
 

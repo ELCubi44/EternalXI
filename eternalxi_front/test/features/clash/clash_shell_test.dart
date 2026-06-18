@@ -12,6 +12,7 @@ import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_e
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
+import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_repository.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
@@ -55,6 +56,7 @@ Future<
     ClashCardsController cardsController,
     ClashShopRepository shopRepository,
     ClashDailyMissionsRepository missionsRepository,
+    ClashAchievementsRepository achievementsRepository,
   })
 >
 _shellDeps() async {
@@ -92,12 +94,17 @@ _shellDeps() async {
     initialCoins: 1500,
     initialGems: 50,
   );
+  final achievementsSetup = await createTestAchievementsSetup(
+    initialCoins: 1500,
+    initialGems: 50,
+  );
   return (
     storyController: ClashStoryController(storyRepository: storyRepo),
     gachaRepository: gachaRepo,
     cardsController: cardsController,
     shopRepository: shopRepo,
     missionsRepository: missionsSetup.missions,
+    achievementsRepository: achievementsSetup.achievements,
   );
 }
 
@@ -119,6 +126,9 @@ Future<(Widget app, ClashNavigationController nav)> _shellApp(
           Provider<ClashShopRepository>.value(value: deps.shopRepository),
           Provider<ClashDailyMissionsRepository>.value(
             value: deps.missionsRepository,
+          ),
+          Provider<ClashAchievementsRepository>.value(
+            value: deps.achievementsRepository,
           ),
           ChangeNotifierProvider<ClashCardsController>.value(
             value: deps.cardsController,
@@ -233,6 +243,7 @@ void main() {
       expect(find.text('Historia'), findsOneWidget);
       expect(find.text('Eventos'), findsOneWidget);
       expect(find.text('Misiones diarias'), findsOneWidget);
+      expect(find.text('Logros'), findsOneWidget);
     });
 
     testWidgets('cambiar a Equipo muestra alineaciones', (tester) async {

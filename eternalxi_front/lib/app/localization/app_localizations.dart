@@ -144,6 +144,27 @@ class AppLocalizations {
       'clashDailyMissionsRewardCoins': '{count} monedas',
       'clashDailyMissionsRewardGems': '{count} gemas',
       'clashDailyMissionsProgress': '{current}/{target}',
+      'clashAchievementsTitle': 'Logros',
+      'clashAchievementsPermanentHint':
+          'Progreso permanente. No se reinician cada día.',
+      'clashAchievementsCompletedSummary': 'Completados {completed}/{total}',
+      'clashAchievementsClaimedSummary': 'Reclamados {claimed}/{total}',
+      'clashAchievementsFilterAll': 'Todos',
+      'clashAchievementsFilterInProgress': 'En progreso',
+      'clashAchievementsFilterCompleted': 'Completados',
+      'clashAchievementsFilterClaimed': 'Reclamados',
+      'clashAchievementsEmptyFilter': 'Sin logros en este filtro',
+      'clashAchievementsStatusInProgress': 'En progreso',
+      'clashAchievementsStatusClaim': 'Reclamar',
+      'clashAchievementsStatusClaimed': 'Reclamado',
+      'clashAchievementsClaimAll': 'Reclamar todas',
+      'clashAchievementsClaimSuccess': 'Recompensa reclamada',
+      'clashAchievementsHomeTitle': 'Logros',
+      'clashAchievementsHomePending': '{count} pendientes de reclamar',
+      'clashAchievementsHomeView': 'Ver',
+      'clashAchievementsRewardCoins': '{count} monedas',
+      'clashAchievementsRewardGems': '{count} gemas',
+      'clashAchievementsProgress': '{current}/{target}',
       'clashTeamLineup7': 'Alineación 7vs7',
       'clashTeamLineup11': 'Alineación 11vs11',
       'clashTeamCharacters': 'Personajes',
@@ -751,6 +772,27 @@ class AppLocalizations {
       'clashDailyMissionsRewardCoins': '{count} coins',
       'clashDailyMissionsRewardGems': '{count} gems',
       'clashDailyMissionsProgress': '{current}/{target}',
+      'clashAchievementsTitle': 'Achievements',
+      'clashAchievementsPermanentHint':
+          'Permanent progress. They do not reset daily.',
+      'clashAchievementsCompletedSummary': 'Completed {completed}/{total}',
+      'clashAchievementsClaimedSummary': 'Claimed {claimed}/{total}',
+      'clashAchievementsFilterAll': 'All',
+      'clashAchievementsFilterInProgress': 'In progress',
+      'clashAchievementsFilterCompleted': 'Completed',
+      'clashAchievementsFilterClaimed': 'Claimed',
+      'clashAchievementsEmptyFilter': 'No achievements in this filter',
+      'clashAchievementsStatusInProgress': 'In progress',
+      'clashAchievementsStatusClaim': 'Claim',
+      'clashAchievementsStatusClaimed': 'Claimed',
+      'clashAchievementsClaimAll': 'Claim all',
+      'clashAchievementsClaimSuccess': 'Reward claimed',
+      'clashAchievementsHomeTitle': 'Achievements',
+      'clashAchievementsHomePending': '{count} ready to claim',
+      'clashAchievementsHomeView': 'View',
+      'clashAchievementsRewardCoins': '{count} coins',
+      'clashAchievementsRewardGems': '{count} gems',
+      'clashAchievementsProgress': '{current}/{target}',
       'clashTeamLineup7': '7v7 lineup',
       'clashTeamLineup11': '11v11 lineup',
       'clashTeamCharacters': 'Characters',
@@ -1384,6 +1426,42 @@ class AppLocalizations {
       _t('clashDailyMissionsRewardGems').replaceAll('{count}', '$count');
   String clashDailyMissionsProgress(int current, int target) => _t(
     'clashDailyMissionsProgress',
+  ).replaceAll('{current}', '$current').replaceAll('{target}', '$target');
+  String get clashAchievementsTitle => _t('clashAchievementsTitle');
+  String get clashAchievementsPermanentHint =>
+      _t('clashAchievementsPermanentHint');
+  String clashAchievementsCompletedSummary(int completed, int total) => _t(
+    'clashAchievementsCompletedSummary',
+  ).replaceAll('{completed}', '$completed').replaceAll('{total}', '$total');
+  String clashAchievementsClaimedSummary(int claimed, int total) => _t(
+    'clashAchievementsClaimedSummary',
+  ).replaceAll('{claimed}', '$claimed').replaceAll('{total}', '$total');
+  String get clashAchievementsFilterAll => _t('clashAchievementsFilterAll');
+  String get clashAchievementsFilterInProgress =>
+      _t('clashAchievementsFilterInProgress');
+  String get clashAchievementsFilterCompleted =>
+      _t('clashAchievementsFilterCompleted');
+  String get clashAchievementsFilterClaimed =>
+      _t('clashAchievementsFilterClaimed');
+  String get clashAchievementsEmptyFilter => _t('clashAchievementsEmptyFilter');
+  String get clashAchievementsStatusInProgress =>
+      _t('clashAchievementsStatusInProgress');
+  String get clashAchievementsStatusClaim => _t('clashAchievementsStatusClaim');
+  String get clashAchievementsStatusClaimed =>
+      _t('clashAchievementsStatusClaimed');
+  String get clashAchievementsClaimAll => _t('clashAchievementsClaimAll');
+  String get clashAchievementsClaimSuccess =>
+      _t('clashAchievementsClaimSuccess');
+  String get clashAchievementsHomeTitle => _t('clashAchievementsHomeTitle');
+  String clashAchievementsHomePending(int count) =>
+      _t('clashAchievementsHomePending').replaceAll('{count}', '$count');
+  String get clashAchievementsHomeView => _t('clashAchievementsHomeView');
+  String clashAchievementsRewardCoins(int count) =>
+      _t('clashAchievementsRewardCoins').replaceAll('{count}', '$count');
+  String clashAchievementsRewardGems(int count) =>
+      _t('clashAchievementsRewardGems').replaceAll('{count}', '$count');
+  String clashAchievementsProgress(int current, int target) => _t(
+    'clashAchievementsProgress',
   ).replaceAll('{current}', '$current').replaceAll('{target}', '$target');
   String get clashTeamLineup7 => _t('clashTeamLineup7');
   String get clashTeamLineup11 => _t('clashTeamLineup11');

@@ -38,6 +38,10 @@ import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
 import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
 import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
+import 'package:eternal_xi/features/clash/achievements/data/clash_achievement_event_sink.dart';
+import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_local_datasource.dart';
+import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_repository.dart';
+import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_storage.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_local_datasource.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_repository.dart';
@@ -105,6 +109,8 @@ Future<void> main() async {
       await SharedPreferencesClashGachaPityBackend.create();
   final clashDailyMissionsBackend =
       await SharedPreferencesClashDailyMissionsBackend.create();
+  final clashAchievementsBackend =
+      await SharedPreferencesClashAchievementsBackend.create();
   final clashGachaTicketInventoryBackend =
       await SharedPreferencesClashGachaTicketInventoryBackend.create();
   final clashGachaTicketRepository = ClashGachaTicketRepository(
@@ -242,8 +248,14 @@ Future<void> main() async {
         Provider<ClashDailyMissionsStorageBackend>.value(
           value: clashDailyMissionsBackend,
         ),
+        Provider<ClashAchievementsStorageBackend>.value(
+          value: clashAchievementsBackend,
+        ),
         Provider<ClashDailyMissionEventSink>(
           create: (_) => ClashDailyMissionEventSink(),
+        ),
+        Provider<ClashAchievementEventSink>(
+          create: (_) => ClashAchievementEventSink(),
         ),
         Provider<ClashInventoryRepository>(
           create: (context) => ClashInventoryRepository(
@@ -265,6 +277,7 @@ Future<void> main() async {
             evolutionMaterialsRepository: context
                 .read<ClashEvolutionMaterialsRepository>(),
             missionEventSink: context.read<ClashDailyMissionEventSink>(),
+            achievementEventSink: context.read<ClashAchievementEventSink>(),
           ),
         ),
         ChangeNotifierProvider<ClashCardsController>(
@@ -315,6 +328,18 @@ Future<void> main() async {
             return repository;
           },
         ),
+        Provider<ClashAchievementsRepository>(
+          create: (context) {
+            final repository = ClashAchievementsRepository(
+              dataSource: ClashAchievementsLocalDataSource(),
+              storage: context.read<ClashAchievementsStorageBackend>(),
+              storyRepository: context.read<ClashStoryRepository>(),
+              grantService: context.read<ClashShopGrantService>(),
+            );
+            context.read<ClashAchievementEventSink>().bind(repository);
+            return repository;
+          },
+        ),
         Provider<ClashShopRepository>(
           create: (context) => ClashShopRepository(
             dataSource: ClashShopLocalDataSource(),
@@ -341,6 +366,7 @@ Future<void> main() async {
                 .read<ClashPlayerCollectionRepository>(),
             cardsRepository: context.read<ClashCardsRepository>(),
             missionEventSink: context.read<ClashDailyMissionEventSink>(),
+            achievementEventSink: context.read<ClashAchievementEventSink>(),
           ),
         ),
         Provider<ClashLineupsStorageBackend>.value(value: clashLineupsBackend),
