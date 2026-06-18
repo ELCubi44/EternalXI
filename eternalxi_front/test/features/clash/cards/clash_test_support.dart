@@ -34,6 +34,11 @@ import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_loc
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_progress.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_local_datasource.dart';
+import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_repository.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_storage.dart';
 import 'package:eternal_xi/features/clash/match/data/datasources/clash_match_items_local_datasource.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_item_inventory_entry.dart';
 
@@ -311,6 +316,7 @@ Future<ClashGachaRepository> createTestGachaRepository({
   ClashGachaPityStorageBackend? pityStorage,
   ClashGachaTicketRepository? ticketRepository,
   ClashGachaEngine? engine,
+  ClashDailyMissionEventSink? missionEventSink,
   DateTime Function()? now,
   int initialGems = 200,
 }) async {
@@ -343,6 +349,7 @@ Future<ClashGachaRepository> createTestGachaRepository({
     collectionRepository: collection,
     cardsRepository: cardsRepo,
     engine: engine,
+    missionEventSink: missionEventSink,
     now: now,
   );
 }
@@ -373,6 +380,7 @@ ClashPlayerCollectionRepository createTestCollectionRepository({
   ClashExpMaterialsRepository? expMaterialsRepository,
   ClashTechniqueBooksRepository? techniqueBooksRepository,
   ClashEvolutionMaterialsRepository? evolutionMaterialsRepository,
+  ClashDailyMissionEventSink? missionEventSink,
 }) {
   return ClashPlayerCollectionRepository(
     storage: storage ?? InMemoryClashPlayerCollectionBackend(),
@@ -384,6 +392,7 @@ ClashPlayerCollectionRepository createTestCollectionRepository({
     evolutionMaterialsRepository:
         evolutionMaterialsRepository ??
         createTestEvolutionMaterialsRepository(),
+    missionEventSink: missionEventSink,
   );
 }
 
@@ -462,6 +471,7 @@ Future<ClashShopRepository> createTestShopRepository({
   ClashPlayerCollectionRepository? collectionRepository,
   ClashGachaTicketRepository? ticketRepository,
   ClashShopGrantService? grantService,
+  ClashDailyMissionEventSink? missionEventSink,
   int initialCoins = 2000,
   int initialGems = 100,
 }) async {
@@ -493,5 +503,123 @@ Future<ClashShopRepository> createTestShopRepository({
           collectionRepository: collection,
           ticketRepository: tickets,
         ),
+    missionEventSink: missionEventSink,
   );
+}
+
+const clashTestDailyMissionsJson = '''
+{
+  "missions": [
+    {
+      "id": "daily-play-match",
+      "title": "Juega un partido",
+      "description": "Completa cualquier partido de Clash.",
+      "type": "playMatch",
+      "target": 1,
+      "reward": { "coins": 300 }
+    },
+    {
+      "id": "daily-win-match",
+      "title": "Gana un partido",
+      "description": "Consigue la victoria en un partido.",
+      "type": "winMatch",
+      "target": 1,
+      "reward": { "gems": 1 }
+    },
+    {
+      "id": "daily-summon",
+      "title": "Haz una invocación",
+      "description": "Realiza una invocación en cualquier banner.",
+      "type": "summon",
+      "target": 1,
+      "reward": { "coins": 500 }
+    },
+    {
+      "id": "daily-shop-purchase",
+      "title": "Compra en tienda",
+      "description": "Compra un producto en la tienda local.",
+      "type": "shopPurchase",
+      "target": 1,
+      "reward": {
+        "expMaterial": {
+          "id": "basic-training-manual",
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "daily-use-exp-material",
+      "title": "Usa un material de EXP",
+      "description": "Aplica un manual de entrenamiento a una carta.",
+      "type": "useExpMaterial",
+      "target": 1,
+      "reward": { "coins": 200 }
+    },
+    {
+      "id": "daily-upgrade-technique",
+      "title": "Mejora una supertécnica",
+      "description": "Usa un libro técnico en una supertécnica.",
+      "type": "upgradeTechnique",
+      "target": 1,
+      "reward": {
+        "techniqueBook": {
+          "id": "basic-technique-book",
+          "quantity": 1
+        }
+      }
+    }
+  ]
+}
+''';
+
+class TestMissionsDataSource extends ClashDailyMissionsLocalDataSource {
+  @override
+  Future<List<ClashDailyMission>> loadMissions() async {
+    return parseMissionsJson(clashTestDailyMissionsJson);
+  }
+}
+
+Future<
+  ({
+    ClashDailyMissionsRepository missions,
+    ClashDailyMissionEventSink sink,
+    ClashStoryRepository story,
+    ClashPlayerCollectionRepository collection,
+  })
+>
+createTestMissionsSetup({
+  ClashDailyMissionsStorageBackend? storage,
+  DateTime Function()? now,
+  int initialCoins = 0,
+  int initialGems = 0,
+}) async {
+  final sink = ClashDailyMissionEventSink();
+  final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
+  final collection = createTestCollectionRepository(
+    cardsRepository: cardsRepo,
+    missionEventSink: sink,
+  );
+  final storyProgress = InMemoryClashStoryProgressBackend();
+  await storyProgress.writeProgress(
+    ClashStoryProgress(walletCoins: initialCoins, walletGems: initialGems),
+  );
+  final story = ClashStoryRepository(
+    dataSource: ClashStoryLocalDataSource(),
+    progressStorage: storyProgress,
+    collectionRepository: collection,
+    ticketRepository: createTestTicketRepository(),
+  );
+  final tickets = createTestTicketRepository();
+  final missions = ClashDailyMissionsRepository(
+    dataSource: TestMissionsDataSource(),
+    storage: storage ?? InMemoryClashDailyMissionsBackend(),
+    storyRepository: story,
+    grantService: ClashShopGrantService(
+      collectionRepository: collection,
+      ticketRepository: tickets,
+    ),
+    now: now,
+  );
+  sink.bind(missions);
+  return (missions: missions, sink: sink, story: story, collection: collection);
 }

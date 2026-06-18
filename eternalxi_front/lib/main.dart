@@ -37,7 +37,10 @@ import 'package:eternal_xi/features/clash/shop/data/clash_shop_local_datasource.
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
 import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
-import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_local_datasource.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_repository.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_storage.dart';
 import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
@@ -99,6 +102,8 @@ Future<void> main() async {
       await SharedPreferencesClashGachaHistoryBackend.create();
   final clashGachaPityBackend =
       await SharedPreferencesClashGachaPityBackend.create();
+  final clashDailyMissionsBackend =
+      await SharedPreferencesClashDailyMissionsBackend.create();
   final clashGachaTicketInventoryBackend =
       await SharedPreferencesClashGachaTicketInventoryBackend.create();
   final clashGachaTicketRepository = ClashGachaTicketRepository(
@@ -233,6 +238,12 @@ Future<void> main() async {
         Provider<ClashGachaTicketRepository>.value(
           value: clashGachaTicketRepository,
         ),
+        Provider<ClashDailyMissionsStorageBackend>.value(
+          value: clashDailyMissionsBackend,
+        ),
+        Provider<ClashDailyMissionEventSink>(
+          create: (_) => ClashDailyMissionEventSink(),
+        ),
         Provider<ClashInventoryRepository>(
           create: (context) => ClashInventoryRepository(
             expMaterialsRepository: context.read<ClashExpMaterialsRepository>(),
@@ -252,6 +263,7 @@ Future<void> main() async {
                 .read<ClashTechniqueBooksRepository>(),
             evolutionMaterialsRepository: context
                 .read<ClashEvolutionMaterialsRepository>(),
+            missionEventSink: context.read<ClashDailyMissionEventSink>(),
           ),
         ),
         ChangeNotifierProvider<ClashCardsController>(
@@ -283,15 +295,31 @@ Future<void> main() async {
             storyRepository: context.read<ClashStoryRepository>(),
           ),
         ),
+        Provider<ClashShopGrantService>(
+          create: (context) => ClashShopGrantService(
+            collectionRepository: context
+                .read<ClashPlayerCollectionRepository>(),
+            ticketRepository: context.read<ClashGachaTicketRepository>(),
+          ),
+        ),
+        Provider<ClashDailyMissionsRepository>(
+          create: (context) {
+            final repository = ClashDailyMissionsRepository(
+              dataSource: ClashDailyMissionsLocalDataSource(),
+              storage: context.read<ClashDailyMissionsStorageBackend>(),
+              storyRepository: context.read<ClashStoryRepository>(),
+              grantService: context.read<ClashShopGrantService>(),
+            );
+            context.read<ClashDailyMissionEventSink>().bind(repository);
+            return repository;
+          },
+        ),
         Provider<ClashShopRepository>(
           create: (context) => ClashShopRepository(
             dataSource: ClashShopLocalDataSource(),
             storyRepository: context.read<ClashStoryRepository>(),
-            grantService: ClashShopGrantService(
-              collectionRepository: context
-                  .read<ClashPlayerCollectionRepository>(),
-              ticketRepository: context.read<ClashGachaTicketRepository>(),
-            ),
+            grantService: context.read<ClashShopGrantService>(),
+            missionEventSink: context.read<ClashDailyMissionEventSink>(),
           ),
         ),
         Provider<ClashGachaDailyStorageBackend>.value(
@@ -311,9 +339,9 @@ Future<void> main() async {
             collectionRepository: context
                 .read<ClashPlayerCollectionRepository>(),
             cardsRepository: context.read<ClashCardsRepository>(),
+            missionEventSink: context.read<ClashDailyMissionEventSink>(),
           ),
         ),
-        Provider<ClashLineupsStorageBackend>.value(value: clashLineupsBackend),
         Provider<ClashLineupsRepository>(
           create: (context) => ClashLineupsRepository(
             storage: context.read<ClashLineupsStorageBackend>(),

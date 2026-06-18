@@ -129,6 +129,21 @@ class AppLocalizations {
       'clashHomeProtagonistSquad': 'Equipo Eternal XI',
       'clashHomeProtagonistHint':
           'Vista provisional del equipo protagonista. La composición real llegará con la colección.',
+      'clashDailyMissionsTitle': 'Misiones diarias',
+      'clashDailyMissionsResetHint': 'Se reinician mañana',
+      'clashDailyMissionsCompletedSummary': 'Completadas {completed}/{total}',
+      'clashDailyMissionsClaimedSummary': 'Reclamadas {claimed}/{total}',
+      'clashDailyMissionsStatusInProgress': 'En progreso',
+      'clashDailyMissionsStatusClaim': 'Reclamar',
+      'clashDailyMissionsStatusClaimed': 'Reclamada',
+      'clashDailyMissionsClaimAll': 'Reclamar todas',
+      'clashDailyMissionsClaimSuccess': 'Recompensa reclamada',
+      'clashDailyMissionsHomeTitle': 'Misiones diarias',
+      'clashDailyMissionsHomePending': '{count} pendientes de reclamar',
+      'clashDailyMissionsHomeView': 'Ver',
+      'clashDailyMissionsRewardCoins': '{count} monedas',
+      'clashDailyMissionsRewardGems': '{count} gemas',
+      'clashDailyMissionsProgress': '{current}/{target}',
       'clashTeamLineup7': 'Alineación 7vs7',
       'clashTeamLineup11': 'Alineación 11vs11',
       'clashTeamCharacters': 'Personajes',
@@ -192,8 +207,7 @@ class AppLocalizations {
       'clashShopExchange': 'Intercambio',
       'clashShopGems': 'Gemas',
       'clashShopPacks': 'Packs',
-      'clashShopLocalDisclaimer':
-          'Tienda local de prueba · sin compras reales',
+      'clashShopLocalDisclaimer': 'Tienda local de prueba · sin compras reales',
       'clashShopWalletCoins': 'Monedas: {count}',
       'clashShopProductCost': '{count} monedas',
       'clashShopIncludes': 'Incluye:',
@@ -722,6 +736,21 @@ class AppLocalizations {
       'clashHomeProtagonistSquad': 'Eternal XI Squad',
       'clashHomeProtagonistHint':
           'Provisional view of the protagonist squad. The real roster arrives with collection.',
+      'clashDailyMissionsTitle': 'Daily missions',
+      'clashDailyMissionsResetHint': 'They reset tomorrow',
+      'clashDailyMissionsCompletedSummary': 'Completed {completed}/{total}',
+      'clashDailyMissionsClaimedSummary': 'Claimed {claimed}/{total}',
+      'clashDailyMissionsStatusInProgress': 'In progress',
+      'clashDailyMissionsStatusClaim': 'Claim',
+      'clashDailyMissionsStatusClaimed': 'Claimed',
+      'clashDailyMissionsClaimAll': 'Claim all',
+      'clashDailyMissionsClaimSuccess': 'Reward claimed',
+      'clashDailyMissionsHomeTitle': 'Daily missions',
+      'clashDailyMissionsHomePending': '{count} ready to claim',
+      'clashDailyMissionsHomeView': 'View',
+      'clashDailyMissionsRewardCoins': '{count} coins',
+      'clashDailyMissionsRewardGems': '{count} gems',
+      'clashDailyMissionsProgress': '{current}/{target}',
       'clashTeamLineup7': '7v7 lineup',
       'clashTeamLineup11': '11v11 lineup',
       'clashTeamCharacters': 'Characters',
@@ -785,8 +814,7 @@ class AppLocalizations {
       'clashShopExchange': 'Exchange',
       'clashShopGems': 'Gems',
       'clashShopPacks': 'Packs',
-      'clashShopLocalDisclaimer':
-          'Local test shop · no real purchases',
+      'clashShopLocalDisclaimer': 'Local test shop · no real purchases',
       'clashShopWalletCoins': 'Coins: {count}',
       'clashShopProductCost': '{count} coins',
       'clashShopIncludes': 'Includes:',
@@ -1329,6 +1357,34 @@ class AppLocalizations {
   String get clashHomeNews => _t('clashHomeNews');
   String get clashHomeProtagonistSquad => _t('clashHomeProtagonistSquad');
   String get clashHomeProtagonistHint => _t('clashHomeProtagonistHint');
+  String get clashDailyMissionsTitle => _t('clashDailyMissionsTitle');
+  String get clashDailyMissionsResetHint => _t('clashDailyMissionsResetHint');
+  String clashDailyMissionsCompletedSummary(int completed, int total) => _t(
+    'clashDailyMissionsCompletedSummary',
+  ).replaceAll('{completed}', '$completed').replaceAll('{total}', '$total');
+  String clashDailyMissionsClaimedSummary(int claimed, int total) => _t(
+    'clashDailyMissionsClaimedSummary',
+  ).replaceAll('{claimed}', '$claimed').replaceAll('{total}', '$total');
+  String get clashDailyMissionsStatusInProgress =>
+      _t('clashDailyMissionsStatusInProgress');
+  String get clashDailyMissionsStatusClaim =>
+      _t('clashDailyMissionsStatusClaim');
+  String get clashDailyMissionsStatusClaimed =>
+      _t('clashDailyMissionsStatusClaimed');
+  String get clashDailyMissionsClaimAll => _t('clashDailyMissionsClaimAll');
+  String get clashDailyMissionsClaimSuccess =>
+      _t('clashDailyMissionsClaimSuccess');
+  String get clashDailyMissionsHomeTitle => _t('clashDailyMissionsHomeTitle');
+  String clashDailyMissionsHomePending(int count) =>
+      _t('clashDailyMissionsHomePending').replaceAll('{count}', '$count');
+  String get clashDailyMissionsHomeView => _t('clashDailyMissionsHomeView');
+  String clashDailyMissionsRewardCoins(int count) =>
+      _t('clashDailyMissionsRewardCoins').replaceAll('{count}', '$count');
+  String clashDailyMissionsRewardGems(int count) =>
+      _t('clashDailyMissionsRewardGems').replaceAll('{count}', '$count');
+  String clashDailyMissionsProgress(int current, int target) => _t(
+    'clashDailyMissionsProgress',
+  ).replaceAll('{current}', '$current').replaceAll('{target}', '$target');
   String get clashTeamLineup7 => _t('clashTeamLineup7');
   String get clashTeamLineup11 => _t('clashTeamLineup11');
   String get clashTeamCharacters => _t('clashTeamCharacters');

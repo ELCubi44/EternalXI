@@ -2,6 +2,7 @@ import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/features/clash/missions/presentation/widgets/clash_daily_missions_home_card.dart';
 import 'package:eternal_xi/features/clash/presentation/widgets/clash_section_tile.dart';
 import 'package:eternal_xi/features/clash/story/presentation/clash_story_gate.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,8 @@ class ClashHomeScreen extends StatelessWidget {
             color: context.xiTextSecondary,
           ),
         ),
+        const SizedBox(height: 10),
+        const ClashDailyMissionsHomeCard(),
         const SizedBox(height: 10),
         ClashSectionTile(
           icon: Icons.menu_book_rounded,

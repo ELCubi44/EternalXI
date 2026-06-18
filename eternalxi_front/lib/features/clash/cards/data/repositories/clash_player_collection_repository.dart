@@ -17,6 +17,8 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_use_
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_level.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_progress_resolver.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_grant_result.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
+import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission_type.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_service.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_unlock_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
@@ -29,17 +31,20 @@ class ClashPlayerCollectionRepository {
     required ClashExpMaterialsRepository expMaterialsRepository,
     required ClashTechniqueBooksRepository techniqueBooksRepository,
     required ClashEvolutionMaterialsRepository evolutionMaterialsRepository,
+    ClashDailyMissionEventSink? missionEventSink,
   }) : _storage = storage,
        _cardsRepository = cardsRepository,
        _expMaterialsRepository = expMaterialsRepository,
        _techniqueBooksRepository = techniqueBooksRepository,
-       _evolutionMaterialsRepository = evolutionMaterialsRepository;
+       _evolutionMaterialsRepository = evolutionMaterialsRepository,
+       _missionEventSink = missionEventSink;
 
   final ClashPlayerCollectionStorageBackend _storage;
   final ClashCardsRepository _cardsRepository;
   final ClashExpMaterialsRepository _expMaterialsRepository;
   final ClashTechniqueBooksRepository _techniqueBooksRepository;
   final ClashEvolutionMaterialsRepository _evolutionMaterialsRepository;
+  final ClashDailyMissionEventSink? _missionEventSink;
 
   ClashPlayerCollectionSnapshot? _cache;
 
@@ -699,6 +704,8 @@ class ClashPlayerCollectionRepository {
     );
     await _save(snapshot.copyWith(cardProgress: progressMap));
 
+    await _missionEventSink?.record(ClashDailyMissionType.upgradeTechnique);
+
     return preview.withQuantityUsed(quantity);
   }
 
@@ -910,6 +917,8 @@ class ClashPlayerCollectionRepository {
     );
     progressMap[cardId] = updatedProgress;
     await _save(snapshot.copyWith(cardProgress: progressMap));
+
+    await _missionEventSink?.record(ClashDailyMissionType.useExpMaterial);
 
     return ClashExpMaterialUseResult(
       cardId: cardId,

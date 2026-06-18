@@ -1,3 +1,5 @@
+import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
+import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission_type.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_local_datasource.dart';
 import 'package:eternal_xi/features/clash/shop/domain/clash_shop_product.dart';
@@ -11,13 +13,16 @@ class ClashShopRepository {
     required ClashShopLocalDataSource dataSource,
     required ClashStoryRepository storyRepository,
     required ClashShopGrantService grantService,
+    ClashDailyMissionEventSink? missionEventSink,
   }) : _dataSource = dataSource,
        _storyRepository = storyRepository,
-       _grantService = grantService;
+       _grantService = grantService,
+       _missionEventSink = missionEventSink;
 
   final ClashShopLocalDataSource _dataSource;
   final ClashStoryRepository _storyRepository;
   final ClashShopGrantService _grantService;
+  final ClashDailyMissionEventSink? _missionEventSink;
 
   List<ClashShopProduct>? _productsCache;
 
@@ -80,6 +85,8 @@ class ClashShopRepository {
         newCoinBalance: walletCoins(),
       );
     }
+
+    await _missionEventSink?.record(ClashDailyMissionType.shopPurchase);
 
     return ClashShopPurchaseResult(
       success: true,

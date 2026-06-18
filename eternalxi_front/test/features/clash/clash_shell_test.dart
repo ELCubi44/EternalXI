@@ -12,6 +12,7 @@ import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_e
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
 import 'package:eternal_xi/features/clash/presentation/clash_navigation_controller.dart';
@@ -53,6 +54,7 @@ Future<
     ClashGachaRepository gachaRepository,
     ClashCardsController cardsController,
     ClashShopRepository shopRepository,
+    ClashDailyMissionsRepository missionsRepository,
   })
 >
 _shellDeps() async {
@@ -86,11 +88,16 @@ _shellDeps() async {
     initialCoins: 1500,
     initialGems: 50,
   );
+  final missionsSetup = await createTestMissionsSetup(
+    initialCoins: 1500,
+    initialGems: 50,
+  );
   return (
     storyController: ClashStoryController(storyRepository: storyRepo),
     gachaRepository: gachaRepo,
     cardsController: cardsController,
     shopRepository: shopRepo,
+    missionsRepository: missionsSetup.missions,
   );
 }
 
@@ -110,6 +117,9 @@ Future<(Widget app, ClashNavigationController nav)> _shellApp(
           ),
           Provider<ClashGachaRepository>.value(value: deps.gachaRepository),
           Provider<ClashShopRepository>.value(value: deps.shopRepository),
+          Provider<ClashDailyMissionsRepository>.value(
+            value: deps.missionsRepository,
+          ),
           ChangeNotifierProvider<ClashCardsController>.value(
             value: deps.cardsController,
           ),
@@ -207,12 +217,22 @@ void main() {
     });
 
     testWidgets('Inicio muestra Historia y Eventos', (tester) async {
+      tester.view.physicalSize = const Size(800, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
       final (app, _) = await _shellApp(auth());
       await tester.pumpWidget(app);
       await tester.pumpAndSettle();
 
+      await tester.scrollUntilVisible(
+        find.text('Historia'),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('Historia'), findsOneWidget);
       expect(find.text('Eventos'), findsOneWidget);
+      expect(find.text('Misiones diarias'), findsOneWidget);
     });
 
     testWidgets('cambiar a Equipo muestra alineaciones', (tester) async {

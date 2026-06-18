@@ -425,6 +425,16 @@ class ClashStoryRepository {
     );
   }
 
+  Future<void> addGems(int amount) async {
+    if (amount <= 0) {
+      return;
+    }
+    final progress = loadProgress();
+    await _saveProgress(
+      progress.copyWith(walletGems: progress.walletGems + amount),
+    );
+  }
+
   void clearCacheForTests() {
     _sagasCache = null;
     _chaptersCache.clear();

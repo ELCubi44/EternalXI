@@ -1,0 +1,62 @@
+{
+  "missions": [
+    {
+      "id": "daily-play-match",
+      "title": "Juega un partido",
+      "description": "Completa cualquier partido de Clash.",
+      "type": "playMatch",
+      "target": 1,
+      "reward": { "coins": 300 }
+    },
+    {
+      "id": "daily-win-match",
+      "title": "Gana un partido",
+      "description": "Consigue la victoria en un partido.",
+      "type": "winMatch",
+      "target": 1,
+      "reward": { "gems": 1 }
+    },
+    {
+      "id": "daily-summon",
+      "title": "Haz una invocación",
+      "description": "Realiza una invocación en cualquier banner.",
+      "type": "summon",
+      "target": 1,
+      "reward": { "coins": 500 }
+    },
+    {
+      "id": "daily-shop-purchase",
+      "title": "Compra en tienda",
+      "description": "Compra un producto en la tienda local.",
+      "type": "shopPurchase",
+      "target": 1,
+      "reward": {
+        "expMaterial": {
+          "id": "basic-training-manual",
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "daily-use-exp-material",
+      "title": "Usa un material de EXP",
+      "description": "Aplica un manual de entrenamiento a una carta.",
+      "type": "useExpMaterial",
+      "target": 1,
+      "reward": { "coins": 200 }
+    },
+    {
+      "id": "daily-upgrade-technique",
+      "title": "Mejora una supertécnica",
+      "description": "Usa un libro técnico en una supertécnica.",
+      "type": "upgradeTechnique",
+      "target": 1,
+      "reward": {
+        "techniqueBook": {
+          "id": "basic-technique-book",
+          "quantity": 1
+        }
+      }
+    }
+  ]
+}

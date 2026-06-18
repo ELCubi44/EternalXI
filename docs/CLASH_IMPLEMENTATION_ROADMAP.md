@@ -470,6 +470,17 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 **Pendiente:** límites, tienda eventos, backend, economía final.
 
+### Fase 28 — Misiones diarias locales
+
+- Submódulo `lib/features/clash/missions/` con catálogo `daily_missions.json`.
+- Persistencia local `clash_daily_missions_v1` con fecha `yyyy-MM-dd`.
+- Reset automático al cambiar el día local (sin servidor).
+- Progreso por eventos: partido, victoria, invocación, compra tienda, uso EXP, mejora supertécnica.
+- Reclamación local de recompensas (monedas, gemas, materiales, libros).
+- Pantalla `/clash/missions` y tarjeta resumen en Inicio Clash.
+
+**Pendiente:** misiones semanales, logros globales, backend, sincronización, notificaciones, pase de batalla.
+
 ---
 
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

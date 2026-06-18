@@ -14,6 +14,8 @@ import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_result.d
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_type.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_rarity_rates.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_ticket.dart';
+import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
+import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission_type.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 
 /// Orquesta tiradas gacha locales (Fase 23), historial (Fase 24), pity (Fase 25)
@@ -29,6 +31,7 @@ class ClashGachaRepository {
     required ClashPlayerCollectionRepository collectionRepository,
     required ClashCardsRepository cardsRepository,
     ClashGachaEngine? engine,
+    ClashDailyMissionEventSink? missionEventSink,
     DateTime Function()? now,
   }) : _dataSource = dataSource,
        _dailyStorage = dailyStorage,
@@ -39,6 +42,7 @@ class ClashGachaRepository {
        _collectionRepository = collectionRepository,
        _cardsRepository = cardsRepository,
        _engine = engine ?? ClashGachaEngine(),
+       _missionEventSink = missionEventSink,
        _now = now ?? DateTime.now;
 
   final ClashGachaLocalDataSource _dataSource;
@@ -50,6 +54,7 @@ class ClashGachaRepository {
   final ClashPlayerCollectionRepository _collectionRepository;
   final ClashCardsRepository _cardsRepository;
   final ClashGachaEngine _engine;
+  final ClashDailyMissionEventSink? _missionEventSink;
   final DateTime Function() _now;
 
   ClashGachaCatalog? _catalogCache;
@@ -278,6 +283,8 @@ class ClashGachaRepository {
         bannerName: banner.name,
       ),
     );
+
+    await _missionEventSink?.record(ClashDailyMissionType.summon);
 
     return ClashGachaPullOutcome(result: result);
   }
