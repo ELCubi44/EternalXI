@@ -533,4 +533,18 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 33 — Eventos de personaje local (MVP)
+
+**Estado:** implementada (local).
+
+- Catálogo en `assets/data/clash/character_events.json` (evento inicial «Entrenamiento de Arin»).
+- Sin backend, calendario servidor, tienda de evento ni cinemáticas reales.
+- Progreso en `clash_character_events_v1` con `firstClear` / `repeatRewards`.
+- Fases **story** (lectura) y **match** (7vs7 reutilizando motor existente).
+- Rutas `/clash/events` y anidadas; tarjeta «Eventos» en Inicio.
+
+**Pendiente:** eventos temporales con fecha servidor, tienda/moneda de evento, ranking, dificultades avanzadas, cinemáticas, backend.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

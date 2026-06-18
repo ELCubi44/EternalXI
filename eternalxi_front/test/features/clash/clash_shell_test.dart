@@ -16,6 +16,7 @@ import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_r
 import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_repository.dart';
 import 'package:eternal_xi/features/clash/news/data/clash_news_repository.dart';
 import 'package:eternal_xi/features/clash/gifts/data/clash_gifts_repository.dart';
+import 'package:eternal_xi/features/clash/events/data/clash_character_events_repository.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
@@ -63,6 +64,7 @@ Future<
     ClashAchievementsRepository achievementsRepository,
     ClashNewsRepository newsRepository,
     ClashGiftsRepository giftsRepository,
+    ClashCharacterEventsRepository eventsRepository,
   })
 >
 _shellDeps() async {
@@ -110,6 +112,7 @@ _shellDeps() async {
   );
   final newsSetup = await createTestNewsSetup();
   final giftsSetup = await createTestGiftsSetup();
+  final eventsSetup = await createTestEventsSetup();
   return (
     storyController: ClashStoryController(storyRepository: storyRepo),
     gachaRepository: gachaRepo,
@@ -120,6 +123,7 @@ _shellDeps() async {
     achievementsRepository: achievementsSetup.achievements,
     newsRepository: newsSetup.news,
     giftsRepository: giftsSetup.gifts,
+    eventsRepository: eventsSetup.events,
   );
 }
 
@@ -150,6 +154,9 @@ Future<(Widget app, ClashNavigationController nav)> _shellApp(
           ),
           Provider<ClashNewsRepository>.value(value: deps.newsRepository),
           Provider<ClashGiftsRepository>.value(value: deps.giftsRepository),
+          Provider<ClashCharacterEventsRepository>.value(
+            value: deps.eventsRepository,
+          ),
           ChangeNotifierProvider<ClashCardsController>.value(
             value: deps.cardsController,
           ),

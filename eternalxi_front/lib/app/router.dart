@@ -18,6 +18,11 @@ import 'package:eternal_xi/features/clash/inventory/presentation/screens/clash_i
 import 'package:eternal_xi/features/clash/achievements/presentation/screens/clash_achievements_screen.dart';
 import 'package:eternal_xi/features/clash/news/presentation/screens/clash_news_screen.dart';
 import 'package:eternal_xi/features/clash/gifts/presentation/screens/clash_gifts_screen.dart';
+import 'package:eternal_xi/features/clash/events/presentation/screens/clash_events_screen.dart';
+import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_detail_screen.dart';
+import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_story_stage_screen.dart';
+import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_match_prepare_screen.dart';
+import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_match_screen.dart';
 import 'package:eternal_xi/features/clash/missions/presentation/screens/clash_weekly_missions_screen.dart';
 import 'package:eternal_xi/features/clash/missions/presentation/screens/clash_daily_missions_screen.dart';
 import 'package:eternal_xi/features/clash/match/presentation/screens/clash_match_prepare_screen.dart';
@@ -153,6 +158,44 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: 'gifts',
               builder: (context, state) => const ClashGiftsScreen(),
+            ),
+            GoRoute(
+              path: 'events',
+              builder: (context, state) => const ClashEventsScreen(),
+              routes: [
+                GoRoute(
+                  path: ':eventId',
+                  builder: (context, state) => ClashEventDetailScreen(
+                    eventId: state.pathParameters['eventId'] ?? '',
+                  ),
+                  routes: [
+                    GoRoute(
+                      path: 'stage/:stageId',
+                      builder: (context, state) => ClashEventStoryStageScreen(
+                        eventId: state.pathParameters['eventId'] ?? '',
+                        stageId: state.pathParameters['stageId'] ?? '',
+                      ),
+                      routes: [
+                        GoRoute(
+                          path: 'prepare',
+                          builder: (context, state) =>
+                              ClashEventMatchPrepareScreen(
+                                eventId: state.pathParameters['eventId'] ?? '',
+                                stageId: state.pathParameters['stageId'] ?? '',
+                              ),
+                        ),
+                        GoRoute(
+                          path: 'match',
+                          builder: (context, state) => ClashEventMatchScreen(
+                            eventId: state.pathParameters['eventId'] ?? '',
+                            stageId: state.pathParameters['stageId'] ?? '',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
             ),
             GoRoute(
               path: 'summon/history',

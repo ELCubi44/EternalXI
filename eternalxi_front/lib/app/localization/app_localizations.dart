@@ -214,6 +214,42 @@ class AppLocalizations {
       'clashGiftsHomeNone': 'Sin regalos pendientes',
       'clashGiftsHomeView': 'Ver',
       'clashGiftsEmptyPending': 'No hay regalos pendientes',
+      'clashEventsTitle': 'Eventos',
+      'clashEventsEmpty': 'No hay eventos disponibles',
+      'clashEventsNotFound': 'Evento no encontrado',
+      'clashEventsEnter': 'Entrar',
+      'clashEventsProgress': 'Fases completadas {completed}/{total}',
+      'clashEventsStagesTitle': 'Fases',
+      'clashEventsFeaturedCard': 'Carta destacada: {cardId}',
+      'clashEventsStageLocked': 'Bloqueada',
+      'clashEventsStageAvailable': 'Disponible',
+      'clashEventsStageCompleted': 'Completada',
+      'clashEventsStageRead': 'Leer',
+      'clashEventsStageReadAgain': 'Leer de nuevo',
+      'clashEventsStagePrepare': 'Preparar partido',
+      'clashEventsStageRepeat': 'Repetir',
+      'clashEventsStageTypeStory': 'Historia',
+      'clashEventsStageTypeMatch': 'Partido 7vs7',
+      'clashEventsStageClearCount': 'Victorias: {count}',
+      'clashEventsFirstClear': 'Primera vez',
+      'clashEventsRepeatRewards': 'Repetición',
+      'clashEventsStoryComplete': 'Completar',
+      'clashEventsStoryPlaceholder': 'Continúa el entrenamiento.',
+      'clashEventsStageNotFound': 'Fase no encontrada',
+      'clashEventsRewardTitle': 'Recompensas',
+      'clashEventsRewardFirstClear': '¡Primera victoria!',
+      'clashEventsRewardRepeat': 'Recompensa de repetición',
+      'clashEventsRewardDuplicate': 'Copia duplicada: {cardId}',
+      'clashEventsRewardContinue': 'Continuar',
+      'clashEventsCardXpReward': 'EXP por carta',
+      'clashEventsHomeTitle': 'Eventos',
+      'clashEventsHomeAvailable': '{count} disponibles',
+      'clashEventsHomeNone': 'Sin eventos activos',
+      'clashEventsHomeView': 'Ver',
+      'clashEventsBack': 'Volver al evento',
+      'clashEventsMatchDefeatHint':
+          'No hay recompensas en derrota. Puedes reintentar.',
+      'clashEventsStageCompletedTitle': 'Fase completada: {title}',
       'clashTeamLineup7': 'Alineación 7vs7',
       'clashTeamLineup11': 'Alineación 11vs11',
       'clashTeamCharacters': 'Personajes',
@@ -891,6 +927,41 @@ class AppLocalizations {
       'clashGiftsHomeNone': 'No pending gifts',
       'clashGiftsHomeView': 'View',
       'clashGiftsEmptyPending': 'No pending gifts',
+      'clashEventsTitle': 'Events',
+      'clashEventsEmpty': 'No events available',
+      'clashEventsNotFound': 'Event not found',
+      'clashEventsEnter': 'Enter',
+      'clashEventsProgress': 'Stages completed {completed}/{total}',
+      'clashEventsStagesTitle': 'Stages',
+      'clashEventsFeaturedCard': 'Featured card: {cardId}',
+      'clashEventsStageLocked': 'Locked',
+      'clashEventsStageAvailable': 'Available',
+      'clashEventsStageCompleted': 'Completed',
+      'clashEventsStageRead': 'Read',
+      'clashEventsStageReadAgain': 'Read again',
+      'clashEventsStagePrepare': 'Prepare match',
+      'clashEventsStageRepeat': 'Repeat',
+      'clashEventsStageTypeStory': 'Story',
+      'clashEventsStageTypeMatch': '7v7 match',
+      'clashEventsStageClearCount': 'Clears: {count}',
+      'clashEventsFirstClear': 'First clear',
+      'clashEventsRepeatRewards': 'Repeat',
+      'clashEventsStoryComplete': 'Complete',
+      'clashEventsStoryPlaceholder': 'Continue the training.',
+      'clashEventsStageNotFound': 'Stage not found',
+      'clashEventsRewardTitle': 'Rewards',
+      'clashEventsRewardFirstClear': 'First clear!',
+      'clashEventsRewardRepeat': 'Repeat reward',
+      'clashEventsRewardDuplicate': 'Duplicate copy: {cardId}',
+      'clashEventsRewardContinue': 'Continue',
+      'clashEventsCardXpReward': 'Card XP',
+      'clashEventsHomeTitle': 'Events',
+      'clashEventsHomeAvailable': '{count} available',
+      'clashEventsHomeNone': 'No active events',
+      'clashEventsHomeView': 'View',
+      'clashEventsBack': 'Back to event',
+      'clashEventsMatchDefeatHint': 'No rewards on defeat. You can retry.',
+      'clashEventsStageCompletedTitle': 'Stage completed: {title}',
       'clashTeamLineup7': '7v7 lineup',
       'clashTeamLineup11': '11v11 lineup',
       'clashTeamCharacters': 'Characters',
@@ -1629,6 +1700,48 @@ class AppLocalizations {
   String get clashGiftsHomeNone => _t('clashGiftsHomeNone');
   String get clashGiftsHomeView => _t('clashGiftsHomeView');
   String get clashGiftsEmptyPending => _t('clashGiftsEmptyPending');
+  String get clashEventsTitle => _t('clashEventsTitle');
+  String get clashEventsEmpty => _t('clashEventsEmpty');
+  String get clashEventsNotFound => _t('clashEventsNotFound');
+  String get clashEventsEnter => _t('clashEventsEnter');
+  String clashEventsProgress(int completed, int total) => _t(
+    'clashEventsProgress',
+  ).replaceAll('{completed}', '$completed').replaceAll('{total}', '$total');
+  String get clashEventsStagesTitle => _t('clashEventsStagesTitle');
+  String clashEventsFeaturedCard(String cardId) =>
+      _t('clashEventsFeaturedCard').replaceAll('{cardId}', cardId);
+  String get clashEventsStageLocked => _t('clashEventsStageLocked');
+  String get clashEventsStageAvailable => _t('clashEventsStageAvailable');
+  String get clashEventsStageCompleted => _t('clashEventsStageCompleted');
+  String get clashEventsStageRead => _t('clashEventsStageRead');
+  String get clashEventsStageReadAgain => _t('clashEventsStageReadAgain');
+  String get clashEventsStagePrepare => _t('clashEventsStagePrepare');
+  String get clashEventsStageRepeat => _t('clashEventsStageRepeat');
+  String get clashEventsStageTypeStory => _t('clashEventsStageTypeStory');
+  String get clashEventsStageTypeMatch => _t('clashEventsStageTypeMatch');
+  String clashEventsStageClearCount(int count) =>
+      _t('clashEventsStageClearCount').replaceAll('{count}', '$count');
+  String get clashEventsFirstClear => _t('clashEventsFirstClear');
+  String get clashEventsRepeatRewards => _t('clashEventsRepeatRewards');
+  String get clashEventsStoryComplete => _t('clashEventsStoryComplete');
+  String get clashEventsStoryPlaceholder => _t('clashEventsStoryPlaceholder');
+  String get clashEventsStageNotFound => _t('clashEventsStageNotFound');
+  String get clashEventsRewardTitle => _t('clashEventsRewardTitle');
+  String get clashEventsRewardFirstClear => _t('clashEventsRewardFirstClear');
+  String get clashEventsRewardRepeat => _t('clashEventsRewardRepeat');
+  String clashEventsRewardDuplicate(String cardId) =>
+      _t('clashEventsRewardDuplicate').replaceAll('{cardId}', cardId);
+  String get clashEventsRewardContinue => _t('clashEventsRewardContinue');
+  String get clashEventsCardXpReward => _t('clashEventsCardXpReward');
+  String get clashEventsHomeTitle => _t('clashEventsHomeTitle');
+  String clashEventsHomeAvailable(int count) =>
+      _t('clashEventsHomeAvailable').replaceAll('{count}', '$count');
+  String get clashEventsHomeNone => _t('clashEventsHomeNone');
+  String get clashEventsHomeView => _t('clashEventsHomeView');
+  String get clashEventsBack => _t('clashEventsBack');
+  String get clashEventsMatchDefeatHint => _t('clashEventsMatchDefeatHint');
+  String clashEventsStageCompletedTitle(String title) =>
+      _t('clashEventsStageCompletedTitle').replaceAll('{title}', title);
   String get clashTeamLineup7 => _t('clashTeamLineup7');
   String get clashTeamLineup11 => _t('clashTeamLineup11');
   String get clashTeamCharacters => _t('clashTeamCharacters');

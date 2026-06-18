@@ -7,8 +7,8 @@ import 'package:eternal_xi/features/clash/achievements/presentation/widgets/clas
 import 'package:eternal_xi/features/clash/missions/presentation/widgets/clash_daily_missions_home_card.dart';
 import 'package:eternal_xi/features/clash/news/presentation/widgets/clash_news_home_card.dart';
 import 'package:eternal_xi/features/clash/gifts/presentation/widgets/clash_gifts_home_card.dart';
+import 'package:eternal_xi/features/clash/events/presentation/widgets/clash_events_home_card.dart';
 import 'package:eternal_xi/features/clash/presentation/widgets/clash_section_tile.dart';
-import 'package:eternal_xi/features/clash/story/presentation/clash_story_gate.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -46,18 +46,12 @@ class ClashHomeScreen extends StatelessWidget {
         const SizedBox(height: 10),
         const ClashGiftsHomeCard(),
         const SizedBox(height: 10),
+        const ClashEventsHomeCard(),
+        const SizedBox(height: 10),
         ClashSectionTile(
           icon: Icons.menu_book_rounded,
           title: l10n.clashHomeStory,
           onTap: () => context.push(AppRoutes.clashStory),
-        ),
-        const SizedBox(height: 10),
-        ClashSectionTile(
-          icon: Icons.celebration_rounded,
-          title: l10n.clashHomeEvents,
-          onTap: ClashStoryGate.isTeamUnlocked(context)
-              ? null
-              : () => ClashStoryGate.showEventsLockedSnackBar(context),
         ),
         const SizedBox(height: 10),
         ClashSectionTile(

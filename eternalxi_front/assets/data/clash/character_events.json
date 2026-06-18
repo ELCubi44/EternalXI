@@ -1,0 +1,64 @@
+{
+  "events": [
+    {
+      "id": "event-arin-training",
+      "title": "Entrenamiento de Arin",
+      "characterName": "Arin",
+      "description": "Supera el entrenamiento inicial y consigue recompensas para mejorar al equipo.",
+      "status": "available",
+      "featuredCardId": "exi-n-st-001",
+      "isPinned": true,
+      "stages": [
+        {
+          "id": "event-arin-stage-01",
+          "title": "Primer ejercicio",
+          "type": "story",
+          "storyText": "Arin llega al campo de entrenamiento de Clash. El entrenador le explica los fundamentos del modo y le pide completar un calentamiento mental antes del primer partido de prueba.",
+          "firstClearRewards": {
+            "coins": 300,
+            "expMaterial": {
+              "id": "basic-training-manual",
+              "quantity": 1
+            }
+          },
+          "repeatRewards": {}
+        },
+        {
+          "id": "event-arin-stage-02",
+          "title": "Pachanga de entrenamiento",
+          "type": "match",
+          "recommendedPower": 85,
+          "cardXpReward": 60,
+          "firstClearRewards": {
+            "featuredCardId": "exi-n-st-001",
+            "gems": 1
+          },
+          "repeatRewards": {
+            "expMaterial": {
+              "id": "basic-training-manual",
+              "quantity": 1
+            }
+          }
+        },
+        {
+          "id": "event-arin-stage-03",
+          "title": "El último esfuerzo",
+          "type": "match",
+          "recommendedPower": 110,
+          "cardXpReward": 90,
+          "firstClearRewards": {
+            "featuredCardId": "exi-n-st-001",
+            "featuredCardAsDuplicate": true,
+            "techniqueBook": {
+              "id": "basic-technique-book",
+              "quantity": 1
+            }
+          },
+          "repeatRewards": {
+            "coins": 300
+          }
+        }
+      ]
+    }
+  ]
+}

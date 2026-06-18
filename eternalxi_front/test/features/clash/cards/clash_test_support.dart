@@ -51,6 +51,10 @@ import 'package:eternal_xi/features/clash/gifts/data/clash_gifts_local_datasourc
 import 'package:eternal_xi/features/clash/gifts/data/clash_gifts_storage.dart';
 import 'package:eternal_xi/features/clash/gifts/data/clash_gifts_repository.dart';
 import 'package:eternal_xi/features/clash/gifts/domain/clash_gift.dart';
+import 'package:eternal_xi/features/clash/events/data/clash_character_events_local_datasource.dart';
+import 'package:eternal_xi/features/clash/events/data/clash_character_events_storage.dart';
+import 'package:eternal_xi/features/clash/events/data/clash_character_events_repository.dart';
+import 'package:eternal_xi/features/clash/events/domain/clash_character_event.dart';
 import 'package:eternal_xi/features/clash/news/domain/clash_news_item.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_weekly_mission.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
@@ -1161,5 +1165,124 @@ createTestGiftsSetup({
     evolutionMaterials: evolutionMaterials,
     tickets: tickets,
     storage: giftStorage,
+  );
+}
+
+const clashTestCharacterEventsJson = '''
+{
+  "events": [
+    {
+      "id": "event-arin-training",
+      "title": "Entrenamiento de Arin",
+      "characterName": "Arin",
+      "description": "Supera el entrenamiento inicial y consigue recompensas para mejorar al equipo.",
+      "status": "available",
+      "featuredCardId": "exi-n-st-001",
+      "isPinned": true,
+      "stages": [
+        {
+          "id": "event-arin-stage-01",
+          "title": "Primer ejercicio",
+          "type": "story",
+          "storyText": "Texto de prueba.",
+          "firstClearRewards": {
+            "coins": 300,
+            "expMaterial": { "id": "basic-training-manual", "quantity": 1 }
+          },
+          "repeatRewards": {}
+        },
+        {
+          "id": "event-arin-stage-02",
+          "title": "Pachanga de entrenamiento",
+          "type": "match",
+          "recommendedPower": 85,
+          "cardXpReward": 60,
+          "firstClearRewards": {
+            "featuredCardId": "exi-n-st-001",
+            "gems": 1
+          },
+          "repeatRewards": {
+            "expMaterial": { "id": "basic-training-manual", "quantity": 1 }
+          }
+        },
+        {
+          "id": "event-arin-stage-03",
+          "title": "El último esfuerzo",
+          "type": "match",
+          "recommendedPower": 110,
+          "cardXpReward": 90,
+          "firstClearRewards": {
+            "featuredCardId": "exi-n-st-001",
+            "featuredCardAsDuplicate": true,
+            "techniqueBook": { "id": "basic-technique-book", "quantity": 1 }
+          },
+          "repeatRewards": { "coins": 300 }
+        }
+      ]
+    }
+  ]
+}
+''';
+
+class TestCharacterEventsDataSource
+    extends ClashCharacterEventsLocalDataSource {
+  @override
+  Future<List<ClashCharacterEvent>> loadEvents() async {
+    return parseEventsJson(clashTestCharacterEventsJson);
+  }
+}
+
+Future<
+  ({
+    ClashCharacterEventsRepository events,
+    ClashStoryRepository story,
+    ClashPlayerCollectionRepository collection,
+    ClashExpMaterialsRepository expMaterials,
+    ClashTechniqueBooksRepository techniqueBooks,
+    ClashCharacterEventsStorageBackend storage,
+  })
+>
+createTestEventsSetup({
+  ClashCharacterEventsStorageBackend? storage,
+  int initialCoins = 0,
+  int initialGems = 0,
+}) async {
+  final expMaterials = createTestExpMaterialsRepository();
+  final techniqueBooks = createTestTechniqueBooksRepository();
+  final tickets = createTestTicketRepository();
+  final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
+  final collection = createTestCollectionRepository(
+    cardsRepository: cardsRepo,
+    expMaterialsRepository: expMaterials,
+    techniqueBooksRepository: techniqueBooks,
+  );
+  final storyProgress = InMemoryClashStoryProgressBackend();
+  await storyProgress.writeProgress(
+    ClashStoryProgress(walletCoins: initialCoins, walletGems: initialGems),
+  );
+  final story = ClashStoryRepository(
+    dataSource: ClashStoryLocalDataSource(),
+    progressStorage: storyProgress,
+    collectionRepository: collection,
+    ticketRepository: tickets,
+  );
+  final eventStorage = storage ?? InMemoryClashCharacterEventsBackend();
+  final events = ClashCharacterEventsRepository(
+    dataSource: TestCharacterEventsDataSource(),
+    storage: eventStorage,
+    storyRepository: story,
+    grantService: ClashShopGrantService(
+      collectionRepository: collection,
+      ticketRepository: tickets,
+    ),
+    collectionRepository: collection,
+  );
+  return (
+    events: events,
+    story: story,
+    collection: collection,
+    expMaterials: expMaterials,
+    techniqueBooks: techniqueBooks,
+    storage: eventStorage,
   );
 }

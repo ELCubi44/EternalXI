@@ -221,6 +221,25 @@ Diseñados para que el jugador **consiga y maximice** un personaje **sin gacha**
 
 Los eventos de personaje **no sustituyen** LR/XI de gacha; permiten camino F2P hacia **SR maximizado** de personajes concretos.
 
+### 6.4 Implementación Fase 33 (Flutter, local)
+
+MVP local de eventos de personaje sin backend ni calendario servidor:
+
+| Elemento | Detalle |
+|---|---|
+| **Catálogo** | `assets/data/clash/character_events.json` |
+| **Persistencia** | `clash_character_events_v1` (`completedStageIds`, `claimedFirstClearRewardKeys`, `clearCounts`, `lastPlayedAt`) |
+| **Recompensas** | `firstClearRewards` solo en el primer clear; `repeatRewards` en victorias posteriores (match) |
+| **Carta destacada** | `featuredCardId`: primera vez → owned; si ya poseída o `featuredCardAsDuplicate` → `duplicateCopies +1` |
+| **Fases story** | Pantalla de lectura + botón Completar |
+| **Fases match** | Preparación 7vs7 + motor existente; `cardXpReward` a la alineación activa al ganar |
+| **Rutas** | `/clash/events`, detalle, stage, prepare, match |
+| **Inicio** | Tarjeta compacta “Eventos” |
+
+Evento inicial: **Entrenamiento de Arin** (`event-arin-training`).
+
+**Pendiente:** calendario servidor, tienda de evento, moneda de evento, ranking, cinemáticas con imágenes, drops aleatorios complejos, LR/XI, backend.
+
 ---
 
 ## 7. Desafíos

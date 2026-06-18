@@ -18,7 +18,19 @@ class AppRoutes {
   static const clashWeeklyMissions = '/clash/weekly-missions';
   static const clashNews = '/clash/news';
   static const clashGifts = '/clash/gifts';
+  static const clashEvents = '/clash/events';
   static const clashStory = '/clash/story';
+
+  static String clashEventDetail(String eventId) => '/clash/events/$eventId';
+
+  static String clashEventStoryStage(String eventId, String stageId) =>
+      '/clash/events/$eventId/stage/$stageId';
+
+  static String clashEventStagePrepare(String eventId, String stageId) =>
+      '/clash/events/$eventId/stage/$stageId/prepare';
+
+  static String clashEventStageMatch(String eventId, String stageId) =>
+      '/clash/events/$eventId/stage/$stageId/match';
 
   static String clashStoryLevel(String levelId) =>
       '/clash/story/level/$levelId';

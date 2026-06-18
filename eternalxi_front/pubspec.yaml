@@ -86,6 +86,7 @@ flutter:
     - assets/data/clash/weekly_missions.json
     - assets/data/clash/news.json
     - assets/data/clash/gifts.json
+    - assets/data/clash/character_events.json
     - assets/data/clash/story/sagas.json
     - assets/data/clash/story/chapter_01.json
 
