@@ -368,9 +368,18 @@ void main() {
     }
 
     testWidgets('Home Clash muestra tarjeta Misiones diarias', (tester) async {
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
       final setup = await createTestMissionsSetup();
       await tester.pumpWidget(await _homeApp(setup.missions));
       await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Misiones diarias'),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('Misiones diarias'), findsOneWidget);
     });
 

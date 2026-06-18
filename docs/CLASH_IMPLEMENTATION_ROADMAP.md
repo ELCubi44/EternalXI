@@ -547,4 +547,25 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 34 — Limpieza de warnings Clash
+
+**Estado:** implementada.
+
+- Reducción de warnings/info del analyzer en `lib/features/clash` y `test/features/clash`.
+- Sin cambios de lógica ni nuevas features.
+
+---
+
+## Fase 35 — Hub visual Inicio Clash
+
+**Estado:** implementada (local).
+
+- Inicio Clash reorganizado como hub principal tipo Dokkan: cabecera con recursos, accesos destacados (Historia, Eventos, Equipo, Invocar), actividad diaria compacta, avisos/recompensas y evento destacado.
+- Widgets: `ClashHomeHeader`, `ClashHomePrimaryActionGrid`, `ClashHomeSectionTitle`, `ClashHomeCompactCard`, `ClashHomeFeaturedEventCard`, `ClashShopHomeCard`.
+- Sin cambios de rutas, progreso, grants ni backend.
+
+**Pendiente:** arte final, banners animados, carousel remoto, backend remoto.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

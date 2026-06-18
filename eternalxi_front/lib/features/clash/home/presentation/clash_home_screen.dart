@@ -1,126 +1,53 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
-import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
-import 'package:eternal_xi/features/clash/missions/presentation/widgets/clash_weekly_missions_home_card.dart';
 import 'package:eternal_xi/features/clash/achievements/presentation/widgets/clash_achievements_home_card.dart';
-import 'package:eternal_xi/features/clash/missions/presentation/widgets/clash_daily_missions_home_card.dart';
-import 'package:eternal_xi/features/clash/news/presentation/widgets/clash_news_home_card.dart';
 import 'package:eternal_xi/features/clash/gifts/presentation/widgets/clash_gifts_home_card.dart';
-import 'package:eternal_xi/features/clash/events/presentation/widgets/clash_events_home_card.dart';
-import 'package:eternal_xi/features/clash/presentation/widgets/clash_section_tile.dart';
+import 'package:eternal_xi/features/clash/home/presentation/widgets/clash_home_featured_event_card.dart';
+import 'package:eternal_xi/features/clash/home/presentation/widgets/clash_home_header.dart';
+import 'package:eternal_xi/features/clash/home/presentation/widgets/clash_home_primary_action_grid.dart';
+import 'package:eternal_xi/features/clash/home/presentation/widgets/clash_home_section_title.dart';
+import 'package:eternal_xi/features/clash/missions/presentation/widgets/clash_daily_missions_home_card.dart';
+import 'package:eternal_xi/features/clash/missions/presentation/widgets/clash_weekly_missions_home_card.dart';
+import 'package:eternal_xi/features/clash/news/presentation/widgets/clash_news_home_card.dart';
+import 'package:eternal_xi/features/clash/shop/presentation/widgets/clash_shop_home_card.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
+/// Hub principal del modo Clash (Fase 35).
 class ClashHomeScreen extends StatelessWidget {
   const ClashHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
 
-    return ClashScreenScaffold(
-      title: l10n.clashHomeTitle,
-      children: [
-        _ProtagonistSquadBlock(
-          title: l10n.clashHomeProtagonistSquad,
-          hint: l10n.clashHomeProtagonistHint,
-        ),
-        const SizedBox(height: 20),
-        Text(
-          l10n.clashHomeMainAccess,
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: context.xiTextSecondary,
-          ),
-        ),
-        const SizedBox(height: 10),
-        const ClashDailyMissionsHomeCard(),
-        const SizedBox(height: 10),
-        const ClashWeeklyMissionsHomeCard(),
-        const SizedBox(height: 10),
-        const ClashAchievementsHomeCard(),
-        const SizedBox(height: 10),
-        const ClashNewsHomeCard(),
-        const SizedBox(height: 10),
-        const ClashGiftsHomeCard(),
-        const SizedBox(height: 10),
-        const ClashEventsHomeCard(),
-        const SizedBox(height: 10),
-        ClashSectionTile(
-          icon: Icons.menu_book_rounded,
-          title: l10n.clashHomeStory,
-          onTap: () => context.push(AppRoutes.clashStory),
-        ),
-        const SizedBox(height: 10),
-        ClashSectionTile(
-          icon: Icons.flag_rounded,
-          title: l10n.clashHomeChallenges,
-        ),
-      ],
-    );
-  }
-}
-
-class _ProtagonistSquadBlock extends StatelessWidget {
-  const _ProtagonistSquadBlock({required this.title, required this.hint});
-
-  final String title;
-  final String hint;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: context.xiDivider),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            XiColors.royalBlue.withValues(alpha: 0.18),
-            XiColors.techCyan.withValues(alpha: 0.08),
-          ],
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Material(
+      color: Colors.transparent,
+      child: ListView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
         children: [
-          Text(
-            title,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: context.xiTextPrimary,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(
-              5,
-              (index) => CircleAvatar(
-                radius: 22,
-                backgroundColor: context.xiSurfaceInset,
-                child: Icon(
-                  Icons.person_rounded,
-                  color: XiColors.royalBlue.withValues(alpha: 0.7),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            hint,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: context.xiTextSecondary.withValues(alpha: 0.9),
-              height: 1.45,
-            ),
-          ),
-        ],
+        const ClashHomeHeader(),
+        const SizedBox(height: 20),
+        ClashHomeSectionTitle(l10n.clashHomePlaySection),
+        const ClashHomePrimaryActionGrid(),
+        const SizedBox(height: 20),
+        const ClashHomeFeaturedEventCard(),
+        const SizedBox(height: 20),
+        ClashHomeSectionTitle(l10n.clashHomeDailyActivity),
+        const ClashDailyMissionsHomeCard(),
+        const SizedBox(height: 8),
+        const ClashWeeklyMissionsHomeCard(),
+        const SizedBox(height: 8),
+        const ClashAchievementsHomeCard(),
+        const SizedBox(height: 20),
+        ClashHomeSectionTitle(l10n.clashHomeNoticesSection),
+        const ClashNewsHomeCard(),
+        const SizedBox(height: 8),
+        const ClashGiftsHomeCard(),
+        const SizedBox(height: 8),
+        const ClashShopHomeCard(),
+      ],
       ),
     );
   }

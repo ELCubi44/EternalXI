@@ -240,8 +240,8 @@ void main() {
 
       expect(find.text('Inicio'), findsOneWidget);
       expect(find.text('Equipo'), findsWidgets);
-      expect(find.text('Invocar'), findsOneWidget);
-      expect(find.text('Tienda'), findsOneWidget);
+      expect(find.text('Invocar'), findsWidgets);
+      expect(find.text('Tienda'), findsWidgets);
     });
 
     testWidgets('Inicio muestra Historia y Eventos', (tester) async {
@@ -317,7 +317,7 @@ void main() {
       await tester.pumpWidget(app);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Tienda'));
+      await tester.tap(find.text('Tienda').last);
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Tienda local de prueba'), findsOneWidget);
@@ -331,7 +331,7 @@ void main() {
       await tester.pumpWidget(await _routerApp(router, controller));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byIcon(Icons.swap_horiz_rounded));
+      await tester.tap(find.byIcon(Icons.swap_horiz_rounded).first);
       await tester.pumpAndSettle();
 
       expect(find.text('Entrar a Fantasy'), findsOneWidget);

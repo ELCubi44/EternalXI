@@ -427,9 +427,18 @@ void main() {
     }
 
     testWidgets('Home muestra Misiones semanales', (tester) async {
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
       final setup = await createTestWeeklyMissionsSetup();
       await tester.pumpWidget(await homeApp(setup.weekly));
       await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Misiones semanales'),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('Misiones semanales'), findsOneWidget);
     });
 

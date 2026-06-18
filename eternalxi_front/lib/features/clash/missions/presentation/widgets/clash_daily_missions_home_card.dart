@@ -1,6 +1,6 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
-import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/features/clash/home/presentation/widgets/clash_home_compact_card.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_repository.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission.dart';
 import 'package:flutter/material.dart';
@@ -38,52 +38,17 @@ class _ClashDailyMissionsHomeCardState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     final summary = _summary;
+    final subtitle = summary == null
+        ? null
+        : l10n.clashDailyMissionsHomePending(summary.claimableCount);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.assignment_turned_in_rounded,
-                  color: theme.colorScheme.primary,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    l10n.clashDailyMissionsHomeTitle,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            if (summary != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                l10n.clashDailyMissionsHomePending(summary.claimableCount),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: context.xiTextSecondary,
-                ),
-              ),
-            ],
-            const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton.tonal(
-                onPressed: () => context.push(AppRoutes.clashMissions),
-                child: Text(l10n.clashDailyMissionsHomeView),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return ClashHomeCompactCard(
+      icon: Icons.assignment_turned_in_rounded,
+      title: l10n.clashDailyMissionsHomeTitle,
+      subtitle: subtitle,
+      viewLabel: l10n.clashDailyMissionsHomeView,
+      onView: () => context.push(AppRoutes.clashMissions),
     );
   }
 }

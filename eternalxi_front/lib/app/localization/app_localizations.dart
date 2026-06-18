@@ -129,6 +129,21 @@ class AppLocalizations {
       'clashHomeProtagonistSquad': 'Equipo Eternal XI',
       'clashHomeProtagonistHint':
           'Vista provisional del equipo protagonista. La composición real llegará con la colección.',
+      'clashHomeHubTitle': 'Eternal Clash',
+      'clashHomeHubSubtitle': 'Historia, eventos y cartas',
+      'clashHomePlaySection': 'Jugar',
+      'clashHomeDailyActivity': 'Actividad diaria',
+      'clashHomeNoticesSection': 'Avisos y recompensas',
+      'clashHomePrimaryStoryDesc': 'Saga y niveles del prólogo',
+      'clashHomePrimaryEventsDesc': 'Eventos de personaje',
+      'clashHomePrimaryTeamDesc': 'Alineación 7vs7',
+      'clashHomePrimarySummonDesc': 'Invocar cartas',
+      'clashHomePrimaryLocked': 'Desbloquéalo en Historia.',
+      'clashHomeFeaturedEventTitle': 'Evento destacado',
+      'clashHomeFeaturedEventEnter': 'Entrar',
+      'clashHomeFeaturedEventProgress': '{completed}/{total} fases',
+      'clashHomeShopBalance': 'Monedas: {coins} · Gemas: {gems}',
+      'clashHomeShopView': 'Ver',
       'clashDailyMissionsTitle': 'Misiones diarias',
       'clashDailyMissionsResetHint': 'Se reinician mañana',
       'clashDailyMissionsCompletedSummary': 'Completadas {completed}/{total}',
@@ -842,6 +857,21 @@ class AppLocalizations {
       'clashHomeProtagonistSquad': 'Eternal XI Squad',
       'clashHomeProtagonistHint':
           'Provisional view of the protagonist squad. The real roster arrives with collection.',
+      'clashHomeHubTitle': 'Eternal Clash',
+      'clashHomeHubSubtitle': 'Story, events and cards',
+      'clashHomePlaySection': 'Play',
+      'clashHomeDailyActivity': 'Daily activity',
+      'clashHomeNoticesSection': 'Notices and rewards',
+      'clashHomePrimaryStoryDesc': 'Saga and prologue levels',
+      'clashHomePrimaryEventsDesc': 'Character events',
+      'clashHomePrimaryTeamDesc': '7vs7 lineup',
+      'clashHomePrimarySummonDesc': 'Summon cards',
+      'clashHomePrimaryLocked': 'Unlock it in Story.',
+      'clashHomeFeaturedEventTitle': 'Featured event',
+      'clashHomeFeaturedEventEnter': 'Enter',
+      'clashHomeFeaturedEventProgress': '{completed}/{total} stages',
+      'clashHomeShopBalance': 'Coins: {coins} · Gems: {gems}',
+      'clashHomeShopView': 'View',
       'clashDailyMissionsTitle': 'Daily missions',
       'clashDailyMissionsResetHint': 'They reset tomorrow',
       'clashDailyMissionsCompletedSummary': 'Completed {completed}/{total}',
@@ -1568,6 +1598,25 @@ class AppLocalizations {
   String get clashHomeNews => _t('clashHomeNews');
   String get clashHomeProtagonistSquad => _t('clashHomeProtagonistSquad');
   String get clashHomeProtagonistHint => _t('clashHomeProtagonistHint');
+  String get clashHomeHubTitle => _t('clashHomeHubTitle');
+  String get clashHomeHubSubtitle => _t('clashHomeHubSubtitle');
+  String get clashHomePlaySection => _t('clashHomePlaySection');
+  String get clashHomeDailyActivity => _t('clashHomeDailyActivity');
+  String get clashHomeNoticesSection => _t('clashHomeNoticesSection');
+  String get clashHomePrimaryStoryDesc => _t('clashHomePrimaryStoryDesc');
+  String get clashHomePrimaryEventsDesc => _t('clashHomePrimaryEventsDesc');
+  String get clashHomePrimaryTeamDesc => _t('clashHomePrimaryTeamDesc');
+  String get clashHomePrimarySummonDesc => _t('clashHomePrimarySummonDesc');
+  String get clashHomePrimaryLocked => _t('clashHomePrimaryLocked');
+  String get clashHomeFeaturedEventTitle => _t('clashHomeFeaturedEventTitle');
+  String get clashHomeFeaturedEventEnter => _t('clashHomeFeaturedEventEnter');
+  String clashHomeFeaturedEventProgress(int completed, int total) => _t(
+    'clashHomeFeaturedEventProgress',
+  ).replaceAll('{completed}', '$completed').replaceAll('{total}', '$total');
+  String clashHomeShopBalance(int coins, int gems) => _t(
+    'clashHomeShopBalance',
+  ).replaceAll('{coins}', '$coins').replaceAll('{gems}', '$gems');
+  String get clashHomeShopView => _t('clashHomeShopView');
   String get clashDailyMissionsTitle => _t('clashDailyMissionsTitle');
   String get clashDailyMissionsResetHint => _t('clashDailyMissionsResetHint');
   String clashDailyMissionsCompletedSummary(int completed, int total) => _t(
