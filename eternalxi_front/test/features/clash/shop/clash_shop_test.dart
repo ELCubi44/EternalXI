@@ -212,6 +212,42 @@ void main() {
       expect(find.textContaining('Gemas: 80'), findsOneWidget);
     });
 
+    testWidgets('tienda muestra aviso sin compras reales', (tester) async {
+      configureViewport(tester);
+      final repo = await createTestShopRepository();
+      await tester.pumpWidget(await shopApp(repo));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('Tienda local · sin compras reales'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('tienda muestra productos agrupados por categoría', (
+      tester,
+    ) async {
+      configureViewport(tester);
+      final repo = await createTestShopRepository();
+      await tester.pumpWidget(await shopApp(repo));
+      await tester.pumpAndSettle();
+      expect(find.text('Materiales'), findsWidgets);
+      expect(find.text('Técnicas'), findsWidgets);
+      expect(find.text('Evolución'), findsWidgets);
+      expect(find.text('Tickets'), findsWidgets);
+    });
+
+    testWidgets('product card muestra coste y recompensas', (tester) async {
+      configureViewport(tester);
+      final repo = await createTestShopRepository();
+      await tester.pumpWidget(await shopApp(repo));
+      await tester.pumpAndSettle();
+      expect(find.text('300 monedas'), findsOneWidget);
+      expect(
+        find.textContaining('Manual básico de entrenamiento ×2'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('tienda muestra productos', (tester) async {
       configureViewport(tester);
       final repo = await createTestShopRepository();
@@ -238,9 +274,12 @@ void main() {
         find.widgetWithText(FilledButton, 'Comprar').first,
       );
       expect(button.onPressed, isNull);
+      expect(find.text('Monedas insuficientes'), findsWidgets);
     });
 
-    testWidgets('confirmar compra muestra diálogo', (tester) async {
+    testWidgets('confirmar compra muestra diálogo con recompensas', (
+      tester,
+    ) async {
       configureViewport(tester);
       final repo = await createTestShopRepository(initialCoins: 1500);
       await tester.pumpWidget(await shopApp(repo));
@@ -249,9 +288,11 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Confirmar compra'), findsOneWidget);
       expect(find.textContaining('Pack entrenamiento básico'), findsWidgets);
+      expect(find.text('Recibirás:'), findsOneWidget);
+      expect(find.textContaining('Saldo tras compra'), findsOneWidget);
     });
 
-    testWidgets('compra exitosa muestra SnackBar', (tester) async {
+    testWidgets('compra exitosa muestra SnackBar con resumen', (tester) async {
       configureViewport(tester);
       final repo = await createTestShopRepository(initialCoins: 1500);
       await tester.pumpWidget(await shopApp(repo));
@@ -260,7 +301,12 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Comprar').last);
       await tester.pumpAndSettle();
-      expect(find.text('Compra realizada'), findsOneWidget);
+      expect(
+        find.textContaining(
+          'Compra realizada: +2 Manual básico de entrenamiento',
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('saldo se actualiza tras compra', (tester) async {
@@ -274,6 +320,16 @@ void main() {
       await tester.pumpAndSettle();
       await tester.pump(const Duration(milliseconds: 100));
       expect(find.textContaining('Monedas: 1200'), findsOneWidget);
+    });
+
+    testWidgets('no overflow en viewport móvil', (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      final repo = await createTestShopRepository();
+      await tester.pumpWidget(await shopApp(repo));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
     });
   });
 }

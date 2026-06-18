@@ -286,6 +286,9 @@ class AppLocalizations {
       'clashInventoryUseInSummon': 'Usar en Invocar',
       'clashInventoryMatchKitProvisional': 'Kit provisional por partido',
       'clashInventoryEmptyCategory': 'Sin unidades en esta categoría',
+      'clashInventoryEmptyFilter': 'No hay ítems en esta categoría',
+      'clashInventoryGoToShop': 'Ir a tienda',
+      'clashInventoryZeroQuantityHeader': 'Sin stock',
       'clashGachaLocalDisclaimer': 'Simulación local · sin compras reales',
       'clashGachaWalletGems': 'Gemas: {count}',
       'clashGachaWalletTickets': 'Tickets: {count}',
@@ -348,15 +351,23 @@ class AppLocalizations {
       'clashShopExchange': 'Intercambio',
       'clashShopGems': 'Gemas',
       'clashShopPacks': 'Packs',
-      'clashShopLocalDisclaimer': 'Tienda local de prueba · sin compras reales',
+      'clashShopLocalDisclaimer': 'Tienda local · sin compras reales',
       'clashShopWalletCoins': 'Monedas: {count}',
       'clashShopProductCost': '{count} monedas',
       'clashShopIncludes': 'Incluye:',
       'clashShopGrantLine': '{label} ×{count}',
       'clashShopBuyButton': 'Comprar',
+      'clashShopButtonDisabledCoins': 'Monedas insuficientes',
+      'clashShopSectionMaterials': 'Materiales',
+      'clashShopSectionTechniques': 'Técnicas',
+      'clashShopSectionEvolution': 'Evolución',
+      'clashShopSectionTickets': 'Tickets',
       'clashShopConfirmTitle': 'Confirmar compra',
       'clashShopConfirmMessage': '¿Comprar {name} por {cost} monedas?',
+      'clashShopConfirmBalanceAfter': 'Saldo tras compra: {count} monedas',
+      'clashShopConfirmRewards': 'Recibirás:',
       'clashShopPurchaseSuccess': 'Compra realizada',
+      'clashShopPurchaseSuccessDetail': 'Compra realizada: +{quantity} {label}',
       'clashShopInsufficientCoins': 'Monedas insuficientes',
       'clashBack': 'Volver',
       'clashCollectionTitle': 'Personajes',
@@ -1074,6 +1085,9 @@ class AppLocalizations {
       'clashInventoryUseInSummon': 'Use in Summon',
       'clashInventoryMatchKitProvisional': 'Provisional kit per match',
       'clashInventoryEmptyCategory': 'No units in this category',
+      'clashInventoryEmptyFilter': 'No items in this category',
+      'clashInventoryGoToShop': 'Go to shop',
+      'clashInventoryZeroQuantityHeader': 'Out of stock',
       'clashGachaLocalDisclaimer': 'Local simulation · no real purchases',
       'clashGachaWalletGems': 'Gems: {count}',
       'clashGachaWalletTickets': 'Tickets: {count}',
@@ -1136,15 +1150,24 @@ class AppLocalizations {
       'clashShopExchange': 'Exchange',
       'clashShopGems': 'Gems',
       'clashShopPacks': 'Packs',
-      'clashShopLocalDisclaimer': 'Local test shop · no real purchases',
+      'clashShopLocalDisclaimer': 'Local shop · no real purchases',
       'clashShopWalletCoins': 'Coins: {count}',
       'clashShopProductCost': '{count} coins',
       'clashShopIncludes': 'Includes:',
       'clashShopGrantLine': '{label} ×{count}',
       'clashShopBuyButton': 'Buy',
+      'clashShopButtonDisabledCoins': 'Insufficient coins',
+      'clashShopSectionMaterials': 'Materials',
+      'clashShopSectionTechniques': 'Techniques',
+      'clashShopSectionEvolution': 'Evolution',
+      'clashShopSectionTickets': 'Tickets',
       'clashShopConfirmTitle': 'Confirm purchase',
       'clashShopConfirmMessage': 'Buy {name} for {cost} coins?',
+      'clashShopConfirmBalanceAfter': 'Balance after purchase: {count} coins',
+      'clashShopConfirmRewards': 'You will receive:',
       'clashShopPurchaseSuccess': 'Purchase completed',
+      'clashShopPurchaseSuccessDetail':
+          'Purchase completed: +{quantity} {label}',
       'clashShopInsufficientCoins': 'Insufficient coins',
       'clashBack': 'Back',
       'clashCollectionTitle': 'Characters',
@@ -1940,6 +1963,10 @@ class AppLocalizations {
   String get clashInventoryMatchKitProvisional =>
       _t('clashInventoryMatchKitProvisional');
   String get clashInventoryEmptyCategory => _t('clashInventoryEmptyCategory');
+  String get clashInventoryEmptyFilter => _t('clashInventoryEmptyFilter');
+  String get clashInventoryGoToShop => _t('clashInventoryGoToShop');
+  String get clashInventoryZeroQuantityHeader =>
+      _t('clashInventoryZeroQuantityHeader');
   String get clashGachaLocalDisclaimer => _t('clashGachaLocalDisclaimer');
   String clashGachaWalletGems(int count) =>
       _t('clashGachaWalletGems').replaceAll('{count}', '$count');
@@ -2041,11 +2068,22 @@ class AppLocalizations {
     'clashShopGrantLine',
   ).replaceAll('{label}', label).replaceAll('{count}', '$count');
   String get clashShopBuyButton => _t('clashShopBuyButton');
+  String get clashShopButtonDisabledCoins => _t('clashShopButtonDisabledCoins');
+  String get clashShopSectionMaterials => _t('clashShopSectionMaterials');
+  String get clashShopSectionTechniques => _t('clashShopSectionTechniques');
+  String get clashShopSectionEvolution => _t('clashShopSectionEvolution');
+  String get clashShopSectionTickets => _t('clashShopSectionTickets');
   String get clashShopConfirmTitle => _t('clashShopConfirmTitle');
   String clashShopConfirmMessage(String name, int cost) => _t(
     'clashShopConfirmMessage',
   ).replaceAll('{name}', name).replaceAll('{cost}', '$cost');
+  String clashShopConfirmBalanceAfter(int count) =>
+      _t('clashShopConfirmBalanceAfter').replaceAll('{count}', '$count');
+  String get clashShopConfirmRewards => _t('clashShopConfirmRewards');
   String get clashShopPurchaseSuccess => _t('clashShopPurchaseSuccess');
+  String clashShopPurchaseSuccessDetail(int quantity, String label) => _t(
+    'clashShopPurchaseSuccessDetail',
+  ).replaceAll('{quantity}', '$quantity').replaceAll('{label}', label);
   String get clashShopInsufficientCoins => _t('clashShopInsufficientCoins');
   String get clashBack => _t('clashBack');
   String get clashCollectionTitle => _t('clashCollectionTitle');

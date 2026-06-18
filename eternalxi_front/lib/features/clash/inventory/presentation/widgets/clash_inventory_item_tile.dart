@@ -13,76 +13,101 @@ class ClashInventoryItemTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final accent = _accentFor(theme.colorScheme, item.category);
+    final isEmpty = item.quantity <= 0;
 
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: context.xiCardSurface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.xiDivider),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: theme.colorScheme.primaryContainer,
-            child: Icon(
-              _iconFor(item.category),
-              color: theme.colorScheme.onPrimaryContainer,
+    return Opacity(
+      opacity: isEmpty ? 0.55 : 1,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: context.xiCardSurface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: context.xiDivider),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: accent.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(_iconFor(item.category), color: accent),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        item.name,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item.name,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: accent.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          '×${item.quantity}',
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: accent,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    item.description,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: context.xiTextSecondary,
                     ),
-                    Text(
-                      '×${item.quantity}',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
+                  ),
+                  const SizedBox(height: 8),
+                  _CategoryBadge(
+                    label: _categoryLabel(l10n, item.category),
+                    color: accent,
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.touch_app_rounded,
+                        size: 14,
                         color: theme.colorScheme.primary,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  item.description,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: context.xiTextSecondary,
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          _usageLabel(l10n, item.usageHint),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  _categoryLabel(l10n, item.category),
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: context.xiTextSecondary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  _usageLabel(l10n, item.usageHint),
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -94,6 +119,16 @@ class ClashInventoryItemTile extends StatelessWidget {
       ClashInventoryCategory.evolution => Icons.military_tech_rounded,
       ClashInventoryCategory.match => Icons.medical_services_rounded,
       ClashInventoryCategory.tickets => Icons.confirmation_number_rounded,
+    };
+  }
+
+  static Color _accentFor(ColorScheme scheme, ClashInventoryCategory category) {
+    return switch (category) {
+      ClashInventoryCategory.exp => scheme.primary,
+      ClashInventoryCategory.technique => scheme.tertiary,
+      ClashInventoryCategory.evolution => scheme.secondary,
+      ClashInventoryCategory.match => scheme.error,
+      ClashInventoryCategory.tickets => scheme.primaryContainer,
     };
   }
 
@@ -115,5 +150,30 @@ class ClashInventoryItemTile extends StatelessWidget {
         l10n.clashInventoryUseDuringHalftime,
       ClashInventoryUsageHint.useInSummon => l10n.clashInventoryUseInSummon,
     };
+  }
+}
+
+class _CategoryBadge extends StatelessWidget {
+  const _CategoryBadge({required this.label, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
+      ),
+    );
   }
 }

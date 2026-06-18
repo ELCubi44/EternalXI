@@ -6,6 +6,7 @@ import 'package:eternal_xi/features/clash/inventory/domain/clash_inventory_item.
 import 'package:eternal_xi/features/clash/inventory/presentation/controllers/clash_inventory_controller.dart';
 import 'package:eternal_xi/features/clash/inventory/presentation/widgets/clash_inventory_category_section.dart';
 import 'package:eternal_xi/features/clash/inventory/presentation/widgets/clash_inventory_item_tile.dart';
+import 'package:eternal_xi/features/clash/presentation/clash_navigation_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -35,17 +36,29 @@ class _ClashInventoryScreenState extends State<ClashInventoryScreen> {
     super.dispose();
   }
 
+  void _goToShop(BuildContext context) {
+    try {
+      context.read<ClashNavigationController>().selectTab(3);
+    } catch (_) {}
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ClashInventoryController>.value(
       value: _controller,
-      child: const _ClashInventoryBody(),
+      child: _ClashInventoryBody(onGoToShop: () => _goToShop(context)),
     );
   }
 }
 
 class _ClashInventoryBody extends StatelessWidget {
-  const _ClashInventoryBody();
+  const _ClashInventoryBody({required this.onGoToShop});
+
+  final VoidCallback onGoToShop;
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +84,7 @@ class _ClashInventoryBody extends StatelessWidget {
         ),
         ClashInventoryLoadState.ready => _ReadyInventory(
           controller: controller,
+          onGoToShop: onGoToShop,
         ),
       },
     );
@@ -78,9 +92,10 @@ class _ClashInventoryBody extends StatelessWidget {
 }
 
 class _ReadyInventory extends StatelessWidget {
-  const _ReadyInventory({required this.controller});
+  const _ReadyInventory({required this.controller, required this.onGoToShop});
 
   final ClashInventoryController controller;
+  final VoidCallback onGoToShop;
 
   @override
   Widget build(BuildContext context) {
@@ -94,9 +109,12 @@ class _ReadyInventory extends StatelessWidget {
       children: [
         if (summary != null) _SummaryCard(summary: summary),
         const SizedBox(height: 16),
-        _FilterChips(
-          selected: controller.filter,
-          onSelected: controller.setFilter,
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: _FilterChips(
+            selected: controller.filter,
+            onSelected: controller.setFilter,
+          ),
         ),
         const SizedBox(height: 16),
         if (controller.filter == ClashInventoryFilter.all)
@@ -107,12 +125,7 @@ class _ReadyInventory extends StatelessWidget {
               showProvisionalNote: true,
             )
         else if (controller.visibleItems.isEmpty)
-          ClashInventoryCategorySection(
-            category: controller.filter.category!,
-            items: const [],
-            showProvisionalNote:
-                controller.filter == ClashInventoryFilter.match,
-          )
+          _EmptyFilterState(onGoToShop: onGoToShop)
         else ...[
           if (controller.filter == ClashInventoryFilter.match) ...[
             Text(
@@ -142,6 +155,7 @@ class _SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final theme = Theme.of(context);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -155,16 +169,18 @@ class _SummaryCard extends StatelessWidget {
         children: [
           Text(
             l10n.clashInventorySummaryTitle,
-            style: Theme.of(
-              context,
-            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             l10n.clashInventoryTotalItems(summary.totalQuantity),
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -175,6 +191,7 @@ class _SummaryCard extends StatelessWidget {
                     _categoryShortLabel(l10n, category),
                     summary.quantityFor(category),
                   ),
+                  color: _accentFor(theme.colorScheme, category),
                 ),
             ],
           ),
@@ -192,27 +209,39 @@ class _SummaryCard extends StatelessWidget {
       ClashInventoryCategory.tickets => l10n.clashInventoryTickets,
     };
   }
+
+  static Color _accentFor(ColorScheme scheme, ClashInventoryCategory category) {
+    return switch (category) {
+      ClashInventoryCategory.exp => scheme.primary,
+      ClashInventoryCategory.technique => scheme.tertiary,
+      ClashInventoryCategory.evolution => scheme.secondary,
+      ClashInventoryCategory.match => scheme.error,
+      ClashInventoryCategory.tickets => scheme.primaryContainer,
+    };
+  }
 }
 
 class _SummaryChip extends StatelessWidget {
-  const _SummaryChip({required this.label});
+  const _SummaryChip({required this.label, required this.color});
 
   final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: context.xiChipBackground,
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: context.xiDivider),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: Text(
         label,
-        style: Theme.of(
-          context,
-        ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
       ),
     );
   }
@@ -228,16 +257,18 @@ class _FilterChips extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+    return Row(
       children: [
-        for (final filter in ClashInventoryFilter.values)
-          FilterChip(
-            label: Text(_filterLabel(l10n, filter)),
-            selected: selected == filter,
-            onSelected: (_) => onSelected(filter),
+        for (final filter in ClashInventoryFilter.values) ...[
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: FilterChip(
+              label: Text(_filterLabel(l10n, filter)),
+              selected: selected == filter,
+              onSelected: (_) => onSelected(filter),
+            ),
           ),
+        ],
       ],
     );
   }
@@ -251,5 +282,47 @@ class _FilterChips extends StatelessWidget {
       ClashInventoryFilter.match => l10n.clashInventoryMatch,
       ClashInventoryFilter.tickets => l10n.clashInventoryTickets,
     };
+  }
+}
+
+class _EmptyFilterState extends StatelessWidget {
+  const _EmptyFilterState({required this.onGoToShop});
+
+  final VoidCallback onGoToShop;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: context.xiCardSurface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.xiDivider),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.inventory_2_outlined,
+            size: 48,
+            color: context.xiTextSecondary,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            l10n.clashInventoryEmptyFilter,
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(color: context.xiTextSecondary),
+          ),
+          const SizedBox(height: 16),
+          FilledButton.tonal(
+            onPressed: onGoToShop,
+            child: Text(l10n.clashInventoryGoToShop),
+          ),
+        ],
+      ),
+    );
   }
 }

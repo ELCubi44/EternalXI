@@ -605,4 +605,19 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 39 — Pulido visual Tienda e Inventario
+
+**Estado:** implementada (local).
+
+- Tienda con saldo monedas/gemas, aviso local y productos agrupados por sección.
+- Product cards con icono, coste, recompensas y botón con estado disabled/loading.
+- Diálogo de confirmación con saldo tras compra y SnackBar con resumen de grant.
+- Inventario con resumen, filtros horizontales, empty state con CTA a tienda.
+- Tiles con icono por categoría, cantidad destacada y hints de uso.
+- Sin cambios de costes, grants ni persistencia de inventario.
+
+**Pendiente:** tienda real, Play Billing, backend, límites, event shop.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

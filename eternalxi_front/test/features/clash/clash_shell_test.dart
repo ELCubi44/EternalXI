@@ -345,7 +345,10 @@ void main() {
       await tester.tap(find.text('Tienda').last);
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Tienda local de prueba'), findsOneWidget);
+      expect(
+        find.textContaining('Tienda local · sin compras reales'),
+        findsOneWidget,
+      );
       expect(find.textContaining('Monedas:'), findsOneWidget);
       expect(find.text('Comprar'), findsWidgets);
     });

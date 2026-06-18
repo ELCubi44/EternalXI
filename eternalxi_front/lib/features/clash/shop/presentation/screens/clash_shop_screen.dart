@@ -3,8 +3,10 @@ import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
 import 'package:eternal_xi/features/clash/shop/domain/clash_shop_product.dart';
 import 'package:eternal_xi/features/clash/shop/domain/clash_shop_purchase_error.dart';
+import 'package:eternal_xi/features/clash/shop/domain/clash_shop_section.dart';
 import 'package:eternal_xi/features/clash/shop/presentation/controllers/clash_shop_controller.dart';
 import 'package:eternal_xi/features/clash/shop/presentation/widgets/clash_shop_product_card.dart';
+import 'package:eternal_xi/features/clash/shop/presentation/widgets/clash_shop_purchase_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -35,24 +37,10 @@ class _ClashShopScreenState extends State<ClashShopScreen> {
 
   Future<void> _confirmPurchase(ClashShopProduct product) async {
     final l10n = context.l10n;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.clashShopConfirmTitle),
-        content: Text(
-          l10n.clashShopConfirmMessage(product.name, product.costCoins),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(l10n.clashShopBuyButton),
-          ),
-        ],
-      ),
+    final confirmed = await showClashShopPurchaseDialog(
+      context,
+      product: product,
+      currentCoins: _controller.walletCoins,
     );
     if (confirmed != true || !mounted) {
       return;
@@ -64,11 +52,14 @@ class _ClashShopScreenState extends State<ClashShopScreen> {
     }
 
     if (result.success) {
+      final message = result.grants.length == 1
+          ? l10n.clashShopPurchaseSuccessDetail(
+              result.grants.first.quantity,
+              result.grants.first.label,
+            )
+          : l10n.clashShopPurchaseSuccess;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text(l10n.clashShopPurchaseSuccess),
-        ),
+        SnackBar(behavior: SnackBarBehavior.floating, content: Text(message)),
       );
       return;
     }
@@ -113,7 +104,7 @@ class _ClashShopBody extends StatelessWidget {
       return Center(child: Text(controller.errorMessage!));
     }
 
-    final purchasing = controller.state == ClashShopLoadState.purchasing;
+    final grouped = controller.productsBySection;
 
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -126,25 +117,83 @@ class _ClashShopBody extends StatelessWidget {
           ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 8),
-        Text(
-          l10n.clashShopLocalDisclaimer,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: context.xiTextSecondary,
-            fontStyle: FontStyle.italic,
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: context.xiChipBackground,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: context.xiDivider),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.info_outline_rounded,
+                size: 16,
+                color: context.xiTextSecondary,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.clashShopLocalDisclaimer,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: context.xiTextSecondary,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 16),
         _WalletCard(coins: controller.walletCoins, gems: controller.walletGems),
-        const SizedBox(height: 16),
-        for (final product in controller.products) ...[
-          ClashShopProductCard(
-            product: product,
-            canAfford: controller.canAfford(product),
-            purchasing: purchasing,
-            onBuy: () => onPurchase(product),
-          ),
-          const SizedBox(height: 12),
+        const SizedBox(height: 20),
+        for (final section in ClashShopSection.displayOrder) ...[
+          if ((grouped[section] ?? const []).isNotEmpty) ...[
+            _SectionHeader(section: section),
+            const SizedBox(height: 10),
+            for (final product in grouped[section]!) ...[
+              ClashShopProductCard(
+                product: product,
+                canAfford: controller.canAfford(product),
+                purchasing: controller.isPurchasing(product.id),
+                onBuy: () => onPurchase(product),
+              ),
+              const SizedBox(height: 12),
+            ],
+            const SizedBox(height: 4),
+          ],
         ],
+      ],
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.section});
+
+  final ClashShopSection section;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final accent = section.accentColor(theme.colorScheme);
+    final label = switch (section) {
+      ClashShopSection.materials => l10n.clashShopSectionMaterials,
+      ClashShopSection.techniques => l10n.clashShopSectionTechniques,
+      ClashShopSection.evolution => l10n.clashShopSectionEvolution,
+      ClashShopSection.tickets => l10n.clashShopSectionTickets,
+    };
+
+    return Row(
+      children: [
+        Icon(section.icon, size: 20, color: accent),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
+        ),
       ],
     );
   }
@@ -159,6 +208,7 @@ class _WalletCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final theme = Theme.of(context);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -168,35 +218,34 @@ class _WalletCard extends StatelessWidget {
         border: Border.all(color: context.xiDivider),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
-              Icon(
-                Icons.paid_rounded,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                l10n.clashShopWalletCoins(coins),
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+              Icon(Icons.paid_rounded, color: theme.colorScheme.primary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.clashShopWalletCoins(coins),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Row(
             children: [
-              Icon(
-                Icons.diamond_rounded,
-                color: Theme.of(context).colorScheme.secondary,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                l10n.clashGachaWalletGems(gems),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: context.xiTextSecondary,
+              Icon(Icons.diamond_rounded, color: theme.colorScheme.secondary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.clashGachaWalletGems(gems),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: context.xiTextSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],

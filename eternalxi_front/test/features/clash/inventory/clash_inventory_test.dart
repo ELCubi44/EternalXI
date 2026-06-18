@@ -7,7 +7,9 @@ import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_e
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/inventory/data/clash_inventory_repository.dart';
 import 'package:eternal_xi/features/clash/inventory/domain/clash_inventory_category.dart';
+import 'package:eternal_xi/features/clash/inventory/domain/clash_inventory_item.dart';
 import 'package:eternal_xi/features/clash/inventory/presentation/screens/clash_inventory_screen.dart';
+import 'package:eternal_xi/features/clash/presentation/clash_navigation_controller.dart';
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
 import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
 import 'package:eternal_xi/features/clash/team/presentation/clash_team_screen.dart';
@@ -207,6 +209,17 @@ void main() {
       await tester.pumpAndSettle();
     }
 
+    Future<void> tapFilter(WidgetTester tester, String label) async {
+      final chip = find.widgetWithText(FilterChip, label);
+      final filterScroll = find.descendant(
+        of: find.byType(SingleChildScrollView).first,
+        matching: find.byType(Scrollable),
+      );
+      await tester.scrollUntilVisible(chip, 120, scrollable: filterScroll);
+      await tester.tap(chip);
+      await tester.pumpAndSettle();
+    }
+
     testWidgets('pantalla inventario muestra título', (tester) async {
       await pumpInventory(tester);
       expect(find.text('Inventario'), findsOneWidget);
@@ -250,7 +263,7 @@ void main() {
 
     testWidgets('filtro EXP solo muestra EXP', (tester) async {
       await pumpInventory(tester);
-      await tester.tap(find.widgetWithText(FilterChip, 'Materiales EXP'));
+      await tapFilter(tester, 'Materiales EXP');
       await tester.pumpAndSettle();
       expect(find.text('Manual básico de entrenamiento'), findsOneWidget);
       expect(find.text('Libro técnico básico'), findsNothing);
@@ -260,7 +273,7 @@ void main() {
 
     testWidgets('filtro Técnicas solo muestra libros', (tester) async {
       await pumpInventory(tester);
-      await tester.tap(find.widgetWithText(FilterChip, 'Libros de técnica'));
+      await tapFilter(tester, 'Libros de técnica');
       await tester.pumpAndSettle();
       expect(find.text('Libro técnico básico'), findsOneWidget);
       expect(find.text('Manual básico de entrenamiento'), findsNothing);
@@ -268,9 +281,7 @@ void main() {
 
     testWidgets('filtro Evolución solo muestra insignias', (tester) async {
       await pumpInventory(tester);
-      await tester.tap(
-        find.widgetWithText(FilterChip, 'Materiales de evolución'),
-      );
+      await tapFilter(tester, 'Materiales de evolución');
       await tester.pumpAndSettle();
       expect(find.text('Insignia R'), findsOneWidget);
       expect(find.text('Manual básico de entrenamiento'), findsNothing);
@@ -280,7 +291,7 @@ void main() {
       tester,
     ) async {
       await pumpInventory(tester);
-      await tester.tap(find.widgetWithText(FilterChip, 'Objetos de partido'));
+      await tapFilter(tester, 'Objetos de partido');
       await tester.pumpAndSettle();
       expect(find.text('Bebida técnica test'), findsOneWidget);
       expect(find.text('Manual básico de entrenamiento'), findsNothing);
@@ -334,5 +345,114 @@ void main() {
       expect(find.text('Resumen'), findsOneWidget);
       expect(router.state.uri.path, '/clash/inventory');
     });
+
+    testWidgets('muestra total de ítems en resumen', (tester) async {
+      await pumpInventory(tester);
+      expect(find.textContaining('Total de unidades:'), findsOneWidget);
+    });
+
+    testWidgets('muestra chips de categorías en resumen', (tester) async {
+      await pumpInventory(tester);
+      expect(find.textContaining('Materiales EXP:'), findsOneWidget);
+      expect(find.textContaining('Tickets:'), findsWidgets);
+    });
+
+    testWidgets('filtro Tickets funciona', (tester) async {
+      await pumpInventory(tester);
+      await tapFilter(tester, 'Tickets');
+      await tester.pumpAndSettle();
+      expect(find.text('Ticket de invocación inicial'), findsOneWidget);
+      expect(find.text('Manual básico de entrenamiento'), findsNothing);
+    });
+
+    testWidgets('item tile muestra cantidad y uso', (tester) async {
+      await pumpInventory(tester);
+      expect(find.textContaining('×'), findsWidgets);
+      expect(find.text('Usar desde detalle de carta'), findsWidgets);
+      expect(find.text('Usar en Invocar'), findsOneWidget);
+    });
+
+    testWidgets('cantidad 0 se muestra atenuada', (tester) async {
+      final booksInventory = InMemoryClashTechniqueBookInventoryBackend();
+      await booksInventory.writeSnapshot(
+        const ClashTechniqueBookInventorySnapshot(
+          quantities: {'master-technique-book': 0},
+        ),
+      );
+      await tester.pumpWidget(
+        inventoryApp(
+          createTestInventoryRepository(
+            techniqueBooksRepository: createTestTechniqueBooksRepository(
+              inventoryStorage: booksInventory,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Libro técnico maestro'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Libro técnico maestro'), findsOneWidget);
+      expect(find.text('Sin stock'), findsOneWidget);
+    });
+
+    testWidgets('filtro vacío muestra empty state y CTA va a tienda', (
+      tester,
+    ) async {
+      final nav = ClashNavigationController();
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<ClashNavigationController>.value(value: nav),
+            Provider<ClashInventoryRepository>.value(
+              value: _ExpOnlyInventoryRepository(),
+            ),
+          ],
+          child: MaterialApp(
+            locale: const Locale('es'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            home: const ClashInventoryScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tapFilter(tester, 'Libros de técnica');
+      expect(find.text('No hay ítems en esta categoría'), findsOneWidget);
+      expect(find.text('Ir a tienda'), findsOneWidget);
+      await tester.tap(find.text('Ir a tienda'));
+      await tester.pump();
+      expect(nav.tabIndex, 3);
+    });
+
+    testWidgets('no overflow en viewport móvil', (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(inventoryApp(createTestInventoryRepository()));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    });
   });
+}
+
+class _ExpOnlyInventoryRepository extends ClashInventoryRepository {
+  _ExpOnlyInventoryRepository()
+    : super(
+        expMaterialsRepository: createTestExpMaterialsRepository(),
+        techniqueBooksRepository: createTestTechniqueBooksRepository(),
+        evolutionMaterialsRepository: createTestEvolutionMaterialsRepository(),
+        ticketRepository: createTestTicketRepository(),
+      );
+
+  @override
+  Future<List<ClashInventoryItem>> fetchAllItems() async {
+    final all = await super.fetchAllItems();
+    return all
+        .where((item) => item.category == ClashInventoryCategory.exp)
+        .toList(growable: false);
+  }
 }
