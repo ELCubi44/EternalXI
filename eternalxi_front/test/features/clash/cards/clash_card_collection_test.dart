@@ -152,8 +152,15 @@ Widget _routerApp(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  void configureViewport(WidgetTester tester) {
+    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+  }
+
   group('ClashCardCollectionScreen', () {
     testWidgets('renderiza cartas cargadas', (tester) async {
+      configureViewport(tester);
       final ready = await _readyController();
       final controller = ready.$1;
       await tester.pumpWidget(
@@ -169,11 +176,96 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Marco Reyes'), findsOneWidget);
-      expect(find.textContaining('PWR'), findsOneWidget);
+      expect(find.text('Marco Reyes'), findsWidgets);
+      expect(find.textContaining('PWR'), findsWidgets);
+      expect(find.textContaining('1 cartas'), findsOneWidget);
+    });
+
+    testWidgets('muestra cabecera con potencia y filtros', (tester) async {
+      configureViewport(tester);
+      final ready = await _readyController();
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ClashCardsController>.value(
+          value: ready.$1,
+          child: MaterialApp(
+            locale: const Locale('es'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            home: const Scaffold(body: ClashCardCollectionScreen()),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Rareza:'), findsOneWidget);
+      expect(find.textContaining('Posición:'), findsOneWidget);
+      expect(find.text('Lv 1'), findsOneWidget);
+    });
+
+    testWidgets('tile muestra rareza nivel y potencia', (tester) async {
+      configureViewport(tester);
+      final ready = await _readyController();
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ClashCardsController>.value(
+          value: ready.$1,
+          child: MaterialApp(
+            locale: const Locale('es'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            home: const Scaffold(body: ClashCardCollectionScreen()),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('N'), findsWidgets);
+      expect(find.text('Lv 1'), findsOneWidget);
+      expect(find.byType(ClashCardTile), findsOneWidget);
+    });
+
+    testWidgets('filtro sin resultados muestra estado vacío', (tester) async {
+      configureViewport(tester);
+      final ready = await _readyController();
+      final controller = ready.$1;
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ClashCardsController>.value(
+          value: controller,
+          child: MaterialApp(
+            locale: const Locale('es'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            home: const Scaffold(body: ClashCardCollectionScreen()),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      controller.setSearchQuery('zzzz-no-match');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sin resultados'), findsOneWidget);
+      expect(find.text('Limpiar filtros'), findsOneWidget);
+    });
+
+    testWidgets('sin overflow en colección básica', (tester) async {
+      configureViewport(tester);
+      final ready = await _readyController();
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ClashCardsController>.value(
+          value: ready.$1,
+          child: MaterialApp(
+            locale: const Locale('es'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            home: const Scaffold(body: ClashCardCollectionScreen()),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('pulsar carta abre detalle', (tester) async {
+      configureViewport(tester);
       final (
         controller,
         collectionRepo,
@@ -204,7 +296,57 @@ void main() {
   });
 
   group('ClashCardDetailScreen', () {
+    testWidgets('muestra cabecera stats y secciones', (tester) async {
+      configureViewport(tester);
+      final (
+        controller,
+        collectionRepo,
+        materialsRepo,
+        techniqueBooksRepo,
+        evolutionMaterialsRepo,
+      ) = await _readyController();
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('es'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: MultiProvider(
+            providers: [
+              ChangeNotifierProvider<ClashCardsController>.value(
+                value: controller,
+              ),
+              Provider<ClashPlayerCollectionRepository>.value(
+                value: collectionRepo,
+              ),
+              Provider<ClashExpMaterialsRepository>.value(value: materialsRepo),
+              Provider<ClashTechniqueBooksRepository>.value(
+                value: techniqueBooksRepo,
+              ),
+              Provider<ClashEvolutionMaterialsRepository>.value(
+                value: evolutionMaterialsRepo,
+              ),
+            ],
+            child: const Scaffold(
+              body: ClashCardDetailScreen(cardId: 'ui-test-1'),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Detalle de carta'), findsOneWidget);
+      expect(find.text('Marco Reyes'), findsWidgets);
+      expect(find.text('Estadísticas'), findsOneWidget);
+      expect(find.text('Experiencia'), findsOneWidget);
+      expect(find.text('Supertécnica'), findsOneWidget);
+      expect(find.text('Mejorar'), findsOneWidget);
+      expect(find.text('Evolución'), findsOneWidget);
+      expect(find.text('Árbol de habilidades'), findsOneWidget);
+      expect(find.text('Muralla Eterna'), findsOneWidget);
+    });
+
     testWidgets('carta inexistente muestra error seguro', (tester) async {
+      configureViewport(tester);
       final (
         controller,
         collectionRepo,

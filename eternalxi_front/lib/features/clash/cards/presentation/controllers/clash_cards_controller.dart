@@ -30,6 +30,21 @@ class ClashCardsController extends ChangeNotifier {
   ClashCardsLoadState get state => _state;
   String? get errorMessage => _errorMessage;
   List<ClashCardCatalogEntry> get visibleCards => _visibleCards;
+  int get ownedCount => _allCards.length;
+  ClashCardCatalogEntry? get strongestOwned {
+    if (_allCards.isEmpty) {
+      return null;
+    }
+    return _allCards.reduce((a, b) => a.power >= b.power ? a : b);
+  }
+
+  int get totalOwnedPower =>
+      _allCards.fold<int>(0, (sum, entry) => sum + entry.power);
+  bool get hasActiveFilters =>
+      _searchQuery.trim().isNotEmpty ||
+      _rarityFilter != null ||
+      _positionFilter != null ||
+      _styleFilter != null;
   String get searchQuery => _searchQuery;
   ClashRarity? get rarityFilter => _rarityFilter;
   ClashPosition? get positionFilter => _positionFilter;
@@ -99,6 +114,15 @@ class ClashCardsController extends ChangeNotifier {
 
   void toggleSortDirection() {
     _sortDescending = !_sortDescending;
+    _applyFilters();
+    notifyListeners();
+  }
+
+  void clearFilters() {
+    _searchQuery = '';
+    _rarityFilter = null;
+    _positionFilter = null;
+    _styleFilter = null;
     _applyFilters();
     notifyListeners();
   }

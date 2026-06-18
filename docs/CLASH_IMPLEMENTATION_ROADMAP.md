@@ -568,4 +568,18 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 36 — Pulido visual colección y detalle de cartas
+
+**Estado:** implementada (local).
+
+- Cabecera de colección con total, potencia y carta más fuerte; filtros activos visibles.
+- Tiles con borde por rareza, nivel, potencia, duplicados, árbol y badge evolucionada.
+- Portrait placeholder mejorado con iniciales y rareza/posición.
+- Detalle reorganizado en secciones: cabecera, stats con barras, supertécnicas, EXP, evolución y árbol.
+- Sin cambios de lógica de progresión ni economía.
+
+**Pendiente:** artes LR/XI reales, imágenes remotas, animaciones, filtros avanzados nuevos, backend.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

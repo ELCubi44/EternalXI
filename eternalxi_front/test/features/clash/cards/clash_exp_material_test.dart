@@ -329,6 +329,7 @@ void main() {
 
   group('UI materiales EXP', () {
     testWidgets('detalle muestra sección Mejorar', (tester) async {
+      configureClashDetailViewport(tester);
       final setup = await _setupRepos();
       await tester.pumpWidget(
         await _detailApp(
@@ -340,11 +341,13 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      await scrollClashDetailUntilVisible(tester, find.text('Mejorar'));
       expect(find.text('Mejorar'), findsOneWidget);
       expect(find.text('Manual básico de entrenamiento'), findsOneWidget);
     });
 
     testWidgets('muestra materiales y cantidades', (tester) async {
+      configureClashDetailViewport(tester);
       final setup = await _setupRepos();
       await tester.pumpWidget(
         await _detailApp(
@@ -356,12 +359,17 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      await scrollClashDetailUntilVisible(
+        tester,
+        find.text('Manual básico de entrenamiento'),
+      );
       expect(find.text('Cantidad: 5'), findsOneWidget);
       expect(find.text('Cantidad: 2'), findsOneWidget);
       expect(find.text('Cantidad: 1'), findsOneWidget);
     });
 
     testWidgets('botón Usar deshabilitado con cantidad 0', (tester) async {
+      configureClashDetailViewport(tester);
       final inventory = InMemoryClashExpMaterialInventoryBackend();
       final setup = await _setupRepos(inventoryStorage: inventory);
       await setup.materials.consumeMaterial(
@@ -379,18 +387,13 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      await scrollClashDetailUntilVisible(tester, find.text('Usar 1').first);
       final useButtons = find.widgetWithText(FilledButton, 'Usar 1');
       expect(tester.widget<FilledButton>(useButtons.first).onPressed, isNull);
     });
 
     testWidgets('usar material actualiza EXP/nivel', (tester) async {
-      tester.view.physicalSize = const Size(800, 1400);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        tester.view.resetPhysicalSize();
-        tester.view.resetDevicePixelRatio();
-      });
-
+      configureClashDetailViewport(tester);
       final setup = await _setupRepos();
       await tester.pumpWidget(
         await _detailApp(
@@ -415,13 +418,7 @@ void main() {
     });
 
     testWidgets('muestra mensaje de subida de nivel', (tester) async {
-      tester.view.physicalSize = const Size(800, 1400);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        tester.view.resetPhysicalSize();
-        tester.view.resetDevicePixelRatio();
-      });
-
+      configureClashDetailViewport(tester);
       final storage = InMemoryClashPlayerCollectionBackend();
       await storage.writeSnapshot(
         ClashPlayerCollectionSnapshot(
@@ -464,6 +461,7 @@ void main() {
     });
 
     testWidgets('nivel máximo deshabilita mejorar', (tester) async {
+      configureClashDetailViewport(tester);
       final setup = await _setupRepos();
       await setup.collection.grantMatchXp(
         cardIds: [_card.id],
@@ -480,6 +478,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      await scrollClashDetailUntilVisible(
+        tester,
+        find.text('Nivel máximo alcanzado. No se pueden usar materiales.'),
+      );
       expect(
         find.text('Nivel máximo alcanzado. No se pueden usar materiales.'),
         findsOneWidget,

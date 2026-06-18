@@ -7,6 +7,8 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_tile.dart';
+import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_collection_empty_state.dart';
+import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_collection_header.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +42,11 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
     super.dispose();
   }
 
+  void _clearFilters(ClashCardsController controller) {
+    _searchController.clear();
+    controller.clearFilters();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -69,6 +76,9 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
             ],
           ),
         ),
+        if (controller.state == ClashCardsLoadState.ready &&
+            controller.ownedCount > 0)
+          ClashCollectionHeader(controller: controller),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
           child: TextField(
@@ -77,12 +87,23 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
             decoration: InputDecoration(
               hintText: l10n.clashSearchHint,
               prefixIcon: const Icon(Icons.search_rounded),
+              suffixIcon: controller.searchQuery.trim().isNotEmpty
+                  ? IconButton(
+                      onPressed: () => _clearFilters(controller),
+                      icon: const Icon(Icons.clear_rounded),
+                    )
+                  : null,
               isDense: true,
             ),
           ),
         ),
         _FiltersBar(controller: controller),
-        Expanded(child: _CollectionBody(controller: controller)),
+        Expanded(
+          child: _CollectionBody(
+            controller: controller,
+            onClearFilters: () => _clearFilters(controller),
+          ),
+        ),
       ],
     );
   }
@@ -189,6 +210,7 @@ class _FilterMenu<T> extends StatelessWidget {
       (item) => item.value == value,
       orElse: () => items.first,
     );
+    final isActive = selected.value != items.first.value;
 
     return PopupMenuButton<T>(
       onSelected: onChanged,
@@ -201,15 +223,22 @@ class _FilterMenu<T> extends StatelessWidget {
       child: Chip(
         label: Text('$label: ${selected.label}'),
         visualDensity: VisualDensity.compact,
+        backgroundColor: isActive
+            ? Theme.of(context).colorScheme.primaryContainer
+            : null,
       ),
     );
   }
 }
 
 class _CollectionBody extends StatelessWidget {
-  const _CollectionBody({required this.controller});
+  const _CollectionBody({
+    required this.controller,
+    required this.onClearFilters,
+  });
 
   final ClashCardsController controller;
+  final VoidCallback onClearFilters;
 
   @override
   Widget build(BuildContext context) {
@@ -232,7 +261,10 @@ class _CollectionBody extends StatelessWidget {
       case ClashCardsLoadState.ready:
         final cards = controller.visibleCards;
         if (cards.isEmpty) {
-          return Center(child: Text(l10n.clashCollectionEmpty));
+          return ClashCollectionEmptyState(
+            controller: controller,
+            onClearFilters: onClearFilters,
+          );
         }
         return GridView.builder(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -240,7 +272,7 @@ class _CollectionBody extends StatelessWidget {
             crossAxisCount: 2,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
-            childAspectRatio: 0.72,
+            childAspectRatio: 0.68,
           ),
           itemCount: cards.length,
           itemBuilder: (context, index) {

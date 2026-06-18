@@ -401,6 +401,7 @@ void main() {
 
   group('UI libros de técnica', () {
     testWidgets('detalle muestra nivel de técnica', (tester) async {
+      configureClashDetailViewport(tester);
       final setup = await _setup();
       await tester.pumpWidget(
         await _detailApp(
@@ -411,11 +412,13 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await scrollClashDetailUntilVisible(tester, find.text('Mejorar técnica'));
       expect(find.text('Normal'), findsOneWidget);
       expect(find.text('Mejorar técnica'), findsOneWidget);
     });
 
     testWidgets('detalle muestra libros disponibles', (tester) async {
+      configureClashDetailViewport(tester);
       final setup = await _setup();
       await tester.pumpWidget(
         await _detailApp(
@@ -426,11 +429,16 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await scrollClashDetailUntilVisible(
+        tester,
+        find.text('Libro técnico básico'),
+      );
       expect(find.text('Libro técnico básico'), findsOneWidget);
       expect(find.text('Cantidad: 3'), findsOneWidget);
     });
 
     testWidgets('botón deshabilitado con cantidad 0', (tester) async {
+      configureClashDetailViewport(tester);
       final inventory = InMemoryClashTechniqueBookInventoryBackend();
       final booksRepo = createTestTechniqueBooksRepository(
         inventoryStorage: inventory,
@@ -455,6 +463,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      await scrollClashDetailUntilVisible(
+        tester,
+        find.text('Libro técnico básico'),
+      );
       expect(find.text('Libro técnico básico'), findsOneWidget);
       expect(find.text('Cantidad: 0'), findsNWidgets(2));
 
@@ -467,6 +479,7 @@ void main() {
     });
 
     testWidgets('usar libro actualiza nivel visible', (tester) async {
+      configureClashDetailViewport(tester);
       final setup = await _setup();
       await setup.collection.useTechniqueBookOnCard(
         cardId: _card.id,
@@ -486,11 +499,13 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      await scrollClashDetailUntilVisible(tester, find.text('I'));
       expect(find.text('I'), findsOneWidget);
       expect(find.text('Cantidad: 2'), findsWidgets);
     });
 
     testWidgets('usar libro actualiza potencia efectiva', (tester) async {
+      configureClashDetailViewport(tester);
       final setup = await _setup();
       await setup.collection.useTechniqueBookOnCard(
         cardId: _card.id,
@@ -509,10 +524,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      await scrollClashDetailUntilVisible(tester, find.text('42'));
       expect(find.text('42'), findsOneWidget);
     });
 
     testWidgets('nivel máximo bloquea mejora', (tester) async {
+      configureClashDetailViewport(tester);
       final storage = InMemoryClashPlayerCollectionBackend();
       await storage.writeSnapshot(
         ClashPlayerCollectionSnapshot(
@@ -545,17 +562,12 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await scrollClashDetailUntilVisible(tester, find.text('Mejorar técnica'));
       expect(find.text('Nivel máximo'), findsWidgets);
     });
 
     testWidgets('SnackBar muestra cambio de nivel', (tester) async {
-      tester.view.physicalSize = const Size(800, 2400);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        tester.view.resetPhysicalSize();
-        tester.view.resetDevicePixelRatio();
-      });
-
+      configureClashDetailViewport(tester);
       final setup = await _setup();
       await tester.pumpWidget(
         await _detailApp(

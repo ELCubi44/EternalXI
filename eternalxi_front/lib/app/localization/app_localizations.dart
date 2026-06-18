@@ -351,6 +351,19 @@ class AppLocalizations {
       'clashSortName': 'Nombre',
       'clashSortDirection': 'Invertir orden',
       'clashCollectionEmpty': 'No hay cartas con estos filtros.',
+      'clashCollectionOwnedCount': '{count} cartas',
+      'clashCollectionTotalPower': 'PWR {power}',
+      'clashCollectionStrongest': 'Más fuerte: {name} ({power})',
+      'clashCollectionActiveFilters': 'Filtros activos',
+      'clashCollectionEmptyTitle': 'Sin resultados',
+      'clashCollectionEmptyFiltered':
+          'Prueba otros filtros o limpia la búsqueda.',
+      'clashCollectionEmptyOwnedTitle': 'Colección vacía',
+      'clashCollectionEmptyOwned':
+          'Aún no tienes cartas. Juega Historia o invoca.',
+      'clashCollectionGoStory': 'Ir a Historia',
+      'clashCollectionGoSummon': 'Ir a Invocar',
+      'clashCollectionClearFilters': 'Limpiar filtros',
       'clashCollectionLoadError': 'No se pudo cargar la colección.',
       'clashCardNotFound': 'Carta no encontrada.',
       'clashCardTeam': 'Equipo',
@@ -361,6 +374,12 @@ class AppLocalizations {
       'clashCardXpProgress': 'EXP: {current} / {needed}',
       'clashCardMaxLevel': 'Nivel máximo',
       'clashCardPower': 'Potencia',
+      'clashCardPowerValue': '{power} PWR',
+      'clashCardLevelShort': 'Lv {level}',
+      'clashCardEvolved': 'Evolucionada',
+      'clashCardBonusIncluded': 'Incluye bonus de nivel, evolución y árbol',
+      'clashCardPortraitPlaceholder': 'Arte próximamente',
+      'clashCardDetailTitle': 'Detalle de carta',
       'clashCardStats': 'Estadísticas',
       'clashStatSave': 'Parada',
       'clashStatDefense': 'Defensa',
@@ -1078,6 +1097,18 @@ class AppLocalizations {
       'clashSortName': 'Name',
       'clashSortDirection': 'Toggle sort direction',
       'clashCollectionEmpty': 'No cards match these filters.',
+      'clashCollectionOwnedCount': '{count} cards',
+      'clashCollectionTotalPower': 'PWR {power}',
+      'clashCollectionStrongest': 'Strongest: {name} ({power})',
+      'clashCollectionActiveFilters': 'Active filters',
+      'clashCollectionEmptyTitle': 'No results',
+      'clashCollectionEmptyFiltered': 'Try other filters or clear the search.',
+      'clashCollectionEmptyOwnedTitle': 'Empty collection',
+      'clashCollectionEmptyOwned':
+          'You have no cards yet. Play Story or summon.',
+      'clashCollectionGoStory': 'Go to Story',
+      'clashCollectionGoSummon': 'Go to Summon',
+      'clashCollectionClearFilters': 'Clear filters',
       'clashCollectionLoadError': 'Could not load the collection.',
       'clashCardNotFound': 'Card not found.',
       'clashCardTeam': 'Team',
@@ -1088,6 +1119,12 @@ class AppLocalizations {
       'clashCardXpProgress': 'XP: {current} / {needed}',
       'clashCardMaxLevel': 'Max level',
       'clashCardPower': 'Power',
+      'clashCardPowerValue': '{power} PWR',
+      'clashCardLevelShort': 'Lv {level}',
+      'clashCardEvolved': 'Evolved',
+      'clashCardBonusIncluded': 'Includes level, evolution and tree bonuses',
+      'clashCardPortraitPlaceholder': 'Artwork coming soon',
+      'clashCardDetailTitle': 'Card detail',
       'clashCardStats': 'Stats',
       'clashStatSave': 'Save',
       'clashStatDefense': 'Defense',
@@ -1905,6 +1942,22 @@ class AppLocalizations {
   String get clashSortName => _t('clashSortName');
   String get clashSortDirection => _t('clashSortDirection');
   String get clashCollectionEmpty => _t('clashCollectionEmpty');
+  String clashCollectionOwnedCount(int count) =>
+      _t('clashCollectionOwnedCount').replaceAll('{count}', '$count');
+  String clashCollectionTotalPower(int power) =>
+      _t('clashCollectionTotalPower').replaceAll('{power}', '$power');
+  String clashCollectionStrongest(String name, int power) => _t(
+    'clashCollectionStrongest',
+  ).replaceAll('{name}', name).replaceAll('{power}', '$power');
+  String get clashCollectionActiveFilters => _t('clashCollectionActiveFilters');
+  String get clashCollectionEmptyTitle => _t('clashCollectionEmptyTitle');
+  String get clashCollectionEmptyFiltered => _t('clashCollectionEmptyFiltered');
+  String get clashCollectionEmptyOwnedTitle =>
+      _t('clashCollectionEmptyOwnedTitle');
+  String get clashCollectionEmptyOwned => _t('clashCollectionEmptyOwned');
+  String get clashCollectionGoStory => _t('clashCollectionGoStory');
+  String get clashCollectionGoSummon => _t('clashCollectionGoSummon');
+  String get clashCollectionClearFilters => _t('clashCollectionClearFilters');
   String get clashCollectionLoadError => _t('clashCollectionLoadError');
   String get clashCardNotFound => _t('clashCardNotFound');
   String get clashCardTeam => _t('clashCardTeam');
@@ -1913,6 +1966,14 @@ class AppLocalizations {
   String get clashCardLevel => _t('clashCardLevel');
   String get clashCardXpTitle => _t('clashCardXpTitle');
   String get clashCardMaxLevel => _t('clashCardMaxLevel');
+  String clashCardPowerValue(int power) =>
+      _t('clashCardPowerValue').replaceAll('{power}', '$power');
+  String clashCardLevelShort(int level) =>
+      _t('clashCardLevelShort').replaceAll('{level}', '$level');
+  String get clashCardEvolved => _t('clashCardEvolved');
+  String get clashCardBonusIncluded => _t('clashCardBonusIncluded');
+  String get clashCardPortraitPlaceholder => _t('clashCardPortraitPlaceholder');
+  String get clashCardDetailTitle => _t('clashCardDetailTitle');
 
   String clashCardXpProgress(int current, int needed) => _t(
     'clashCardXpProgress',

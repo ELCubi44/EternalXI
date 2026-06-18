@@ -333,6 +333,7 @@ void main() {
 
   group('UI card XP', () {
     testWidgets('detalle muestra barra XP', (tester) async {
+      configureClashDetailViewport(tester);
       final storage = InMemoryClashPlayerCollectionBackend();
       final cardsRepo = ClashCardsRepository(_FakeCardsDataSource());
       final materialsRepo = createTestExpMaterialsRepository();
@@ -355,6 +356,7 @@ void main() {
     });
 
     testWidgets('detalle muestra nivel máximo si aplica', (tester) async {
+      configureClashDetailViewport(tester);
       final storage = InMemoryClashPlayerCollectionBackend();
       final cardsRepo = ClashCardsRepository(_FakeCardsDataSource());
       final materialsRepo = createTestExpMaterialsRepository();
@@ -373,7 +375,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Nivel máximo'), findsOneWidget);
+      expect(find.text('Nivel máximo'), findsWidgets);
     });
 
     testWidgets('victoria muestra experiencia de cartas', (tester) async {

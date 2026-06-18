@@ -56,6 +56,8 @@ class ClashCardCatalogEntry {
 
   bool get isMaxLevel => displayLevel >= effectiveRarity.maxLevel;
 
+  bool get isEvolved => effectiveRarity.index > card.rarity.index;
+
   ClashCardCatalogEntry withProgress(ClashCardProgress? value) {
     return ClashCardCatalogEntry(
       card: card,

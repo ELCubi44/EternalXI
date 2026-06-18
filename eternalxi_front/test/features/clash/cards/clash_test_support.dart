@@ -64,6 +64,8 @@ import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_sto
 import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission.dart';
 import 'package:eternal_xi/features/clash/match/data/datasources/clash_match_items_local_datasource.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_item_inventory_entry.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 const clashTestExpMaterialsJson = '''
 {
@@ -1284,5 +1286,25 @@ createTestEventsSetup({
     expMaterials: expMaterials,
     techniqueBooks: techniqueBooks,
     storage: eventStorage,
+  );
+}
+
+/// Viewport alto para pantallas Clash con scroll (detalle de carta, etc.).
+void configureClashDetailViewport(WidgetTester tester) {
+  tester.view.physicalSize = const Size(800, 2400);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.reset);
+}
+
+/// Desplaza el scroll principal del detalle hasta que [matcher] sea visible.
+Future<void> scrollClashDetailUntilVisible(
+  WidgetTester tester,
+  Finder matcher, {
+  double delta = 120,
+}) async {
+  await tester.scrollUntilVisible(
+    matcher,
+    delta,
+    scrollable: find.byType(Scrollable).first,
   );
 }
