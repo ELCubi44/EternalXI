@@ -1,0 +1,53 @@
+{
+  "gifts": [
+    {
+      "id": "gift-welcome-clash",
+      "title": "Bienvenida a Clash",
+      "message": "Gracias por entrar al modo Clash. Aquí tienes un kit inicial para empezar.",
+      "rewards": {
+        "gems": 5,
+        "coins": 1000,
+        "ticket": {
+          "id": "starter-single-ticket",
+          "quantity": 1
+        }
+      },
+      "isPinned": true
+    },
+    {
+      "id": "gift-training-kit",
+      "title": "Kit de entrenamiento inicial",
+      "message": "Materiales para mejorar a tus primeros jugadores.",
+      "rewards": {
+        "expMaterial": {
+          "id": "basic-training-manual",
+          "quantity": 3
+        },
+        "techniqueBook": {
+          "id": "basic-technique-book",
+          "quantity": 1
+        }
+      },
+      "isPinned": true
+    },
+    {
+      "id": "gift-evo-trial",
+      "title": "Materiales de evolución de prueba",
+      "message": "Una insignia R para probar el sistema de evolución local.",
+      "rewards": {
+        "evolutionMaterial": {
+          "id": "insignia-r",
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "gift-thanks-beta",
+      "title": "Gracias por probar el modo Clash",
+      "message": "Recompensa local por participar en las pruebas del modo.",
+      "rewards": {
+        "coins": 2000
+      }
+    }
+  ]
+}

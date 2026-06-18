@@ -47,6 +47,10 @@ import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_st
 import 'package:eternal_xi/features/clash/news/data/clash_news_local_datasource.dart';
 import 'package:eternal_xi/features/clash/news/data/clash_news_read_storage.dart';
 import 'package:eternal_xi/features/clash/news/data/clash_news_repository.dart';
+import 'package:eternal_xi/features/clash/gifts/data/clash_gifts_local_datasource.dart';
+import 'package:eternal_xi/features/clash/gifts/data/clash_gifts_storage.dart';
+import 'package:eternal_xi/features/clash/gifts/data/clash_gifts_repository.dart';
+import 'package:eternal_xi/features/clash/gifts/domain/clash_gift.dart';
 import 'package:eternal_xi/features/clash/news/domain/clash_news_item.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_weekly_mission.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
@@ -1044,4 +1048,118 @@ createTestNewsSetup({
     storage: readStorage,
   );
   return (news: news, storage: readStorage);
+}
+
+const clashTestGiftsJson = '''
+{
+  "gifts": [
+    {
+      "id": "gift-welcome-clash",
+      "title": "Bienvenida a Clash",
+      "message": "Kit inicial de prueba.",
+      "rewards": {
+        "gems": 5,
+        "coins": 1000,
+        "ticket": { "id": "starter-single-ticket", "quantity": 1 }
+      },
+      "isPinned": true
+    },
+    {
+      "id": "gift-training-kit",
+      "title": "Kit de entrenamiento inicial",
+      "message": "Materiales de entrenamiento.",
+      "rewards": {
+        "expMaterial": { "id": "basic-training-manual", "quantity": 3 },
+        "techniqueBook": { "id": "basic-technique-book", "quantity": 1 }
+      },
+      "isPinned": true
+    },
+    {
+      "id": "gift-evo-trial",
+      "title": "Materiales de evolución de prueba",
+      "message": "Insignia R de prueba.",
+      "rewards": {
+        "evolutionMaterial": { "id": "insignia-r", "quantity": 1 }
+      }
+    },
+    {
+      "id": "gift-thanks-beta",
+      "title": "Gracias por probar el modo Clash",
+      "message": "Monedas de agradecimiento.",
+      "rewards": { "coins": 2000 }
+    },
+    {
+      "id": "gift-expired-sample",
+      "title": "Regalo expirado",
+      "message": "No reclamable.",
+      "rewards": { "gems": 1 },
+      "expiresAt": "2020-01-01"
+    }
+  ]
+}
+''';
+
+class TestGiftsDataSource extends ClashGiftsLocalDataSource {
+  @override
+  Future<List<ClashGift>> loadGifts() async {
+    return parseGiftsJson(clashTestGiftsJson);
+  }
+}
+
+Future<
+  ({
+    ClashGiftsRepository gifts,
+    ClashStoryRepository story,
+    ClashExpMaterialsRepository expMaterials,
+    ClashTechniqueBooksRepository techniqueBooks,
+    ClashEvolutionMaterialsRepository evolutionMaterials,
+    ClashGachaTicketRepository tickets,
+    ClashGiftsStorageBackend storage,
+  })
+>
+createTestGiftsSetup({
+  ClashGiftsStorageBackend? storage,
+  int initialCoins = 0,
+  int initialGems = 0,
+}) async {
+  final expMaterials = createTestExpMaterialsRepository();
+  final techniqueBooks = createTestTechniqueBooksRepository();
+  final evolutionMaterials = createTestEvolutionMaterialsRepository();
+  final tickets = createTestTicketRepository();
+  final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
+  final collection = createTestCollectionRepository(
+    cardsRepository: cardsRepo,
+    expMaterialsRepository: expMaterials,
+    techniqueBooksRepository: techniqueBooks,
+    evolutionMaterialsRepository: evolutionMaterials,
+  );
+  final storyProgress = InMemoryClashStoryProgressBackend();
+  await storyProgress.writeProgress(
+    ClashStoryProgress(walletCoins: initialCoins, walletGems: initialGems),
+  );
+  final story = ClashStoryRepository(
+    dataSource: ClashStoryLocalDataSource(),
+    progressStorage: storyProgress,
+    collectionRepository: collection,
+    ticketRepository: tickets,
+  );
+  final giftStorage = storage ?? InMemoryClashGiftsBackend();
+  final gifts = ClashGiftsRepository(
+    dataSource: TestGiftsDataSource(),
+    storage: giftStorage,
+    storyRepository: story,
+    grantService: ClashShopGrantService(
+      collectionRepository: collection,
+      ticketRepository: tickets,
+    ),
+  );
+  return (
+    gifts: gifts,
+    story: story,
+    expMaterials: expMaterials,
+    techniqueBooks: techniqueBooks,
+    evolutionMaterials: evolutionMaterials,
+    tickets: tickets,
+    storage: giftStorage,
+  );
 }

@@ -200,6 +200,20 @@ class AppLocalizations {
       'clashNewsHomeUnread': '{count} sin leer',
       'clashNewsHomeAllCaughtUp': 'Todo al día',
       'clashNewsHomeView': 'Ver',
+      'clashGiftsTitle': 'Regalos',
+      'clashGiftsPendingSummary': 'Pendientes {count}',
+      'clashGiftsClaimedSummary': 'Reclamados {claimed}/{total}',
+      'clashGiftsClaimAll': 'Reclamar todos',
+      'clashGiftsClaimSuccess': 'Regalo reclamado',
+      'clashGiftsStatusAvailable': 'Disponible',
+      'clashGiftsStatusClaimed': 'Reclamado',
+      'clashGiftsStatusExpired': 'Expirado',
+      'clashGiftsStatusClaim': 'Reclamar',
+      'clashGiftsHomeTitle': 'Regalos',
+      'clashGiftsHomePending': '{count} pendientes',
+      'clashGiftsHomeNone': 'Sin regalos pendientes',
+      'clashGiftsHomeView': 'Ver',
+      'clashGiftsEmptyPending': 'No hay regalos pendientes',
       'clashTeamLineup7': 'Alineación 7vs7',
       'clashTeamLineup11': 'Alineación 11vs11',
       'clashTeamCharacters': 'Personajes',
@@ -863,6 +877,20 @@ class AppLocalizations {
       'clashNewsHomeUnread': '{count} unread',
       'clashNewsHomeAllCaughtUp': 'All caught up',
       'clashNewsHomeView': 'View',
+      'clashGiftsTitle': 'Gifts',
+      'clashGiftsPendingSummary': 'Pending {count}',
+      'clashGiftsClaimedSummary': 'Claimed {claimed}/{total}',
+      'clashGiftsClaimAll': 'Claim all',
+      'clashGiftsClaimSuccess': 'Gift claimed',
+      'clashGiftsStatusAvailable': 'Available',
+      'clashGiftsStatusClaimed': 'Claimed',
+      'clashGiftsStatusExpired': 'Expired',
+      'clashGiftsStatusClaim': 'Claim',
+      'clashGiftsHomeTitle': 'Gifts',
+      'clashGiftsHomePending': '{count} pending',
+      'clashGiftsHomeNone': 'No pending gifts',
+      'clashGiftsHomeView': 'View',
+      'clashGiftsEmptyPending': 'No pending gifts',
       'clashTeamLineup7': '7v7 lineup',
       'clashTeamLineup11': '11v11 lineup',
       'clashTeamCharacters': 'Characters',
@@ -1583,6 +1611,24 @@ class AppLocalizations {
       _t('clashNewsHomeUnread').replaceAll('{count}', '$count');
   String get clashNewsHomeAllCaughtUp => _t('clashNewsHomeAllCaughtUp');
   String get clashNewsHomeView => _t('clashNewsHomeView');
+  String get clashGiftsTitle => _t('clashGiftsTitle');
+  String clashGiftsPendingSummary(int count) =>
+      _t('clashGiftsPendingSummary').replaceAll('{count}', '$count');
+  String clashGiftsClaimedSummary(int claimed, int total) => _t(
+    'clashGiftsClaimedSummary',
+  ).replaceAll('{claimed}', '$claimed').replaceAll('{total}', '$total');
+  String get clashGiftsClaimAll => _t('clashGiftsClaimAll');
+  String get clashGiftsClaimSuccess => _t('clashGiftsClaimSuccess');
+  String get clashGiftsStatusAvailable => _t('clashGiftsStatusAvailable');
+  String get clashGiftsStatusClaimed => _t('clashGiftsStatusClaimed');
+  String get clashGiftsStatusExpired => _t('clashGiftsStatusExpired');
+  String get clashGiftsStatusClaim => _t('clashGiftsStatusClaim');
+  String get clashGiftsHomeTitle => _t('clashGiftsHomeTitle');
+  String clashGiftsHomePending(int count) =>
+      _t('clashGiftsHomePending').replaceAll('{count}', '$count');
+  String get clashGiftsHomeNone => _t('clashGiftsHomeNone');
+  String get clashGiftsHomeView => _t('clashGiftsHomeView');
+  String get clashGiftsEmptyPending => _t('clashGiftsEmptyPending');
   String get clashTeamLineup7 => _t('clashTeamLineup7');
   String get clashTeamLineup11 => _t('clashTeamLineup11');
   String get clashTeamCharacters => _t('clashTeamCharacters');

@@ -15,6 +15,7 @@ import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_c
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_repository.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_repository.dart';
 import 'package:eternal_xi/features/clash/news/data/clash_news_repository.dart';
+import 'package:eternal_xi/features/clash/gifts/data/clash_gifts_repository.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
@@ -61,6 +62,7 @@ Future<
     ClashWeeklyMissionsRepository weeklyMissionsRepository,
     ClashAchievementsRepository achievementsRepository,
     ClashNewsRepository newsRepository,
+    ClashGiftsRepository giftsRepository,
   })
 >
 _shellDeps() async {
@@ -107,6 +109,7 @@ _shellDeps() async {
     initialGems: 50,
   );
   final newsSetup = await createTestNewsSetup();
+  final giftsSetup = await createTestGiftsSetup();
   return (
     storyController: ClashStoryController(storyRepository: storyRepo),
     gachaRepository: gachaRepo,
@@ -116,6 +119,7 @@ _shellDeps() async {
     weeklyMissionsRepository: weeklySetup.weekly,
     achievementsRepository: achievementsSetup.achievements,
     newsRepository: newsSetup.news,
+    giftsRepository: giftsSetup.gifts,
   );
 }
 
@@ -145,6 +149,7 @@ Future<(Widget app, ClashNavigationController nav)> _shellApp(
             value: deps.achievementsRepository,
           ),
           Provider<ClashNewsRepository>.value(value: deps.newsRepository),
+          Provider<ClashGiftsRepository>.value(value: deps.giftsRepository),
           ChangeNotifierProvider<ClashCardsController>.value(
             value: deps.cardsController,
           ),
@@ -242,7 +247,7 @@ void main() {
     });
 
     testWidgets('Inicio muestra Historia y Eventos', (tester) async {
-      tester.view.physicalSize = const Size(800, 2000);
+      tester.view.physicalSize = const Size(800, 2400);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.reset);
 
@@ -266,6 +271,12 @@ void main() {
         scrollable: find.byType(Scrollable).first,
       );
       expect(find.text('Noticias'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Regalos'),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Regalos'), findsOneWidget);
     });
 
     testWidgets('cambiar a Equipo muestra alineaciones', (tester) async {

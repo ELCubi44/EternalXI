@@ -519,4 +519,18 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 32 — Buzón de regalos local
+
+**Estado:** implementada (local).
+
+- Catálogo en `assets/data/clash/gifts.json`.
+- Sin backend, push ni regalos personalizados remotos.
+- Reclamaciones persistidas en `clash_gifts_v1` (`claimedGiftIds`, `lastOpenedAt` opcional).
+- Recompensas vía `ClashShopGrantService` + wallet historia (monedas/gemas).
+- Pantalla `/clash/gifts` y tarjeta compacta en Inicio.
+
+**Pendiente:** backend de regalos, push, gifts personalizados, expiración servidor, panel admin.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

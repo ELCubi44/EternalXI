@@ -6,6 +6,7 @@ import 'package:eternal_xi/features/clash/missions/presentation/widgets/clash_we
 import 'package:eternal_xi/features/clash/achievements/presentation/widgets/clash_achievements_home_card.dart';
 import 'package:eternal_xi/features/clash/missions/presentation/widgets/clash_daily_missions_home_card.dart';
 import 'package:eternal_xi/features/clash/news/presentation/widgets/clash_news_home_card.dart';
+import 'package:eternal_xi/features/clash/gifts/presentation/widgets/clash_gifts_home_card.dart';
 import 'package:eternal_xi/features/clash/presentation/widgets/clash_section_tile.dart';
 import 'package:eternal_xi/features/clash/story/presentation/clash_story_gate.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,8 @@ class ClashHomeScreen extends StatelessWidget {
         const ClashAchievementsHomeCard(),
         const SizedBox(height: 10),
         const ClashNewsHomeCard(),
+        const SizedBox(height: 10),
+        const ClashGiftsHomeCard(),
         const SizedBox(height: 10),
         ClashSectionTile(
           icon: Icons.menu_book_rounded,
