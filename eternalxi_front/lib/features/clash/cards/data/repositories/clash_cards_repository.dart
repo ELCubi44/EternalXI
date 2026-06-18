@@ -44,7 +44,7 @@ class ClashCardsRepository {
       if (query.isNotEmpty && !entry.name.toLowerCase().contains(query)) {
         return false;
       }
-      if (rarity != null && entry.card.rarity != rarity) {
+      if (rarity != null && entry.effectiveRarity != rarity) {
         return false;
       }
       if (position != null && entry.card.position != position) {

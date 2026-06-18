@@ -12,6 +12,7 @@ class ClashCardProgress {
     required this.currentExperience,
     required this.unlockedDuplicateNodes,
     required this.techniqueLevels,
+    this.evolvedRarity,
   });
 
   /// Máximo de nodos desbloqueables con duplicados (carta inicial + 5 = 6 copias).
@@ -26,6 +27,9 @@ class ClashCardProgress {
 
   /// Nivel de mejora por supertécnica (independiente entre técnicas).
   final Map<String, ClashTechniqueLevel> techniqueLevels;
+
+  /// Rareza alcanzada por evolución local (misma cardId en assets).
+  final ClashRarity? evolvedRarity;
 
   /// Valida reglas de progreso según la rareza de la carta.
   void validateForRarity(ClashRarity rarity) {
@@ -60,6 +64,7 @@ class ClashCardProgress {
     int? currentExperience,
     int? unlockedDuplicateNodes,
     Map<String, ClashTechniqueLevel>? techniqueLevels,
+    ClashRarity? evolvedRarity,
   }) {
     return ClashCardProgress(
       cardId: cardId,
@@ -68,6 +73,7 @@ class ClashCardProgress {
       unlockedDuplicateNodes:
           unlockedDuplicateNodes ?? this.unlockedDuplicateNodes,
       techniqueLevels: techniqueLevels ?? this.techniqueLevels,
+      evolvedRarity: evolvedRarity ?? this.evolvedRarity,
     );
   }
 
@@ -92,6 +98,9 @@ class ClashCardProgress {
       techniqueLevels: Map<String, ClashTechniqueLevel>.unmodifiable(
         techniqueLevels,
       ),
+      evolvedRarity: json['evolvedRarity'] == null
+          ? null
+          : ClashRarity.fromJson(json['evolvedRarity']),
     );
   }
 
@@ -103,5 +112,6 @@ class ClashCardProgress {
     'techniqueLevels': techniqueLevels.map(
       (key, value) => MapEntry(key, value.toJson()),
     ),
+    if (evolvedRarity != null) 'evolvedRarity': evolvedRarity!.toJson(),
   };
 }

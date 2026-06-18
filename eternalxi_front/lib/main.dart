@@ -11,8 +11,11 @@ import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.da
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_material_inventory_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_materials_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_evolution_material_inventory_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_evolution_materials_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_technique_book_inventory_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_technique_books_local_datasource.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_evolution_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
@@ -69,6 +72,13 @@ Future<void> main() async {
     inventoryStorage: clashTechniqueBookInventoryBackend,
   );
   await clashTechniqueBooksRepository.seedDefaultInventoryIfEmpty();
+  final clashEvolutionMaterialInventoryBackend =
+      await SharedPreferencesClashEvolutionMaterialInventoryBackend.create();
+  final clashEvolutionMaterialsRepository = ClashEvolutionMaterialsRepository(
+    dataSource: ClashEvolutionMaterialsLocalDataSource(),
+    inventoryStorage: clashEvolutionMaterialInventoryBackend,
+  );
+  await clashEvolutionMaterialsRepository.seedDefaultInventoryIfEmpty();
   final clashStoryProgressBackend =
       await SharedPreferencesClashStoryProgressBackend.create();
   final apiClient = ApiClient(
@@ -184,6 +194,15 @@ Future<void> main() async {
         Provider<ClashTechniqueBooksRepository>.value(
           value: clashTechniqueBooksRepository,
         ),
+        Provider<ClashEvolutionMaterialInventoryStorageBackend>.value(
+          value: clashEvolutionMaterialInventoryBackend,
+        ),
+        Provider<ClashEvolutionMaterialsLocalDataSource>(
+          create: (_) => ClashEvolutionMaterialsLocalDataSource(),
+        ),
+        Provider<ClashEvolutionMaterialsRepository>.value(
+          value: clashEvolutionMaterialsRepository,
+        ),
         Provider<ClashPlayerCollectionRepository>(
           create: (context) => ClashPlayerCollectionRepository(
             storage: context.read<ClashPlayerCollectionStorageBackend>(),
@@ -191,6 +210,8 @@ Future<void> main() async {
             expMaterialsRepository: context.read<ClashExpMaterialsRepository>(),
             techniqueBooksRepository: context
                 .read<ClashTechniqueBooksRepository>(),
+            evolutionMaterialsRepository: context
+                .read<ClashEvolutionMaterialsRepository>(),
           ),
         ),
         ChangeNotifierProvider<ClashCardsController>(

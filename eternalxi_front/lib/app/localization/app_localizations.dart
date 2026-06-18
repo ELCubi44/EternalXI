@@ -193,6 +193,17 @@ class AppLocalizations {
       'clashUpgradeMaxLevelHint':
           'Nivel máximo alcanzado. No se pueden usar materiales.',
       'clashActionEvolve': 'Evolución',
+      'clashEvolutionCannotEvolveMore': 'Esta carta no puede evolucionar más',
+      'clashEvolutionRarityArrow': '{from} → {to}',
+      'clashEvolutionRequiredLevel': 'Nivel requerido: {level}',
+      'clashEvolutionCurrentLevel': 'Nivel actual: {level}',
+      'clashEvolutionRequiredMaterial':
+          '{name} ×{required} (tienes: {available})',
+      'clashEvolutionCoinsPending': 'Monedas: pendiente',
+      'clashEvolutionButton': 'Evolucionar',
+      'clashEvolutionMissingLevel': 'Nivel insuficiente',
+      'clashEvolutionMissingMaterial': 'Faltan materiales',
+      'clashEvolutionSnack': 'Carta evolucionada: {from} → {to}',
       'clashActionTree': 'Árbol',
       'clashLineupSlotEmpty': 'Vacío',
       'clashLineupTotalPower': 'Potencia total',
@@ -704,6 +715,17 @@ class AppLocalizations {
       'clashUpgradeMaxLevelHint':
           'Max level reached. Materials cannot be used.',
       'clashActionEvolve': 'Evolution',
+      'clashEvolutionCannotEvolveMore': 'This card cannot evolve further',
+      'clashEvolutionRarityArrow': '{from} → {to}',
+      'clashEvolutionRequiredLevel': 'Required level: {level}',
+      'clashEvolutionCurrentLevel': 'Current level: {level}',
+      'clashEvolutionRequiredMaterial':
+          '{name} ×{required} (owned: {available})',
+      'clashEvolutionCoinsPending': 'Coins: pending',
+      'clashEvolutionButton': 'Evolve',
+      'clashEvolutionMissingLevel': 'Insufficient level',
+      'clashEvolutionMissingMaterial': 'Missing materials',
+      'clashEvolutionSnack': 'Card evolved: {from} → {to}',
       'clashActionTree': 'Tree',
       'clashLineupSlotEmpty': 'Empty',
       'clashLineupTotalPower': 'Total power',
@@ -1240,6 +1262,31 @@ class AppLocalizations {
   ).replaceAll('{from}', '$from').replaceAll('{to}', '$to');
   String get clashUpgradeMaxLevelHint => _t('clashUpgradeMaxLevelHint');
   String get clashActionEvolve => _t('clashActionEvolve');
+  String get clashEvolutionCannotEvolveMore =>
+      _t('clashEvolutionCannotEvolveMore');
+  String clashEvolutionRarityArrow(String from, String to) => _t(
+    'clashEvolutionRarityArrow',
+  ).replaceAll('{from}', from).replaceAll('{to}', to);
+  String clashEvolutionRequiredLevel(int level) =>
+      _t('clashEvolutionRequiredLevel').replaceAll('{level}', '$level');
+  String clashEvolutionCurrentLevel(int level) =>
+      _t('clashEvolutionCurrentLevel').replaceAll('{level}', '$level');
+  String clashEvolutionRequiredMaterial(
+    String name,
+    int required,
+    int available,
+  ) => _t('clashEvolutionRequiredMaterial')
+      .replaceAll('{name}', name)
+      .replaceAll('{required}', '$required')
+      .replaceAll('{available}', '$available');
+  String get clashEvolutionCoinsPending => _t('clashEvolutionCoinsPending');
+  String get clashEvolutionButton => _t('clashEvolutionButton');
+  String get clashEvolutionMissingLevel => _t('clashEvolutionMissingLevel');
+  String get clashEvolutionMissingMaterial =>
+      _t('clashEvolutionMissingMaterial');
+  String clashEvolutionSnack(String from, String to) => _t(
+    'clashEvolutionSnack',
+  ).replaceAll('{from}', from).replaceAll('{to}', to);
   String get clashActionTree => _t('clashActionTree');
   String get clashLineupSlotEmpty => _t('clashLineupSlotEmpty');
   String get clashLineupTotalPower => _t('clashLineupTotalPower');

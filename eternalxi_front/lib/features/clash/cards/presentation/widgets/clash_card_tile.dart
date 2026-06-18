@@ -52,7 +52,7 @@ class ClashCardTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                  ClashRarityBadge(rarity: card.rarity),
+                  ClashRarityBadge(rarity: entry.effectiveRarity),
                 ],
               ),
               const SizedBox(height: 4),

@@ -40,6 +40,35 @@ class ClashCard {
   /// Potencia delegada en las estadísticas máximas.
   int get power => stats.power;
 
+  ClashCard copyWith({
+    ClashRarity? rarity,
+    int? level,
+    ClashPlayerStyle? style,
+    ClashPosition? position,
+    ClashStats? stats,
+    List<ClashSuperTechnique>? superTechniques,
+    String? passiveId,
+    String? basicPortraitPath,
+    String? specialFullBodyArtPath,
+  }) {
+    return ClashCard(
+      id: id,
+      playerId: playerId,
+      rarity: rarity ?? this.rarity,
+      level: level ?? this.level,
+      style: style ?? this.style,
+      position: position ?? this.position,
+      stats: stats ?? this.stats,
+      superTechniques: superTechniques ?? this.superTechniques,
+      passiveId: passiveId ?? this.passiveId,
+      basicPortraitPath: basicPortraitPath ?? this.basicPortraitPath,
+      specialFullBodyArtPath:
+          specialFullBodyArtPath ?? this.specialFullBodyArtPath,
+    );
+  }
+
+  ClashCard withRarity(ClashRarity rarity) => copyWith(rarity: rarity);
+
   /// Valida reglas de dominio; lanza [FormatException] o [ArgumentError].
   static void validate({
     required ClashRarity rarity,

@@ -1,4 +1,5 @@
 import 'package:eternal_xi/features/clash/cards/domain/clash_card.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_card_evolution_resolver.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_progress.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_stats.dart';
@@ -27,8 +28,10 @@ class ClashCardLevelScaling {
     ClashCardProgress? progress,
   ) {
     final level = effectiveLevel(card, progress);
-    final multiplier = levelMultiplier(level, card.rarity);
-    return card.stats.scaled(multiplier);
+    final rarity = ClashCardEvolutionResolver.effectiveRarity(card, progress);
+    final levelMult = levelMultiplier(level, rarity);
+    final rarityMult = ClashCardEvolutionResolver.rarityStatMultiplier(rarity);
+    return card.stats.scaled(levelMult * rarityMult);
   }
 
   static int effectivePower(ClashCard card, ClashCardProgress? progress) {

@@ -5,6 +5,7 @@ import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_mater
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_evolution_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
@@ -105,6 +106,9 @@ Future<Widget> _detailApp({
         Provider<ClashPlayerCollectionRepository>.value(value: collection),
         Provider<ClashExpMaterialsRepository>.value(value: materials),
         Provider<ClashTechniqueBooksRepository>.value(value: techniqueBooks),
+        Provider<ClashEvolutionMaterialsRepository>.value(
+          value: createTestEvolutionMaterialsRepository(),
+        ),
       ],
       child: MaterialApp(
         locale: const Locale('es'),

@@ -1,11 +1,17 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_evolution_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_card_evolution_resolver.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_table.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_progress.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_material_inventory_entry.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_requirement.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_result.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_service.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_inventory_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_use_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
@@ -34,9 +40,11 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
   ClashCardCatalogEntry? _entry;
   List<ClashExpMaterialInventoryEntry> _materials = const [];
   List<ClashTechniqueBookInventoryEntry> _techniqueBooks = const [];
+  List<ClashEvolutionMaterialInventoryEntry> _evolutionMaterials = const [];
   bool _loading = true;
   bool _notFound = false;
   bool _usingMaterial = false;
+  bool _evolving = false;
   String? _usingTechniqueBookFor;
 
   @override
@@ -50,12 +58,16 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
     final collection = context.read<ClashPlayerCollectionRepository>();
     final materialsRepo = context.read<ClashExpMaterialsRepository>();
     final techniqueBooksRepo = context.read<ClashTechniqueBooksRepository>();
+    final evolutionMaterialsRepo = context
+        .read<ClashEvolutionMaterialsRepository>();
     if (controller.state == ClashCardsLoadState.idle) {
       await controller.load();
     }
     final entry = await controller.findCard(widget.cardId);
     final inventory = await materialsRepo.fetchInventoryEntries();
     final techniqueBooks = await techniqueBooksRepo.fetchInventoryEntries();
+    final evolutionMaterials = await evolutionMaterialsRepo
+        .fetchInventoryEntries();
     if (!mounted) {
       return;
     }
@@ -63,6 +75,7 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
       _entry = entry == null ? null : collection.enrichEntry(entry);
       _materials = inventory;
       _techniqueBooks = techniqueBooks;
+      _evolutionMaterials = evolutionMaterials;
       _notFound = entry == null;
       _loading = false;
     });
@@ -118,6 +131,54 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
             name,
             result.previousLevel.displayLabel,
             result.newLevel.displayLabel,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _evolveCard() async {
+    if (_evolving || _entry == null) {
+      return;
+    }
+
+    setState(() => _evolving = true);
+    final collection = context.read<ClashPlayerCollectionRepository>();
+    final evolutionMaterialsRepo = context
+        .read<ClashEvolutionMaterialsRepository>();
+    final controller = context.read<ClashCardsController>();
+
+    final result = await collection.evolveCard(cardId: widget.cardId);
+
+    if (!mounted) {
+      return;
+    }
+
+    if (result.succeeded) {
+      final entry = await controller.findCard(widget.cardId);
+      final evolutionMaterials = await evolutionMaterialsRepo
+          .fetchInventoryEntries();
+      setState(() {
+        _entry = entry == null ? null : collection.enrichEntry(entry);
+        _evolutionMaterials = evolutionMaterials;
+        _evolving = false;
+      });
+      await controller.reloadOwnedCards();
+      _showEvolutionSnackBar(result);
+    } else {
+      setState(() => _evolving = false);
+    }
+  }
+
+  void _showEvolutionSnackBar(ClashEvolutionResult result) {
+    final l10n = context.l10n;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(
+          l10n.clashEvolutionSnack(
+            ClashCardEvolutionResolver.rarityLabel(result.previousRarity),
+            ClashCardEvolutionResolver.rarityLabel(result.newRarity),
           ),
         ),
       ),
@@ -190,7 +251,7 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
     }
 
     final entry = _entry!;
-    final card = entry.card;
+    final card = entry.displayCard;
 
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -211,7 +272,7 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
                 ),
               ),
             ),
-            ClashRarityBadge(rarity: card.rarity),
+            ClashRarityBadge(rarity: entry.effectiveRarity),
           ],
         ),
         const SizedBox(height: 8),
@@ -275,11 +336,12 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
           isBusy: _usingMaterial,
           onUseMaterial: _useMaterial,
         ),
-        const SizedBox(height: 10),
-        ClashSectionTile(
-          icon: Icons.upgrade_rounded,
-          title: l10n.clashActionEvolve,
-          onTap: () => _showComingSoon(context),
+        const SizedBox(height: 16),
+        _EvolutionPanel(
+          entry: entry,
+          evolutionMaterials: _evolutionMaterials,
+          isBusy: _evolving,
+          onEvolve: _evolveCard,
         ),
         const SizedBox(height: 10),
         ClashSectionTile(
@@ -341,7 +403,7 @@ class _InfoPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final card = entry.card;
+    final card = entry.displayCard;
     final stats = entry.displayStats;
 
     return Container(
@@ -362,7 +424,7 @@ class _InfoPanel extends StatelessWidget {
           _MetaRow(label: l10n.clashCardStyle, value: card.style.displayNameEs),
           _MetaRow(
             label: l10n.clashCardLevel,
-            value: '${entry.displayLevel} / ${card.rarity.maxLevel}',
+            value: '${entry.displayLevel} / ${entry.effectiveRarity.maxLevel}',
           ),
           _MetaRow(label: l10n.clashCardPower, value: '${entry.power}'),
           const SizedBox(height: 12),
@@ -447,7 +509,7 @@ class _XpPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final card = entry.card;
+    final card = entry.displayCard;
     final progress = entry.progress;
     final currentXp = progress?.currentExperience ?? 0;
 
@@ -472,7 +534,10 @@ class _XpPanel extends StatelessWidget {
 
     final needed =
         entry.xpToNextLevel ??
-        ClashCardXpTable.xpToNextLevel(entry.displayLevel, card.rarity);
+        ClashCardXpTable.xpToNextLevel(
+          entry.displayLevel,
+          entry.effectiveRarity,
+        );
     final ratio = needed <= 0 ? 0.0 : (currentXp / needed).clamp(0.0, 1.0);
 
     return Container(
@@ -552,7 +617,7 @@ class _UpgradePanel extends StatelessWidget {
           const SizedBox(height: 8),
           _MetaRow(
             label: l10n.clashCardLevel,
-            value: '${entry.displayLevel} / ${entry.card.rarity.maxLevel}',
+            value: '${entry.displayLevel} / ${entry.effectiveRarity.maxLevel}',
           ),
           if (atMax) ...[
             const SizedBox(height: 8),
@@ -832,6 +897,202 @@ class _TechniqueBookRow extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _EvolutionPanel extends StatelessWidget {
+  const _EvolutionPanel({
+    required this.entry,
+    required this.evolutionMaterials,
+    required this.isBusy,
+    required this.onEvolve,
+  });
+
+  final ClashCardCatalogEntry entry;
+  final List<ClashEvolutionMaterialInventoryEntry> evolutionMaterials;
+  final bool isBusy;
+  final VoidCallback onEvolve;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final currentRarity = entry.effectiveRarity;
+    final requirement = ClashEvolutionService.activeRequirement(
+      entry.card,
+      entry.progress,
+    );
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.xiCardSurface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.xiDivider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            l10n.clashActionEvolve,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 10),
+          if (requirement == null) ...[
+            Text(
+              l10n.clashEvolutionCannotEvolveMore,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: context.xiTextSecondary,
+              ),
+            ),
+          ] else ...[
+            Text(
+              l10n.clashEvolutionRarityArrow(
+                ClashCardEvolutionResolver.rarityLabel(currentRarity),
+                ClashCardEvolutionResolver.rarityLabel(requirement.toRarity),
+              ),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(l10n.clashEvolutionRequiredLevel(requirement.minLevel)),
+            Text(l10n.clashEvolutionCurrentLevel(entry.displayLevel)),
+            if (requirement.coinCost != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                l10n.clashEvolutionCoinsPending,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: context.xiTextSecondary,
+                ),
+              ),
+            ],
+            const SizedBox(height: 10),
+            for (final materialEntry in requirement.requiredMaterials.entries)
+              _EvolutionMaterialRequirementRow(
+                materialId: materialEntry.key,
+                requiredQuantity: materialEntry.value,
+                evolutionMaterials: evolutionMaterials,
+              ),
+            const SizedBox(height: 12),
+            _EvolutionActionButton(
+              entry: entry,
+              requirement: requirement,
+              evolutionMaterials: evolutionMaterials,
+              isBusy: isBusy,
+              onEvolve: onEvolve,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _EvolutionMaterialRequirementRow extends StatelessWidget {
+  const _EvolutionMaterialRequirementRow({
+    required this.materialId,
+    required this.requiredQuantity,
+    required this.evolutionMaterials,
+  });
+
+  final String materialId;
+  final int requiredQuantity;
+  final List<ClashEvolutionMaterialInventoryEntry> evolutionMaterials;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    ClashEvolutionMaterialInventoryEntry? inventoryEntry;
+    for (final item in evolutionMaterials) {
+      if (item.material.id == materialId) {
+        inventoryEntry = item;
+        break;
+      }
+    }
+    final name = inventoryEntry?.material.name ?? materialId;
+    final available = inventoryEntry?.quantity ?? 0;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Text(
+        l10n.clashEvolutionRequiredMaterial(name, requiredQuantity, available),
+        style: Theme.of(context).textTheme.bodySmall,
+      ),
+    );
+  }
+}
+
+class _EvolutionActionButton extends StatelessWidget {
+  const _EvolutionActionButton({
+    required this.entry,
+    required this.requirement,
+    required this.evolutionMaterials,
+    required this.isBusy,
+    required this.onEvolve,
+  });
+
+  final ClashCardCatalogEntry entry;
+  final ClashEvolutionRequirement requirement;
+  final List<ClashEvolutionMaterialInventoryEntry> evolutionMaterials;
+  final bool isBusy;
+  final VoidCallback onEvolve;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final progress =
+        entry.progress ??
+        ClashCardProgress(
+          cardId: entry.id,
+          currentLevel: entry.displayLevel,
+          currentExperience: 0,
+          unlockedDuplicateNodes: 0,
+          techniqueLevels: const {},
+        );
+    final quantities = {
+      for (final item in evolutionMaterials) item.material.id: item.quantity,
+    };
+    final preview = ClashEvolutionService.previewEvolution(
+      cardId: entry.id,
+      card: entry.card,
+      progress: progress,
+      availableMaterials: quantities,
+    );
+
+    String? disabledReason;
+    VoidCallback? onPressed;
+    if (preview.succeeded) {
+      onPressed = isBusy ? null : onEvolve;
+    } else {
+      disabledReason = switch (preview.error) {
+        ClashEvolutionError.insufficientLevel =>
+          l10n.clashEvolutionMissingLevel,
+        ClashEvolutionError.insufficientMaterials =>
+          l10n.clashEvolutionMissingMaterial,
+        _ => l10n.clashEvolutionCannotEvolveMore,
+      };
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (disabledReason != null)
+          Text(
+            disabledReason,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: context.xiTextSecondary),
+          ),
+        if (disabledReason != null) const SizedBox(height: 8),
+        FilledButton(
+          onPressed: onPressed,
+          child: Text(l10n.clashEvolutionButton),
+        ),
+      ],
     );
   }
 }

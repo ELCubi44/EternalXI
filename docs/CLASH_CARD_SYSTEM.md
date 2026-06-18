@@ -71,6 +71,20 @@ R ──→ SR
 - **LR** y **XI** solo se obtienen por gacha, recompensas o métodos especiales.
 - Al evolucionar, la carta mantiene nivel relativo según reglas de conversión (tabla exacta: pendiente de balance); el árbol de duplicados, si aplica, se abre en la **versión SR resultante**.
 
+**Implementación Fase 20 (Flutter):** evolución N→R→SR desde el detalle de carta.
+
+| Paso | Requisitos |
+|---|---|
+| N → R | Nivel 20, 1 Insignia R |
+| R → SR | Nivel 50, 1 Insignia SR |
+
+- Misma `cardId` en assets; rareza evolucionada en `ClashCardProgress.evolvedRarity`.
+- Retrato/arte se mantiene provisionalmente (assets siguen siendo N).
+- Bonus de stats provisional: R +8 %, SR +18 % sobre stats base (además del escalado por nivel).
+- Inventario local: `clash_evolution_material_inventory_v1` (Insignia R ×3, Insignia SR ×1).
+- Coste en monedas documentado pero **pendiente** (wallet historia no acoplada).
+- LR/XI no se obtienen por evolución. Salto directo N→SR no implementado en esta fase.
+
 ---
 
 ## 4. Arte de cartas

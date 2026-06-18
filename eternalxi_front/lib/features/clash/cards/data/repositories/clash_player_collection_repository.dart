@@ -1,11 +1,15 @@
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_evolution_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_card_evolution_resolver.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_progress.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_service.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_result.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_service.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_use_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_service.dart';
@@ -21,15 +25,18 @@ class ClashPlayerCollectionRepository {
     required ClashCardsRepository cardsRepository,
     required ClashExpMaterialsRepository expMaterialsRepository,
     required ClashTechniqueBooksRepository techniqueBooksRepository,
+    required ClashEvolutionMaterialsRepository evolutionMaterialsRepository,
   }) : _storage = storage,
        _cardsRepository = cardsRepository,
        _expMaterialsRepository = expMaterialsRepository,
-       _techniqueBooksRepository = techniqueBooksRepository;
+       _techniqueBooksRepository = techniqueBooksRepository,
+       _evolutionMaterialsRepository = evolutionMaterialsRepository;
 
   final ClashPlayerCollectionStorageBackend _storage;
   final ClashCardsRepository _cardsRepository;
   final ClashExpMaterialsRepository _expMaterialsRepository;
   final ClashTechniqueBooksRepository _techniqueBooksRepository;
+  final ClashEvolutionMaterialsRepository _evolutionMaterialsRepository;
 
   ClashPlayerCollectionSnapshot? _cache;
 
@@ -164,9 +171,13 @@ class ClashPlayerCollectionRepository {
 
       final current =
           progressMap[cardId] ?? ClashCardXpService.initialProgress(cardId);
+      final rarity = ClashCardEvolutionResolver.effectiveRarity(
+        entry.card,
+        current,
+      );
       final result = ClashCardXpService.applyXp(
         progress: current,
-        rarity: entry.card.rarity,
+        rarity: rarity,
         cardName: entry.name,
         xpAmount: xpPerCard,
       );
@@ -207,10 +218,14 @@ class ClashPlayerCollectionRepository {
       }
       final current =
           progressMap[cardId] ?? ClashCardXpService.initialProgress(cardId);
+      final rarity = ClashCardEvolutionResolver.effectiveRarity(
+        entry.card,
+        current,
+      );
       results.add(
         ClashCardXpService.applyXp(
           progress: current,
-          rarity: entry.card.rarity,
+          rarity: rarity,
           cardName: entry.name,
           xpAmount: xpPerCard,
         ),
@@ -243,10 +258,14 @@ class ClashPlayerCollectionRepository {
       }
       final current =
           entry.progress ?? ClashCardXpService.initialProgress(cardId);
+      final rarity = ClashCardEvolutionResolver.effectiveRarity(
+        entry.card,
+        current,
+      );
       results.add(
         ClashCardXpService.applyXp(
           progress: current,
-          rarity: entry.card.rarity,
+          rarity: rarity,
           cardName: entry.name,
           xpAmount: xpPerCard,
         ),
@@ -264,6 +283,83 @@ class ClashPlayerCollectionRepository {
 
   Future<void> grantTechniqueBooks(Map<String, int> additions) {
     return _techniqueBooksRepository.grantBooks(additions);
+  }
+
+  Future<void> grantEvolutionMaterials(Map<String, int> additions) {
+    return _evolutionMaterialsRepository.grantMaterials(additions);
+  }
+
+  /// Evoluciona una carta poseída N→R o R→SR (Fase 20).
+  Future<ClashEvolutionResult> evolveCard({required String cardId}) async {
+    final snapshot = _loadSnapshot();
+    if (!snapshot.ownedCardIds.contains(cardId)) {
+      return _failedEvolution(
+        cardId: cardId,
+        error: ClashEvolutionError.cardNotOwned,
+      );
+    }
+
+    final entry = await _cardsRepository.findById(cardId);
+    if (entry == null) {
+      return _failedEvolution(
+        cardId: cardId,
+        error: ClashEvolutionError.cardNotFound,
+      );
+    }
+
+    final current =
+        snapshot.cardProgress[cardId] ??
+        ClashCardXpService.initialProgress(cardId);
+    final preview = ClashEvolutionService.previewEvolution(
+      cardId: cardId,
+      card: entry.card,
+      progress: current,
+      availableMaterials: _evolutionMaterialsRepository
+          .loadInventoryQuantities(),
+    );
+
+    if (!preview.succeeded) {
+      return preview;
+    }
+
+    for (final material in preview.materialsConsumed.entries) {
+      final consumed = await _evolutionMaterialsRepository.consumeMaterial(
+        materialId: material.key,
+        quantity: material.value,
+      );
+      if (!consumed) {
+        return preview.withError(ClashEvolutionError.insufficientMaterials);
+      }
+    }
+
+    final progressMap = Map<String, ClashCardProgress>.from(
+      snapshot.cardProgress,
+    );
+    progressMap[cardId] = ClashEvolutionService.progressAfterEvolution(
+      progress: current,
+      newRarity: preview.newRarity,
+    );
+    await _save(snapshot.copyWith(cardProgress: progressMap));
+
+    return preview;
+  }
+
+  ClashEvolutionResult _failedEvolution({
+    required String cardId,
+    required ClashEvolutionError error,
+  }) {
+    return ClashEvolutionResult(
+      cardId: cardId,
+      previousRarity: ClashRarity.n,
+      newRarity: ClashRarity.n,
+      previousMaxLevel: ClashRarity.n.maxLevel,
+      newMaxLevel: ClashRarity.n.maxLevel,
+      previousLevel: 1,
+      newLevel: 1,
+      materialsConsumed: const {},
+      coinsConsumed: 0,
+      error: error,
+    );
   }
 
   /// Usa un libro de técnica sobre una supertécnica (Fase 19).
@@ -494,6 +590,10 @@ class ClashPlayerCollectionRepository {
       final progress =
           snapshot.cardProgress[cardId] ??
           ClashCardXpService.initialProgress(cardId);
+      final rarity = ClashCardEvolutionResolver.effectiveRarity(
+        entry.card,
+        progress,
+      );
       return ClashExpMaterialUseResult(
         cardId: cardId,
         materialId: materialId,
@@ -504,10 +604,7 @@ class ClashPlayerCollectionRepository {
         previousXp: progress.currentExperience,
         newXp: progress.currentExperience,
         didLevelUp: false,
-        reachedMaxLevel: ClashCardXpService.isAtMaxLevel(
-          progress,
-          entry.card.rarity,
-        ),
+        reachedMaxLevel: ClashCardXpService.isAtMaxLevel(progress, rarity),
         error: ClashExpMaterialUseError.insufficientQuantity,
       );
     }
@@ -516,6 +613,10 @@ class ClashPlayerCollectionRepository {
       final progress =
           snapshot.cardProgress[cardId] ??
           ClashCardXpService.initialProgress(cardId);
+      final rarity = ClashCardEvolutionResolver.effectiveRarity(
+        entry.card,
+        progress,
+      );
       return ClashExpMaterialUseResult(
         cardId: cardId,
         materialId: materialId,
@@ -526,10 +627,7 @@ class ClashPlayerCollectionRepository {
         previousXp: progress.currentExperience,
         newXp: progress.currentExperience,
         didLevelUp: false,
-        reachedMaxLevel: ClashCardXpService.isAtMaxLevel(
-          progress,
-          entry.card.rarity,
-        ),
+        reachedMaxLevel: ClashCardXpService.isAtMaxLevel(progress, rarity),
         error: ClashExpMaterialUseError.insufficientQuantity,
       );
     }
@@ -537,10 +635,14 @@ class ClashPlayerCollectionRepository {
     final current =
         snapshot.cardProgress[cardId] ??
         ClashCardXpService.initialProgress(cardId);
+    final effectiveRarity = ClashCardEvolutionResolver.effectiveRarity(
+      entry.card,
+      current,
+    );
     final previousLevel = current.currentLevel;
     final previousXp = current.currentExperience;
 
-    if (ClashCardXpService.isAtMaxLevel(current, entry.card.rarity)) {
+    if (ClashCardXpService.isAtMaxLevel(current, effectiveRarity)) {
       return ClashExpMaterialUseResult(
         cardId: cardId,
         materialId: materialId,
@@ -559,7 +661,7 @@ class ClashPlayerCollectionRepository {
     final xpAmount = material.xpAmount * quantity;
     final xpResult = ClashCardXpService.applyXp(
       progress: current,
-      rarity: entry.card.rarity,
+      rarity: effectiveRarity,
       cardName: entry.name,
       xpAmount: xpAmount,
     );

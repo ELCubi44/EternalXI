@@ -1,0 +1,16 @@
+{
+  "materials": [
+    {
+      "id": "insignia-r",
+      "name": "Insignia R",
+      "description": "Material necesario para evolucionar una carta N a R.",
+      "targetRarity": "r"
+    },
+    {
+      "id": "insignia-sr",
+      "name": "Insignia SR",
+      "description": "Material necesario para evolucionar una carta R a SR.",
+      "targetRarity": "sr"
+    }
+  ]
+}

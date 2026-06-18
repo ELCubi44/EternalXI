@@ -1,12 +1,16 @@
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_evolution_material_inventory_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_evolution_materials_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_material_inventory_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_materials_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_technique_book_inventory_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_technique_books_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_evolution_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_material.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book.dart';
 
@@ -60,6 +64,25 @@ const clashTestTechniqueBooksJson = '''
 }
 ''';
 
+const clashTestEvolutionMaterialsJson = '''
+{
+  "materials": [
+    {
+      "id": "insignia-r",
+      "name": "Insignia R",
+      "description": "Material para evolucionar N a R.",
+      "targetRarity": "r"
+    },
+    {
+      "id": "insignia-sr",
+      "name": "Insignia SR",
+      "description": "Material para evolucionar R a SR.",
+      "targetRarity": "sr"
+    }
+  ]
+}
+''';
+
 class TestExpMaterialsDataSource extends ClashExpMaterialsLocalDataSource {
   @override
   Future<List<ClashExpMaterial>> loadMaterials() async {
@@ -71,6 +94,14 @@ class TestTechniqueBooksDataSource extends ClashTechniqueBooksLocalDataSource {
   @override
   Future<List<ClashTechniqueBook>> loadBooks() async {
     return parseBooksJson(clashTestTechniqueBooksJson);
+  }
+}
+
+class TestEvolutionMaterialsDataSource
+    extends ClashEvolutionMaterialsLocalDataSource {
+  @override
+  Future<List<ClashEvolutionMaterial>> loadMaterials() async {
+    return parseMaterialsJson(clashTestEvolutionMaterialsJson);
   }
 }
 
@@ -94,11 +125,22 @@ ClashTechniqueBooksRepository createTestTechniqueBooksRepository({
   );
 }
 
+ClashEvolutionMaterialsRepository createTestEvolutionMaterialsRepository({
+  ClashEvolutionMaterialInventoryStorageBackend? inventoryStorage,
+}) {
+  return ClashEvolutionMaterialsRepository(
+    dataSource: TestEvolutionMaterialsDataSource(),
+    inventoryStorage:
+        inventoryStorage ?? InMemoryClashEvolutionMaterialInventoryBackend(),
+  );
+}
+
 ClashPlayerCollectionRepository createTestCollectionRepository({
   required ClashCardsRepository cardsRepository,
   ClashPlayerCollectionStorageBackend? storage,
   ClashExpMaterialsRepository? expMaterialsRepository,
   ClashTechniqueBooksRepository? techniqueBooksRepository,
+  ClashEvolutionMaterialsRepository? evolutionMaterialsRepository,
 }) {
   return ClashPlayerCollectionRepository(
     storage: storage ?? InMemoryClashPlayerCollectionBackend(),
@@ -107,5 +149,8 @@ ClashPlayerCollectionRepository createTestCollectionRepository({
         expMaterialsRepository ?? createTestExpMaterialsRepository(),
     techniqueBooksRepository:
         techniqueBooksRepository ?? createTestTechniqueBooksRepository(),
+    evolutionMaterialsRepository:
+        evolutionMaterialsRepository ??
+        createTestEvolutionMaterialsRepository(),
   );
 }
