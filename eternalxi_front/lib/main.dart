@@ -37,6 +37,7 @@ import 'package:eternal_xi/features/clash/shop/data/clash_shop_local_datasource.
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
 import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
+import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_local_datasource.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_repository.dart';
@@ -342,6 +343,7 @@ Future<void> main() async {
             missionEventSink: context.read<ClashDailyMissionEventSink>(),
           ),
         ),
+        Provider<ClashLineupsStorageBackend>.value(value: clashLineupsBackend),
         Provider<ClashLineupsRepository>(
           create: (context) => ClashLineupsRepository(
             storage: context.read<ClashLineupsStorageBackend>(),
