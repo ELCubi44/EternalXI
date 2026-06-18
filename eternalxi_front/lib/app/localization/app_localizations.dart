@@ -171,6 +171,10 @@ class AppLocalizations {
       'clashGachaHistoryPullDaily': 'Diario',
       'clashGachaHistorySpent': '{spent} gemas',
       'clashGachaHistorySummary': '{count} cartas · Mejor rareza: {rarity}',
+      'clashGachaPityProgress': 'Pity SR: {current}/{max}',
+      'clashGachaPityRemaining': 'Faltan {count} invocaciones',
+      'clashGachaPityChip': 'Pity SR',
+      'clashGachaMultiGuaranteeChip': 'Garantía multi',
       'clashSummonBanners': 'Banners',
       'clashSummonSingle': 'Single',
       'clashSummonMulti': 'Multi',
@@ -742,6 +746,10 @@ class AppLocalizations {
       'clashGachaHistoryPullDaily': 'Daily',
       'clashGachaHistorySpent': '{spent} gems',
       'clashGachaHistorySummary': '{count} cards · Best rarity: {rarity}',
+      'clashGachaPityProgress': 'SR pity: {current}/{max}',
+      'clashGachaPityRemaining': '{count} summons remaining',
+      'clashGachaPityChip': 'SR pity',
+      'clashGachaMultiGuaranteeChip': 'Multi guarantee',
       'clashSummonBanners': 'Banners',
       'clashSummonSingle': 'Single',
       'clashSummonMulti': 'Multi',
@@ -1344,6 +1352,13 @@ class AppLocalizations {
   String clashGachaHistorySummary(int count, String rarity) => _t(
     'clashGachaHistorySummary',
   ).replaceAll('{count}', '$count').replaceAll('{rarity}', rarity);
+  String clashGachaPityProgress(int current, int max) => _t(
+    'clashGachaPityProgress',
+  ).replaceAll('{current}', '$current').replaceAll('{max}', '$max');
+  String clashGachaPityRemaining(int count) =>
+      _t('clashGachaPityRemaining').replaceAll('{count}', '$count');
+  String get clashGachaPityChip => _t('clashGachaPityChip');
+  String get clashGachaMultiGuaranteeChip => _t('clashGachaMultiGuaranteeChip');
   String get clashSummonBanners => _t('clashSummonBanners');
   String get clashSummonSingle => _t('clashSummonSingle');
   String get clashSummonMulti => _t('clashSummonMulti');

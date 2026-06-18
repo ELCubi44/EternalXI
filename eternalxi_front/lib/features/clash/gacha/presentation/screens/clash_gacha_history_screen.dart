@@ -5,6 +5,7 @@ import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_rarit
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_history_entry.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_type.dart';
+import 'package:eternal_xi/features/clash/gacha/presentation/widgets/clash_gacha_pity_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -166,6 +167,16 @@ class _HistoryResultRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(status),
+                Wrap(
+                  children: [
+                    if (item.wasPity)
+                      ClashGachaResultChip(label: l10n.clashGachaPityChip),
+                    if (item.wasMultiGuarantee)
+                      ClashGachaResultChip(
+                        label: l10n.clashGachaMultiGuaranteeChip,
+                      ),
+                  ],
+                ),
               ],
             ),
           ),

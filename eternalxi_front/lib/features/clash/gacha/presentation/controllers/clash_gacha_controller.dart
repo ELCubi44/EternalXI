@@ -1,5 +1,6 @@
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_banner.dart';
+import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pity_state.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_error.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_result.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_type.dart';
@@ -23,6 +24,7 @@ class ClashGachaController extends ChangeNotifier {
   bool _dailyAvailable = true;
   ClashGachaPullResult? _lastResult;
   ClashGachaPullError? _lastError;
+  ClashGachaPityState? _pityState;
 
   ClashGachaLoadState get state => _state;
   ClashGachaBanner? get banner => _banner;
@@ -31,6 +33,7 @@ class ClashGachaController extends ChangeNotifier {
   bool get dailyAvailable => _dailyAvailable;
   ClashGachaPullResult? get lastResult => _lastResult;
   ClashGachaPullError? get lastError => _lastError;
+  ClashGachaPityState? get pityState => _pityState;
 
   Future<void> load() async {
     _state = ClashGachaLoadState.loading;
@@ -40,6 +43,7 @@ class ClashGachaController extends ChangeNotifier {
     _rates = catalog.rates;
     _walletGems = _repository.walletGems();
     _dailyAvailable = _repository.isDailyAvailable(defaultBannerId);
+    _pityState = _repository.loadPityState(defaultBannerId);
     _state = ClashGachaLoadState.ready;
     notifyListeners();
   }
@@ -58,6 +62,7 @@ class ClashGachaController extends ChangeNotifier {
     _lastError = outcome.error;
     _walletGems = _repository.walletGems();
     _dailyAvailable = _repository.isDailyAvailable(_banner!.id);
+    _pityState = _repository.loadPityState(_banner!.id);
     _state = ClashGachaLoadState.ready;
     notifyListeners();
     return outcome;

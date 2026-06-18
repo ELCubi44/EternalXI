@@ -403,6 +403,7 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 | **22** | Pantalla central `/clash/inventory` — solo visualización |
 | **23** | Invocar — gacha local MVP (banner, rates, gemas historia) |
 | **24** | Historial local de invocaciones (`/clash/summon/history`) |
+| **25** | Pity SR local cada 30 cartas por banner |
 
 ### Fase 22 — Inventario Clash
 
@@ -434,6 +435,17 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 **Nota:** historial local provisional; no es backend ni auditoría legal.
 
 **Pendiente:** pity definitivo, backend, banners reales, economía/legal final.
+
+### Fase 25 — Pity SR local
+
+- Pity SR cada **30 cartas** obtenidas por banner (`clash_gacha_pity_v1`).
+- Cuenta por carta: single/daily +1, multi +10.
+- Al llegar a 30 se fuerza SR pity y el contador vuelve a 0.
+- **SR natural no reinicia pity**; solo el SR obtenido por pity reinicia.
+- La garantía multi SR sigue activa; si el pity ya dio SR, no aplica garantía extra.
+- UI: contador Pity SR, chips en resultado e historial.
+
+**Pendiente:** backend pity, LR/XI, soft pity, economía/legal final.
 
 ---
 

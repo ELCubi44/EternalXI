@@ -8,6 +8,7 @@ import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_type.dar
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_rarity_rates.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/controllers/clash_gacha_controller.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/widgets/clash_gacha_banner_card.dart';
+import 'package:eternal_xi/features/clash/gacha/presentation/widgets/clash_gacha_pity_card.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/widgets/clash_gacha_result_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -135,6 +136,10 @@ class _ClashGachaBody extends StatelessWidget {
         _WalletCard(gems: controller.walletGems),
         const SizedBox(height: 16),
         ClashGachaBannerCard(banner: banner, rates: controller.rates),
+        if (controller.pityState != null) ...[
+          const SizedBox(height: 12),
+          ClashGachaPityCard(pityState: controller.pityState!),
+        ],
         const SizedBox(height: 16),
         Text(
           l10n.clashSummonRates,

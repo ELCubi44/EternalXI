@@ -11,6 +11,8 @@ class ClashGachaPullResultItem {
     required this.isDuplicate,
     required this.upgradedRarity,
     required this.duplicateCopiesAfter,
+    this.wasPity = false,
+    this.wasMultiGuarantee = false,
   });
 
   final String cardId;
@@ -20,6 +22,8 @@ class ClashGachaPullResultItem {
   final bool isDuplicate;
   final bool upgradedRarity;
   final int duplicateCopiesAfter;
+  final bool wasPity;
+  final bool wasMultiGuarantee;
 }
 
 class ClashGachaPullResult {
@@ -30,6 +34,7 @@ class ClashGachaPullResult {
     required this.results,
     required this.createdAt,
     required this.remainingGems,
+    this.pityTriggered = false,
   });
 
   final String bannerId;
@@ -38,6 +43,7 @@ class ClashGachaPullResult {
   final List<ClashGachaPullResultItem> results;
   final DateTime createdAt;
   final int remainingGems;
+  final bool pityTriggered;
 }
 
 class ClashGachaPullOutcome {

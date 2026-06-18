@@ -12,6 +12,8 @@ class ClashGachaHistoryResultItem {
     required this.isDuplicate,
     required this.upgradedRarity,
     required this.duplicateCopiesAfter,
+    this.wasPity = false,
+    this.wasMultiGuarantee = false,
   });
 
   final String cardId;
@@ -21,6 +23,8 @@ class ClashGachaHistoryResultItem {
   final bool isDuplicate;
   final bool upgradedRarity;
   final int duplicateCopiesAfter;
+  final bool wasPity;
+  final bool wasMultiGuarantee;
 
   factory ClashGachaHistoryResultItem.fromPullItem(
     ClashGachaPullResultItem item,
@@ -33,6 +37,8 @@ class ClashGachaHistoryResultItem {
       isDuplicate: item.isDuplicate,
       upgradedRarity: item.upgradedRarity,
       duplicateCopiesAfter: item.duplicateCopiesAfter,
+      wasPity: item.wasPity,
+      wasMultiGuarantee: item.wasMultiGuarantee,
     );
   }
 
@@ -45,6 +51,8 @@ class ClashGachaHistoryResultItem {
       isDuplicate: json['isDuplicate'] as bool? ?? false,
       upgradedRarity: json['upgradedRarity'] as bool? ?? false,
       duplicateCopiesAfter: json['duplicateCopiesAfter'] as int? ?? 0,
+      wasPity: json['wasPity'] as bool? ?? false,
+      wasMultiGuarantee: json['wasMultiGuarantee'] as bool? ?? false,
     );
   }
 
@@ -56,6 +64,8 @@ class ClashGachaHistoryResultItem {
     'isDuplicate': isDuplicate,
     'upgradedRarity': upgradedRarity,
     'duplicateCopiesAfter': duplicateCopiesAfter,
+    'wasPity': wasPity,
+    'wasMultiGuarantee': wasMultiGuarantee,
   };
 }
 

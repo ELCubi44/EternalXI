@@ -280,6 +280,17 @@ void main() {
   });
 
   group('ClashGachaPanel UI', () {
+    setUp(() {
+      final binding = TestWidgetsFlutterBinding.ensureInitialized();
+      binding.window.physicalSizeTestValue = const Size(800, 2000);
+      binding.window.devicePixelRatioTestValue = 1.0;
+    });
+
+    tearDown(() {
+      TestWidgetsFlutterBinding.ensureInitialized().window.clearPhysicalSizeTestValue();
+      TestWidgetsFlutterBinding.ensureInitialized().window.clearDevicePixelRatioTestValue();
+    });
+
     testWidgets('muestra saldo, banner y probabilidades', (tester) async {
       final repo = await createTestGachaRepository(initialGems: 120);
       await tester.pumpWidget(await _gachaTestApp(gachaRepo: repo));
@@ -311,7 +322,7 @@ void main() {
       await tester.pumpWidget(await _gachaTestApp(gachaRepo: repo));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.textContaining('Single ×10 gemas'));
+      await tester.tap(find.text('Single ×10 gemas'));
       await tester.pumpAndSettle();
 
       expect(find.text('Consigue gemas en Historia'), findsOneWidget);
@@ -320,10 +331,6 @@ void main() {
     testWidgets('pull exitoso muestra resultados y actualiza saldo', (
       tester,
     ) async {
-      tester.view.physicalSize = const Size(800, 2000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.reset);
-
       final repo = await createTestGachaRepository(
         initialGems: 50,
         engine: ClashGachaEngine(random: _FixedRandom(0)),
@@ -331,7 +338,7 @@ void main() {
       await tester.pumpWidget(await _gachaTestApp(gachaRepo: repo));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.textContaining('Single ×10 gemas'));
+      await tester.tap(find.text('Single ×10 gemas'));
       await tester.pumpAndSettle();
 
       expect(
@@ -365,17 +372,13 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.textContaining('Single ×10 gemas'));
+      await tester.tap(find.text('Single ×10 gemas'));
       await tester.pumpAndSettle();
 
       expect(find.text('Duplicado'), findsOneWidget);
     });
 
     testWidgets('multi muestra 10 resultados', (tester) async {
-      tester.view.physicalSize = const Size(800, 2000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.reset);
-
       final repo = await createTestGachaRepository(
         initialGems: 200,
         engine: ClashGachaEngine(random: _FixedRandom(0)),

@@ -127,6 +127,16 @@ R ──→ SR
 - Pool base: cartas de `cards.json`. Si el pull asigna rareza superior a la poseída, se actualiza `evolvedRarity` sin materiales; si ya está en esa rareza o superior, suma `duplicateCopies`.
 - Artes/variantes reales por rareza gacha vendrán en fases posteriores.
 
+**Implementación Fase 25 (Flutter):** pity SR local provisional.
+
+| Incluido (Fase 25) | Pendiente |
+|---|---|
+| Pity SR cada 30 cartas por banner | Backend pity |
+| Contador persistido `clash_gacha_pity_v1` | Pity LR/XI |
+| SR pity reinicia contador; SR natural no | Soft pity |
+| Compatible con garantía multi SR | Economía/legal final |
+| Chips Pity SR / Garantía multi en UI e historial | |
+
 ---
 
 ## 4. Arte de cartas

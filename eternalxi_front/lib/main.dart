@@ -25,6 +25,7 @@ import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_re
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_daily_storage.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_history_storage.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_pity_storage.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_local_datasource.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/inventory/data/clash_inventory_repository.dart';
@@ -90,6 +91,8 @@ Future<void> main() async {
       await SharedPreferencesClashGachaDailyBackend.create();
   final clashGachaHistoryBackend =
       await SharedPreferencesClashGachaHistoryBackend.create();
+  final clashGachaPityBackend =
+      await SharedPreferencesClashGachaPityBackend.create();
   final apiClient = ApiClient(
     acceptLanguage: AppLocaleResolver.apiLanguageTag(),
     secureStorage: secureStorageService,
@@ -263,11 +266,15 @@ Future<void> main() async {
         Provider<ClashGachaHistoryStorageBackend>.value(
           value: clashGachaHistoryBackend,
         ),
+        Provider<ClashGachaPityStorageBackend>.value(
+          value: clashGachaPityBackend,
+        ),
         Provider<ClashGachaRepository>(
           create: (context) => ClashGachaRepository(
             dataSource: ClashGachaLocalDataSource(),
             dailyStorage: context.read<ClashGachaDailyStorageBackend>(),
             historyStorage: context.read<ClashGachaHistoryStorageBackend>(),
+            pityStorage: context.read<ClashGachaPityStorageBackend>(),
             storyRepository: context.read<ClashStoryRepository>(),
             collectionRepository: context
                 .read<ClashPlayerCollectionRepository>(),

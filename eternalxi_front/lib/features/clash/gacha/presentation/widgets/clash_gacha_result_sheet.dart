@@ -3,6 +3,7 @@ import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_rarity_badge.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_result.dart';
+import 'package:eternal_xi/features/clash/gacha/presentation/widgets/clash_gacha_pity_card.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -109,6 +110,16 @@ class _ResultRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(status),
+                Wrap(
+                  children: [
+                    if (item.wasPity)
+                      ClashGachaResultChip(label: l10n.clashGachaPityChip),
+                    if (item.wasMultiGuarantee)
+                      ClashGachaResultChip(
+                        label: l10n.clashGachaMultiGuaranteeChip,
+                      ),
+                  ],
+                ),
                 if (item.isDuplicate)
                   Text(
                     l10n.clashGachaResultDuplicates(item.duplicateCopiesAfter),
