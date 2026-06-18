@@ -1,4 +1,5 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
@@ -9,6 +10,7 @@ import 'package:eternal_xi/features/clash/gacha/presentation/controllers/clash_g
 import 'package:eternal_xi/features/clash/gacha/presentation/widgets/clash_gacha_banner_card.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/widgets/clash_gacha_result_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class ClashGachaPanel extends StatefulWidget {
@@ -105,11 +107,21 @@ class _ClashGachaBody extends StatelessWidget {
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
       children: [
-        Text(
-          l10n.clashTabSummon,
-          style: Theme.of(
-            context,
-          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                l10n.clashTabSummon,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => context.push(AppRoutes.clashSummonHistory),
+              child: Text(l10n.clashSummonHistory),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
         Text(

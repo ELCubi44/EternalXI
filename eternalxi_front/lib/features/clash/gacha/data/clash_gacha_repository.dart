@@ -1,7 +1,9 @@
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_daily_storage.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_history_storage.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_local_datasource.dart';
+import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_history_entry.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_banner.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_engine.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_error.dart';
@@ -10,11 +12,12 @@ import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_type.dar
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_rarity_rates.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 
-/// Orquesta tiradas gacha locales (Fase 23).
+/// Orquesta tiradas gacha locales (Fase 23) e historial (Fase 24).
 class ClashGachaRepository {
   ClashGachaRepository({
     required ClashGachaLocalDataSource dataSource,
     required ClashGachaDailyStorageBackend dailyStorage,
+    required ClashGachaHistoryStorageBackend historyStorage,
     required ClashStoryRepository storyRepository,
     required ClashPlayerCollectionRepository collectionRepository,
     required ClashCardsRepository cardsRepository,
@@ -22,6 +25,7 @@ class ClashGachaRepository {
     DateTime Function()? now,
   }) : _dataSource = dataSource,
        _dailyStorage = dailyStorage,
+       _historyStorage = historyStorage,
        _storyRepository = storyRepository,
        _collectionRepository = collectionRepository,
        _cardsRepository = cardsRepository,
@@ -30,6 +34,7 @@ class ClashGachaRepository {
 
   final ClashGachaLocalDataSource _dataSource;
   final ClashGachaDailyStorageBackend _dailyStorage;
+  final ClashGachaHistoryStorageBackend _historyStorage;
   final ClashStoryRepository _storyRepository;
   final ClashPlayerCollectionRepository _collectionRepository;
   final ClashCardsRepository _cardsRepository;
@@ -58,6 +63,14 @@ class ClashGachaRepository {
       _catalogCache?.rates ?? ClashGachaRarityRates.provisional;
 
   int walletGems() => _storyRepository.walletGems();
+
+  Future<List<ClashGachaHistoryEntry>> loadHistory() async {
+    final entries = _historyStorage.readEntries()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return List<ClashGachaHistoryEntry>.unmodifiable(entries);
+  }
+
+  Future<void> clearHistory() => _historyStorage.clearHistory();
 
   bool isDailyAvailable(String bannerId) {
     final today = _todayKey();
@@ -146,16 +159,24 @@ class ClashGachaRepository {
       );
     }
 
-    return ClashGachaPullOutcome(
-      result: ClashGachaPullResult(
-        bannerId: bannerId,
-        pullType: type,
-        spentGems: cost,
-        results: items,
-        createdAt: _now(),
-        remainingGems: _storyRepository.walletGems(),
+    final result = ClashGachaPullResult(
+      bannerId: bannerId,
+      pullType: type,
+      spentGems: cost,
+      results: items,
+      createdAt: _now(),
+      remainingGems: _storyRepository.walletGems(),
+    );
+
+    await _historyStorage.appendEntry(
+      ClashGachaHistoryEntry.fromPullResult(
+        id: '${result.createdAt.millisecondsSinceEpoch}-${type.name}',
+        result: result,
+        bannerName: banner.name,
       ),
     );
+
+    return ClashGachaPullOutcome(result: result);
   }
 
   Future<List<String>> _resolvePool(ClashGachaBanner banner) async {

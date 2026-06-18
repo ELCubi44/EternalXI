@@ -16,6 +16,7 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_material.
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_daily_storage.dart';
+import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_history_storage.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_local_datasource.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_engine.dart';
@@ -255,6 +256,7 @@ Future<ClashGachaRepository> createTestGachaRepository({
   ClashPlayerCollectionRepository? collectionRepository,
   ClashStoryRepository? storyRepository,
   ClashGachaDailyStorageBackend? dailyStorage,
+  ClashGachaHistoryStorageBackend? historyStorage,
   ClashGachaEngine? engine,
   DateTime Function()? now,
   int initialGems = 200,
@@ -280,6 +282,7 @@ Future<ClashGachaRepository> createTestGachaRepository({
   return ClashGachaRepository(
     dataSource: TestGachaDataSource(),
     dailyStorage: dailyStorage ?? InMemoryClashGachaDailyBackend(),
+    historyStorage: historyStorage ?? InMemoryClashGachaHistoryBackend(),
     storyRepository: story,
     collectionRepository: collection,
     cardsRepository: cardsRepo,

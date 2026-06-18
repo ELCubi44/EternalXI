@@ -320,6 +320,10 @@ void main() {
     testWidgets('pull exitoso muestra resultados y actualiza saldo', (
       tester,
     ) async {
+      tester.view.physicalSize = const Size(800, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
       final repo = await createTestGachaRepository(
         initialGems: 50,
         engine: ClashGachaEngine(random: _FixedRandom(0)),
@@ -330,7 +334,10 @@ void main() {
       await tester.tap(find.textContaining('Single ×10 gemas'));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Resultado de invocación (1)'), findsOneWidget);
+      expect(
+        find.textContaining('Resultado de invocación (1)'),
+        findsOneWidget,
+      );
       expect(find.textContaining('Gemas: 40'), findsOneWidget);
     });
 
@@ -365,6 +372,10 @@ void main() {
     });
 
     testWidgets('multi muestra 10 resultados', (tester) async {
+      tester.view.physicalSize = const Size(800, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
       final repo = await createTestGachaRepository(
         initialGems: 200,
         engine: ClashGachaEngine(random: _FixedRandom(0)),
@@ -375,7 +386,10 @@ void main() {
       await tester.tap(find.textContaining('Multi ×95 gemas'));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Resultado de invocación (10)'), findsOneWidget);
+      expect(
+        find.textContaining('Resultado de invocación (10)'),
+        findsOneWidget,
+      );
       expect(find.textContaining('Gastadas: 95'), findsOneWidget);
     });
   });

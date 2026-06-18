@@ -163,6 +163,14 @@ class AppLocalizations {
       'clashGachaResultDuplicate': 'Duplicado',
       'clashGachaResultUpgraded': 'Rareza mejorada',
       'clashGachaResultDuplicates': 'Duplicados: {count}',
+      'clashGachaViewHistory': 'Ver historial',
+      'clashGachaHistoryTitle': 'Historial de invocaciones',
+      'clashGachaHistoryEmpty': 'Todavía no has hecho invocaciones',
+      'clashGachaHistoryPullSingle': 'Single',
+      'clashGachaHistoryPullMulti': 'Multi',
+      'clashGachaHistoryPullDaily': 'Diario',
+      'clashGachaHistorySpent': '{spent} gemas',
+      'clashGachaHistorySummary': '{count} cartas · Mejor rareza: {rarity}',
       'clashSummonBanners': 'Banners',
       'clashSummonSingle': 'Single',
       'clashSummonMulti': 'Multi',
@@ -726,6 +734,14 @@ class AppLocalizations {
       'clashGachaResultDuplicate': 'Duplicate',
       'clashGachaResultUpgraded': 'Rarity upgraded',
       'clashGachaResultDuplicates': 'Duplicates: {count}',
+      'clashGachaViewHistory': 'View history',
+      'clashGachaHistoryTitle': 'Summon history',
+      'clashGachaHistoryEmpty': 'You have not summoned yet',
+      'clashGachaHistoryPullSingle': 'Single',
+      'clashGachaHistoryPullMulti': 'Multi',
+      'clashGachaHistoryPullDaily': 'Daily',
+      'clashGachaHistorySpent': '{spent} gems',
+      'clashGachaHistorySummary': '{count} cards · Best rarity: {rarity}',
       'clashSummonBanners': 'Banners',
       'clashSummonSingle': 'Single',
       'clashSummonMulti': 'Multi',
@@ -1299,9 +1315,9 @@ class AppLocalizations {
       _t('clashGachaWalletGems').replaceAll('{count}', '$count');
   String clashGachaSingleButton(int cost) =>
       _t('clashGachaSingleButton').replaceAll('{cost}', '$cost');
-  String clashGachaMultiButton(int cost, int count) => _t('clashGachaMultiButton')
-      .replaceAll('{cost}', '$cost')
-      .replaceAll('{count}', '$count');
+  String clashGachaMultiButton(int cost, int count) => _t(
+    'clashGachaMultiButton',
+  ).replaceAll('{cost}', '$cost').replaceAll('{count}', '$count');
   String clashGachaDailyButton(int cost) =>
       _t('clashGachaDailyButton').replaceAll('{cost}', '$cost');
   String get clashGachaDailyUsed => _t('clashGachaDailyUsed');
@@ -1317,6 +1333,17 @@ class AppLocalizations {
   String get clashGachaResultUpgraded => _t('clashGachaResultUpgraded');
   String clashGachaResultDuplicates(int count) =>
       _t('clashGachaResultDuplicates').replaceAll('{count}', '$count');
+  String get clashGachaViewHistory => _t('clashGachaViewHistory');
+  String get clashGachaHistoryTitle => _t('clashGachaHistoryTitle');
+  String get clashGachaHistoryEmpty => _t('clashGachaHistoryEmpty');
+  String get clashGachaHistoryPullSingle => _t('clashGachaHistoryPullSingle');
+  String get clashGachaHistoryPullMulti => _t('clashGachaHistoryPullMulti');
+  String get clashGachaHistoryPullDaily => _t('clashGachaHistoryPullDaily');
+  String clashGachaHistorySpent(int spent) =>
+      _t('clashGachaHistorySpent').replaceAll('{spent}', '$spent');
+  String clashGachaHistorySummary(int count, String rarity) => _t(
+    'clashGachaHistorySummary',
+  ).replaceAll('{count}', '$count').replaceAll('{rarity}', rarity);
   String get clashSummonBanners => _t('clashSummonBanners');
   String get clashSummonSingle => _t('clashSummonSingle');
   String get clashSummonMulti => _t('clashSummonMulti');

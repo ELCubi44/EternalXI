@@ -1,8 +1,10 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_rarity_badge.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_result.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ClashGachaResultSheet extends StatelessWidget {
   const ClashGachaResultSheet({required this.result, super.key});
@@ -56,6 +58,14 @@ class ClashGachaResultSheet extends StatelessWidget {
                   return _ResultRow(item: item);
                 },
               ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.push(AppRoutes.clashSummonHistory);
+              },
+              child: Text(l10n.clashGachaViewHistory),
             ),
           ],
         ),

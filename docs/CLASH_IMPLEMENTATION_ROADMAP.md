@@ -402,6 +402,7 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 | **21** | Duplicados y árbol de habilidades lineal SR/LR/XI (`CLASH_CARD_SYSTEM.md`) |
 | **22** | Pantalla central `/clash/inventory` — solo visualización |
 | **23** | Invocar — gacha local MVP (banner, rates, gemas historia) |
+| **24** | Historial local de invocaciones (`/clash/summon/history`) |
 
 ### Fase 22 — Inventario Clash
 
@@ -422,6 +423,17 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 - Concesión de cartas vía `grantGachaCard` (nueva / duplicado / `evolvedRarity`).
 
 **Pendiente:** backend gacha, banners reales, pity definitivo, animaciones, economía real y tienda.
+
+### Fase 24 — Historial de invocaciones
+
+- Cada tirada exitosa se guarda en `clash_gacha_history_v1` (máx. 50 entradas).
+- Pantalla **Historial de invocaciones** en `/clash/summon/history`.
+- Acceso desde Invocar y desde el sheet de resultado («Ver historial»).
+- Muestra fecha, banner, tipo, gemas, cartas y estado (nueva / duplicado / mejora).
+
+**Nota:** historial local provisional; no es backend ni auditoría legal.
+
+**Pendiente:** pity definitivo, backend, banners reales, economía/legal final.
 
 ---
 
