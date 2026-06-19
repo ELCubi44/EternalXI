@@ -1,7 +1,8 @@
 import 'package:eternal_xi/features/clash/missions/data/clash_mission_progress_event_hub.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission_type.dart';
-import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/data/clash_local_reward_granter.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/data/clash_reward_converters.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_local_datasource.dart';
 import 'package:eternal_xi/features/clash/shop/domain/clash_shop_product.dart';
 import 'package:eternal_xi/features/clash/shop/domain/clash_shop_purchase_error.dart';
@@ -13,18 +14,18 @@ class ClashShopRepository {
   ClashShopRepository({
     required ClashShopLocalDataSource dataSource,
     required ClashStoryRepository storyRepository,
-    required ClashShopGrantService grantService,
+    required ClashLocalRewardGranter rewardGranter,
     ClashDailyMissionEventSink? missionEventSink,
     ClashMissionProgressEventHub? progressEventHub,
   }) : _dataSource = dataSource,
        _storyRepository = storyRepository,
-       _grantService = grantService,
+       _rewardGranter = rewardGranter,
        _missionEventSink = missionEventSink,
        _progressEventHub = progressEventHub;
 
   final ClashShopLocalDataSource _dataSource;
   final ClashStoryRepository _storyRepository;
-  final ClashShopGrantService _grantService;
+  final ClashLocalRewardGranter _rewardGranter;
   final ClashDailyMissionEventSink? _missionEventSink;
   final ClashMissionProgressEventHub? _progressEventHub;
 
@@ -80,7 +81,10 @@ class ClashShopRepository {
       );
     }
 
-    final granted = await _grantService.grantProductGrants(product.grants);
+    final granted = (await _rewardGranter.grantAll(
+      ClashRewardConverters.fromProductGrants(product.grants),
+      grantWallet: false,
+    )).isFullyGranted;
     if (!granted) {
       await _storyRepository.addCoins(product.costCoins);
       return ClashShopPurchaseResult.failure(

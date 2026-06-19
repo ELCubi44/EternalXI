@@ -7,7 +7,6 @@ import 'package:eternal_xi/features/clash/events/data/clash_character_events_loc
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_repository.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_storage.dart';
 import 'package:eternal_xi/features/clash/events/domain/clash_character_event.dart';
-import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
 import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_detail_screen.dart';
 import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_match_prepare_screen.dart';
 import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_story_stage_screen.dart';
@@ -170,7 +169,8 @@ void main() {
         dataSource: _EmptyEventsDataSource(),
         storage: InMemoryClashCharacterEventsBackend(),
         storyRepository: setup.story,
-        grantService: ClashShopGrantService(
+        rewardGranter: createTestRewardGranter(
+          storyRepository: setup.story,
           collectionRepository: setup.collection,
           ticketRepository: createTestTicketRepository(),
         ),

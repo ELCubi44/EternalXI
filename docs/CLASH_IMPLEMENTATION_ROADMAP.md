@@ -774,4 +774,17 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 53 — Grant local unificado
+
+**Estado:** implementada.
+
+- Módulo `lib/features/clash/shared/rewards/`: `ClashReward`, `ClashRewardGrantResult`, `ClashLocalRewardGranter`, `ClashRewardConverters`.
+- Migración gradual: gifts, achievements, daily/weekly missions, character events, shop (entrega) y story (ítems/cartas; wallet en progress).
+- `ClashShopGrantService` conservado como puente legacy hacia el granter.
+- Tests: `test/features/clash/rewards/clash_local_reward_granter_test.dart` + suite Clash existente.
+
+**Sin cambios** en economía, cantidades, claves SharedPreferences, rutas, Fantasy ni backend.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

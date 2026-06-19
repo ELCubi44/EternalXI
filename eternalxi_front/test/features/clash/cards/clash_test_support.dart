@@ -25,7 +25,7 @@ import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_local_datasourc
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_engine.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_ticket.dart';
-import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/data/clash_local_reward_granter.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_local_datasource.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
 import 'package:eternal_xi/features/clash/shop/domain/clash_shop_product.dart';
@@ -66,6 +66,21 @@ import 'package:eternal_xi/features/clash/match/data/datasources/clash_match_ite
 import 'package:eternal_xi/features/clash/match/domain/clash_match_item_inventory_entry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+ClashLocalRewardGranter createTestRewardGranter({
+  ClashStoryRepository? storyRepository,
+  ClashPlayerCollectionRepository? collectionRepository,
+  ClashGachaTicketRepository? ticketRepository,
+}) {
+  final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
+  return ClashLocalRewardGranter(
+    storyRepository: storyRepository,
+    collectionRepository:
+        collectionRepository ??
+        createTestCollectionRepository(cardsRepository: cardsRepo),
+    ticketRepository: ticketRepository ?? createTestTicketRepository(),
+  );
+}
 
 const clashTestExpMaterialsJson = '''
 {
@@ -503,7 +518,7 @@ Future<ClashShopRepository> createTestShopRepository({
   ClashStoryRepository? storyRepository,
   ClashPlayerCollectionRepository? collectionRepository,
   ClashGachaTicketRepository? ticketRepository,
-  ClashShopGrantService? grantService,
+  ClashLocalRewardGranter? rewardGranter,
   ClashDailyMissionEventSink? missionEventSink,
   ClashMissionProgressEventHub? progressEventHub,
   int initialCoins = 2000,
@@ -531,9 +546,10 @@ Future<ClashShopRepository> createTestShopRepository({
   return ClashShopRepository(
     dataSource: TestShopDataSource(),
     storyRepository: story,
-    grantService:
-        grantService ??
-        ClashShopGrantService(
+    rewardGranter:
+        rewardGranter ??
+        createTestRewardGranter(
+          storyRepository: story,
           collectionRepository: collection,
           ticketRepository: tickets,
         ),
@@ -649,7 +665,8 @@ createTestMissionsSetup({
     dataSource: TestMissionsDataSource(),
     storage: storage ?? InMemoryClashDailyMissionsBackend(),
     storyRepository: story,
-    grantService: ClashShopGrantService(
+    rewardGranter: createTestRewardGranter(
+      storyRepository: story,
       collectionRepository: collection,
       ticketRepository: tickets,
     ),
@@ -792,7 +809,8 @@ createTestAchievementsSetup({
     dataSource: TestAchievementsDataSource(),
     storage: storage ?? InMemoryClashAchievementsBackend(),
     storyRepository: story,
-    grantService: ClashShopGrantService(
+    rewardGranter: createTestRewardGranter(
+      storyRepository: story,
       collectionRepository: collection,
       ticketRepository: tickets,
     ),
@@ -960,7 +978,8 @@ createTestWeeklyMissionsSetup({
     dataSource: TestWeeklyMissionsDataSource(),
     storage: storage ?? InMemoryClashWeeklyMissionsBackend(),
     storyRepository: story,
-    grantService: ClashShopGrantService(
+    rewardGranter: createTestRewardGranter(
+      storyRepository: story,
       collectionRepository: collection,
       ticketRepository: tickets,
     ),
@@ -1154,7 +1173,8 @@ createTestGiftsSetup({
     dataSource: TestGiftsDataSource(),
     storage: giftStorage,
     storyRepository: story,
-    grantService: ClashShopGrantService(
+    rewardGranter: createTestRewardGranter(
+      storyRepository: story,
       collectionRepository: collection,
       ticketRepository: tickets,
     ),
@@ -1275,7 +1295,8 @@ createTestEventsSetup({
     dataSource: TestCharacterEventsDataSource(),
     storage: eventStorage,
     storyRepository: story,
-    grantService: ClashShopGrantService(
+    rewardGranter: createTestRewardGranter(
+      storyRepository: story,
       collectionRepository: collection,
       ticketRepository: tickets,
     ),

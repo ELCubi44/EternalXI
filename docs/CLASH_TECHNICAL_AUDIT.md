@@ -132,7 +132,7 @@ ClashMissionProgressEventHub + event sinks
 | # | Hallazgo | Impacto |
 |---|---|---|
 | A1 | **Wallet única en `ClashStoryRepository`** usada por shop, gacha, missions, events, etc. | Al conectar backend, cualquier desincronización de coins/gems afecta todo el modo. |
-| A2 | **Story no usa `ClashShopGrantService`** — grant de ítems vía adapters directos a collection/ticket | Nuevos tipos de grant en el servicio central no aplican automáticamente a historia; riesgo de divergencia. |
+| A2 | **Story no usa `ClashShopGrantService`** — grant de ítems vía adapters directos a collection/ticket | **Parcialmente resuelto (Fase 53):** ítems/cartas de historia usan `ClashLocalRewardGranter`; coins/gems siguen en progress. |
 | A3 | **`ClashPlayerCollectionRepository` monolítico** (~950 líneas) | Dificulta 11v11 (más slots), evolución y tests; alto acoplamiento. |
 | A4 | **15 backends SharedPreferences sin versión/migración** | Riesgo alto al sincronizar con servidor o cambiar esquema de progreso. |
 | A5 | **Duplicación story/events en grant + UI** — previews y pantallas post-recompensa casi gemelas | Cada nuevo evento/personaje duplica mantenimiento (Fases 49–50). |
@@ -143,7 +143,7 @@ ClashMissionProgressEventHub + event sinks
 
 | # | Hallazgo | Impacto |
 |---|---|---|
-| M1 | **Cuatro copias de `_grantReward()`** en repos engagement (daily, weekly, achievements, gifts) | Cambio en lógica de grant requiere 4 edits. |
+| M1 | **Cuatro copias de `_grantReward()`** en repos engagement (daily, weekly, achievements, gifts) | **Parcialmente resuelto (Fase 53):** delegación a `ClashLocalRewardGranter`; repos conservan marcado claimed/idempotencia. |
 | M2 | **Cuatro copias de `_rewardParts()`** en cards de misiones/logros/regalos | Misma cadena de preview strings duplicada. |
 | M3 | **Tres familias de preview UI** — `ClashRewardPreviewRow` (strings), `ClashStoryRewardPreview` / `ClashEventRewardPreview` (tipados), `clashMatchObjectiveRewardPreview` (función) | Inconsistencia visual y de l10n entre módulos. |
 | M4 | **`ClashStoryLevelStatusChip` reutilizado fuera de story** (help, events) | Nombre y ubicación confunden; debería vivir en `shared/`. |
@@ -172,7 +172,7 @@ ClashMissionProgressEventHub + event sinks
 | Sincronización local/remoto | Progreso en 15 SP keys vs estado servidor | Definir `ClashSyncState` + versión de esquema; operaciones idempotentes |
 | Migración SharedPreferences | Sin `schemaVersion` global | Introducir migrador por backend o unificado |
 | IDs estables | `cardId`, `levelId`, `eventId` solo en JSON | Publicar catálogo de IDs; contratos OpenAPI |
-| Idempotencia de rewards | Grants locales sin `transactionId` | Clave de deduplicación por `source+rewardId+timestamp` |
+| Idempotencia de rewards | Grants locales sin `transactionId` | Clave de deduplicación por `source+rewardId+timestamp`; **sync server-side pendiente (post-Fase 53)** |
 | Conflictos de progreso | First clear, pity, misiones pueden solaparse | Server wins / merge policy documentada |
 | Auth/session | Clash asume usuario autenticado pero no valida en repos | Capa de sync post-login; no grant offline infinito |
 | Wallet | Coins/gems solo locales | Endpoint de balance + reconciliación |
@@ -201,7 +201,7 @@ ClashMissionProgressEventHub + event sinks
 
 Lista priorizada y acotada (refactors seguros en fases futuras):
 
-1. **`ClashLocalRewardGranter`** (o ampliar `ClashShopGrantService`) — unificar grant de coins/gems/ítems/cartas con API única; migrar story a este servicio.
+1. **`ClashLocalRewardGranter`** — **implementado (Fase 53)** en `shared/rewards/`; gifts, achievements, missions, events, shop y story (ítems) migrados; wallet de historia sigue en `copyWith` del progress.
 2. **`ClashTypedRewardPreview`** en `shared/` — unificar `ClashStoryRewardPreview` + `ClashEventRewardPreview` + mapper a líneas legibles.
 3. **`ClashRewardResultScreen`** genérica — sustituir `ClashStoryRewardScreen` y `ClashEventRewardScreen`.
 4. **`ClashEngagementGrantMixin`** — extraer `_grantReward` común de missions/achievements/gifts.
@@ -230,7 +230,7 @@ Lista priorizada y acotada (refactors seguros en fases futuras):
 
 | Fase | Objetivo | Tipo |
 |---|---|---|
-| **53** | Consolidar grant local (`ClashLocalRewardGranter` + story alineada) | Refactor seguro |
+| **53** | Consolidar grant local (`ClashLocalRewardGranter` + story alineada) | **Implementada** |
 | **54** | Widgets compartidos: preview tipado + status chip + pantalla post-reward | UI shared |
 | **55** | Extraer `clash_providers.dart` de `main.dart` | Infra DI |
 | **56** | Contratos de IDs y esquema de sync (doc + interfaces, sin API) | Pre-backend |

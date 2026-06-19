@@ -32,6 +32,7 @@ import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_tickets_local_d
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_local_datasource.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
 import 'package:eternal_xi/features/clash/inventory/data/clash_inventory_repository.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/data/clash_local_reward_granter.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_local_datasource.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
@@ -352,11 +353,20 @@ Future<void> main() async {
             storyRepository: context.read<ClashStoryRepository>(),
           ),
         ),
+        Provider<ClashLocalRewardGranter>(
+          create: (context) => ClashLocalRewardGranter(
+            collectionRepository: context
+                .read<ClashPlayerCollectionRepository>(),
+            ticketRepository: context.read<ClashGachaTicketRepository>(),
+            storyRepository: context.read<ClashStoryRepository>(),
+          ),
+        ),
         Provider<ClashShopGrantService>(
           create: (context) => ClashShopGrantService(
             collectionRepository: context
                 .read<ClashPlayerCollectionRepository>(),
             ticketRepository: context.read<ClashGachaTicketRepository>(),
+            rewardGranter: context.read<ClashLocalRewardGranter>(),
           ),
         ),
         Provider<ClashDailyMissionsRepository>(
@@ -365,7 +375,7 @@ Future<void> main() async {
               dataSource: ClashDailyMissionsLocalDataSource(),
               storage: context.read<ClashDailyMissionsStorageBackend>(),
               storyRepository: context.read<ClashStoryRepository>(),
-              grantService: context.read<ClashShopGrantService>(),
+              rewardGranter: context.read<ClashLocalRewardGranter>(),
             );
             context.read<ClashDailyMissionEventSink>().bind(repository);
             return repository;
@@ -377,7 +387,7 @@ Future<void> main() async {
               dataSource: ClashAchievementsLocalDataSource(),
               storage: context.read<ClashAchievementsStorageBackend>(),
               storyRepository: context.read<ClashStoryRepository>(),
-              grantService: context.read<ClashShopGrantService>(),
+              rewardGranter: context.read<ClashLocalRewardGranter>(),
             );
             context.read<ClashAchievementEventSink>().bind(repository);
             return repository;
@@ -389,7 +399,7 @@ Future<void> main() async {
               dataSource: ClashWeeklyMissionsLocalDataSource(),
               storage: context.read<ClashWeeklyMissionsStorageBackend>(),
               storyRepository: context.read<ClashStoryRepository>(),
-              grantService: context.read<ClashShopGrantService>(),
+              rewardGranter: context.read<ClashLocalRewardGranter>(),
             );
             context.read<ClashWeeklyMissionEventSink>().bind(repository);
             return repository;
@@ -406,7 +416,7 @@ Future<void> main() async {
             dataSource: ClashGiftsLocalDataSource(),
             storage: context.read<ClashGiftsStorageBackend>(),
             storyRepository: context.read<ClashStoryRepository>(),
-            grantService: context.read<ClashShopGrantService>(),
+            rewardGranter: context.read<ClashLocalRewardGranter>(),
           ),
         ),
         Provider<ClashCharacterEventsRepository>(
@@ -414,7 +424,7 @@ Future<void> main() async {
             dataSource: ClashCharacterEventsLocalDataSource(),
             storage: context.read<ClashCharacterEventsStorageBackend>(),
             storyRepository: context.read<ClashStoryRepository>(),
-            grantService: context.read<ClashShopGrantService>(),
+            rewardGranter: context.read<ClashLocalRewardGranter>(),
             collectionRepository: context
                 .read<ClashPlayerCollectionRepository>(),
           ),
@@ -427,7 +437,7 @@ Future<void> main() async {
           create: (context) => ClashShopRepository(
             dataSource: ClashShopLocalDataSource(),
             storyRepository: context.read<ClashStoryRepository>(),
-            grantService: context.read<ClashShopGrantService>(),
+            rewardGranter: context.read<ClashLocalRewardGranter>(),
             progressEventHub: context.read<ClashMissionProgressEventHub>(),
           ),
         ),

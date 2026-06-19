@@ -15,7 +15,6 @@ import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_s
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_type.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_local_datasource.dart';
-import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_local_datasource.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
@@ -312,7 +311,8 @@ void main() {
         dataSource: TestMissionsDataSource(),
         storage: InMemoryClashDailyMissionsBackend(),
         storyRepository: story,
-        grantService: ClashShopGrantService(
+        rewardGranter: createTestRewardGranter(
+          storyRepository: story,
           collectionRepository: collection,
           ticketRepository: createTestTicketRepository(),
         ),

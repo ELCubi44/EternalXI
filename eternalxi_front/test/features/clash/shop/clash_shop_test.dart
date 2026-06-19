@@ -1,9 +1,10 @@
 import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
-import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/data/clash_local_reward_granter.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/domain/clash_reward.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/domain/clash_reward_grant_result.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_local_datasource.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
-import 'package:eternal_xi/features/clash/shop/domain/clash_shop_product.dart';
 import 'package:eternal_xi/features/clash/shop/domain/clash_shop_purchase_error.dart';
 import 'package:eternal_xi/features/clash/shop/presentation/screens/clash_shop_screen.dart';
 import 'package:flutter/material.dart';
@@ -12,15 +13,18 @@ import 'package:provider/provider.dart';
 
 import '../cards/clash_test_support.dart';
 
-class _FailingGrantService extends ClashShopGrantService {
-  _FailingGrantService({
+class _FailingRewardGranter extends ClashLocalRewardGranter {
+  _FailingRewardGranter({
     required super.collectionRepository,
-    required super.ticketRepository,
+    super.ticketRepository,
   });
 
   @override
-  Future<bool> grantProductGrants(List<ClashShopProductGrant> grants) async {
-    return false;
+  Future<ClashRewardGrantResult> grantAll(
+    List<ClashReward> rewards, {
+    bool grantWallet = true,
+  }) async {
+    return ClashRewardGrantResult.allFailed(rewards);
   }
 }
 
@@ -128,7 +132,7 @@ void main() {
       final repo = await createTestShopRepository(
         collectionRepository: collection,
         ticketRepository: tickets,
-        grantService: _FailingGrantService(
+        rewardGranter: _FailingRewardGranter(
           collectionRepository: collection,
           ticketRepository: tickets,
         ),

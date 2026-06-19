@@ -4,7 +4,8 @@ import 'package:eternal_xi/features/clash/missions/domain/clash_weekly_mission.d
 import 'package:eternal_xi/features/clash/missions/domain/clash_weekly_mission_claim_result.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_weekly_mission_reward.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_weekly_mission_type.dart';
-import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/data/clash_local_reward_granter.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/data/clash_reward_converters.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 
 /// Misiones semanales locales Clash (Fase 30).
@@ -13,18 +14,18 @@ class ClashWeeklyMissionsRepository {
     required ClashWeeklyMissionsLocalDataSource dataSource,
     required ClashWeeklyMissionsStorageBackend storage,
     required ClashStoryRepository storyRepository,
-    required ClashShopGrantService grantService,
+    required ClashLocalRewardGranter rewardGranter,
     DateTime Function()? now,
   }) : _dataSource = dataSource,
        _storage = storage,
        _storyRepository = storyRepository,
-       _grantService = grantService,
+       _rewardGranter = rewardGranter,
        _now = now ?? DateTime.now;
 
   final ClashWeeklyMissionsLocalDataSource _dataSource;
   final ClashWeeklyMissionsStorageBackend _storage;
   final ClashStoryRepository _storyRepository;
-  final ClashShopGrantService _grantService;
+  final ClashLocalRewardGranter _rewardGranter;
   final DateTime Function() _now;
 
   List<ClashWeeklyMission>? _missionsCache;
@@ -189,24 +190,10 @@ class ClashWeeklyMissionsRepository {
     if (reward.isEmpty) {
       return true;
     }
-    try {
-      if (reward.coins > 0) {
-        await _storyRepository.addCoins(reward.coins);
-      }
-      if (reward.gems > 0) {
-        await _storyRepository.addGems(reward.gems);
-      }
-      final itemGrants = reward.toProductGrants();
-      if (itemGrants.isNotEmpty) {
-        final granted = await _grantService.grantProductGrants(itemGrants);
-        if (!granted) {
-          return false;
-        }
-      }
-      return true;
-    } catch (_) {
-      return false;
-    }
+    final result = await _rewardGranter.grantAll(
+      ClashRewardConverters.fromWeeklyMissionReward(reward),
+    );
+    return result.isFullyGranted;
   }
 
   void clearCacheForTests() {

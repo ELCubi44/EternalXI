@@ -4,7 +4,8 @@ import 'package:eternal_xi/features/clash/achievements/domain/clash_achievement.
 import 'package:eternal_xi/features/clash/achievements/domain/clash_achievement_claim_result.dart';
 import 'package:eternal_xi/features/clash/achievements/domain/clash_achievement_reward.dart';
 import 'package:eternal_xi/features/clash/achievements/domain/clash_achievement_type.dart';
-import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/data/clash_local_reward_granter.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/data/clash_reward_converters.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 
 /// Logros permanentes locales Clash (Fase 29).
@@ -13,18 +14,18 @@ class ClashAchievementsRepository {
     required ClashAchievementsLocalDataSource dataSource,
     required ClashAchievementsStorageBackend storage,
     required ClashStoryRepository storyRepository,
-    required ClashShopGrantService grantService,
+    required ClashLocalRewardGranter rewardGranter,
     DateTime Function()? now,
   }) : _dataSource = dataSource,
        _storage = storage,
        _storyRepository = storyRepository,
-       _grantService = grantService,
+       _rewardGranter = rewardGranter,
        _now = now ?? DateTime.now;
 
   final ClashAchievementsLocalDataSource _dataSource;
   final ClashAchievementsStorageBackend _storage;
   final ClashStoryRepository _storyRepository;
-  final ClashShopGrantService _grantService;
+  final ClashLocalRewardGranter _rewardGranter;
   final DateTime Function() _now;
 
   List<ClashAchievement>? _achievementsCache;
@@ -182,24 +183,10 @@ class ClashAchievementsRepository {
     if (reward.isEmpty) {
       return true;
     }
-    try {
-      if (reward.coins > 0) {
-        await _storyRepository.addCoins(reward.coins);
-      }
-      if (reward.gems > 0) {
-        await _storyRepository.addGems(reward.gems);
-      }
-      final itemGrants = reward.toProductGrants();
-      if (itemGrants.isNotEmpty) {
-        final granted = await _grantService.grantProductGrants(itemGrants);
-        if (!granted) {
-          return false;
-        }
-      }
-      return true;
-    } catch (_) {
-      return false;
-    }
+    final result = await _rewardGranter.grantAll(
+      ClashRewardConverters.fromAchievementReward(reward),
+    );
+    return result.isFullyGranted;
   }
 
   void clearCacheForTests() {

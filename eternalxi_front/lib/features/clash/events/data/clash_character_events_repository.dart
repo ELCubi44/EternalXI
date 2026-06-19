@@ -7,7 +7,8 @@ import 'package:eternal_xi/features/clash/events/domain/clash_character_event_re
 import 'package:eternal_xi/features/clash/events/domain/clash_character_event_stage.dart';
 import 'package:eternal_xi/features/clash/events/domain/clash_character_event_stage_type.dart';
 import 'package:eternal_xi/features/clash/events/domain/clash_character_event_status.dart';
-import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/data/clash_local_reward_granter.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/data/clash_reward_converters.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 
 class ClashCharacterEventsRepository {
@@ -15,20 +16,20 @@ class ClashCharacterEventsRepository {
     required ClashCharacterEventsLocalDataSource dataSource,
     required ClashCharacterEventsStorageBackend storage,
     required ClashStoryRepository storyRepository,
-    required ClashShopGrantService grantService,
+    required ClashLocalRewardGranter rewardGranter,
     required ClashPlayerCollectionRepository collectionRepository,
     DateTime Function()? now,
   }) : _dataSource = dataSource,
        _storage = storage,
        _storyRepository = storyRepository,
-       _grantService = grantService,
+       _rewardGranter = rewardGranter,
        _collectionRepository = collectionRepository,
        _now = now ?? DateTime.now;
 
   final ClashCharacterEventsLocalDataSource _dataSource;
   final ClashCharacterEventsStorageBackend _storage;
   final ClashStoryRepository _storyRepository;
-  final ClashShopGrantService _grantService;
+  final ClashLocalRewardGranter _rewardGranter;
   final ClashPlayerCollectionRepository _collectionRepository;
   final DateTime Function() _now;
 
@@ -268,42 +269,10 @@ class ClashCharacterEventsRepository {
       return const [];
     }
 
-    final newlyGranted = <String>[];
-    if (reward.coins > 0) {
-      await _storyRepository.addCoins(reward.coins);
-    }
-    if (reward.gems > 0) {
-      await _storyRepository.addGems(reward.gems);
-    }
-
-    final itemGrants = reward.toAchievementReward().toProductGrants();
-    if (itemGrants.isNotEmpty) {
-      await _grantService.grantProductGrants(itemGrants);
-    }
-
-    if (reward.featuredCardId != null) {
-      newlyGranted.addAll(
-        await _grantFeaturedCard(
-          reward.featuredCardId!,
-          asDuplicateOnly: reward.featuredCardAsDuplicate,
-        ),
-      );
-    }
-    return newlyGranted;
-  }
-
-  Future<List<String>> _grantFeaturedCard(
-    String cardId, {
-    required bool asDuplicateOnly,
-  }) async {
-    final owned = _collectionRepository.loadOwnedCardIds();
-    if (!owned.contains(cardId)) {
-      return _collectionRepository.grantMissingCardIds([cardId]);
-    }
-    if (asDuplicateOnly || owned.contains(cardId)) {
-      await _collectionRepository.grantCardCopy(cardId);
-    }
-    return const [];
+    final result = await _rewardGranter.grantAll(
+      ClashRewardConverters.fromCharacterEventReward(reward),
+    );
+    return result.newlyGrantedCardIds;
   }
 
   void clearCacheForTests() {

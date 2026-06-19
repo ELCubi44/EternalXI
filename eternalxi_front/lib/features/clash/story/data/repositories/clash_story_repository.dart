@@ -1,12 +1,11 @@
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
-import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_reward_adapter.dart';
-import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_reward_adapter.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_result.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_ticket_repository.dart';
-import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_ticket_reward_adapter.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_evaluator.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_progress.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/data/clash_local_reward_granter.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/data/clash_reward_converters.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_local_datasource.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_completion_unlocks.dart';
@@ -47,6 +46,11 @@ class ClashStoryRepository {
   List<ClashStorySaga>? _sagasCache;
   final Map<String, ClashStoryChapter> _chaptersCache = {};
   ClashStoryProgress? _progressCache;
+
+  ClashLocalRewardGranter get _itemRewardGranter => ClashLocalRewardGranter(
+    collectionRepository: _collectionRepository,
+    ticketRepository: _ticketRepository,
+  );
 
   ClashStoryProgress loadProgress() {
     _progressCache ??= _progressStorage.readProgress();
@@ -337,38 +341,11 @@ class ClashStoryRepository {
     ClashStoryReward rewards,
     ClashStoryProgress progress,
   ) async {
-    final granted = <String>[];
-
-    if (rewards.starterRosterKey ==
-        ClashStoryReward.eternalXiStarterRosterKey) {
-      granted.addAll(await _collectionRepository.grantEternalXiStarterNCards());
-    }
-
-    if (rewards.cardIds.isNotEmpty) {
-      granted.addAll(
-        await _collectionRepository.grantMissingCardIds(rewards.cardIds),
-      );
-    }
-
-    final materialGrants =
-        ClashExpMaterialRewardAdapter.quantitiesFromStoryReward(rewards);
-    if (materialGrants.isNotEmpty) {
-      await _collectionRepository.grantExpMaterials(materialGrants);
-    }
-
-    final bookGrants =
-        ClashTechniqueBookRewardAdapter.quantitiesFromStoryReward(rewards);
-    if (bookGrants.isNotEmpty) {
-      await _collectionRepository.grantTechniqueBooks(bookGrants);
-    }
-
-    final ticketGrants =
-        ClashGachaTicketRewardAdapter.quantitiesFromStoryReward(rewards);
-    if (ticketGrants.isNotEmpty && _ticketRepository != null) {
-      await _ticketRepository.grantTickets(ticketGrants);
-    }
-
-    return granted;
+    final result = await _itemRewardGranter.grantAll(
+      ClashRewardConverters.fromStoryRewardItems(rewards),
+      grantWallet: false,
+    );
+    return result.newlyGrantedCardIds;
   }
 
   Future<void> _saveProgress(ClashStoryProgress progress) async {

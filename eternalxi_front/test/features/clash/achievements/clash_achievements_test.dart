@@ -20,7 +20,6 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_technique_level.dar
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_type.dart';
 import 'package:eternal_xi/features/clash/gacha/domain/clash_gacha_pull_type.dart';
 import 'package:eternal_xi/features/clash/home/presentation/clash_home_screen.dart';
-import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -282,7 +281,8 @@ void main() {
         dataSource: TestAchievementsDataSource(),
         storage: InMemoryClashAchievementsBackend(),
         storyRepository: setup.story,
-        grantService: ClashShopGrantService(
+        rewardGranter: createTestRewardGranter(
+          storyRepository: setup.story,
           collectionRepository: collection,
           ticketRepository: createTestTicketRepository(),
         ),
@@ -474,7 +474,8 @@ void main() {
         dataSource: TestAchievementsDataSource(),
         storage: InMemoryClashAchievementsBackend(),
         storyRepository: setup.story,
-        grantService: ClashShopGrantService(
+        rewardGranter: createTestRewardGranter(
+          storyRepository: setup.story,
           collectionRepository: collection,
           ticketRepository: createTestTicketRepository(),
         ),
