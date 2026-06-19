@@ -787,4 +787,16 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 54 — Providers Clash extraídos
+
+**Estado:** implementada.
+
+- Nuevo `lib/features/clash/shared/di/clash_providers.dart`: `ClashProviderDependencies`, `prepareClashProviders()`, `buildClashProviders()`.
+- `main.dart` reducido: solo core/Fantasy + `...buildClashProviders(clashDeps)`.
+- Test: `test/features/clash/di/clash_providers_test.dart`.
+
+**Sin cambios** en lógica, persistencia, economía, rutas ni UI.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

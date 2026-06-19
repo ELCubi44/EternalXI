@@ -136,7 +136,7 @@ ClashMissionProgressEventHub + event sinks
 | A3 | **`ClashPlayerCollectionRepository` monolítico** (~950 líneas) | Dificulta 11v11 (más slots), evolución y tests; alto acoplamiento. |
 | A4 | **15 backends SharedPreferences sin versión/migración** | Riesgo alto al sincronizar con servidor o cambiar esquema de progreso. |
 | A5 | **Duplicación story/events en grant + UI** — previews y pantallas post-recompensa casi gemelas | Cada nuevo evento/personaje duplica mantenimiento (Fases 49–50). |
-| A6 | **`main.dart` como composition root gigante** (~40 registros Clash) | Errores de wiring, difícil test de integración y arranque lento de lectura. |
+| A6 | **`main.dart` como composition root gigante** (~40 registros Clash) | **Parcialmente resuelto (Fase 54):** `lib/features/clash/shared/di/clash_providers.dart` con `prepareClashProviders()` + `buildClashProviders()`. |
 | A7 | **IDs de contenido locales sin contrato estable** — cardId, levelId, eventId en JSON | Backend necesitará mapeo explícito; riesgo de rotura al renombrar assets. |
 
 ### Prioridad media
@@ -207,7 +207,7 @@ Lista priorizada y acotada (refactors seguros en fases futuras):
 4. **`ClashEngagementGrantMixin`** — extraer `_grantReward` común de missions/achievements/gifts.
 5. **`ClashRewardPartsFormatter`** — unificar `_rewardParts()` de las cuatro cards de engagement.
 6. **Mover `ClashStoryLevelStatusChip` → `shared/presentation/widgets/clash_status_chip.dart`** — renombrar y reexportar.
-7. **`ClashDependencyModule`** — extraer registro de providers Clash de `main.dart` a `lib/features/clash/di/clash_providers.dart`.
+7. **`ClashDependencyModule`** — **implementado (Fase 54)** como `lib/features/clash/shared/di/clash_providers.dart`.
 8. **Dividir `ClashPlayerCollectionRepository`** — sub-repos: `CollectionCards`, `CollectionMaterials`, `CollectionXp` (interfaces internas).
 9. **`clash_test_support.dart`** — dividir por dominio (`clash_match_test_support.dart`, `clash_engagement_test_support.dart`, etc.).
 10. **Validación JSON** — helper común `parseClashJsonList<T>` con mensajes de error uniformes (opcional, bajo riesgo).
@@ -231,8 +231,8 @@ Lista priorizada y acotada (refactors seguros en fases futuras):
 | Fase | Objetivo | Tipo |
 |---|---|---|
 | **53** | Consolidar grant local (`ClashLocalRewardGranter` + story alineada) | **Implementada** |
-| **54** | Widgets compartidos: preview tipado + status chip + pantalla post-reward | UI shared |
-| **55** | Extraer `clash_providers.dart` de `main.dart` | Infra DI |
+| **54** | Extraer `clash_providers.dart` de `main.dart` | **Implementada** |
+| **55** | Widgets compartidos: preview tipado + status chip + pantalla post-reward | UI shared |
 | **56** | Contratos de IDs y esquema de sync (doc + interfaces, sin API) | Pre-backend |
 | **57** | Segundo evento/personaje en JSON (validar escalabilidad de events) | Contenido |
 | **58** | Mejorar smoke/screenshots (flujos help, events, gacha) | Tooling |
