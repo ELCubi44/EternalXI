@@ -762,4 +762,16 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 52 — Auditoría técnica y deuda
+
+**Estado:** implementada.
+
+- Documento [`CLASH_TECHNICAL_AUDIT.md`](./CLASH_TECHNICAL_AUDIT.md): arquitectura, deuda priorizada, riesgos pre-backend/11v11, refactors recomendados y plan de fases 53–60.
+- Checks ejecutados: `flutter analyze lib/features/clash test/features/clash` (0 errores), `flutter test test/features/clash/` (745 tests).
+- Limpieza mínima: eliminación de `unused_import` en archivos Clash (sin cambio de lógica).
+
+**Sin cambios** en lógica, persistencia, economía, rutas ni Fantasy.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

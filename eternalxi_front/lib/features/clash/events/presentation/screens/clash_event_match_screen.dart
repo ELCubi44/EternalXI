@@ -1,5 +1,4 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
-import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_result.dart';
 import 'package:eternal_xi/features/clash/events/domain/clash_character_event_reward.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_status.dart';

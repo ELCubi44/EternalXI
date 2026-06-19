@@ -1,6 +1,4 @@
 import 'package:eternal_xi/app/localization/app_localizations.dart';
-import 'package:eternal_xi/app/localization/l10n_extension.dart';
-import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/help/domain/clash_help_topic.dart';
 import 'package:flutter/material.dart';
 
