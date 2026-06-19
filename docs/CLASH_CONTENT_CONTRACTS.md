@@ -4,7 +4,7 @@ Documento de referencia para IDs, assets locales y validación técnica antes de
 
 ## Convenciones de IDs
 
-- **Formato:** `kebab-case` o `snake_case` según dominio (`exi-n-gk-001`, `event-arin-training`, `basic-training-manual`).
+- **Formato:** `kebab-case` o `snake_case` según dominio (`exi-n-gk-001`, `event-arin-training`, `event-mika-speed`, `basic-training-manual`).
 - **Unicidad:** cada `id` debe ser único dentro de su asset (`cards`, `rivals`, `missions`, etc.).
 - **No vacíos:** strings críticos (`id`, `name`, `title`) no pueden estar vacíos.
 - **Referencias:** `cardId`, `rivalTeamId`, `bannerId` deben existir en el catálogo correspondiente.
@@ -52,7 +52,7 @@ Los `items` en recompensas de historia pueden ser **flavor** (no concedibles), p
 
 ## Referencias cruzadas
 
-- **Eventos:** `featuredCardId` ∈ `cards.json`; stages `match` → `rivalTeamId` ∈ `rivals.json`.
+- **Eventos:** `featuredCardId` ∈ `cards.json`; stages `match` → `rivalTeamId` ∈ `rivals.json`. Varios eventos en `character_events.json` comparten rivales reutilizables (p. ej. `rival-arin-training`, `rival-mika-speed`).
 - **Historia:** niveles `match` → `rivalTeamId` ∈ `rivals.json`; `starterRosterKey` conocido.
 - **Gacha:** `poolCardIds` (si no vacío) ⊆ `cards.json`; tickets `compatibleBannerIds` ⊆ `gacha_banners.json`.
 - **Tienda / misiones / logros / regalos:** grants/rewards usan solo IDs del contrato anterior.

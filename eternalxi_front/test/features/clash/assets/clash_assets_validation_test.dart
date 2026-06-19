@@ -382,4 +382,33 @@ void main() {
     expect(evolutionMaterialIds, ClashRewardIds.evolutionMaterials);
     expect(ticketIds, ClashRewardIds.tickets);
   });
+
+  test('event-mika-speed is valid and references rival-mika-speed', () async {
+    final json = await loadClashAssetJson(
+      'assets/data/clash/character_events.json',
+    );
+    final events = json['events'] as List;
+    final mika = events
+        .map((e) => Map<String, dynamic>.from(e as Map))
+        .firstWhere((e) => e['id'] == 'event-mika-speed');
+    expect(mika['featuredCardId'], 'exi-n-wg-001');
+    expect(cardIds.contains('exi-n-wg-001'), isTrue);
+    final stages = mika['stages'] as List;
+    expect(stages, hasLength(3));
+    for (final stageRaw in stages) {
+      final stage = Map<String, dynamic>.from(stageRaw as Map);
+      if (stage['type'] == 'match') {
+        expect(stage['rivalTeamId'], 'rival-mika-speed');
+        expect(rivalTeamIds.contains('rival-mika-speed'), isTrue);
+      }
+    }
+    final rivalsJson = await loadClashAssetJson(
+      'assets/data/clash/rivals.json',
+    );
+    final mikaRival = (rivalsJson['rivals'] as List)
+        .map((r) => Map<String, dynamic>.from(r as Map))
+        .firstWhere((r) => r['id'] == 'rival-mika-speed');
+    expect(mikaRival['lineup7v7'], hasLength(7));
+    expect(mikaRival['name'], 'Equipo Relámpago de Mika');
+  });
 }

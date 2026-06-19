@@ -824,4 +824,19 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 57 — Segundo evento de personaje local
+
+**Estado:** implementada.
+
+- `assets/data/clash/rivals.json`: rival `rival-mika-speed` (Equipo Relámpago de Mika).
+- `assets/data/clash/character_events.json`: evento `event-mika-speed` (Carrera de Mika).
+- Validación y tests de escalabilidad (múltiples eventos, progreso independiente, referencias cruzadas).
+- Documentación actualizada en `CLASH_STORY_AND_EVENTS.md` y `CLASH_CONTENT_CONTRACTS.md`.
+
+**Objetivo:** comprobar que assets, validación, UI de listado y progreso/recompensas escalan sin tocar lógica ni backend.
+
+**Sin cambios** en economía global, claves SharedPreferences, Fantasy, leagues ni rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

@@ -238,6 +238,13 @@ MVP local de eventos de personaje sin backend ni calendario servidor:
 
 Evento inicial: **Entrenamiento de Arin** (`event-arin-training`).
 
+Segundo evento local (Fase 57): **Carrera de Mika** (`event-mika-speed`). Sirve para validar escalabilidad del catálogo: múltiples eventos/rivales, referencias cruzadas, progreso independiente por `eventId` y recompensas firstClear/repeat sin cambiar lógica ni UI base.
+
+| Evento | Rival | Carta destacada |
+|---|---|---|
+| `event-arin-training` | `rival-arin-training` | `exi-n-st-001` |
+| `event-mika-speed` | `rival-mika-speed` | `exi-n-wg-001` |
+
 **Pendiente:** calendario servidor, tienda de evento, moneda de evento, ranking, cinemáticas con imágenes, drops aleatorios complejos, LR/XI, backend.
 
 ---

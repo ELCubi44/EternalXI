@@ -377,6 +377,177 @@
           ]
         }
       ]
+    },
+    {
+      "id": "rival-mika-speed",
+      "name": "Equipo Relámpago de Mika",
+      "description": "Un rival rápido que castiga los errores en el centro del campo.",
+      "difficulty": 2,
+      "recommendedPower": 120,
+      "lineup7v7": [
+        {
+          "id": "rival-mika-gk",
+          "playerId": 92201,
+          "name": "Rin Portero",
+          "position": "goalkeeper",
+          "style": "preciso",
+          "rarity": "r",
+          "level": 8,
+          "stats": {
+            "save": 30,
+            "defense": 18,
+            "pass": 14,
+            "dribble": 10,
+            "shot": 6,
+            "techniquePoints": 10,
+            "stamina": 100
+          }
+        },
+        {
+          "id": "rival-mika-cb",
+          "playerId": 92202,
+          "name": "Taro Central",
+          "position": "centreBack",
+          "style": "preciso",
+          "rarity": "r",
+          "level": 8,
+          "stats": {
+            "save": 6,
+            "defense": 24,
+            "pass": 16,
+            "dribble": 12,
+            "shot": 8,
+            "techniquePoints": 10,
+            "stamina": 100
+          },
+          "superTechniques": [
+            {
+              "id": "rival-mika-cb-st1",
+              "name": "Corte Limpio",
+              "description": "Entrada precisa que corta el avance rival.",
+              "type": "defense",
+              "style": "preciso",
+              "basePower": 38,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-mika-fb",
+          "playerId": 92203,
+          "name": "Kai Lateral",
+          "position": "fullBack",
+          "style": "agil",
+          "rarity": "r",
+          "level": 9,
+          "stats": {
+            "save": 6,
+            "defense": 20,
+            "pass": 18,
+            "dribble": 18,
+            "shot": 8,
+            "techniquePoints": 10,
+            "stamina": 101
+          }
+        },
+        {
+          "id": "rival-mika-dm",
+          "playerId": 92204,
+          "name": "Len Medio",
+          "position": "defensiveMidfielder",
+          "style": "preciso",
+          "rarity": "r",
+          "level": 9,
+          "stats": {
+            "save": 6,
+            "defense": 18,
+            "pass": 22,
+            "dribble": 14,
+            "shot": 10,
+            "techniquePoints": 10,
+            "stamina": 101
+          }
+        },
+        {
+          "id": "rival-mika-am",
+          "playerId": 92205,
+          "name": "Mika Creativa",
+          "position": "attackingMidfielder",
+          "style": "agil",
+          "rarity": "sr",
+          "level": 9,
+          "stats": {
+            "save": 6,
+            "defense": 12,
+            "pass": 24,
+            "dribble": 22,
+            "shot": 16,
+            "techniquePoints": 12,
+            "stamina": 102
+          }
+        },
+        {
+          "id": "rival-mika-wg",
+          "playerId": 92206,
+          "name": "Zoe Extremo",
+          "position": "winger",
+          "style": "agil",
+          "rarity": "sr",
+          "level": 10,
+          "stats": {
+            "save": 6,
+            "defense": 10,
+            "pass": 18,
+            "dribble": 26,
+            "shot": 20,
+            "techniquePoints": 12,
+            "stamina": 102
+          },
+          "superTechniques": [
+            {
+              "id": "rival-mika-wg-st1",
+              "name": "Sprint Relámpago",
+              "description": "Desborde veloz que deja atrás al defensor.",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 40,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-mika-st",
+          "playerId": 92207,
+          "name": "Nao Delantero",
+          "position": "striker",
+          "style": "agil",
+          "rarity": "sr",
+          "level": 10,
+          "stats": {
+            "save": 6,
+            "defense": 10,
+            "pass": 14,
+            "dribble": 18,
+            "shot": 28,
+            "techniquePoints": 12,
+            "stamina": 103
+          },
+          "superTechniques": [
+            {
+              "id": "rival-mika-st-st1",
+              "name": "Disparo Chispa",
+              "description": "Tiro rápido que sorprende al portero.",
+              "type": "shot",
+              "style": "agil",
+              "basePower": 44,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

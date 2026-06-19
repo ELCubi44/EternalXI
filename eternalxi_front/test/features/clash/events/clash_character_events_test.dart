@@ -5,6 +5,7 @@ import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_re
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_local_datasource.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_repository.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_storage.dart';
+import 'package:eternal_xi/features/clash/events/domain/clash_character_event_stage.dart';
 import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_detail_screen.dart';
 import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_match_prepare_screen.dart';
 import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_reward_screen.dart';
@@ -35,8 +36,11 @@ void main() {
       final events = ClashCharacterEventsLocalDataSource().parseEventsJson(
         clashTestCharacterEventsJson,
       );
-      expect(events, hasLength(1));
-      expect(events.first.id, eventId);
+      expect(events, hasLength(2));
+      expect(
+        events.map((e) => e.id),
+        containsAll([eventId, 'event-mika-speed']),
+      );
     });
   });
 
@@ -44,9 +48,12 @@ void main() {
     test('evento inicial disponible', () async {
       final setup = await createTestEventsSetup();
       final summaries = await setup.events.fetchEventSummaries();
-      expect(summaries, hasLength(1));
-      expect(summaries.first.isAvailable, isTrue);
-      expect(summaries.first.event.title, 'Entrenamiento de Arin');
+      expect(summaries, hasLength(2));
+      expect(summaries.every((s) => s.isAvailable), isTrue);
+      expect(
+        summaries.map((s) => s.event.title),
+        containsAll(['Entrenamiento de Arin', 'Carrera de Mika']),
+      );
     });
 
     test('story stage firstClear concede recompensa una vez', () async {
@@ -220,6 +227,119 @@ void main() {
     });
   });
 
+  group('ClashCharacterEventsRepository Fase 57 — Mika', () {
+    const mikaEventId = 'event-mika-speed';
+    const mikaStoryStageId = 'event-mika-stage-01';
+    const mikaMatchStage2Id = 'event-mika-stage-02';
+    const mikaMatchStage3Id = 'event-mika-stage-03';
+
+    test('completar stage de Mika no completa Arin', () async {
+      final setup = await createTestEventsSetup();
+      await setup.events.completeStoryStage(
+        eventId: mikaEventId,
+        stageId: mikaStoryStageId,
+      );
+      final arinProgress = await setup.events.fetchStageProgress(eventId);
+      final mikaProgress = await setup.events.fetchStageProgress(mikaEventId);
+      expect(
+        mikaProgress
+            .firstWhere((p) => p.stage.id == mikaStoryStageId)
+            .status,
+        ClashCharacterEventStageStatus.completed,
+      );
+      expect(
+        arinProgress
+            .firstWhere((p) => p.stage.id == storyStageId)
+            .status,
+        isNot(ClashCharacterEventStageStatus.completed),
+      );
+    });
+
+    test('story firstClear Mika idempotente', () async {
+      final setup = await createTestEventsSetup();
+      final first = await setup.events.completeStoryStage(
+        eventId: mikaEventId,
+        stageId: mikaStoryStageId,
+      );
+      expect(first?.firstClear, isTrue);
+      expect(setup.story.walletCoins(), 400);
+      final second = await setup.events.completeStoryStage(
+        eventId: mikaEventId,
+        stageId: mikaStoryStageId,
+      );
+      expect(second?.rewardsGranted.isEmpty, isTrue);
+      expect(setup.story.walletCoins(), 400);
+    });
+
+    test('match firstClear y repeat Mika funcionan', () async {
+      final setup = await createTestEventsSetup();
+      await setup.events.completeStoryStage(
+        eventId: mikaEventId,
+        stageId: mikaStoryStageId,
+      );
+      final first = await setup.events.completeMatchStage(
+        eventId: mikaEventId,
+        stageId: mikaMatchStage2Id,
+        userWon: true,
+      );
+      expect(first?.firstClear, isTrue);
+      expect(setup.story.walletGems(), 1);
+      expect(setup.collection.loadOwnedCardIds(), contains('exi-n-wg-001'));
+      final coinsBefore = setup.story.walletCoins();
+      final repeat = await setup.events.completeMatchStage(
+        eventId: mikaEventId,
+        stageId: mikaMatchStage2Id,
+        userWon: true,
+      );
+      expect(repeat?.firstClear, isFalse);
+      expect(setup.story.walletCoins(), coinsBefore + 250);
+    });
+
+    test('match stages referencian rival-mika-speed', () async {
+      final setup = await createTestEventsSetup();
+      final stage2 = await setup.events.findStage(
+        mikaEventId,
+        mikaMatchStage2Id,
+      );
+      final stage3 = await setup.events.findStage(
+        mikaEventId,
+        mikaMatchStage3Id,
+      );
+      expect(stage2?.title, 'Pases a toda velocidad');
+      expect(stage2?.rivalTeamId, 'rival-mika-speed');
+      expect(stage3?.rivalTeamId, 'rival-mika-speed');
+    });
+
+    test('stage 03 repeat concede libro de técnica', () async {
+      final setup = await createTestEventsSetup();
+      await setup.events.completeStoryStage(
+        eventId: mikaEventId,
+        stageId: mikaStoryStageId,
+      );
+      await setup.events.completeMatchStage(
+        eventId: mikaEventId,
+        stageId: mikaMatchStage2Id,
+        userWon: true,
+      );
+      await setup.events.completeMatchStage(
+        eventId: mikaEventId,
+        stageId: mikaMatchStage3Id,
+        userWon: true,
+      );
+      final before = setup.techniqueBooks.quantityFor('basic-technique-book');
+      final repeat = await setup.events.completeMatchStage(
+        eventId: mikaEventId,
+        stageId: mikaMatchStage3Id,
+        userWon: true,
+      );
+      expect(repeat?.firstClear, isFalse);
+      expect(
+        setup.techniqueBooks.quantityFor('basic-technique-book'),
+        before + 1,
+      );
+    });
+  });
+
   group('ClashCharacterEvents UI', () {
     Future<Widget> eventsListApp(ClashCharacterEventsRepository repo) async {
       final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
@@ -280,6 +400,7 @@ void main() {
       await tester.pumpWidget(await eventsListApp(setup.events));
       await tester.pumpAndSettle();
       expect(find.text('Entrenamiento de Arin'), findsOneWidget);
+      expect(find.text('Carrera de Mika'), findsOneWidget);
     });
 
     testWidgets('entrar al evento muestra fases', (tester) async {
@@ -353,12 +474,17 @@ void main() {
       await tester.tap(find.text('Completar'));
       await tester.pumpAndSettle();
       expect(find.text('Recompensas'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
     });
 
     testWidgets('lineup incompleta avisa', (tester) async {
       tester.view.physicalSize = const Size(800, 2400);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
 
       final setup = await createTestEventsSetup();
       await setup.events.completeStoryStage(
@@ -403,7 +529,7 @@ void main() {
         ),
       );
       await tester.pump();
-      for (var i = 0; i < 20; i++) {
+      for (var i = 0; i < 40; i++) {
         await tester.pump(const Duration(milliseconds: 50));
         if (find.text('Alineación activa incompleta').evaluate().isNotEmpty) {
           break;

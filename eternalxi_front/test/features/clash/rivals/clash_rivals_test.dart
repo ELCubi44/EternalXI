@@ -17,10 +17,14 @@ void main() {
   group('ClashRivalsRepository', () {
     test('carga rivals.json', () async {
       final teams = await ClashRivalsRepository().fetchTeams();
-      expect(teams, hasLength(2));
+      expect(teams, hasLength(3));
       expect(
         teams.map((team) => team.id),
-        containsAll(['rival-training-squad', 'rival-arin-training']),
+        containsAll([
+          'rival-training-squad',
+          'rival-arin-training',
+          'rival-mika-speed',
+        ]),
       );
     });
 
@@ -207,6 +211,17 @@ void main() {
       expect(setup.rivalTeamName, 'Grupo de Arin');
       expect(setup.difficulty, 2);
       expect(setup.rivalPower, 110);
+    });
+
+    test('evento Mika usa Equipo Relámpago de Mika', () async {
+      final setup = await ClashRivalMatchSetupResolver.resolve(
+        repository: ClashRivalsRepository(),
+        rivalTeamId: 'rival-mika-speed',
+        fallbackPower: 105,
+      );
+      expect(setup.rivalTeamName, 'Equipo Relámpago de Mika');
+      expect(setup.difficulty, 2);
+      expect(setup.rivalPower, 120);
     });
   });
 

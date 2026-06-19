@@ -1243,6 +1243,56 @@ const clashTestCharacterEventsJson = '''
           "repeatRewards": { "coins": 300 }
         }
       ]
+    },
+    {
+      "id": "event-mika-speed",
+      "title": "Carrera de Mika",
+      "characterName": "Mika",
+      "description": "Un entrenamiento de velocidad para aprender a elegir mejor los pases y avanzar sin perder el balón.",
+      "status": "available",
+      "featuredCardId": "exi-n-wg-001",
+      "stages": [
+        {
+          "id": "event-mika-stage-01",
+          "title": "Arranque rápido",
+          "type": "story",
+          "storyText": "Texto de prueba Mika.",
+          "firstClearRewards": {
+            "coins": 400,
+            "expMaterial": { "id": "basic-training-manual", "quantity": 1 }
+          },
+          "repeatRewards": {}
+        },
+        {
+          "id": "event-mika-stage-02",
+          "title": "Pases a toda velocidad",
+          "type": "match",
+          "recommendedPower": 105,
+          "rivalTeamId": "rival-mika-speed",
+          "cardXpReward": 70,
+          "firstClearRewards": {
+            "featuredCardId": "exi-n-wg-001",
+            "gems": 1
+          },
+          "repeatRewards": { "coins": 250 }
+        },
+        {
+          "id": "event-mika-stage-03",
+          "title": "Rayo final",
+          "type": "match",
+          "recommendedPower": 125,
+          "rivalTeamId": "rival-mika-speed",
+          "cardXpReward": 100,
+          "firstClearRewards": {
+            "featuredCardId": "exi-n-wg-001",
+            "featuredCardAsDuplicate": true,
+            "expMaterial": { "id": "advanced-training-manual", "quantity": 1 }
+          },
+          "repeatRewards": {
+            "techniqueBook": { "id": "basic-technique-book", "quantity": 1 }
+          }
+        }
+      ]
     }
   ]
 }

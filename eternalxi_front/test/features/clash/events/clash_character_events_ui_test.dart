@@ -23,8 +23,12 @@ import 'package:provider/provider.dart';
 import '../cards/clash_test_support.dart';
 
 const _eventId = 'event-arin-training';
+const _mikaEventId = 'event-mika-speed';
 const _storyStageId = 'event-arin-stage-01';
 const _matchStageId = 'event-arin-stage-02';
+const _mikaStoryStageId = 'event-mika-stage-01';
+const _mikaMatchStage2Id = 'event-mika-stage-02';
+const _mikaMatchStage3Id = 'event-mika-stage-03';
 
 class _EmptyEventsDataSource extends ClashCharacterEventsLocalDataSource {
   @override
@@ -109,12 +113,13 @@ void main() {
       await tester.pump(const Duration(milliseconds: 800));
 
       expect(find.text('Eventos'), findsWidgets);
-      expect(find.text('1 eventos disponibles'), findsOneWidget);
+      expect(find.text('2 eventos disponibles'), findsOneWidget);
       expect(find.text('Eventos locales de prueba'), findsOneWidget);
       expect(find.text('Entrenamiento de Arin'), findsOneWidget);
-      expect(find.text('Fases completadas 0/3'), findsOneWidget);
+      expect(find.text('Carrera de Mika'), findsOneWidget);
+      expect(find.text('Fases completadas 0/3'), findsWidgets);
       expect(find.text('Carta destacada'), findsWidgets);
-      expect(find.text('Entrar'), findsOneWidget);
+      expect(find.text('Entrar'), findsNWidgets(2));
     });
 
     testWidgets('botón Entrar navega al detalle', (tester) async {
@@ -155,7 +160,7 @@ void main() {
       );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 800));
-      await tester.tap(find.text('Entrar'));
+      await tester.tap(find.text('Entrar').first);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 800));
 
@@ -419,6 +424,93 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 1500));
 
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('ClashEvents Fase 57 — Mika', () {
+    testWidgets('detalle Mika muestra fases y carta destacada', (tester) async {
+      tester.view.physicalSize = const Size(400, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      final setup = await createTestEventsSetup();
+      await tester.pumpWidget(
+        _eventsApp(
+          eventsRepo: setup.events,
+          cardsRepo: ClashCardsRepository(GachaTestCardsDataSource()),
+          child: const ClashEventDetailScreen(eventId: _mikaEventId),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 800));
+
+      expect(find.text('Carrera de Mika'), findsOneWidget);
+      expect(find.text('Mika'), findsOneWidget);
+      expect(find.text('Carta destacada'), findsOneWidget);
+      expect(find.text('Arranque rápido'), findsOneWidget);
+      expect(find.text('Pases a toda velocidad'), findsOneWidget);
+      expect(find.text('Rayo final'), findsOneWidget);
+    });
+
+    testWidgets('stage 03 Mika muestra repeat rewards', (tester) async {
+      tester.view.physicalSize = const Size(400, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      final setup = await createTestEventsSetup();
+      await setup.events.completeStoryStage(
+        eventId: _mikaEventId,
+        stageId: _mikaStoryStageId,
+      );
+      await setup.events.completeMatchStage(
+        eventId: _mikaEventId,
+        stageId: _mikaMatchStage2Id,
+        userWon: true,
+      );
+      await setup.events.completeMatchStage(
+        eventId: _mikaEventId,
+        stageId: _mikaMatchStage3Id,
+        userWon: true,
+      );
+
+      await tester.pumpWidget(
+        _eventsApp(
+          eventsRepo: setup.events,
+          cardsRepo: ClashCardsRepository(GachaTestCardsDataSource()),
+          child: const ClashEventDetailScreen(eventId: _mikaEventId),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 800));
+
+      expect(find.text('Repetición'), findsWidgets);
+      expect(find.text('Completada'), findsWidgets);
+    });
+
+    testWidgets('listado con 2 eventos no overflow', (tester) async {
+      tester.view.physicalSize = const Size(360, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      final setup = await createTestEventsSetup();
+      await tester.pumpWidget(
+        _eventsApp(
+          eventsRepo: setup.events,
+          cardsRepo: ClashCardsRepository(GachaTestCardsDataSource()),
+          child: const ClashEventsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 800));
+
+      expect(find.text('Entrenamiento de Arin'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Carrera de Mika'),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Carrera de Mika'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   });
