@@ -29,12 +29,13 @@ class ClashMatchPrepareValidation {
     required ClashStoryProgress progress,
     required ClashLineup7v7? activeLineup,
     required int lineupPower,
+    int? rivalRecommendedPower,
   }) {
     final teamUnlocked =
         !level.requirements.clashTeamUnlocked || progress.clashTeamUnlocked;
     final hasComplete = activeLineup?.isComplete ?? false;
     final needsLineup = level.requirements.completeActiveLineup;
-    final recommended = level.recommendedPower;
+    final recommended = rivalRecommendedPower ?? level.recommendedPower;
     final belowRecommended = recommended != null && lineupPower < recommended;
 
     return ClashMatchPrepareValidation(

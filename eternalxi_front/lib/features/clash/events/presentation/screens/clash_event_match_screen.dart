@@ -17,6 +17,8 @@ import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_status_banner.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_mini_pitch.dart';
 import 'package:eternal_xi/features/clash/events/presentation/widgets/clash_event_match_end_panel.dart';
+import 'package:eternal_xi/features/clash/rivals/data/clash_rival_match_setup_resolver.dart';
+import 'package:eternal_xi/features/clash/rivals/data/clash_rivals_repository.dart';
 import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:flutter/material.dart';
@@ -75,12 +77,20 @@ class _ClashEventMatchScreenState extends State<ClashEventMatchScreen> {
       return;
     }
 
+    final rivalSetup = await ClashRivalMatchSetupResolver.resolve(
+      repository: context.read<ClashRivalsRepository>(),
+      rivalTeamId: stage.rivalTeamId,
+      fallbackPower: stage.recommendedPower,
+    );
+
     match.startMatch(
       levelId: widget.stageId,
       lineup: lineups.activeLineup,
       catalogById: lineups.catalogById,
       matchInventory: kit,
-      rivalPower: stage.recommendedPower ?? 100,
+      rivalPower: rivalSetup.rivalPower,
+      rivalSquad: rivalSetup.squad,
+      rivalTeamName: rivalSetup.rivalTeamName,
     );
     if (mounted) {
       setState(() => _initialized = true);

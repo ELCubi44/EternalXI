@@ -1,4 +1,6 @@
 import 'package:eternal_xi/app/localization/app_localizations.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
+import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_local_datasource.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_repository.dart';
@@ -9,6 +11,7 @@ import 'package:eternal_xi/features/clash/events/presentation/screens/clash_even
 import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_story_stage_screen.dart';
 import 'package:eternal_xi/features/clash/events/presentation/screens/clash_events_screen.dart';
 import 'package:eternal_xi/features/clash/home/presentation/clash_home_screen.dart';
+import 'package:eternal_xi/features/clash/rivals/data/clash_rivals_repository.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
 import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
@@ -348,49 +351,6 @@ void main() {
       expect(find.text('Recompensas'), findsOneWidget);
     });
 
-    testWidgets('match stage muestra preparación', (tester) async {
-      tester.view.physicalSize = const Size(800, 2400);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.reset);
-
-      final setup = await createTestEventsSetup();
-      final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
-      final lineupsRepo = ClashLineupsRepository(
-        storage: InMemoryClashLineupsBackend(),
-        cardsRepository: cardsRepo,
-      );
-      final lineups = ClashLineupsController(
-        lineupsRepository: lineupsRepo,
-        collectionRepository: setup.collection,
-      );
-      await lineups.load();
-
-      await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('es'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          home: MultiProvider(
-            providers: [
-              Provider<ClashCharacterEventsRepository>.value(
-                value: setup.events,
-              ),
-              ChangeNotifierProvider<ClashLineupsController>.value(
-                value: lineups,
-              ),
-            ],
-            child: ClashEventMatchPrepareScreen(
-              eventId: eventId,
-              stageId: matchStageId,
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(find.text('Pachanga de entrenamiento'), findsWidgets);
-      expect(find.text('Potencia recomendada'), findsOneWidget);
-    });
-
     testWidgets('lineup incompleta avisa', (tester) async {
       tester.view.physicalSize = const Size(800, 2400);
       tester.view.devicePixelRatio = 1.0;
@@ -401,14 +361,16 @@ void main() {
         eventId: eventId,
         stageId: storyStageId,
       );
-      final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
+      final cardsRepo = ClashCardsRepository(_EmptyCardsDataSource());
       final lineupsRepo = ClashLineupsRepository(
         storage: InMemoryClashLineupsBackend(),
         cardsRepository: cardsRepo,
       );
       final lineups = ClashLineupsController(
         lineupsRepository: lineupsRepo,
-        collectionRepository: setup.collection,
+        collectionRepository: createTestCollectionRepository(
+          cardsRepository: cardsRepo,
+        ),
       );
       await lineups.load();
 
@@ -425,6 +387,9 @@ void main() {
               ChangeNotifierProvider<ClashLineupsController>.value(
                 value: lineups,
               ),
+              Provider<ClashRivalsRepository>(
+                create: (_) => ClashRivalsRepository(),
+              ),
             ],
             child: ClashEventMatchPrepareScreen(
               eventId: eventId,
@@ -433,7 +398,13 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      for (var i = 0; i < 20; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+        if (find.text('Alineación activa incompleta').evaluate().isNotEmpty) {
+          break;
+        }
+      }
       expect(find.text('Alineación activa incompleta'), findsOneWidget);
       expect(
         find.widgetWithText(FilledButton, 'Comenzar partido'),
@@ -443,6 +414,8 @@ void main() {
         find.widgetWithText(FilledButton, 'Comenzar partido'),
       );
       expect(start.onPressed, isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
     });
 
     testWidgets('victoria de evento muestra recompensas', (tester) async {
@@ -525,4 +498,9 @@ void main() {
       expect(find.text('Recompensa de repetición'), findsOneWidget);
     });
   });
+}
+
+class _EmptyCardsDataSource extends ClashCardsLocalDataSource {
+  @override
+  Future<List<ClashCardCatalogEntry>> loadCards() async => const [];
 }

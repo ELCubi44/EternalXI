@@ -187,6 +187,7 @@
         "type": "match",
         "energyCost": 8,
         "recommendedPower": 120,
+        "rivalTeamId": "rival-training-squad",
         "cardXpReward": 80,
         "rewards": {
           "gems": 1,

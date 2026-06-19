@@ -622,6 +622,20 @@ Persistencia de partido pausado (mid-match exit): pendiente (recomendado para m�
 
 ---
 
+## Fase 42 — Rivales locales reutilizables
+
+| Incluido | Pendiente |
+|---|---|
+| Asset `assets/data/clash/rivals.json` read-only | Editor de rivales |
+| Equipos con `lineup7v7`, stats, estilos y supertécnicas | Backend / sincronización |
+| `rivalTeamId` en niveles story y stages de eventos | IA avanzada por rival |
+| `ClashRivalSquadBuilder` → `MatchSquadPlayer` | Dificultad dinámica / escalado |
+| Preparación muestra nombre rival, dificultad y potencia | 11v11 |
+
+Sin `rivalTeamId`, el partido sigue usando `MatchSquadBuilder.buildRivalSquad` (fallback genérico).
+
+---
+
 ## 17. Decisiones pendientes
 
 | Tema | Estado |

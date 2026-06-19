@@ -1198,6 +1198,7 @@ const clashTestCharacterEventsJson = '''
           "title": "Pachanga de entrenamiento",
           "type": "match",
           "recommendedPower": 85,
+          "rivalTeamId": "rival-arin-training",
           "cardXpReward": 60,
           "firstClearRewards": {
             "featuredCardId": "exi-n-st-001",
@@ -1212,6 +1213,7 @@ const clashTestCharacterEventsJson = '''
           "title": "El último esfuerzo",
           "type": "match",
           "recommendedPower": 110,
+          "rivalTeamId": "rival-arin-training",
           "cardXpReward": 90,
           "firstClearRewards": {
             "featuredCardId": "exi-n-st-001",

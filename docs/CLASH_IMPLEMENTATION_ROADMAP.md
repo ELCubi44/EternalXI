@@ -635,4 +635,18 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 42 — Equipos rivales reutilizables
+
+**Estado:** implementada (local).
+
+- Asset `rivals.json` con equipos read-only, alineación 7v7, stats y supertécnicas.
+- Módulo `lib/features/clash/rivals/` (dominio, datasource, repositorio).
+- `ClashRivalSquadBuilder` adapta rivales al motor de partido.
+- `rivalTeamId` opcional en niveles story y stages de eventos.
+- Preparación de partido muestra rival, dificultad y potencia recomendada.
+
+**Pendiente:** editor de rivales, IA avanzada, dificultad dinámica, backend, 11v11.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

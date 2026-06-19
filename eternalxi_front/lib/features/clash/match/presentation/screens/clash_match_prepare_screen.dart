@@ -2,6 +2,9 @@ import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_objectives_card.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_rival_prepare_section.dart';
+import 'package:eternal_xi/features/clash/rivals/data/clash_rivals_repository.dart';
+import 'package:eternal_xi/features/clash/rivals/domain/clash_rival_team.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_prepare_validation.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_map_screen.dart';
@@ -23,6 +26,7 @@ class ClashMatchPrepareScreen extends StatefulWidget {
 class _ClashMatchPrepareScreenState extends State<ClashMatchPrepareScreen> {
   var _loading = true;
   var _blocked = false;
+  ClashRivalTeam? _rivalTeam;
 
   @override
   void initState() {
@@ -46,9 +50,22 @@ class _ClashMatchPrepareScreenState extends State<ClashMatchPrepareScreen> {
       return;
     }
 
+    ClashRivalTeam? rivalTeam;
+    final level = story.activeLevel;
+    if (level?.rivalTeamId != null) {
+      rivalTeam = await context.read<ClashRivalsRepository>().findTeam(
+        level!.rivalTeamId!,
+      );
+    }
+
+    if (!mounted) {
+      return;
+    }
+
     setState(() {
       _loading = false;
       _blocked = !ok;
+      _rivalTeam = rivalTeam;
     });
   }
 
@@ -87,6 +104,7 @@ class _ClashMatchPrepareScreenState extends State<ClashMatchPrepareScreen> {
       progress: story.progress,
       activeLineup: activeLineup,
       lineupPower: lineupPower,
+      rivalRecommendedPower: _rivalTeam?.recommendedPower,
     );
 
     return Scaffold(
@@ -110,7 +128,12 @@ class _ClashMatchPrepareScreenState extends State<ClashMatchPrepareScreen> {
             label: l10n.clashMatchPrepareEnergy,
             value: '${level.energyCost}',
           ),
-          if (validation.recommendedPower != null)
+          ClashMatchRivalPrepareSection(
+            rivalName: _rivalTeam?.name,
+            difficulty: _rivalTeam?.difficulty,
+            recommendedPower: _rivalTeam?.recommendedPower,
+          ),
+          if (_rivalTeam == null && validation.recommendedPower != null)
             _InfoTile(
               label: l10n.clashMatchPrepareRecommendedPower,
               value: '${validation.recommendedPower}',

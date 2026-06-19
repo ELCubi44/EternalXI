@@ -11,6 +11,7 @@ class ClashCharacterEventStage {
     required this.repeatRewards,
     this.storyText = '',
     this.recommendedPower,
+    this.rivalTeamId,
     this.cardXpReward = 0,
   });
 
@@ -19,6 +20,7 @@ class ClashCharacterEventStage {
   final ClashCharacterEventStageType type;
   final String storyText;
   final int? recommendedPower;
+  final String? rivalTeamId;
   final int cardXpReward;
   final ClashCharacterEventReward firstClearRewards;
   final ClashCharacterEventReward repeatRewards;
@@ -32,6 +34,7 @@ class ClashCharacterEventStage {
       recommendedPower: json['recommendedPower'] == null
           ? null
           : clashAsInt(json['recommendedPower']),
+      rivalTeamId: clashOptionalString(json['rivalTeamId']),
       cardXpReward: clashAsInt(json['cardXpReward']),
       firstClearRewards: ClashCharacterEventReward.fromJson(
         Map<String, dynamic>.from(

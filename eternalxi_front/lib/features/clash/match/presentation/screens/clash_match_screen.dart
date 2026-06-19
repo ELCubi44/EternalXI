@@ -20,6 +20,8 @@ import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_pass_sheet.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_status_banner.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_mini_pitch.dart';
+import 'package:eternal_xi/features/clash/rivals/data/clash_rival_match_setup_resolver.dart';
+import 'package:eternal_xi/features/clash/rivals/data/clash_rivals_repository.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_reward.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_reward_screen.dart';
@@ -67,16 +69,31 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
       return;
     }
 
+    final level = story.activeLevel;
+    if (level == null) {
+      context.go(AppRoutes.clashStory);
+      return;
+    }
+
     final kit = await ClashMatchController.loadDefaultMatchKit();
     if (!mounted) {
       return;
     }
+
+    final rivalSetup = await ClashRivalMatchSetupResolver.resolve(
+      repository: context.read<ClashRivalsRepository>(),
+      rivalTeamId: level.rivalTeamId,
+      fallbackPower: level.recommendedPower,
+    );
 
     match.startMatch(
       levelId: widget.levelId,
       lineup: lineups.activeLineup,
       catalogById: lineups.catalogById,
       matchInventory: kit,
+      rivalPower: rivalSetup.rivalPower,
+      rivalSquad: rivalSetup.squad,
+      rivalTeamName: rivalSetup.rivalTeamName,
     );
     if (mounted) {
       setState(() => _initialized = true);

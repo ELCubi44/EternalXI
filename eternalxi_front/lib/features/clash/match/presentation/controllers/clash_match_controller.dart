@@ -17,6 +17,7 @@ import 'package:eternal_xi/features/clash/match/domain/clash_rival_ai_decision.d
 import 'package:eternal_xi/features/clash/match/domain/clash_rival_ai_engine.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_rules.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_score.dart';
+import 'package:eternal_xi/features/clash/match/domain/match_squad_player.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_squad_builder.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_status.dart';
@@ -39,6 +40,8 @@ class ClashMatchController extends ChangeNotifier {
   String? _levelId;
   ClashLineup7v7? _lineup;
   Map<String, ClashCardCatalogEntry> _catalogById = const {};
+  List<MatchSquadPlayer>? _rivalSquad;
+  String? _rivalTeamName;
   int _rivalPower = 120;
   List<ClashMatchItemInventoryEntry> _matchInventory = const [];
 
@@ -47,6 +50,8 @@ class ClashMatchController extends ChangeNotifier {
   ClashRivalAiDecision? get lastRivalAiDecision => _lastRivalAiDecision;
 
   bool get isHalftime => _state?.isPausedForHalftime ?? false;
+
+  String? get rivalTeamName => _rivalTeamName;
 
   static Future<List<ClashMatchItemInventoryEntry>> loadDefaultMatchKit() {
     return ClashMatchItemsLocalDataSource().loadDefaultKit();
@@ -84,18 +89,23 @@ class ClashMatchController extends ChangeNotifier {
     ClashLineup7v7? lineup,
     Map<String, ClashCardCatalogEntry> catalogById = const {},
     int rivalPower = 120,
+    List<MatchSquadPlayer>? rivalSquad,
+    String? rivalTeamName,
     List<ClashMatchItemInventoryEntry> matchInventory = const [],
   }) {
     final userSquad = MatchSquadBuilder.buildUserSquad(
       lineup: lineup,
       catalogById: catalogById,
     );
-    final rivalSquad = MatchSquadBuilder.buildRivalSquad(basePower: rivalPower);
+    final resolvedRivalSquad =
+        rivalSquad ?? MatchSquadBuilder.buildRivalSquad(basePower: rivalPower);
 
     _levelId = levelId;
     _lineup = lineup;
     _catalogById = catalogById;
     _rivalPower = rivalPower;
+    _rivalSquad = rivalSquad;
+    _rivalTeamName = rivalTeamName;
     _matchInventory = matchInventory;
     _lastRivalAiDecision = null;
 
@@ -107,7 +117,7 @@ class ClashMatchController extends ChangeNotifier {
       ballHolderIndex: 3,
       ballZone: MatchBallZone.ownMidfield,
       userSquad: userSquad,
-      rivalSquad: rivalSquad,
+      rivalSquad: resolvedRivalSquad,
       pressure: 20,
       possessionRisk: 15,
       eventLog: const [],
@@ -128,6 +138,7 @@ class ClashMatchController extends ChangeNotifier {
     final kickoffZone = kickoffSide == MatchTeamSide.user
         ? MatchBallZone.ownMidfield
         : MatchBallZone.rivalMidfield;
+    final rivalLabel = _rivalTeamName ?? 'Rival';
 
     _state = current.copyWith(
       status: MatchStatus.playing,
@@ -143,7 +154,7 @@ class ClashMatchController extends ChangeNotifier {
           type: MatchEventType.kickoff,
           message: kickoffSide == MatchTeamSide.user
               ? 'Saque inicial: Eternal XI'
-              : 'Saque inicial: Rival',
+              : 'Saque inicial: $rivalLabel',
         ),
       ],
     );
@@ -316,6 +327,8 @@ class ClashMatchController extends ChangeNotifier {
     Map<String, ClashCardCatalogEntry>? catalogById,
     List<ClashMatchItemInventoryEntry>? matchInventory,
     int? rivalPower,
+    List<MatchSquadPlayer>? rivalSquad,
+    String? rivalTeamName,
   }) {
     final levelId = _levelId;
     if (levelId == null) {
@@ -326,6 +339,8 @@ class ClashMatchController extends ChangeNotifier {
       lineup: lineup ?? _lineup,
       catalogById: catalogById ?? _catalogById,
       rivalPower: rivalPower ?? _rivalPower,
+      rivalSquad: rivalSquad ?? _rivalSquad,
+      rivalTeamName: rivalTeamName ?? _rivalTeamName,
       matchInventory: matchInventory ?? _matchInventory,
     );
   }
@@ -390,6 +405,8 @@ class ClashMatchController extends ChangeNotifier {
     _lineup = null;
     _catalogById = const {};
     _rivalPower = 120;
+    _rivalSquad = null;
+    _rivalTeamName = null;
     _matchInventory = const [];
     notifyListeners();
   }
@@ -401,6 +418,7 @@ class ClashMatchController extends ChangeNotifier {
     if (current == null) {
       return;
     }
+    final rivalLabel = _rivalTeamName ?? 'Rival';
     _state = current.copyWith(
       status: MatchStatus.playing,
       possession: kickoffSide,
@@ -414,7 +432,7 @@ class ClashMatchController extends ChangeNotifier {
           type: MatchEventType.kickoff,
           message: kickoffSide == MatchTeamSide.user
               ? 'Saque inicial: Eternal XI'
-              : 'Saque inicial: Rival',
+              : 'Saque inicial: $rivalLabel',
         ),
       ],
     );

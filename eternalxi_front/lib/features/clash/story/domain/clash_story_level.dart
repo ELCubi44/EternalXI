@@ -20,6 +20,7 @@ class ClashStoryLevel {
     required this.rewards,
     required this.scenes,
     this.recommendedPower,
+    this.rivalTeamId,
     this.requiredPlayers = const [],
     this.requiredPositions = const [],
     this.guestCards = const [],
@@ -37,6 +38,7 @@ class ClashStoryLevel {
   final ClashStoryLevelType type;
   final int energyCost;
   final int? recommendedPower;
+  final String? rivalTeamId;
   final ClashStoryReward rewards;
   final List<int> requiredPlayers;
   final List<ClashPosition> requiredPositions;
@@ -67,6 +69,7 @@ class ClashStoryLevel {
       recommendedPower: json['recommendedPower'] == null
           ? null
           : clashAsInt(json['recommendedPower']),
+      rivalTeamId: clashOptionalString(json['rivalTeamId']),
       rewards: ClashStoryReward.fromJson(
         Map<String, dynamic>.from(json['rewards'] as Map? ?? const {}),
       ),
@@ -116,6 +119,7 @@ class ClashStoryLevel {
     'type': type.toJson(),
     'energyCost': energyCost,
     if (recommendedPower != null) 'recommendedPower': recommendedPower,
+    if (rivalTeamId != null) 'rivalTeamId': rivalTeamId,
     'rewards': rewards.toJson(),
     'requiredPlayers': requiredPlayers,
     'requiredPositions': requiredPositions

@@ -533,6 +533,8 @@ class AppLocalizations {
           'Tu potencia está por debajo de la recomendada. Puedes jugar igualmente.',
       'clashMatchPrepareEditLineup': 'Editar alineación',
       'clashMatchPrepareStart': 'Comenzar partido',
+      'clashMatchPrepareRival': 'Rival',
+      'clashMatchPrepareDifficulty': 'Dificultad {difficulty}',
       'clashMatchScoreLabel': '{user} - {rival}',
       'clashMatchWinTarget': 'Objetivo: primero a 3 goles',
       'clashMatchPhaseLabel': 'Fase',
@@ -1336,6 +1338,8 @@ class AppLocalizations {
           'Your power is below the recommended value. You can still play.',
       'clashMatchPrepareEditLineup': 'Edit lineup',
       'clashMatchPrepareStart': 'Start match',
+      'clashMatchPrepareRival': 'Rival',
+      'clashMatchPrepareDifficulty': 'Difficulty {difficulty}',
       'clashMatchScoreLabel': '{user} - {rival}',
       'clashMatchWinTarget': 'Goal: first to 3',
       'clashMatchPhaseLabel': 'Phase',
@@ -2307,6 +2311,10 @@ class AppLocalizations {
       _t('clashMatchPreparePowerWarning');
   String get clashMatchPrepareEditLineup => _t('clashMatchPrepareEditLineup');
   String get clashMatchPrepareStart => _t('clashMatchPrepareStart');
+  String get clashMatchPrepareRival => _t('clashMatchPrepareRival');
+  String clashMatchPrepareDifficulty(int difficulty) => _t(
+    'clashMatchPrepareDifficulty',
+  ).replaceAll('{difficulty}', '$difficulty');
   String get clashMatchWinTarget => _t('clashMatchWinTarget');
   String get clashMatchPhaseLabel => _t('clashMatchPhaseLabel');
   String get clashMatchPhaseCoinToss => _t('clashMatchPhaseCoinToss');

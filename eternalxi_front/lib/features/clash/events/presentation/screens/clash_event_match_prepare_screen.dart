@@ -4,6 +4,9 @@ import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_repository.dart';
 import 'package:eternal_xi/features/clash/events/domain/clash_character_event_stage.dart';
 import 'package:eternal_xi/features/clash/events/presentation/widgets/clash_event_stage_card.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_rival_prepare_section.dart';
+import 'package:eternal_xi/features/clash/rivals/data/clash_rivals_repository.dart';
+import 'package:eternal_xi/features/clash/rivals/domain/clash_rival_team.dart';
 import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -27,6 +30,7 @@ class ClashEventMatchPrepareScreen extends StatefulWidget {
 class _ClashEventMatchPrepareScreenState
     extends State<ClashEventMatchPrepareScreen> {
   ClashCharacterEventStage? _stage;
+  ClashRivalTeam? _rivalTeam;
   var _loading = true;
 
   @override
@@ -45,9 +49,16 @@ class _ClashEventMatchPrepareScreenState
       return;
     }
     final stage = await repo.findStage(widget.eventId, widget.stageId);
+    ClashRivalTeam? rivalTeam;
+    if (stage?.rivalTeamId != null) {
+      rivalTeam = await context.read<ClashRivalsRepository>().findTeam(
+        stage!.rivalTeamId!,
+      );
+    }
     if (mounted) {
       setState(() {
         _stage = stage;
+        _rivalTeam = rivalTeam;
         _loading = false;
       });
     }
@@ -74,7 +85,7 @@ class _ClashEventMatchPrepareScreenState
         ? 0
         : lineups.totalPower(activeLineup);
     final hasCompleteLineup = activeLineup?.isComplete ?? false;
-    final recommended = stage.recommendedPower;
+    final recommended = _rivalTeam?.recommendedPower ?? stage.recommendedPower;
     final powerBelowRecommended =
         recommended != null && lineupPower < recommended;
 
@@ -90,10 +101,15 @@ class _ClashEventMatchPrepareScreenState
             ).textTheme.bodyMedium?.copyWith(color: context.xiTextSecondary),
           ),
           const SizedBox(height: 16),
-          if (recommended != null)
+          ClashMatchRivalPrepareSection(
+            rivalName: _rivalTeam?.name,
+            difficulty: _rivalTeam?.difficulty,
+            recommendedPower: recommended,
+          ),
+          if (_rivalTeam == null && stage.recommendedPower != null)
             _InfoTile(
               label: l10n.clashMatchPrepareRecommendedPower,
-              value: '$recommended',
+              value: '${stage.recommendedPower}',
             ),
           _InfoTile(
             label: l10n.clashMatchPrepareLineupPower,

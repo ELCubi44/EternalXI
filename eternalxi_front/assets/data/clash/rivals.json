@@ -1,0 +1,382 @@
+{
+  "rivals": [
+    {
+      "id": "rival-training-squad",
+      "name": "Equipo de entrenamiento",
+      "description": "Rival básico para pachangas y pruebas.",
+      "difficulty": 1,
+      "recommendedPower": 80,
+      "lineup7v7": [
+        {
+          "id": "rival-training-gk",
+          "playerId": 92001,
+          "name": "Portero Prueba",
+          "position": "goalkeeper",
+          "style": "valiente",
+          "rarity": "n",
+          "level": 4,
+          "stats": {
+            "save": 22,
+            "defense": 14,
+            "pass": 10,
+            "dribble": 6,
+            "shot": 4,
+            "techniquePoints": 8,
+            "stamina": 95
+          },
+          "superTechniques": [
+            {
+              "id": "rival-training-gk-st1",
+              "name": "Parada básica",
+              "description": "Parada sencilla de entrenamiento.",
+              "type": "save",
+              "style": "valiente",
+              "basePower": 30,
+              "ptCost": 8,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-training-cb",
+          "playerId": 92002,
+          "name": "Central Prueba",
+          "position": "centreBack",
+          "style": "potente",
+          "rarity": "n",
+          "level": 4,
+          "stats": {
+            "save": 4,
+            "defense": 20,
+            "pass": 12,
+            "dribble": 8,
+            "shot": 6,
+            "techniquePoints": 8,
+            "stamina": 96
+          },
+          "superTechniques": [
+            {
+              "id": "rival-training-cb-st1",
+              "name": "Entrada firme",
+              "description": "Corte defensivo básico.",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 28,
+              "ptCost": 8,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-training-fb",
+          "playerId": 92003,
+          "name": "Lateral Prueba",
+          "position": "fullBack",
+          "style": "agil",
+          "rarity": "n",
+          "level": 4,
+          "stats": {
+            "save": 4,
+            "defense": 18,
+            "pass": 14,
+            "dribble": 10,
+            "shot": 6,
+            "techniquePoints": 8,
+            "stamina": 97
+          }
+        },
+        {
+          "id": "rival-training-dm",
+          "playerId": 92004,
+          "name": "MCD Prueba",
+          "position": "defensiveMidfielder",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 4,
+          "stats": {
+            "save": 4,
+            "defense": 16,
+            "pass": 16,
+            "dribble": 10,
+            "shot": 8,
+            "techniquePoints": 8,
+            "stamina": 98
+          }
+        },
+        {
+          "id": "rival-training-am",
+          "playerId": 92005,
+          "name": "MCO Prueba",
+          "position": "attackingMidfielder",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 4,
+          "stats": {
+            "save": 4,
+            "defense": 12,
+            "pass": 16,
+            "dribble": 14,
+            "shot": 10,
+            "techniquePoints": 8,
+            "stamina": 98
+          }
+        },
+        {
+          "id": "rival-training-wg",
+          "playerId": 92006,
+          "name": "Extremo Prueba",
+          "position": "winger",
+          "style": "agil",
+          "rarity": "n",
+          "level": 4,
+          "stats": {
+            "save": 4,
+            "defense": 10,
+            "pass": 12,
+            "dribble": 16,
+            "shot": 12,
+            "techniquePoints": 8,
+            "stamina": 99
+          },
+          "superTechniques": [
+            {
+              "id": "rival-training-wg-st1",
+              "name": "Regate veloz",
+              "description": "Regate sencillo por la banda.",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 26,
+              "ptCost": 8,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-training-st",
+          "playerId": 92007,
+          "name": "Delantero Prueba",
+          "position": "striker",
+          "style": "potente",
+          "rarity": "n",
+          "level": 4,
+          "stats": {
+            "save": 4,
+            "defense": 8,
+            "pass": 10,
+            "dribble": 12,
+            "shot": 18,
+            "techniquePoints": 8,
+            "stamina": 99
+          },
+          "superTechniques": [
+            {
+              "id": "rival-training-st-st1",
+              "name": "Remate básico",
+              "description": "Tiro sencillo de entrenamiento.",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 32,
+              "ptCost": 8,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rival-arin-training",
+      "name": "Grupo de Arin",
+      "description": "Un grupo más exigente para entrenamientos de evento.",
+      "difficulty": 2,
+      "recommendedPower": 110,
+      "lineup7v7": [
+        {
+          "id": "rival-arin-gk",
+          "playerId": 92101,
+          "name": "Kael Portero",
+          "position": "goalkeeper",
+          "style": "preciso",
+          "rarity": "r",
+          "level": 8,
+          "stats": {
+            "save": 28,
+            "defense": 18,
+            "pass": 12,
+            "dribble": 8,
+            "shot": 6,
+            "techniquePoints": 10,
+            "stamina": 100
+          },
+          "superTechniques": [
+            {
+              "id": "rival-arin-gk-st1",
+              "name": "Muro de Arin",
+              "description": "Parada firme del grupo de entrenamiento.",
+              "type": "save",
+              "style": "preciso",
+              "basePower": 38,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-arin-cb",
+          "playerId": 92102,
+          "name": "Bruno Central",
+          "position": "centreBack",
+          "style": "potente",
+          "rarity": "r",
+          "level": 8,
+          "stats": {
+            "save": 6,
+            "defense": 26,
+            "pass": 14,
+            "dribble": 10,
+            "shot": 8,
+            "techniquePoints": 10,
+            "stamina": 100
+          },
+          "superTechniques": [
+            {
+              "id": "rival-arin-cb-st1",
+              "name": "Muro defensivo",
+              "description": "Entrada contundente del grupo.",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 36,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-arin-fb",
+          "playerId": 92103,
+          "name": "Lino Lateral",
+          "position": "fullBack",
+          "style": "agil",
+          "rarity": "r",
+          "level": 8,
+          "stats": {
+            "save": 6,
+            "defense": 22,
+            "pass": 16,
+            "dribble": 14,
+            "shot": 8,
+            "techniquePoints": 10,
+            "stamina": 101
+          }
+        },
+        {
+          "id": "rival-arin-dm",
+          "playerId": 92104,
+          "name": "Nico Medio",
+          "position": "defensiveMidfielder",
+          "style": "valiente",
+          "rarity": "r",
+          "level": 9,
+          "stats": {
+            "save": 6,
+            "defense": 20,
+            "pass": 18,
+            "dribble": 12,
+            "shot": 10,
+            "techniquePoints": 10,
+            "stamina": 101
+          }
+        },
+        {
+          "id": "rival-arin-am",
+          "playerId": 92105,
+          "name": "Sora Creativo",
+          "position": "attackingMidfielder",
+          "style": "picaro",
+          "rarity": "sr",
+          "level": 9,
+          "stats": {
+            "save": 6,
+            "defense": 14,
+            "pass": 20,
+            "dribble": 18,
+            "shot": 14,
+            "techniquePoints": 12,
+            "stamina": 102
+          },
+          "superTechniques": [
+            {
+              "id": "rival-arin-am-st1",
+              "name": "Pase filtrado",
+              "description": "Asistencia rápida del mediocampo.",
+              "type": "dribble",
+              "style": "picaro",
+              "basePower": 34,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-arin-wg",
+          "playerId": 92106,
+          "name": "Vega Extremo",
+          "position": "winger",
+          "style": "agil",
+          "rarity": "sr",
+          "level": 9,
+          "stats": {
+            "save": 6,
+            "defense": 12,
+            "pass": 14,
+            "dribble": 22,
+            "shot": 16,
+            "techniquePoints": 12,
+            "stamina": 102
+          },
+          "superTechniques": [
+            {
+              "id": "rival-arin-wg-st1",
+              "name": "Carrera punzante",
+              "description": "Desborde veloz por la banda.",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 36,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-arin-st",
+          "playerId": 92107,
+          "name": "Arin Delantero",
+          "position": "striker",
+          "style": "potente",
+          "rarity": "sr",
+          "level": 10,
+          "stats": {
+            "save": 6,
+            "defense": 10,
+            "pass": 12,
+            "dribble": 14,
+            "shot": 24,
+            "techniquePoints": 12,
+            "stamina": 103
+          },
+          "superTechniques": [
+            {
+              "id": "rival-arin-st-st1",
+              "name": "Golpe de Arin",
+              "description": "Remate potente del líder del grupo.",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 42,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
