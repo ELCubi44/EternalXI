@@ -723,4 +723,16 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 49 — Pulido mapa y detalle de historia
+
+**Estado:** implementada.
+
+- Mapa con progreso X/Y, capítulo actual y tarjetas de nivel.
+- Detalle story/match con chips de estado, first clear y objetivos.
+- CTAs: Leer / Jugar / Repetir / Preparar equipo / Empezar partido.
+
+**Sin cambios** en progresión ni recompensas.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

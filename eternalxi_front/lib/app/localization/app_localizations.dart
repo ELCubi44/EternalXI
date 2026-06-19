@@ -509,6 +509,19 @@ class AppLocalizations {
       'clashStoryStatusLocked': 'Bloqueado',
       'clashStoryStatusAvailable': 'Disponible',
       'clashStoryStatusCompleted': 'Completado',
+      'clashStoryProgressTitle': 'Progreso',
+      'clashStoryCurrentChapter': 'Capítulo actual',
+      'clashStoryLevelsProgress': '{completed}/{total} niveles',
+      'clashStoryFirstClear': 'Primera vez',
+      'clashStoryFirstClearClaimed': 'Primera vez reclamada',
+      'clashStoryFirstClearRewardsTitle': 'Recompensas de primera vez',
+      'clashStoryActionRead': 'Leer',
+      'clashStoryActionPlay': 'Jugar',
+      'clashStoryActionReplay': 'Repetir',
+      'clashStoryCompletePreviousLevel': 'Completa el nivel anterior',
+      'clashStoryPrepareTeam': 'Preparar equipo',
+      'clashStoryStartMatch': 'Empezar partido',
+      'clashStoryReadAgain': 'Leer de nuevo',
       'clashStorySkipScene': 'Omitir',
       'clashStoryNextScene': 'Siguiente',
       'clashStoryFinishLevel': 'Finalizar nivel',
@@ -1372,6 +1385,19 @@ class AppLocalizations {
       'clashStoryStatusLocked': 'Locked',
       'clashStoryStatusAvailable': 'Available',
       'clashStoryStatusCompleted': 'Completed',
+      'clashStoryProgressTitle': 'Progress',
+      'clashStoryCurrentChapter': 'Current chapter',
+      'clashStoryLevelsProgress': '{completed}/{total} levels',
+      'clashStoryFirstClear': 'First clear',
+      'clashStoryFirstClearClaimed': 'First clear claimed',
+      'clashStoryFirstClearRewardsTitle': 'First-time rewards',
+      'clashStoryActionRead': 'Read',
+      'clashStoryActionPlay': 'Play',
+      'clashStoryActionReplay': 'Replay',
+      'clashStoryCompletePreviousLevel': 'Complete the previous level',
+      'clashStoryPrepareTeam': 'Prepare team',
+      'clashStoryStartMatch': 'Start match',
+      'clashStoryReadAgain': 'Read again',
       'clashStorySkipScene': 'Skip',
       'clashStoryNextScene': 'Next',
       'clashStoryFinishLevel': 'Finish level',
@@ -2400,6 +2426,23 @@ class AppLocalizations {
   String get clashStoryStatusLocked => _t('clashStoryStatusLocked');
   String get clashStoryStatusAvailable => _t('clashStoryStatusAvailable');
   String get clashStoryStatusCompleted => _t('clashStoryStatusCompleted');
+  String get clashStoryProgressTitle => _t('clashStoryProgressTitle');
+  String get clashStoryCurrentChapter => _t('clashStoryCurrentChapter');
+  String clashStoryLevelsProgress(int completed, int total) => _t(
+    'clashStoryLevelsProgress',
+  ).replaceAll('{completed}', '$completed').replaceAll('{total}', '$total');
+  String get clashStoryFirstClear => _t('clashStoryFirstClear');
+  String get clashStoryFirstClearClaimed => _t('clashStoryFirstClearClaimed');
+  String get clashStoryFirstClearRewardsTitle =>
+      _t('clashStoryFirstClearRewardsTitle');
+  String get clashStoryActionRead => _t('clashStoryActionRead');
+  String get clashStoryActionPlay => _t('clashStoryActionPlay');
+  String get clashStoryActionReplay => _t('clashStoryActionReplay');
+  String get clashStoryCompletePreviousLevel =>
+      _t('clashStoryCompletePreviousLevel');
+  String get clashStoryPrepareTeam => _t('clashStoryPrepareTeam');
+  String get clashStoryStartMatch => _t('clashStoryStartMatch');
+  String get clashStoryReadAgain => _t('clashStoryReadAgain');
   String get clashStorySkipScene => _t('clashStorySkipScene');
   String get clashStoryNextScene => _t('clashStoryNextScene');
   String get clashStoryFinishLevel => _t('clashStoryFinishLevel');

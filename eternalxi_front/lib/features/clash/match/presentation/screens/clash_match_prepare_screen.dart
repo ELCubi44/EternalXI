@@ -1,13 +1,14 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_match_prepare_validation.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_objectives_card.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_rival_prepare_section.dart';
 import 'package:eternal_xi/features/clash/rivals/data/clash_rivals_repository.dart';
 import 'package:eternal_xi/features/clash/rivals/domain/clash_rival_team.dart';
-import 'package:eternal_xi/features/clash/match/domain/clash_match_prepare_validation.dart';
+import 'package:eternal_xi/features/clash/story/domain/clash_story_level_status.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
-import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_map_screen.dart';
+import 'package:eternal_xi/features/clash/story/presentation/widgets/clash_story_level_detail_header.dart';
 import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -86,9 +87,19 @@ class _ClashMatchPrepareScreenState extends State<ClashMatchPrepareScreen> {
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text(
-              l10n.clashStoryLevelBlockedBody,
-              textAlign: TextAlign.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  l10n.clashStoryCompletePreviousLevel,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () => context.go(AppRoutes.clashStory),
+                  child: Text(l10n.clashStoryBackToMap),
+                ),
+              ],
             ),
           ),
         ),
@@ -106,12 +117,25 @@ class _ClashMatchPrepareScreenState extends State<ClashMatchPrepareScreen> {
       lineupPower: lineupPower,
       rivalRecommendedPower: _rivalTeam?.recommendedPower,
     );
+    final chapterTitle = story.activeChapter?.title ?? level.chapterId;
+    final status = story.statusFor(level);
+    final rewardsClaimed = story.progress.areRewardsClaimed(level.id);
+    final lineupReady = validation.hasCompleteActiveLineup;
 
     return Scaffold(
-      appBar: AppBar(title: Text(level.title)),
+      appBar: AppBar(title: Text(l10n.clashHomeStory)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
         children: [
+          ClashStoryLevelDetailHeader(
+            title: level.title,
+            chapterTitle: chapterTitle,
+            type: level.type,
+            status: status,
+            rewards: level.rewards,
+            rewardsClaimed: rewardsClaimed,
+          ),
+          const SizedBox(height: 12),
           Text(
             level.description,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -119,15 +143,16 @@ class _ClashMatchPrepareScreenState extends State<ClashMatchPrepareScreen> {
               height: 1.45,
             ),
           ),
-          const SizedBox(height: 20),
-          _InfoTile(
-            label: l10n.clashMatchPrepareType,
-            value: clashStoryLevelTypeLabel(level.type, l10n),
-          ),
+          const SizedBox(height: 16),
           _InfoTile(
             label: l10n.clashMatchPrepareEnergy,
             value: '${level.energyCost}',
           ),
+          if (validation.recommendedPower != null)
+            _InfoTile(
+              label: l10n.clashMatchPrepareRecommendedPower,
+              value: '${validation.recommendedPower}',
+            ),
           ClashMatchRivalPrepareSection(
             ownPower: validation.lineupPower,
             rivalTeam: _rivalTeam,
@@ -137,8 +162,8 @@ class _ClashMatchPrepareScreenState extends State<ClashMatchPrepareScreen> {
           ),
           const SizedBox(height: 12),
           _StatusChip(
-            ok: validation.hasCompleteActiveLineup,
-            label: validation.hasCompleteActiveLineup
+            ok: lineupReady,
+            label: lineupReady
                 ? l10n.clashMatchPrepareLineupComplete
                 : l10n.clashMatchPrepareLineupIncomplete,
           ),
@@ -166,17 +191,36 @@ class _ClashMatchPrepareScreenState extends State<ClashMatchPrepareScreen> {
             ClashMatchObjectivesCard(objectives: level.matchObjectives),
           ],
           const SizedBox(height: 24),
-          OutlinedButton(
-            onPressed: () => context.push(AppRoutes.clashTeam7v7),
-            child: Text(l10n.clashMatchPrepareEditLineup),
-          ),
-          const SizedBox(height: 10),
-          FilledButton(
-            onPressed: validation.canStart
-                ? () => context.push(AppRoutes.clashMatch(widget.levelId))
-                : null,
-            child: Text(l10n.clashMatchPrepareStart),
-          ),
+          if (!lineupReady) ...[
+            FilledButton(
+              onPressed: () => context.push(AppRoutes.clashTeam7v7),
+              child: Text(l10n.clashStoryPrepareTeam),
+            ),
+            const SizedBox(height: 8),
+            FilledButton(
+              onPressed: null,
+              child: Text(l10n.clashStoryStartMatch),
+            ),
+          ] else ...[
+            FilledButton(
+              onPressed: validation.canStart
+                  ? () => context.push(AppRoutes.clashMatch(widget.levelId))
+                  : null,
+              child: Text(l10n.clashStoryStartMatch),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton(
+              onPressed: () => context.push(AppRoutes.clashTeam7v7),
+              child: Text(l10n.clashMatchPrepareEditLineup),
+            ),
+          ],
+          if (status == ClashStoryLevelStatus.completed) ...[
+            const SizedBox(height: 8),
+            OutlinedButton(
+              onPressed: () => context.go(AppRoutes.clashStory),
+              child: Text(l10n.clashStoryBackToMap),
+            ),
+          ],
         ],
       ),
     );

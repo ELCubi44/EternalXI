@@ -375,6 +375,9 @@ void main() {
       final setup = await _setup();
       final controller = ClashStoryController(storyRepository: setup.storyRepo);
       await controller.load();
+      tester.view.physicalSize = const Size(400, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
 
       await tester.pumpWidget(
         await _app(controller: controller, child: const ClashStoryMapScreen()),
@@ -384,10 +387,6 @@ void main() {
       expect(find.text('Nivel 1'), findsOneWidget);
       expect(find.text('Nivel 2'), findsOneWidget);
       expect(find.text('Nivel 3'), findsOneWidget);
-
-      await tester.drag(find.byType(ListView), const Offset(0, -500));
-      await tester.pumpAndSettle();
-
       expect(find.text('Nivel match'), findsOneWidget);
     });
 
@@ -413,7 +412,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Nivel bloqueado'), findsOneWidget);
+      expect(find.text('Completa el nivel anterior'), findsOneWidget);
     });
 
     Future<ClashLineupsController> _lineupsController() async {

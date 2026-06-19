@@ -5,7 +5,9 @@ import 'package:eternal_xi/features/clash/story/domain/clash_story_level.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level_status.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level_type.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
-import 'package:eternal_xi/features/clash/story/presentation/widgets/clash_story_level_node.dart';
+import 'package:eternal_xi/features/clash/story/presentation/widgets/clash_story_chapter_card.dart';
+import 'package:eternal_xi/features/clash/story/presentation/widgets/clash_story_level_card.dart';
+import 'package:eternal_xi/features/clash/story/presentation/widgets/clash_story_progress_header.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -47,6 +49,12 @@ class _ClashStoryMapScreenState extends State<ClashStoryMapScreen> {
 
     final saga = controller.sagas.isNotEmpty ? controller.sagas.first : null;
     final chapter = controller.activeChapter;
+    final levels = chapter == null
+        ? const <ClashStoryLevel>[]
+        : ([...chapter.levels]..sort((a, b) => a.order.compareTo(b.order)));
+    final completedCount = levels
+        .where((level) => controller.progress.isLevelCompleted(level.id))
+        .length;
 
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -61,8 +69,8 @@ class _ClashStoryMapScreenState extends State<ClashStoryMapScreen> {
             Expanded(
               child: Text(
                 l10n.clashHomeStory,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
                   color: context.xiTextPrimary,
                 ),
               ),
@@ -70,13 +78,14 @@ class _ClashStoryMapScreenState extends State<ClashStoryMapScreen> {
           ],
         ),
         if (saga != null) ...[
+          const SizedBox(height: 4),
           Text(
             saga.title,
             style: Theme.of(
               context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(
             saga.description,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -86,99 +95,45 @@ class _ClashStoryMapScreenState extends State<ClashStoryMapScreen> {
           ),
         ],
         if (chapter != null) ...[
-          const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: context.xiCardSurface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: context.xiDivider),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  chapter.title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  chapter.description,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: context.xiTextSecondary,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
+          const SizedBox(height: 16),
+          ClashStoryProgressHeader(
+            completedLevels: completedCount,
+            totalLevels: levels.length,
+            chapterTitle: chapter.title,
           ),
-          const SizedBox(height: 20),
-          ..._levelNodes(context, controller, chapter.levels),
+          const SizedBox(height: 14),
+          ClashStoryChapterCard(
+            title: chapter.title,
+            description: chapter.description,
+            completedLevels: completedCount,
+            totalLevels: levels.length,
+          ),
+          const SizedBox(height: 18),
+          for (final level in levels)
+            ClashStoryLevelCard(
+              level: level,
+              status: controller.statusFor(level),
+              progress: controller.progress,
+              onAction: _canOpen(controller.statusFor(level))
+                  ? () => _openLevel(context, level)
+                  : null,
+            ),
         ],
       ],
     );
   }
 
-  List<Widget> _levelNodes(
-    BuildContext context,
-    ClashStoryController controller,
-    List<ClashStoryLevel> levels,
-  ) {
-    final sorted = [...levels]..sort((a, b) => a.order.compareTo(b.order));
-    final widgets = <Widget>[];
-
-    for (var i = 0; i < sorted.length; i++) {
-      final level = sorted[i];
-      final status = controller.statusFor(level);
-      widgets.add(
-        ClashStoryLevelNode(
-          level: level,
-          status: status,
-          onTap: status == ClashStoryLevelStatus.available
-              ? () {
-                  final route = level.type == ClashStoryLevelType.story
-                      ? AppRoutes.clashStoryLevel(level.id)
-                      : AppRoutes.clashStoryLevelPrepare(level.id);
-                  context.push(route);
-                }
-              : null,
-        ),
-      );
-      if (i < sorted.length - 1) {
-        widgets.add(
-          Center(
-            child: Container(
-              width: 3,
-              height: 28,
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              decoration: BoxDecoration(
-                color: context.xiDivider,
-                borderRadius: BorderRadius.circular(99),
-              ),
-            ),
-          ),
-        );
-      }
-    }
-
-    return widgets;
+  bool _canOpen(ClashStoryLevelStatus status) {
+    return status == ClashStoryLevelStatus.available ||
+        status == ClashStoryLevelStatus.completed;
   }
-}
 
-String clashStoryLevelTypeLabel(ClashStoryLevelType type, dynamic l10n) {
-  return switch (type) {
-    ClashStoryLevelType.story => l10n.clashStoryTypeStory,
-    ClashStoryLevelType.match => l10n.clashStoryTypeMatch,
-    ClashStoryLevelType.mixed => l10n.clashStoryTypeMixed,
-  };
-}
-
-String clashStoryLevelStatusLabel(ClashStoryLevelStatus status, dynamic l10n) {
-  return switch (status) {
-    ClashStoryLevelStatus.locked => l10n.clashStoryStatusLocked,
-    ClashStoryLevelStatus.available => l10n.clashStoryStatusAvailable,
-    ClashStoryLevelStatus.completed => l10n.clashStoryStatusCompleted,
-  };
+  void _openLevel(BuildContext context, ClashStoryLevel level) {
+    final route = switch (level.type) {
+      ClashStoryLevelType.story => AppRoutes.clashStoryLevel(level.id),
+      ClashStoryLevelType.match ||
+      ClashStoryLevelType.mixed => AppRoutes.clashStoryLevelPrepare(level.id),
+    };
+    context.push(route);
+  }
 }

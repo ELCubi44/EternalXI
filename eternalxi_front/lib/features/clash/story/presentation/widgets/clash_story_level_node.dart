@@ -2,7 +2,7 @@ import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level_status.dart';
-import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_map_screen.dart';
+import 'package:eternal_xi/features/clash/story/presentation/widgets/clash_story_labels.dart';
 import 'package:flutter/material.dart';
 
 class ClashStoryLevelNode extends StatelessWidget {

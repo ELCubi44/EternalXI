@@ -349,6 +349,19 @@ Contenido narrativo concreto: **pendiente** de guion.
 
 ---
 
+## Fase 49 — Mapa y detalle de historia (UI)
+
+| Incluido | Pendiente |
+|---|---|
+| Progreso X/Y y capítulo actual en mapa | Mapa con nodos animados |
+| Tarjetas de nivel con tipo, estado y first clear | Cinemáticas con imágenes |
+| Detalle story con narrativa y rewards | Editor de historia |
+| Preparación match con rival, objetivos y CTAs | Energía/stamina de entrada |
+
+**Sin cambios** en progresión, recompensas ni desbloqueos.
+
+---
+
 ## 13. Decisiones pendientes
 
 | Tema | Estado |
