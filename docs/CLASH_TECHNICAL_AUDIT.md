@@ -172,7 +172,8 @@ ClashMissionProgressEventHub + event sinks
 | Sincronización local/remoto | Progreso en 15 SP keys vs estado servidor | Definir `ClashSyncState` + versión de esquema; operaciones idempotentes |
 | Migración SharedPreferences | Sin `schemaVersion` global | Introducir migrador por backend o unificado |
 | IDs estables | `cardId`, `levelId`, `eventId` solo en JSON | Publicar catálogo de IDs; contratos OpenAPI |
-| Idempotencia de rewards | Grants locales sin `transactionId` | Clave de deduplicación por `source+rewardId+timestamp`; **sync server-side pendiente (post-Fase 53)** |
+| Idempotencia de rewards | Grants locales sin `transactionId` | Clave de deduplicación por `source+rewardId+timestamp`; **sync server-side pendiente** |
+| Contratos de contenido | Sin validación automática de assets JSON | **Iniciado (Fase 55):** `CLASH_CONTENT_CONTRACTS.md` + `clash_assets_validation_test.dart` |
 | Conflictos de progreso | First clear, pity, misiones pueden solaparse | Server wins / merge policy documentada |
 | Auth/session | Clash asume usuario autenticado pero no valida en repos | Capa de sync post-login; no grant offline infinito |
 | Wallet | Coins/gems solo locales | Endpoint de balance + reconciliación |
@@ -232,8 +233,8 @@ Lista priorizada y acotada (refactors seguros en fases futuras):
 |---|---|---|
 | **53** | Consolidar grant local (`ClashLocalRewardGranter` + story alineada) | **Implementada** |
 | **54** | Extraer `clash_providers.dart` de `main.dart` | **Implementada** |
-| **55** | Widgets compartidos: preview tipado + status chip + pantalla post-reward | UI shared |
-| **56** | Contratos de IDs y esquema de sync (doc + interfaces, sin API) | Pre-backend |
+| **55** | Contratos de IDs + validación assets locales | **Implementada** |
+| **56** | Widgets compartidos: preview tipado + status chip + pantalla post-reward | UI shared |
 | **57** | Segundo evento/personaje en JSON (validar escalabilidad de events) | Contenido |
 | **58** | Mejorar smoke/screenshots (flujos help, events, gacha) | Tooling |
 | **59** | Diseño técnico 11v11 (modelo formación, impacto motor/UI) | Doc + spike |

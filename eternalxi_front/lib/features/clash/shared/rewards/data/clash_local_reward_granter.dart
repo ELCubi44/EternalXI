@@ -2,8 +2,8 @@ import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_c
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_ticket_repository.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/domain/clash_reward.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/domain/clash_reward_grant_result.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/domain/clash_reward_ids.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
-import 'package:eternal_xi/features/clash/story/domain/clash_story_reward.dart';
 
 /// Concede recompensas locales unificadas de Clash (Fase 53).
 class ClashLocalRewardGranter {
@@ -19,21 +19,13 @@ class ClashLocalRewardGranter {
   final ClashGachaTicketRepository? _ticketRepository;
   final ClashStoryRepository? _storyRepository;
 
-  static const knownExpMaterialIds = {
-    'basic-training-manual',
-    'advanced-training-manual',
-    'master-training-manual',
-  };
+  static const knownExpMaterialIds = ClashRewardIds.expMaterials;
 
-  static const knownTechniqueBookIds = {
-    'basic-technique-book',
-    'advanced-technique-book',
-    'master-technique-book',
-  };
+  static const knownTechniqueBookIds = ClashRewardIds.techniqueBooks;
 
-  static const knownEvolutionMaterialIds = {'insignia-r', 'insignia-sr'};
+  static const knownEvolutionMaterialIds = ClashRewardIds.evolutionMaterials;
 
-  static const knownTicketIds = {'starter-single-ticket'};
+  static const knownTicketIds = ClashRewardIds.tickets;
 
   Future<ClashRewardGrantResult> grantAll(
     List<ClashReward> rewards, {
@@ -228,7 +220,7 @@ class ClashLocalRewardGranter {
         switch (reward.kind) {
           case ClashRewardKind.starterRoster:
             if (reward.starterRosterKey ==
-                ClashStoryReward.eternalXiStarterRosterKey) {
+                ClashRewardIds.eternalXiStarterRosterKey) {
               newlyGrantedCardIds.addAll(
                 await _collectionRepository.grantEternalXiStarterNCards(),
               );

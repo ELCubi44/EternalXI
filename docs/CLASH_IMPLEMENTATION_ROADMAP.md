@@ -799,4 +799,16 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 55 — Contratos de contenido y validación de assets
+
+**Estado:** implementada.
+
+- `lib/features/clash/shared/rewards/domain/clash_reward_ids.dart` — IDs concedibles compartidos.
+- `test/features/clash/assets/clash_assets_validation_test.dart` — validación cruzada de JSON locales.
+- Documento [`CLASH_CONTENT_CONTRACTS.md`](./CLASH_CONTENT_CONTRACTS.md).
+
+**Sin cambios** en gameplay, UI, economía ni backend.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*
