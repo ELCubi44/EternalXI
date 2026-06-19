@@ -1,10 +1,12 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_repository.dart';
 import 'package:eternal_xi/features/clash/events/domain/clash_character_event_stage.dart';
 import 'package:eternal_xi/features/clash/events/domain/clash_character_event_stage_type.dart';
 import 'package:eternal_xi/features/clash/events/presentation/controllers/clash_character_events_controller.dart';
+import 'package:eternal_xi/features/clash/events/presentation/widgets/clash_event_detail_header.dart';
 import 'package:eternal_xi/features/clash/events/presentation/widgets/clash_event_stage_card.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -21,6 +23,8 @@ class ClashEventDetailScreen extends StatefulWidget {
 
 class _ClashEventDetailScreenState extends State<ClashEventDetailScreen> {
   late final ClashCharacterEventsController _controller;
+  String? _featuredCardName;
+  String? _featuredCardRarity;
 
   @override
   void initState() {
@@ -30,6 +34,31 @@ class _ClashEventDetailScreenState extends State<ClashEventDetailScreen> {
     );
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _controller.openEvent(widget.eventId);
+      await _resolveFeaturedCard();
+    });
+  }
+
+  Future<void> _resolveFeaturedCard() async {
+    final cardId = _controller.activeEvent?.featuredCardId;
+    if (cardId == null) {
+      return;
+    }
+    ClashCardsRepository? cardsRepo;
+    try {
+      cardsRepo = context.read<ClashCardsRepository>();
+    } catch (_) {
+      if (mounted) {
+        setState(() => _featuredCardName = cardId);
+      }
+      return;
+    }
+    final entry = await cardsRepo.findById(cardId);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _featuredCardName = entry?.name ?? cardId;
+      _featuredCardRarity = entry?.effectiveRarity.name.toUpperCase();
     });
   }
 
@@ -80,55 +109,36 @@ class _ClashEventDetailScreenState extends State<ClashEventDetailScreen> {
             .length;
 
         return Scaffold(
-          appBar: AppBar(title: Text(event.title)),
+          appBar: AppBar(title: Text(l10n.clashEventsTitle)),
           body: RefreshIndicator(
-            onRefresh: () => _controller.openEvent(widget.eventId),
+            onRefresh: () async {
+              await _controller.openEvent(widget.eventId);
+              await _resolveFeaturedCard();
+            },
             child: ListView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
               children: [
-                Text(
-                  event.characterName,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: theme.colorScheme.primary,
-                  ),
+                ClashEventDetailHeader(
+                  event: event,
+                  completedStages: completed,
+                  featuredCardName: _featuredCardName,
+                  featuredCardRarity: _featuredCardRarity,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  event.description,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: context.xiTextSecondary,
-                    height: 1.45,
-                  ),
-                ),
-                if (event.featuredCardId != null) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.clashEventsFeaturedCard(event.featuredCardId!),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: context.xiTextSecondary,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 12),
-                Text(
-                  l10n.clashEventsProgress(completed, event.stages.length),
-                  style: theme.textTheme.labelLarge,
-                ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 Text(
                   l10n.clashEventsStagesTitle,
                   style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
                 const SizedBox(height: 10),
-                ..._controller.stageProgress.map(
-                  (progress) => ClashEventStageCard(
-                    progress: progress,
-                    onPrimaryAction: progress.canPlay
-                        ? () => _openStage(progress)
+                ..._controller.stageProgress.asMap().entries.map(
+                  (entry) => ClashEventStageCard(
+                    stageNumber: entry.key + 1,
+                    progress: entry.value,
+                    onPrimaryAction: entry.value.canPlay
+                        ? () => _openStage(entry.value)
                         : null,
                   ),
                 ),

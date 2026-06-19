@@ -55,47 +55,53 @@ class ClashEventMatchEndPanel extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-          ClashMatchEndHeader(state: state, subtitle: subtitle),
-          if (userWon) ...[
-            const SizedBox(height: 12),
-            Text(
-              l10n.clashEventsStageCompletedTitle(stageTitle),
-              textAlign: TextAlign.center,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 14),
-            ClashMatchEndRewardsObtainedSection.event(reward: previewReward),
-            if (previewCardXp.isNotEmpty) ...[
+            ClashMatchEndHeader(state: state, subtitle: subtitle),
+            if (userWon) ...[
+              const SizedBox(height: 12),
+              Text(
+                l10n.clashEventsStageCompletedTitle(stageTitle),
+                textAlign: TextAlign.center,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
               const SizedBox(height: 14),
-              ClashMatchEndCardProgressSection(results: previewCardXp),
+              ClashMatchEndRewardsObtainedSection.event(reward: previewReward),
+              if (previewCardXp.isNotEmpty) ...[
+                const SizedBox(height: 14),
+                ClashMatchEndCardProgressSection(results: previewCardXp),
+              ],
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: onViewRewards,
+                child: Text(l10n.clashMatchContinue),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: onRetry,
+                child: Text(l10n.clashMatchRetry),
+              ),
+            ] else ...[
+              const SizedBox(height: 12),
+              Text(
+                l10n.clashEventsMatchDefeatHint,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: context.xiTextSecondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: onRetry,
+                child: Text(l10n.clashMatchRetry),
+              ),
             ],
-            const SizedBox(height: 16),
-            FilledButton(
-              onPressed: onViewRewards,
-              child: Text(l10n.clashMatchContinue),
-            ),
             const SizedBox(height: 8),
             OutlinedButton(
-              onPressed: onRetry,
-              child: Text(l10n.clashMatchRetry),
+              onPressed: onBack,
+              child: Text(l10n.clashEventsBack),
             ),
-          ] else ...[
-            const SizedBox(height: 12),
-            Text(
-              l10n.clashEventsMatchDefeatHint,
-              textAlign: TextAlign.center,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: context.xiTextSecondary),
-            ),
-            const SizedBox(height: 16),
-            FilledButton(onPressed: onRetry, child: Text(l10n.clashMatchRetry)),
           ],
-          const SizedBox(height: 8),
-          OutlinedButton(onPressed: onBack, child: Text(l10n.clashEventsBack)),
-        ],
         ),
       ),
     );

@@ -269,6 +269,15 @@ class AppLocalizations {
       'clashEventsMatchDefeatHint':
           'No hay recompensas en derrota. Puedes reintentar.',
       'clashEventsStageCompletedTitle': 'Fase completada: {title}',
+      'clashEventsLocalTestLabel': 'Eventos locales de prueba',
+      'clashEventsFeaturedCardTitle': 'Carta destacada',
+      'clashEventsFirstVictory': 'Primera victoria',
+      'clashEventsRepeats': 'Repeticiones',
+      'clashEventsRepeatable': 'Repetible',
+      'clashEventsCompletedTimes': 'Completada {count} veces',
+      'clashEventsFirstTimeCard': 'Primera vez: consigues la carta',
+      'clashEventsRepeatDuplicates': 'Repeticiones: duplicados/materiales',
+      'clashEventsAvailableCount': '{count} eventos disponibles',
       'clashTeamLineup7': 'Alineación 7vs7',
       'clashTeamLineup11': 'Alineación 11vs11',
       'clashTeamCharacters': 'Personajes',
@@ -1145,6 +1154,15 @@ class AppLocalizations {
       'clashEventsBack': 'Back to event',
       'clashEventsMatchDefeatHint': 'No rewards on defeat. You can retry.',
       'clashEventsStageCompletedTitle': 'Stage completed: {title}',
+      'clashEventsLocalTestLabel': 'Local test events',
+      'clashEventsFeaturedCardTitle': 'Featured card',
+      'clashEventsFirstVictory': 'First victory',
+      'clashEventsRepeats': 'Repeats',
+      'clashEventsRepeatable': 'Repeatable',
+      'clashEventsCompletedTimes': 'Completed {count} times',
+      'clashEventsFirstTimeCard': 'First time: you get the card',
+      'clashEventsRepeatDuplicates': 'Repeats: duplicates/materials',
+      'clashEventsAvailableCount': '{count} events available',
       'clashTeamLineup7': '7v7 lineup',
       'clashTeamLineup11': '11v11 lineup',
       'clashTeamCharacters': 'Characters',
@@ -2095,6 +2113,17 @@ class AppLocalizations {
   String get clashEventsMatchDefeatHint => _t('clashEventsMatchDefeatHint');
   String clashEventsStageCompletedTitle(String title) =>
       _t('clashEventsStageCompletedTitle').replaceAll('{title}', title);
+  String get clashEventsLocalTestLabel => _t('clashEventsLocalTestLabel');
+  String get clashEventsFeaturedCardTitle => _t('clashEventsFeaturedCardTitle');
+  String get clashEventsFirstVictory => _t('clashEventsFirstVictory');
+  String get clashEventsRepeats => _t('clashEventsRepeats');
+  String get clashEventsRepeatable => _t('clashEventsRepeatable');
+  String clashEventsCompletedTimes(int count) =>
+      _t('clashEventsCompletedTimes').replaceAll('{count}', '$count');
+  String get clashEventsFirstTimeCard => _t('clashEventsFirstTimeCard');
+  String get clashEventsRepeatDuplicates => _t('clashEventsRepeatDuplicates');
+  String clashEventsAvailableCount(int count) =>
+      _t('clashEventsAvailableCount').replaceAll('{count}', '$count');
   String get clashTeamLineup7 => _t('clashTeamLineup7');
   String get clashTeamLineup11 => _t('clashTeamLineup11');
   String get clashTeamCharacters => _t('clashTeamCharacters');

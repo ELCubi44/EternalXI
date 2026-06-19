@@ -362,6 +362,18 @@ Contenido narrativo concreto: **pendiente** de guion.
 
 ---
 
+## Fase 50 — Eventos de personaje (UI)
+
+| Incluido | Pendiente |
+|---|---|
+| Listado con cabecera, progreso y carta destacada | Eventos temporales reales |
+| Detalle con fases, first clear y repetición | Calendario servidor / tienda |
+| Story stage y prepare match pulidos | Ranking / banners remotos |
+
+**Sin cambios** en progresión, recompensas ni desbloqueos.
+
+---
+
 ## 13. Decisiones pendientes
 
 | Tema | Estado |

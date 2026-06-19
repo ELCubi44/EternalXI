@@ -1,9 +1,11 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_repository.dart';
-import 'package:eternal_xi/features/clash/events/domain/clash_character_event_reward.dart';
+import 'package:eternal_xi/features/clash/events/domain/clash_character_event.dart';
 import 'package:eternal_xi/features/clash/events/domain/clash_character_event_stage.dart';
 import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_reward_screen.dart';
+import 'package:eternal_xi/features/clash/events/presentation/widgets/clash_event_stage_detail_header.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +27,9 @@ class ClashEventStoryStageScreen extends StatefulWidget {
 
 class _ClashEventStoryStageScreenState
     extends State<ClashEventStoryStageScreen> {
+  ClashCharacterEvent? _event;
   ClashCharacterEventStage? _stage;
+  ClashCharacterEventStageProgress? _progress;
   var _loading = true;
   var _completing = false;
 
@@ -37,10 +41,21 @@ class _ClashEventStoryStageScreenState
 
   Future<void> _load() async {
     final repo = context.read<ClashCharacterEventsRepository>();
+    final event = await repo.findEventById(widget.eventId);
     final stage = await repo.findStage(widget.eventId, widget.stageId);
+    final progressList = await repo.fetchStageProgress(widget.eventId);
+    ClashCharacterEventStageProgress? progress;
+    for (final item in progressList) {
+      if (item.stage.id == widget.stageId) {
+        progress = item;
+        break;
+      }
+    }
     if (mounted) {
       setState(() {
+        _event = event;
         _stage = stage;
+        _progress = progress;
         _loading = false;
       });
     }
@@ -88,89 +103,84 @@ class _ClashEventStoryStageScreenState
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final stage = _stage;
+    final event = _event;
+    final progress = _progress;
 
     if (_loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    if (stage == null) {
+    if (stage == null || event == null || progress == null) {
       return Scaffold(
         appBar: AppBar(title: Text(l10n.clashEventsTitle)),
         body: Center(child: Text(l10n.clashEventsStageNotFound)),
       );
     }
 
+    final isCompleted = progress.clearCount > 0;
+    final narrative = stage.storyText.isNotEmpty
+        ? stage.storyText
+        : l10n.clashEventsStoryPlaceholder;
+
     return Scaffold(
-      appBar: AppBar(title: Text(stage.title)),
+      appBar: AppBar(title: Text(l10n.clashEventsTitle)),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
         children: [
-          Text(
-            stage.title,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            stage.storyText.isNotEmpty
-                ? stage.storyText
-                : l10n.clashEventsStoryPlaceholder,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: context.xiTextSecondary,
-              height: 1.5,
-            ),
+          ClashEventStageDetailHeader(
+            eventTitle: event.title,
+            stage: stage,
+            status: progress.status,
+            clearCount: progress.clearCount,
+            firstClearClaimed: isCompleted,
           ),
           const SizedBox(height: 20),
-          Text(
-            l10n.clashEventsFirstClear,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: context.xiCardSurface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: context.xiDivider),
+            ),
+            child: Text(
+              narrative,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: context.xiTextSecondary,
+                height: 1.55,
+              ),
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            _rewardText(context, stage.firstClearRewards),
-            style: theme.textTheme.bodyMedium,
-          ),
           const SizedBox(height: 24),
-          FilledButton(
-            onPressed: _completing ? null : _complete,
-            child: _completing
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Text(l10n.clashEventsStoryComplete),
-          ),
+          if (isCompleted) ...[
+            OutlinedButton(
+              onPressed: () =>
+                  context.go(AppRoutes.clashEventDetail(widget.eventId)),
+              child: Text(l10n.clashEventsBack),
+            ),
+            const SizedBox(height: 8),
+            FilledButton(
+              onPressed: _completing ? null : _complete,
+              child: _completing
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(l10n.clashEventsStageReadAgain),
+            ),
+          ] else
+            FilledButton(
+              onPressed: _completing ? null : _complete,
+              child: _completing
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(l10n.clashEventsStoryComplete),
+            ),
         ],
       ),
     );
-  }
-
-  String _rewardText(BuildContext context, ClashCharacterEventReward reward) {
-    final l10n = context.l10n;
-    if (reward.isEmpty) {
-      return '—';
-    }
-    final parts = <String>[];
-    if (reward.coins > 0) {
-      parts.add(l10n.clashAchievementsRewardCoins(reward.coins));
-    }
-    if (reward.gems > 0) {
-      parts.add(l10n.clashAchievementsRewardGems(reward.gems));
-    }
-    if (reward.expMaterial != null) {
-      parts.add(
-        l10n.clashShopGrantLine(
-          reward.expMaterial!.id,
-          reward.expMaterial!.quantity,
-        ),
-      );
-    }
-    if (reward.featuredCardId != null) {
-      parts.add(reward.featuredCardId!);
-    }
-    return parts.join(' · ');
   }
 }

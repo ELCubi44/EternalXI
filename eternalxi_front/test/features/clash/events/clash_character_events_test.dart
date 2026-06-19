@@ -222,12 +222,16 @@ void main() {
 
   group('ClashCharacterEvents UI', () {
     Future<Widget> eventsListApp(ClashCharacterEventsRepository repo) async {
+      final cardsRepo = ClashCardsRepository(GachaTestCardsDataSource());
       return MaterialApp(
         locale: const Locale('es'),
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
-        home: Provider<ClashCharacterEventsRepository>.value(
-          value: repo,
+        home: MultiProvider(
+          providers: [
+            Provider<ClashCharacterEventsRepository>.value(value: repo),
+            Provider<ClashCardsRepository>.value(value: cardsRepo),
+          ],
           child: const ClashEventsScreen(),
         ),
       );
@@ -406,12 +410,9 @@ void main() {
         }
       }
       expect(find.text('Alineación activa incompleta'), findsOneWidget);
-      expect(
-        find.widgetWithText(FilledButton, 'Comenzar partido'),
-        findsOneWidget,
-      );
+      expect(find.text('Preparar equipo'), findsOneWidget);
       final start = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Comenzar partido'),
+        find.widgetWithText(FilledButton, 'Empezar partido'),
       );
       expect(start.onPressed, isNull);
       await tester.pumpWidget(const SizedBox.shrink());

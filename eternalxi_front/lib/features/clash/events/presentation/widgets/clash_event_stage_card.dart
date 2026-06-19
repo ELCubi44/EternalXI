@@ -1,18 +1,22 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
-import 'package:eternal_xi/features/clash/events/domain/clash_character_event_reward.dart';
 import 'package:eternal_xi/features/clash/events/domain/clash_character_event_stage.dart';
 import 'package:eternal_xi/features/clash/events/domain/clash_character_event_stage_type.dart';
+import 'package:eternal_xi/features/clash/events/presentation/widgets/clash_event_labels.dart';
+import 'package:eternal_xi/features/clash/events/presentation/widgets/clash_event_reward_preview.dart';
+import 'package:eternal_xi/features/clash/story/presentation/widgets/clash_story_level_status_chip.dart';
 import 'package:flutter/material.dart';
 
 class ClashEventStageCard extends StatelessWidget {
   const ClashEventStageCard({
     super.key,
     required this.progress,
+    required this.stageNumber,
     required this.onPrimaryAction,
   });
 
   final ClashCharacterEventStageProgress progress;
+  final int stageNumber;
   final VoidCallback? onPrimaryAction;
 
   @override
@@ -20,145 +24,126 @@ class ClashEventStageCard extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final stage = progress.stage;
+    final isLocked = progress.status == ClashCharacterEventStageStatus.locked;
+    final isCompleted =
+        progress.status == ClashCharacterEventStageStatus.completed;
+    final firstClearClaimed = progress.clearCount > 0;
 
-    final statusLabel = switch (progress.status) {
-      ClashCharacterEventStageStatus.locked => l10n.clashEventsStageLocked,
-      ClashCharacterEventStageStatus.available =>
-        l10n.clashEventsStageAvailable,
-      ClashCharacterEventStageStatus.completed =>
-        l10n.clashEventsStageCompleted,
-    };
+    final borderColor = isCompleted
+        ? Colors.green.withValues(alpha: 0.5)
+        : isLocked
+        ? context.xiDivider
+        : theme.colorScheme.primary.withValues(alpha: 0.5);
 
-    final actionLabel = switch (stage.type) {
-      ClashCharacterEventStageType.story =>
-        progress.status == ClashCharacterEventStageStatus.completed
-            ? l10n.clashEventsStageReadAgain
-            : l10n.clashEventsStageRead,
-      ClashCharacterEventStageType.match =>
-        progress.clearCount > 0
-            ? l10n.clashEventsStageRepeat
-            : l10n.clashEventsStagePrepare,
-    };
+    final actionLabel = clashEventStageActionLabel(
+      stage: stage,
+      progress: progress,
+      l10n: l10n,
+    );
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: context.xiCardSurface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: borderColor, width: isLocked ? 1 : 1.5),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: isCompleted
+                      ? Colors.green.withValues(alpha: 0.12)
+                      : theme.colorScheme.primary.withValues(alpha: 0.12),
                   child: Text(
-                    stage.title,
+                    '$stageNumber',
                     style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                 ),
-                Text(
-                  statusLabel,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: context.xiTextSecondary,
-                    fontWeight: FontWeight.w600,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        stage.title,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          ClashStoryLevelStatusChip(
+                            label: clashEventStageTypeLabel(stage.type, l10n),
+                            kind: ClashStoryLevelChipKind.type,
+                          ),
+                          ClashStoryLevelStatusChip(
+                            label: clashEventStageStatusLabel(
+                              progress.status,
+                              l10n,
+                            ),
+                            kind: ClashStoryLevelChipKind.status,
+                          ),
+                          if (progress.clearCount > 0)
+                            ClashStoryLevelStatusChip(
+                              label: l10n.clashEventsCompletedTimes(
+                                progress.clearCount,
+                              ),
+                              kind: ClashStoryLevelChipKind.firstClearClaimed,
+                            )
+                          else if (stage.type ==
+                              ClashCharacterEventStageType.match)
+                            ClashStoryLevelStatusChip(
+                              label: l10n.clashEventsRepeatable,
+                              kind: ClashStoryLevelChipKind.firstClear,
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 6),
-            Text(
-              stage.type == ClashCharacterEventStageType.story
-                  ? l10n.clashEventsStageTypeStory
-                  : l10n.clashEventsStageTypeMatch,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.primary,
-              ),
-            ),
-            if (progress.clearCount > 0) ...[
-              const SizedBox(height: 4),
-              Text(
-                l10n.clashEventsStageClearCount(progress.clearCount),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: context.xiTextSecondary,
-                ),
-              ),
-            ],
-            const SizedBox(height: 8),
-            Text(
-              _rewardSummary(
-                context,
-                stage.firstClearRewards,
-                l10n.clashEventsFirstClear,
-              ),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: context.xiTextSecondary,
-              ),
-            ),
-            if (!stage.repeatRewards.isEmpty) ...[
-              const SizedBox(height: 4),
-              Text(
-                _rewardSummary(
-                  context,
-                  stage.repeatRewards,
-                  l10n.clashEventsRepeatRewards,
-                ),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: context.xiTextSecondary,
-                ),
-              ),
-            ],
-            if (onPrimaryAction != null) ...[
+            if (!stage.firstClearRewards.isEmpty) ...[
               const SizedBox(height: 12),
-              Align(
-                alignment: Alignment.centerRight,
-                child: FilledButton(
-                  onPressed: onPrimaryAction,
-                  child: Text(actionLabel),
+              ClashEventRewardPreview(
+                title: l10n.clashEventsFirstClear,
+                rewards: stage.firstClearRewards,
+                muted: firstClearClaimed,
+              ),
+            ],
+            if (!stage.repeatRewards.isEmpty) ...[
+              const SizedBox(height: 8),
+              ClashEventRewardPreview(
+                title: l10n.clashEventsRepeatRewards,
+                rewards: stage.repeatRewards,
+              ),
+            ],
+            if (isLocked) ...[
+              const SizedBox(height: 12),
+              Text(
+                l10n.clashStoryCompletePreviousLevel,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: context.xiTextSecondary,
                 ),
               ),
             ],
+            const SizedBox(height: 12),
+            FilledButton(onPressed: onPrimaryAction, child: Text(actionLabel)),
           ],
         ),
       ),
     );
-  }
-
-  String _rewardSummary(
-    BuildContext context,
-    ClashCharacterEventReward reward,
-    String prefix,
-  ) {
-    final l10n = context.l10n;
-    if (reward.isEmpty) {
-      return '$prefix: —';
-    }
-    final parts = <String>[];
-    if (reward.coins > 0) {
-      parts.add(l10n.clashAchievementsRewardCoins(reward.coins));
-    }
-    if (reward.gems > 0) {
-      parts.add(l10n.clashAchievementsRewardGems(reward.gems));
-    }
-    if (reward.expMaterial != null) {
-      parts.add(
-        l10n.clashShopGrantLine(
-          reward.expMaterial!.id,
-          reward.expMaterial!.quantity,
-        ),
-      );
-    }
-    if (reward.techniqueBook != null) {
-      parts.add(
-        l10n.clashShopGrantLine(
-          reward.techniqueBook!.id,
-          reward.techniqueBook!.quantity,
-        ),
-      );
-    }
-    if (reward.featuredCardId != null) {
-      parts.add(reward.featuredCardId!);
-    }
-    return '$prefix: ${parts.join(' · ')}';
   }
 }

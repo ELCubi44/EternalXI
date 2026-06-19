@@ -735,4 +735,17 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 50 — Pulido UI eventos de personaje
+
+**Estado:** implementada.
+
+- Listado con cabecera, progreso y carta destacada.
+- Detalle con fases story/match, chips de estado, first clear y repetición.
+- Story stage y prepare match alineados con Fase 49.
+- CTAs: Entrar / Leer / Preparar / Repetir / Preparar equipo / Empezar partido.
+
+**Sin cambios** en progresión ni recompensas.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

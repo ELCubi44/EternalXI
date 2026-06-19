@@ -87,7 +87,8 @@ class ClashEventRewardScreen extends StatelessWidget {
                 );
               },
             )
-          else if (completion != null && completion.newlyGrantedCardIds.isNotEmpty)
+          else if (completion != null &&
+              completion.newlyGrantedCardIds.isNotEmpty)
             for (final cardId in completion.newlyGrantedCardIds)
               _RewardRow(icon: Icons.style_rounded, label: cardId)
           else if (rewards.featuredCardId != null &&
