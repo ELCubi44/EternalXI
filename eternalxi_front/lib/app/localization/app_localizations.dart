@@ -576,6 +576,12 @@ class AppLocalizations {
       'clashMatchObjectivesTitle': 'Objetivos',
       'clashMatchObjectiveCompleted': 'Completado',
       'clashMatchObjectiveIncomplete': 'No completado',
+      'clashMatchObjectiveStatusPending': 'Pendiente',
+      'clashMatchObjectiveStatusInProgress': 'En progreso',
+      'clashMatchObjectiveStatusCompleted': 'Cumplido',
+      'clashMatchObjectiveStatusFailed': 'Fallido',
+      'clashMatchObjectiveStatusReviewedAtEnd': 'Se revisa al final',
+      'clashMatchObjectivesNone': 'Sin objetivos secundarios',
       'clashMatchObjectivesDefeatHint':
           'Debes ganar el partido para recibir recompensas de objetivos',
       'clashMatchRewardsTotalTitle': 'Total obtenido',
@@ -1418,6 +1424,12 @@ class AppLocalizations {
       'clashMatchObjectivesTitle': 'Objectives',
       'clashMatchObjectiveCompleted': 'Completed',
       'clashMatchObjectiveIncomplete': 'Not completed',
+      'clashMatchObjectiveStatusPending': 'Pending',
+      'clashMatchObjectiveStatusInProgress': 'In progress',
+      'clashMatchObjectiveStatusCompleted': 'Completed',
+      'clashMatchObjectiveStatusFailed': 'Failed',
+      'clashMatchObjectiveStatusReviewedAtEnd': 'Checked at the end',
+      'clashMatchObjectivesNone': 'No secondary objectives',
       'clashMatchObjectivesDefeatHint':
           'You must win the match to receive objective rewards',
       'clashMatchRewardsTotalTitle': 'Total earned',
@@ -2456,6 +2468,17 @@ class AppLocalizations {
   String get clashMatchObjectiveCompleted => _t('clashMatchObjectiveCompleted');
   String get clashMatchObjectiveIncomplete =>
       _t('clashMatchObjectiveIncomplete');
+  String get clashMatchObjectiveStatusPending =>
+      _t('clashMatchObjectiveStatusPending');
+  String get clashMatchObjectiveStatusInProgress =>
+      _t('clashMatchObjectiveStatusInProgress');
+  String get clashMatchObjectiveStatusCompleted =>
+      _t('clashMatchObjectiveStatusCompleted');
+  String get clashMatchObjectiveStatusFailed =>
+      _t('clashMatchObjectiveStatusFailed');
+  String get clashMatchObjectiveStatusReviewedAtEnd =>
+      _t('clashMatchObjectiveStatusReviewedAtEnd');
+  String get clashMatchObjectivesNone => _t('clashMatchObjectivesNone');
   String get clashMatchObjectivesDefeatHint =>
       _t('clashMatchObjectivesDefeatHint');
   String get clashMatchRewardsTotalTitle => _t('clashMatchRewardsTotalTitle');

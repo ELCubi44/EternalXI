@@ -17,6 +17,7 @@ import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_halftime_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_header.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_history_panel.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_objectives_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_rival_turn_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_status_banner.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_mini_pitch.dart';
@@ -255,6 +256,13 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
             state: state,
             rivalName: match.rivalTeamName,
           ),
+          if (!isFinished && level.matchObjectives.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            ClashMatchObjectivesPanel(
+              objectives: level.matchObjectives,
+              state: state,
+            ),
+          ],
           if (!isFinished) ...[
             const SizedBox(height: 12),
             ClashMatchStatusBanner(state: state),

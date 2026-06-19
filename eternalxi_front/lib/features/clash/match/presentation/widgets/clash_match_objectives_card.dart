@@ -1,7 +1,7 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective.dart';
-import 'package:eternal_xi/features/clash/story/domain/clash_story_reward.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_objective_reward_preview.dart';
 import 'package:flutter/material.dart';
 
 /// Lista de objetivos de un nivel match en preparación (Fase 16).
@@ -59,7 +59,10 @@ class ClashMatchObjectivesCard extends StatelessWidget {
                   if (!objective.rewards.isEmpty) ...[
                     const SizedBox(height: 4),
                     Text(
-                      _rewardPreview(context, objective.rewards),
+                      clashMatchObjectiveRewardPreview(
+                        context,
+                        objective.rewards,
+                      ),
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: theme.colorScheme.primary,
                         fontWeight: FontWeight.w700,
@@ -73,23 +76,5 @@ class ClashMatchObjectivesCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _rewardPreview(BuildContext context, ClashStoryReward rewards) {
-    final l10n = context.l10n;
-    final parts = <String>[];
-    if (rewards.gems > 0) {
-      parts.add(l10n.clashMatchRewardGems(rewards.gems));
-    }
-    if (rewards.coins > 0) {
-      parts.add(l10n.clashMatchRewardCoins(rewards.coins));
-    }
-    for (final item in rewards.items) {
-      parts.add('${item.name} x${item.quantity}');
-    }
-    for (final material in rewards.materials) {
-      parts.add('${material.name} x${material.quantity}');
-    }
-    return parts.join(' · ');
   }
 }

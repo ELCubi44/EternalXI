@@ -699,4 +699,16 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 47 — Objetivos visibles durante partido
+
+**Estado:** implementada.
+
+- `ClashMatchObjectivesPanel` con progreso live en story match.
+- Resolver `ClashMatchObjectiveLiveResolver` (sin cambiar evaluador final).
+- Algunos objetivos se resuelven solo al final del partido.
+
+**Sin cambios** de reglas ni recompensas.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

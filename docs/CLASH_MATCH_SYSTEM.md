@@ -664,6 +664,20 @@ Sin `rivalTeamId`, el partido sigue usando `MatchSquadBuilder.buildRivalSquad` (
 
 ---
 
+## Fase 47 — Objetivos secundarios visibles en partido
+
+| Incluido | Pendiente |
+|---|---|
+| Panel live `ClashMatchObjectivesPanel` en story match | Objetivos nuevos complejos |
+| Estados: Pendiente / En progreso / Cumplido / Fallido / Se revisa al final | Misiones live globales |
+| `cleanSheet` y `scoreWithShotTechnique` con progreso durante el partido | Backend de objetivos |
+| `winMatch` pendiente hasta el final | Achievements nuevos |
+| Event match sin objetivos: panel oculto | |
+
+**Sin cambios** en evaluador final, reglas ni recompensas.
+
+---
+
 ## 17. Decisiones pendientes
 
 | Tema | Estado |
