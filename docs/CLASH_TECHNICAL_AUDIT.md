@@ -134,7 +134,7 @@ ClashMissionProgressEventHub + event sinks
 | A1 | **Wallet única en `ClashStoryRepository`** usada por shop, gacha, missions, events, etc. | Al conectar backend, cualquier desincronización de coins/gems afecta todo el modo. |
 | A2 | **Story no usa `ClashShopGrantService`** — grant de ítems vía adapters directos a collection/ticket | **Parcialmente resuelto (Fase 53):** ítems/cartas de historia usan `ClashLocalRewardGranter`; coins/gems siguen en progress. |
 | A3 | **`ClashPlayerCollectionRepository` monolítico** (~950 líneas) | Dificulta 11v11 (más slots), evolución y tests; alto acoplamiento. |
-| A4 | **15 backends SharedPreferences sin versión/migración** | Riesgo alto al sincronizar con servidor o cambiar esquema de progreso. |
+| A4 | **15 backends SharedPreferences sin versión/migración** | **Parcialmente resuelto (Fase 56):** `clash_schema_version` global + `ClashLocalMigrationRunner` (0→1 metadata). Migraciones de datos pendientes. |
 | A5 | **Duplicación story/events en grant + UI** — previews y pantallas post-recompensa casi gemelas | Cada nuevo evento/personaje duplica mantenimiento (Fases 49–50). |
 | A6 | **`main.dart` como composition root gigante** (~40 registros Clash) | **Parcialmente resuelto (Fase 54):** `lib/features/clash/shared/di/clash_providers.dart` con `prepareClashProviders()` + `buildClashProviders()`. |
 | A7 | **IDs de contenido locales sin contrato estable** — cardId, levelId, eventId en JSON | Backend necesitará mapeo explícito; riesgo de rotura al renombrar assets. |
@@ -170,7 +170,7 @@ ClashMissionProgressEventHub + event sinks
 | Riesgo | Detalle | Mitigación recomendada |
 |---|---|---|
 | Sincronización local/remoto | Progreso en 15 SP keys vs estado servidor | Definir `ClashSyncState` + versión de esquema; operaciones idempotentes |
-| Migración SharedPreferences | Sin `schemaVersion` global | Introducir migrador por backend o unificado |
+| Migración SharedPreferences | Sin `schemaVersion` global | **Iniciado (Fase 56):** ver `CLASH_LOCAL_STORAGE.md` |
 | IDs estables | `cardId`, `levelId`, `eventId` solo en JSON | Publicar catálogo de IDs; contratos OpenAPI |
 | Idempotencia de rewards | Grants locales sin `transactionId` | Clave de deduplicación por `source+rewardId+timestamp`; **sync server-side pendiente** |
 | Contratos de contenido | Sin validación automática de assets JSON | **Iniciado (Fase 55):** `CLASH_CONTENT_CONTRACTS.md` + `clash_assets_validation_test.dart` |
@@ -234,11 +234,12 @@ Lista priorizada y acotada (refactors seguros en fases futuras):
 | **53** | Consolidar grant local (`ClashLocalRewardGranter` + story alineada) | **Implementada** |
 | **54** | Extraer `clash_providers.dart` de `main.dart` | **Implementada** |
 | **55** | Contratos de IDs + validación assets locales | **Implementada** |
-| **56** | Widgets compartidos: preview tipado + status chip + pantalla post-reward | UI shared |
+| **56** | Schema version local + migrador SharedPreferences | **Implementada** |
+| **57** | Widgets compartidos: preview tipado + status chip + pantalla post-reward | UI shared |
 | **57** | Segundo evento/personaje en JSON (validar escalabilidad de events) | Contenido |
 | **58** | Mejorar smoke/screenshots (flujos help, events, gacha) | Tooling |
 | **59** | Diseño técnico 11v11 (modelo formación, impacto motor/UI) | Doc + spike |
-| **60** | Migración SP v1 (`schemaVersion` + migrador vacío) | Pre-backend |
+| **60** | Migración SP v1 (`schemaVersion` + migrador vacío) | **Parcial (Fase 56):** schema v1 + 0→1 metadata |
 
 Orden flexible según prioridad de producto; **53–56** deberían preceder a cualquier API Clash.
 

@@ -1,0 +1,48 @@
+/// Claves SharedPreferences de Clash (Fase 56).
+///
+/// Los valores string deben coincidir con los usados históricamente en cada
+/// backend; no cambiar sin migración.
+abstract final class ClashSharedPreferencesKeys {
+  static const schemaVersion = 'clash_schema_version';
+  static const lastMigratedAt = 'clash_last_migrated_at';
+
+  static const lineups7v7 = 'clash_lineups_7v7_v1';
+  static const playerCollectionV1 = 'clash_player_collection_v1';
+  static const playerCollectionV2 = 'clash_player_collection_v2';
+  static const expMaterialInventory = 'clash_exp_material_inventory_v1';
+  static const techniqueBookInventory = 'clash_technique_book_inventory_v1';
+  static const evolutionMaterialInventory =
+      'clash_evolution_material_inventory_v1';
+  static const gachaTicketInventory = 'clash_gacha_ticket_inventory_v1';
+  static const dailyMissions = 'clash_daily_missions_v1';
+  static const weeklyMissions = 'clash_weekly_missions_v1';
+  static const achievements = 'clash_achievements_v1';
+  static const newsRead = 'clash_news_read_v1';
+  static const gifts = 'clash_gifts_v1';
+  static const characterEvents = 'clash_character_events_v1';
+  static const gachaHistory = 'clash_gacha_history_v1';
+  static const gachaPity = 'clash_gacha_pity_v1';
+  static const gachaDaily = 'clash_gacha_daily_v1';
+  static const storyProgress = 'clash_story_progress_v1';
+
+  /// Claves de datos de progreso/inventario (excluye metadata de schema).
+  static const dataKeys = <String>{
+    lineups7v7,
+    playerCollectionV1,
+    playerCollectionV2,
+    expMaterialInventory,
+    techniqueBookInventory,
+    evolutionMaterialInventory,
+    gachaTicketInventory,
+    dailyMissions,
+    weeklyMissions,
+    achievements,
+    newsRead,
+    gifts,
+    characterEvents,
+    gachaHistory,
+    gachaPity,
+    gachaDaily,
+    storyProgress,
+  };
+}

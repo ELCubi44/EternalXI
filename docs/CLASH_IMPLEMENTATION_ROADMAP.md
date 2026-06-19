@@ -811,4 +811,17 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 56 — Schema version y migrador local
+
+**Estado:** implementada.
+
+- `lib/features/clash/shared/migrations/`: `ClashStorageSchema`, `ClashSharedPreferencesKeys`, `ClashLocalMigrationRunner`, migración 0→1 (solo metadata).
+- Integración en `prepareClashProviders()` antes de backends.
+- Documento [`CLASH_LOCAL_STORAGE.md`](./CLASH_LOCAL_STORAGE.md).
+- Tests: `test/features/clash/migrations/clash_local_migration_runner_test.dart`.
+
+**Sin cambios** en datos existentes, claves legacy, economía ni UI.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

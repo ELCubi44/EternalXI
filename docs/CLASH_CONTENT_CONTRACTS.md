@@ -110,5 +110,5 @@ flutter test test/features/clash/
 
 - Sync server-side e idempotencia remota
 - Validación en CI obligatoria
-- Esquema versionado (`schemaVersion`) para migraciones
+- Esquema versionado (`schemaVersion`) para migraciones — ver [`CLASH_LOCAL_STORAGE.md`](./CLASH_LOCAL_STORAGE.md)
 - Editor/generador de contenido

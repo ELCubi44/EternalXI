@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:eternal_xi/features/clash/shared/migrations/data/clash_shared_preferences_keys.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_progress.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,7 +14,7 @@ class SharedPreferencesClashStoryProgressBackend
     implements ClashStoryProgressStorageBackend {
   SharedPreferencesClashStoryProgressBackend(this._prefs);
 
-  static const storageKey = 'clash_story_progress_v1';
+  static const storageKey = ClashSharedPreferencesKeys.storyProgress;
 
   final SharedPreferences _prefs;
 

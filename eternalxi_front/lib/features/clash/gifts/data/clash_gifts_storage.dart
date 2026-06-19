@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:eternal_xi/features/clash/shared/migrations/data/clash_shared_preferences_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Estado persistido del buzón de regalos Clash (Fase 32).
@@ -50,7 +51,7 @@ abstract class ClashGiftsStorageBackend {
 class SharedPreferencesClashGiftsBackend implements ClashGiftsStorageBackend {
   SharedPreferencesClashGiftsBackend(this._prefs);
 
-  static const storageKey = 'clash_gifts_v1';
+  static const storageKey = ClashSharedPreferencesKeys.gifts;
 
   final SharedPreferences _prefs;
 

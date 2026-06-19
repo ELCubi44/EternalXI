@@ -47,6 +47,9 @@ import 'package:eternal_xi/features/clash/news/data/clash_news_local_datasource.
 import 'package:eternal_xi/features/clash/news/data/clash_news_read_storage.dart';
 import 'package:eternal_xi/features/clash/news/data/clash_news_repository.dart';
 import 'package:eternal_xi/features/clash/rivals/data/clash_rivals_repository.dart';
+import 'package:eternal_xi/features/clash/shared/migrations/data/clash_local_migration_runner.dart';
+import 'package:eternal_xi/features/clash/shared/migrations/domain/clash_migration_result.dart';
+import 'package:eternal_xi/features/clash/shared/migrations/domain/clash_storage_schema.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/data/clash_local_reward_granter.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_local_datasource.dart';
@@ -58,7 +61,9 @@ import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_s
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
 import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
 import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/single_child_widget.dart';
 
 /// Backends y repositorios pre-inicializados para el árbol de providers Clash.
@@ -84,6 +89,7 @@ class ClashProviderDependencies {
     required this.characterEventsBackend,
     required this.gachaTicketInventoryBackend,
     required this.gachaTicketRepository,
+    this.migrationResult,
   });
 
   final ClashLineupsStorageBackend lineupsBackend;
@@ -107,10 +113,32 @@ class ClashProviderDependencies {
   final ClashCharacterEventsStorageBackend characterEventsBackend;
   final ClashGachaTicketInventoryStorageBackend gachaTicketInventoryBackend;
   final ClashGachaTicketRepository gachaTicketRepository;
+  final ClashMigrationResult? migrationResult;
 }
 
 /// Inicializa backends SharedPreferences y repositorios con seed por defecto.
 Future<ClashProviderDependencies> prepareClashProviders() async {
+  final prefs = await SharedPreferences.getInstance();
+  ClashMigrationResult migrationResult;
+  try {
+    migrationResult = await ClashLocalMigrationRunner(prefs).run();
+    if (!migrationResult.isSuccess && kDebugMode) {
+      debugPrint(
+        'ClashLocalMigrationRunner completed with errors: '
+        '${migrationResult.errors.join('; ')}',
+      );
+    }
+  } catch (error, stackTrace) {
+    if (kDebugMode) {
+      debugPrint('ClashLocalMigrationRunner error: $error\n$stackTrace');
+    }
+    migrationResult = ClashMigrationResult(
+      fromVersion: ClashStorageSchema.legacyUntrackedVersion,
+      toVersion: ClashStorageSchema.legacyUntrackedVersion,
+      errors: [error.toString()],
+    );
+  }
+
   final lineupsBackend = await SharedPreferencesClashLineupsBackend.create();
   final collectionBackend =
       await SharedPreferencesClashPlayerCollectionBackend.create();
@@ -181,6 +209,7 @@ Future<ClashProviderDependencies> prepareClashProviders() async {
     characterEventsBackend: characterEventsBackend,
     gachaTicketInventoryBackend: gachaTicketInventoryBackend,
     gachaTicketRepository: gachaTicketRepository,
+    migrationResult: migrationResult,
   );
 }
 

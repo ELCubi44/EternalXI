@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_progress.dart';
+import 'package:eternal_xi/features/clash/shared/migrations/data/clash_shared_preferences_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Snapshot persistido de la colección Clash (poseídas + progreso).
@@ -57,8 +58,8 @@ class SharedPreferencesClashPlayerCollectionBackend
     implements ClashPlayerCollectionStorageBackend {
   SharedPreferencesClashPlayerCollectionBackend(this._prefs);
 
-  static const storageKeyV1 = 'clash_player_collection_v1';
-  static const storageKeyV2 = 'clash_player_collection_v2';
+  static const storageKeyV1 = ClashSharedPreferencesKeys.playerCollectionV1;
+  static const storageKeyV2 = ClashSharedPreferencesKeys.playerCollectionV2;
 
   final SharedPreferences _prefs;
 
