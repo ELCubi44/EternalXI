@@ -663,4 +663,16 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 44 — Smoke test visual móvil (ADB)
+
+**Estado:** implementada (tooling local).
+
+- Script `scripts/clash-mobile-smoke.ps1`: adb, capturas PNG, UI dump XML, navegación aproximada, reporte `report.md`.
+- Salida en `debug_screenshots/clash/` (ignorada por git).
+- Documentación en `docs/CLASH_MOBILE_SMOKE_TEST.md`.
+
+**Sin cambios** de lógica Flutter, backend ni producción.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*
