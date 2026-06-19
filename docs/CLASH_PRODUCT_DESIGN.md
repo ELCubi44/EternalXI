@@ -77,8 +77,7 @@ Siempre visible en la pestaña **Inicio** (y referenciada en otras pantallas cua
 | Recurso | Uso |
 |---|---|
 | **Cuenta / perfil** | Acceso a ajustes Clash y enlace a perfil global Eternal XI |
-| **Energía** | Coste de niveles (historia, narrativos, eventos) |
-| **Monedas** | Economía blanda (objetos, mejoras, tienda) |
+| **Energía** | Coste de niveles (historia, narrativos, eventos) || **Monedas** | Economía blanda (objetos, mejoras, tienda) |
 | **Gemas** | Economía premium (gacha, recuperar energía, etc.) |
 | **Misiones** | Misiones diarias/semanales y progreso |
 | **Regalos** | Inbox de recompensas pendientes |
@@ -236,7 +235,20 @@ Clash incluirá:
 
 ---
 
-## 13. Glosario rápido
+## 14. Guía / Ayuda local (Fase 51)
+
+Pantalla de ayuda **local y mantenible** dentro del shell Clash:
+
+- **Ruta:** `/clash/help` (lista) y `/clash/help/:topicId` (detalle).
+- **Contenido:** JSON en `assets/data/clash/help_topics.json` (11 topics iniciales: introducción, cartas/rarezas, estilos, alineación 7v7, partidos, PT/resistencia, supertécnicas, historia/eventos, invocar/pity, tienda/inventario, misiones/logros/regalos/noticias).
+- **UX:** búsqueda local, chips de categoría, consejo rápido y botón **Leer** por topic; enlaces opcionales a rutas Clash (Historia, Equipo, Invocar, etc.).
+- **Acceso:** chip **Guía Clash** en la cabecera del hub Inicio (sin saturar el Home).
+
+**Fuera de alcance en esta fase:** tutorial interactivo, overlay guiado, vídeo, FAQ remota, onboarding obligatorio.
+
+---
+
+## 15. Glosario rápido
 
 | Término | Significado |
 |---|---|

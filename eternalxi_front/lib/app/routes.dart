@@ -20,6 +20,9 @@ class AppRoutes {
   static const clashGifts = '/clash/gifts';
   static const clashEvents = '/clash/events';
   static const clashStory = '/clash/story';
+  static const clashHelp = '/clash/help';
+
+  static String clashHelpTopic(String topicId) => '/clash/help/$topicId';
 
   static String clashEventDetail(String eventId) => '/clash/events/$eventId';
 

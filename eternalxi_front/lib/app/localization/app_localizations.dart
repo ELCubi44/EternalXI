@@ -131,6 +131,33 @@ class AppLocalizations {
           'Vista provisional del equipo protagonista. La composición real llegará con la colección.',
       'clashHomeHubTitle': 'Eternal Clash',
       'clashHomeHubSubtitle': 'Historia, eventos y cartas',
+      'clashHelpTitle': 'Guía Clash',
+      'clashHelpSearchHint': 'Buscar en la guía',
+      'clashHelpQuickTipTitle': 'Consejo rápido',
+      'clashHelpQuickTipBody':
+          'Completa la historia inicial para desbloquear cartas y alineación.',
+      'clashHelpRead': 'Leer',
+      'clashHelpNoResults': 'Sin resultados',
+      'clashHelpCategoryAll': 'Todos',
+      'clashHelpCategoryGettingStarted': 'Primeros pasos',
+      'clashHelpCategoryCards': 'Cartas',
+      'clashHelpCategoryMatch': 'Partido',
+      'clashHelpCategoryProgress': 'Progreso',
+      'clashHelpCategoryRewards': 'Recompensas',
+      'clashHelpTopicNotFound': 'Tema no encontrado',
+      'clashHelpBack': 'Volver a la guía',
+      'clashHelpRelatedLinks': 'Ir a',
+      'clashHelpGoStory': 'Ir a Historia',
+      'clashHelpGoEvents': 'Ir a Eventos',
+      'clashHelpGoTeam': 'Ir a Equipo',
+      'clashHelpGoCards': 'Ir a Cartas',
+      'clashHelpGoInventory': 'Ir a Inventario',
+      'clashHelpGoMissions': 'Ir a Misiones',
+      'clashHelpGoAchievements': 'Ir a Logros',
+      'clashHelpGoNews': 'Ir a Noticias',
+      'clashHelpGoGifts': 'Ir a Regalos',
+      'clashHelpGoSummon': 'Ir a Invocar',
+      'clashHelpGoShop': 'Ir a Tienda',
       'clashHomePlaySection': 'Jugar',
       'clashHomeDailyActivity': 'Actividad diaria',
       'clashHomeNoticesSection': 'Avisos y recompensas',
@@ -1017,6 +1044,33 @@ class AppLocalizations {
           'Provisional view of the protagonist squad. The real roster arrives with collection.',
       'clashHomeHubTitle': 'Eternal Clash',
       'clashHomeHubSubtitle': 'Story, events and cards',
+      'clashHelpTitle': 'Clash Guide',
+      'clashHelpSearchHint': 'Search the guide',
+      'clashHelpQuickTipTitle': 'Quick tip',
+      'clashHelpQuickTipBody':
+          'Complete the opening story to unlock cards and your lineup.',
+      'clashHelpRead': 'Read',
+      'clashHelpNoResults': 'No results',
+      'clashHelpCategoryAll': 'All',
+      'clashHelpCategoryGettingStarted': 'Getting started',
+      'clashHelpCategoryCards': 'Cards',
+      'clashHelpCategoryMatch': 'Match',
+      'clashHelpCategoryProgress': 'Progress',
+      'clashHelpCategoryRewards': 'Rewards',
+      'clashHelpTopicNotFound': 'Topic not found',
+      'clashHelpBack': 'Back to guide',
+      'clashHelpRelatedLinks': 'Go to',
+      'clashHelpGoStory': 'Go to Story',
+      'clashHelpGoEvents': 'Go to Events',
+      'clashHelpGoTeam': 'Go to Team',
+      'clashHelpGoCards': 'Go to Cards',
+      'clashHelpGoInventory': 'Go to Inventory',
+      'clashHelpGoMissions': 'Go to Missions',
+      'clashHelpGoAchievements': 'Go to Achievements',
+      'clashHelpGoNews': 'Go to News',
+      'clashHelpGoGifts': 'Go to Gifts',
+      'clashHelpGoSummon': 'Go to Summon',
+      'clashHelpGoShop': 'Go to Shop',
       'clashHomePlaySection': 'Play',
       'clashHomeDailyActivity': 'Daily activity',
       'clashHomeNoticesSection': 'Notices and rewards',
@@ -1917,6 +1971,33 @@ class AppLocalizations {
   String get clashHomeProtagonistHint => _t('clashHomeProtagonistHint');
   String get clashHomeHubTitle => _t('clashHomeHubTitle');
   String get clashHomeHubSubtitle => _t('clashHomeHubSubtitle');
+  String get clashHelpTitle => _t('clashHelpTitle');
+  String get clashHelpSearchHint => _t('clashHelpSearchHint');
+  String get clashHelpQuickTipTitle => _t('clashHelpQuickTipTitle');
+  String get clashHelpQuickTipBody => _t('clashHelpQuickTipBody');
+  String get clashHelpRead => _t('clashHelpRead');
+  String get clashHelpNoResults => _t('clashHelpNoResults');
+  String get clashHelpCategoryAll => _t('clashHelpCategoryAll');
+  String get clashHelpCategoryGettingStarted =>
+      _t('clashHelpCategoryGettingStarted');
+  String get clashHelpCategoryCards => _t('clashHelpCategoryCards');
+  String get clashHelpCategoryMatch => _t('clashHelpCategoryMatch');
+  String get clashHelpCategoryProgress => _t('clashHelpCategoryProgress');
+  String get clashHelpCategoryRewards => _t('clashHelpCategoryRewards');
+  String get clashHelpTopicNotFound => _t('clashHelpTopicNotFound');
+  String get clashHelpBack => _t('clashHelpBack');
+  String get clashHelpRelatedLinks => _t('clashHelpRelatedLinks');
+  String get clashHelpGoStory => _t('clashHelpGoStory');
+  String get clashHelpGoEvents => _t('clashHelpGoEvents');
+  String get clashHelpGoTeam => _t('clashHelpGoTeam');
+  String get clashHelpGoCards => _t('clashHelpGoCards');
+  String get clashHelpGoInventory => _t('clashHelpGoInventory');
+  String get clashHelpGoMissions => _t('clashHelpGoMissions');
+  String get clashHelpGoAchievements => _t('clashHelpGoAchievements');
+  String get clashHelpGoNews => _t('clashHelpGoNews');
+  String get clashHelpGoGifts => _t('clashHelpGoGifts');
+  String get clashHelpGoSummon => _t('clashHelpGoSummon');
+  String get clashHelpGoShop => _t('clashHelpGoShop');
   String get clashHomePlaySection => _t('clashHomePlaySection');
   String get clashHomeDailyActivity => _t('clashHomeDailyActivity');
   String get clashHomeNoticesSection => _t('clashHomeNoticesSection');

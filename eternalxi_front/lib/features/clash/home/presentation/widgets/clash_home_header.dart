@@ -79,6 +79,11 @@ class ClashHomeHeader extends StatelessWidget {
                 onPressed: () => context.go(AppRoutes.mode),
               ),
               ActionChip(
+                avatar: const Icon(Icons.help_outline_rounded, size: 18),
+                label: Text(l10n.clashHelpTitle),
+                onPressed: () => context.push(AppRoutes.clashHelp),
+              ),
+              ActionChip(
                 avatar: const Icon(Icons.inventory_2_outlined, size: 18),
                 label: Text(l10n.clashInventoryTitle),
                 onPressed: () => context.push(AppRoutes.clashInventory),

@@ -748,4 +748,18 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 51 — Guía / Ayuda local
+
+**Estado:** implementada.
+
+- Pantalla **Guía Clash** (`/clash/help`) con topics locales desde `assets/data/clash/help_topics.json`.
+- Búsqueda simple por título, resumen y bullets; filtros por categoría (Primeros pasos, Cartas, Partido, Progreso, Recompensas).
+- Detalle por topic (`/clash/help/:topicId`) con secciones, bullets y enlaces a rutas Clash conocidas.
+- Acceso desde chip **Guía Clash** en cabecera del hub Inicio.
+- Consejo rápido estático en la parte superior de la lista.
+
+**Sin cambios** en lógica de juego, economía ni backend. Sin tutorial interactivo ni FAQ remota.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

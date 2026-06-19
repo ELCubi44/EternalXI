@@ -13,6 +13,8 @@ import 'package:eternal_xi/features/clash/cards/presentation/screens/clash_card_
 import 'package:eternal_xi/features/clash/presentation/clash_navigation_controller.dart';
 import 'package:eternal_xi/features/clash/presentation/clash_shell_screen.dart';
 import 'package:eternal_xi/features/clash/presentation/clash_tab_host.dart';
+import 'package:eternal_xi/features/clash/help/presentation/screens/clash_help_screen.dart';
+import 'package:eternal_xi/features/clash/help/presentation/screens/clash_help_topic_screen.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/screens/clash_gacha_history_screen.dart';
 import 'package:eternal_xi/features/clash/inventory/presentation/screens/clash_inventory_screen.dart';
 import 'package:eternal_xi/features/clash/achievements/presentation/screens/clash_achievements_screen.dart';
@@ -194,6 +196,18 @@ final GoRouter appRouter = GoRouter(
                       ],
                     ),
                   ],
+                ),
+              ],
+            ),
+            GoRoute(
+              path: 'help',
+              builder: (context, state) => const ClashHelpScreen(),
+              routes: [
+                GoRoute(
+                  path: ':topicId',
+                  builder: (context, state) => ClashHelpTopicScreen(
+                    topicId: state.pathParameters['topicId'] ?? '',
+                  ),
                 ),
               ],
             ),

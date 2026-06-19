@@ -90,6 +90,7 @@ flutter:
     - assets/data/clash/rivals.json
     - assets/data/clash/story/sagas.json
     - assets/data/clash/story/chapter_01.json
+    - assets/data/clash/help_topics.json
 
   fonts:
     - family: Lumiare

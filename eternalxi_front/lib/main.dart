@@ -60,6 +60,8 @@ import 'package:eternal_xi/features/clash/gifts/data/clash_gifts_repository.dart
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_local_datasource.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_storage.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_repository.dart';
+import 'package:eternal_xi/features/clash/help/data/clash_help_topics_local_datasource.dart';
+import 'package:eternal_xi/features/clash/help/data/clash_help_repository.dart';
 import 'package:eternal_xi/features/clash/rivals/data/clash_rivals_repository.dart';
 import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
@@ -416,6 +418,10 @@ Future<void> main() async {
             collectionRepository: context
                 .read<ClashPlayerCollectionRepository>(),
           ),
+        ),
+        Provider<ClashHelpRepository>(
+          create: (_) =>
+              ClashHelpRepository(dataSource: ClashHelpTopicsLocalDataSource()),
         ),
         Provider<ClashShopRepository>(
           create: (context) => ClashShopRepository(

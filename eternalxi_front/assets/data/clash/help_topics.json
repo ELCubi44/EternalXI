@@ -1,0 +1,319 @@
+{
+  "topics": [
+    {
+      "id": "clash_intro",
+      "title": "¿Qué es Eternal Clash?",
+      "summary": "Un modo de cartas, historia, eventos y partidos 7v7.",
+      "icon": "info",
+      "category": "getting_started",
+      "sections": [
+        {
+          "title": "Avanza en historia y eventos",
+          "body": "Completa capítulos de historia y eventos de personaje para desbloquear cartas, alineación y recompensas.",
+          "bullets": [
+            "La historia principal guía el prólogo y el desbloqueo del equipo.",
+            "Los eventos ofrecen fases story y partido con first clear y repeticiones."
+          ]
+        },
+        {
+          "title": "Mejora tus cartas",
+          "body": "Sube de nivel, evoluciona rareza y desbloquea supertécnicas con materiales del inventario.",
+          "bullets": []
+        },
+        {
+          "title": "Juega partidos por turnos",
+          "body": "Enfréntate a rivales en partidos 7v7: primero a 3 goles, con duelos de regate, tiro y parada.",
+          "bullets": []
+        }
+      ],
+      "relatedRoutes": [
+        { "path": "/clash/story" },
+        { "path": "/clash/team/7v7" }
+      ]
+    },
+    {
+      "id": "cards_rarities",
+      "title": "Cartas y rarezas",
+      "summary": "N, R, SR, LR y XI con distintos niveles máximos y potencial.",
+      "icon": "style",
+      "category": "cards",
+      "sections": [
+        {
+          "title": "Rarezas",
+          "body": "Cada carta tiene una rareza base que limita su nivel máximo y árbol de habilidades.",
+          "bullets": [
+            "N (Normal): nivel máximo bajo, ideal para empezar.",
+            "R (Rare): más potencia y margen de mejora.",
+            "SR (Super Rare): cartas fuertes con supertécnicas útiles.",
+            "LR (Legendary Rare): alto techo de poder.",
+            "XI (Eternal XI): rareza máxima del roster especial."
+          ]
+        },
+        {
+          "title": "Niveles y poder",
+          "body": "El nivel y la evolución aumentan las estadísticas y la potencia mostrada en alineación.",
+          "bullets": []
+        }
+      ],
+      "relatedRoutes": [{ "path": "/clash/cards" }]
+    },
+    {
+      "id": "styles",
+      "title": "Estilos",
+      "summary": "Pícaro, Potente, Ágil, Preciso y Valiente con ventaja circular.",
+      "icon": "auto_awesome",
+      "category": "cards",
+      "sections": [
+        {
+          "title": "Los cinco estilos",
+          "body": "Cada carta tiene un estilo que influye en duelos y sinergias de equipo.",
+          "bullets": [
+            "Pícaro",
+            "Potente",
+            "Ágil",
+            "Preciso",
+            "Valiente"
+          ]
+        },
+        {
+          "title": "Rueda de ventajas",
+          "body": "En duelos, un estilo puede tener ventaja sobre otro siguiendo este ciclo:",
+          "bullets": [
+            "Pícaro > Potente",
+            "Potente > Valiente",
+            "Valiente > Preciso",
+            "Preciso > Ágil",
+            "Ágil > Pícaro"
+          ]
+        }
+      ],
+      "relatedRoutes": [{ "path": "/clash/cards" }]
+    },
+    {
+      "id": "lineup_7v7",
+      "title": "Alineación 7v7",
+      "summary": "Siete posiciones oficiales con portero obligatorio.",
+      "icon": "groups",
+      "category": "getting_started",
+      "sections": [
+        {
+          "title": "Posiciones",
+          "body": "Completa las siete plazas antes de jugar partidos de historia o eventos.",
+          "bullets": [
+            "Portero",
+            "Defensa central",
+            "Lateral",
+            "Mediocentro atrasado",
+            "Mediocentro ofensivo",
+            "Extremo",
+            "Delantero centro"
+          ]
+        },
+        {
+          "title": "Reglas básicas",
+          "body": "Cada carta solo puede ocupar posiciones compatibles. No repitas la misma carta en dos plazas.",
+          "bullets": []
+        }
+      ],
+      "relatedRoutes": [{ "path": "/clash/team/7v7" }]
+    },
+    {
+      "id": "match_basics",
+      "title": "Partidos y duelos",
+      "summary": "Primero a 3 goles con acciones Pasar, Avanzar y Tirar.",
+      "icon": "sports_soccer",
+      "category": "match",
+      "sections": [
+        {
+          "title": "Victoria",
+          "body": "Gana el equipo que marque 3 goles primero.",
+          "bullets": []
+        },
+        {
+          "title": "Acciones de turno",
+          "body": "En tu fase de ataque puedes mover el balón y finalizar con tiro.",
+          "bullets": [
+            "Pasar: entrega el balón a un compañero.",
+            "Avanzar: conduce hacia la portería rival.",
+            "Tirar: intenta marcar gol."
+          ]
+        },
+        {
+          "title": "Duelos",
+          "body": "Cuando hay oposición se resuelven duelos automáticos.",
+          "bullets": [
+            "Regate vs Defensa al avanzar.",
+            "Tiro vs Parada al disparar."
+          ]
+        }
+      ],
+      "relatedRoutes": [{ "path": "/clash/story" }]
+    },
+    {
+      "id": "pt_stamina",
+      "title": "PT y resistencia",
+      "summary": "Puntos de técnica y resistencia afectan el rendimiento en partido.",
+      "icon": "battery_charging_full",
+      "category": "match",
+      "sections": [
+        {
+          "title": "Puntos de técnica (PT)",
+          "body": "Las supertécnicas consumen PT al activarse durante el partido.",
+          "bullets": [
+            "Gestiona el PT para usar técnicas en momentos clave.",
+            "Sin PT suficiente, la técnica no se ejecuta."
+          ]
+        },
+        {
+          "title": "Resistencia",
+          "body": "La resistencia baja reduce el rendimiento de la carta en el encuentro.",
+          "bullets": [
+            "Rotar y cuidar el equipo mejora la consistencia.",
+            "Una alineación fuerte en papel puede rendir menos si está cansada."
+          ]
+        }
+      ],
+      "relatedRoutes": [{ "path": "/clash/team/7v7" }]
+    },
+    {
+      "id": "techniques",
+      "title": "Supertécnicas",
+      "summary": "Técnicas especiales con tipo, coste PT y nivel.",
+      "icon": "flash_on",
+      "category": "match",
+      "sections": [
+        {
+          "title": "Tipos",
+          "body": "Cada supertécnica pertenece a una categoría de duelo.",
+          "bullets": [
+            "Parada",
+            "Defensa",
+            "Regate",
+            "Tiro"
+          ]
+        },
+        {
+          "title": "Coste y nivel",
+          "body": "Nivel más alto mejora la técnica; el coste en PT depende de la carta y la técnica equipada.",
+          "bullets": []
+        }
+      ],
+      "relatedRoutes": [{ "path": "/clash/cards" }]
+    },
+    {
+      "id": "story_events",
+      "title": "Historia y eventos",
+      "summary": "Modo historia, eventos de personaje, first clear y repeticiones.",
+      "icon": "menu_book",
+      "category": "progress",
+      "sections": [
+        {
+          "title": "Historia",
+          "body": "Capítulos con niveles story y match. Completa en orden para desbloquear el siguiente.",
+          "bullets": [
+            "Niveles story: lectura y recompensa de primera vez.",
+            "Niveles match: prepara alineación y gana el partido."
+          ]
+        },
+        {
+          "title": "Eventos de personaje",
+          "body": "Arcos cortos con carta destacada y fases repetibles.",
+          "bullets": [
+            "First clear: recompensa la primera vez que completas una fase.",
+            "Repeticiones: materiales, duplicados u otras recompensas al rejugar."
+          ]
+        }
+      ],
+      "relatedRoutes": [
+        { "path": "/clash/story" },
+        { "path": "/clash/events" }
+      ]
+    },
+    {
+      "id": "summon",
+      "title": "Invocar y pity",
+      "summary": "Gacha local con single, multi, diario, tickets y pity SR.",
+      "icon": "casino",
+      "category": "progress",
+      "sections": [
+        {
+          "title": "Tipos de tirada",
+          "body": "Usa gemas o tickets según el banner activo.",
+          "bullets": [
+            "Single: una carta por tirada.",
+            "Multi: varias cartas con mejor eficiencia.",
+            "Diario: tirada con descuento o bonus limitado.",
+            "Tickets: consumibles específicos del banner."
+          ]
+        },
+        {
+          "title": "Pity SR",
+          "body": "Tras un número de tiradas sin SR, el sistema garantiza una carta SR o superior.",
+          "bullets": [
+            "El contador de pity se muestra en la pantalla de invocar.",
+            "Busca «pity» en esta guía para volver aquí rápido."
+          ]
+        }
+      ],
+      "relatedRoutes": [{ "path": "clash:tab:summon" }]
+    },
+    {
+      "id": "shop_inventory",
+      "title": "Tienda e inventario",
+      "summary": "Compras locales, materiales EXP, libros, insignias y tickets.",
+      "icon": "storefront",
+      "category": "rewards",
+      "sections": [
+        {
+          "title": "Tienda",
+          "body": "Gasta monedas o gemas en packs y materiales de prueba.",
+          "bullets": []
+        },
+        {
+          "title": "Inventario",
+          "body": "Consulta todo lo que posees para mejorar cartas.",
+          "bullets": [
+            "Materiales EXP para subir nivel.",
+            "Libros de técnica para desbloquear o mejorar técnicas.",
+            "Materiales de evolución e insignias.",
+            "Tickets de invocación y objetos de partido."
+          ]
+        }
+      ],
+      "relatedRoutes": [
+        { "path": "clash:tab:shop" },
+        { "path": "/clash/inventory" }
+      ]
+    },
+    {
+      "id": "missions_rewards",
+      "title": "Misiones, logros y más",
+      "summary": "Actividad diaria, logros, regalos y noticias locales.",
+      "icon": "card_giftcard",
+      "category": "rewards",
+      "sections": [
+        {
+          "title": "Misiones",
+          "body": "Completa objetivos diarios y semanales por monedas, gemas o materiales.",
+          "bullets": []
+        },
+        {
+          "title": "Logros",
+          "body": "Hitos permanentes que recompensan tu progreso a largo plazo.",
+          "bullets": []
+        },
+        {
+          "title": "Regalos y noticias",
+          "body": "Reclama regalos de prueba y lee avisos del modo Clash.",
+          "bullets": []
+        }
+      ],
+      "relatedRoutes": [
+        { "path": "/clash/missions" },
+        { "path": "/clash/achievements" },
+        { "path": "/clash/gifts" },
+        { "path": "/clash/news" }
+      ]
+    }
+  ]
+}
