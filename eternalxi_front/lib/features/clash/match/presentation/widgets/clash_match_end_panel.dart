@@ -53,6 +53,12 @@ class ClashMatchEndPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Icon(
+            userWon ? Icons.emoji_events_rounded : Icons.sentiment_dissatisfied,
+            size: 40,
+            color: userWon ? Colors.green : Colors.redAccent,
+          ),
+          const SizedBox(height: 8),
           Text(
             userWon ? l10n.clashMatchVictory : l10n.clashMatchDefeat,
             textAlign: TextAlign.center,

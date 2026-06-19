@@ -1,5 +1,6 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/features/clash/match/domain/clash_rival_ai_action.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
 import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,26 @@ import 'package:provider/provider.dart';
 /// Panel de turno rival con IA básica (Fase 13).
 class ClashMatchRivalTurnPanel extends StatelessWidget {
   const ClashMatchRivalTurnPanel({super.key});
+
+  String? _contextHint(BuildContext context, ClashMatchController match) {
+    final l10n = context.l10n;
+    final state = match.state;
+    if (state == null) {
+      return null;
+    }
+    if (state.hasPendingManualDefense) {
+      return l10n.clashMatchRivalAwaitingDefense;
+    }
+    final decision = match.lastRivalAiDecision;
+    if (decision == null) {
+      return null;
+    }
+    return switch (decision.action) {
+      ClashRivalAiAction.advance => l10n.clashMatchRivalPreparingAdvance,
+      ClashRivalAiAction.shoot => l10n.clashMatchRivalPreparingShot,
+      ClashRivalAiAction.pass => decision.summary,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +42,7 @@ class ClashMatchRivalTurnPanel extends StatelessWidget {
 
     final holder = state.ballHolderPlayer();
     final lastDecision = match.lastRivalAiDecision;
+    final contextHint = _contextHint(context, match);
 
     return Container(
       width: double.infinity,
@@ -36,16 +58,40 @@ class ClashMatchRivalTurnPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            l10n.clashMatchRivalTurnTitle,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w900,
-              color: Colors.redAccent,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.smart_toy_outlined, color: Colors.redAccent),
+              const SizedBox(width: 8),
+              Text(
+                l10n.clashMatchRivalTurnTitle,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: Colors.redAccent,
+                ),
+              ),
+            ],
           ),
+          if (contextHint != null) ...[
+            const SizedBox(height: 10),
+            Material(
+              color: Colors.redAccent.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(10),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  contextHint,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.redAccent.shade200,
+                  ),
+                ),
+              ),
+            ),
+          ],
           if (holder != null) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
               l10n.clashMatchBallHolder(holder.label),
               textAlign: TextAlign.center,
@@ -70,7 +116,7 @@ class ClashMatchRivalTurnPanel extends StatelessWidget {
               ),
             ),
           ],
-          if (lastDecision != null) ...[
+          if (lastDecision != null && contextHint != lastDecision.summary) ...[
             const SizedBox(height: 10),
             Material(
               color: theme.colorScheme.surfaceContainerHighest.withValues(
@@ -99,6 +145,7 @@ class ClashMatchRivalTurnPanel extends StatelessWidget {
             style: FilledButton.styleFrom(
               backgroundColor: Colors.redAccent,
               foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14),
             ),
           ),
         ],

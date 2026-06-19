@@ -687,4 +687,16 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 46 — Pulido visual partido 7v7
+
+**Estado:** implementada.
+
+- Cabecera, jugador activo, minipitch, acciones, duelos, historial, descanso y fin de partido.
+- Componentes reutilizables en `match/presentation/widgets/`.
+- Documentación en `docs/CLASH_MATCH_SYSTEM.md`.
+
+**Sin cambios** de reglas ni motor de partido.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

@@ -1,6 +1,5 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
-import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_result.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
@@ -8,16 +7,17 @@ import 'package:eternal_xi/features/clash/missions/data/clash_mission_progress_e
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_evaluator.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_progress.dart';
 import 'package:eternal_xi/features/clash/match/domain/coin_toss.dart';
-import 'package:eternal_xi/features/clash/match/domain/match_ball_zone.dart';
-import 'package:eternal_xi/features/clash/match/domain/match_event.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_status.dart';
 import 'package:eternal_xi/features/clash/match/domain/match_team_side.dart';
 import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_action_panel.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_active_player_card.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_duel_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_end_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_halftime_panel.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_header.dart';
+import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_history_panel.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_rival_turn_panel.dart';
-import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_duel_panel.dart';
-import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_pass_sheet.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_match_status_banner.dart';
 import 'package:eternal_xi/features/clash/match/presentation/widgets/clash_mini_pitch.dart';
 import 'package:eternal_xi/features/clash/rivals/data/clash_rival_match_setup_resolver.dart';
@@ -192,7 +192,6 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    final holder = state.ballHolderPlayer();
     final isFinished = state.isFinished;
     final userWon = isFinished && state.winner == MatchTeamSide.user;
     final objectiveResults = isFinished
@@ -239,22 +238,23 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
         !isHalftime &&
         state.possession == MatchTeamSide.rival &&
         !hasDuelUi;
-    final canPass = match.canUserPass;
+    final showActivePlayer =
+        !isFinished &&
+        !isHalftime &&
+        state.coinToss != null &&
+        (state.status == MatchStatus.playing ||
+            state.status == MatchStatus.halftime);
 
     return Scaffold(
       appBar: AppBar(title: Text(level.title)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          Text(
-            l10n.clashMatchScoreLabel(state.score.user, state.score.rival),
-            textAlign: TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w900),
+          ClashMatchHeader(
+            matchTitle: level.title,
+            state: state,
+            rivalName: match.rivalTeamName,
           ),
-          const SizedBox(height: 4),
-          Text(l10n.clashMatchWinTarget, textAlign: TextAlign.center),
           if (!isFinished) ...[
             const SizedBox(height: 12),
             ClashMatchStatusBanner(state: state),
@@ -282,38 +282,10 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
                 ),
               ],
             ),
-          ] else if (!isFinished &&
-              state.coinToss != null &&
-              (state.status == MatchStatus.playing ||
-                  state.status == MatchStatus.halftime)) ...[
+          ],
+          if (showActivePlayer) ...[
             const SizedBox(height: 12),
-            _InfoCard(
-              children: [
-                Text(
-                  state.possession == MatchTeamSide.user
-                      ? l10n.clashMatchPossessionUser
-                      : l10n.clashMatchPossessionRival,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
-                ),
-                if (holder != null) ...[
-                  const SizedBox(height: 6),
-                  Text(l10n.clashMatchBallHolder(holder.label)),
-                  Text(
-                    '${l10n.clashMatchZoneLabel}: ${state.ballZone.labelEs()}',
-                  ),
-                  Text(
-                    l10n.clashMatchPtStaminaLabel(
-                      holder.currentPt,
-                      holder.maxPt,
-                      holder.currentStamina,
-                      holder.maxStamina,
-                    ),
-                  ),
-                ],
-              ],
-            ),
+            ClashMatchActivePlayerCard(state: state),
           ],
           if (isHalftime) ...[
             const SizedBox(height: 14),
@@ -329,93 +301,11 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
           ],
           if (isUserPossession) ...[
             const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: canPass
-                        ? () => showClashMatchPassSheet(context)
-                        : null,
-                    icon: const Icon(Icons.swap_horiz_rounded),
-                    label: Text(l10n.clashMatchActionPass),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: FilledButton.tonalIcon(
-                    onPressed: match.advance,
-                    icon: const Icon(Icons.arrow_upward_rounded),
-                    label: Text(l10n.clashMatchActionAdvance),
-                  ),
-                ),
-              ],
-            ),
-            if (!canPass) ...[
-              const SizedBox(height: 8),
-              Text(
-                l10n.clashMatchPassUnavailable,
-                textAlign: TextAlign.center,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: context.xiTextSecondary),
-              ),
-            ],
-            if (match.advanceChancePercent != null &&
-                state.ballZone != MatchBallZone.rivalArea) ...[
-              const SizedBox(height: 8),
-              Text(
-                l10n.clashMatchAdvanceChance(match.advanceChancePercent!),
-                textAlign: TextAlign.center,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: context.xiTextSecondary),
-              ),
-            ],
-            const SizedBox(height: 8),
-            if (match.canUserShoot)
-              FilledButton.icon(
-                onPressed: match.shoot,
-                icon: const Icon(Icons.sports_soccer),
-                label: Text(l10n.clashMatchActionShoot),
-              )
-            else
-              Text(
-                l10n.clashMatchStatusShootNeedArea,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: context.xiTextSecondary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+            const ClashMatchActionPanel(),
           ],
-          if (state.eventLog.isNotEmpty && !isFinished) ...[
-            const SizedBox(height: 16),
-            Text(
-              l10n.clashMatchEventLogTitle,
-              style: Theme.of(
-                context,
-              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: 8),
-            ...state.eventLog.reversed
-                .take(6)
-                .map(
-                  (event) => Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          _iconForEvent(event.type),
-                          size: 16,
-                          color: context.xiTextSecondary,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(child: Text(event.message)),
-                      ],
-                    ),
-                  ),
-                ),
+          if (!isFinished && state.eventLog.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            ClashMatchHistoryPanel(state: state),
           ],
           if (isFinished) ...[
             const SizedBox(height: 16),
@@ -431,51 +321,6 @@ class _ClashMatchScreenState extends State<ClashMatchScreen> {
             ),
           ],
         ],
-      ),
-    );
-  }
-
-  IconData _iconForEvent(MatchEventType type) {
-    return switch (type) {
-      MatchEventType.passSuccess => Icons.check_circle_outline,
-      MatchEventType.passFail ||
-      MatchEventType.advanceFail => Icons.cancel_outlined,
-      MatchEventType.advanceSuccess => Icons.trending_up_rounded,
-      MatchEventType.duelStarted => Icons.sports_martial_arts_outlined,
-      MatchEventType.duelSuccess => Icons.check_circle_outline,
-      MatchEventType.duelFail => Icons.block_outlined,
-      MatchEventType.duelTechniqueUsed => Icons.bolt_rounded,
-      MatchEventType.shotDuelStarted => Icons.sports_soccer_outlined,
-      MatchEventType.saveMade => Icons.back_hand_outlined,
-      MatchEventType.goal => Icons.sports_soccer,
-      MatchEventType.kickoff => Icons.flag_outlined,
-      MatchEventType.rivalAction => Icons.smart_toy_outlined,
-      MatchEventType.possessionLost => Icons.swap_horiz_rounded,
-      MatchEventType.halftimeStarted => Icons.free_breakfast_outlined,
-      MatchEventType.halftimeEnded => Icons.play_arrow_rounded,
-      MatchEventType.halftimeItemUsed => Icons.medical_services_outlined,
-    };
-  }
-}
-
-class _InfoCard extends StatelessWidget {
-  const _InfoCard({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: context.xiCardSurface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: context.xiDivider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
       ),
     );
   }

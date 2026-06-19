@@ -640,6 +640,28 @@ class AppLocalizations {
       'clashMatchPassPercent': '{percent}%',
       'clashMatchPassOptionPower': 'Potencia {power}',
       'clashMatchAdvanceChance': 'Probabilidad de avance: {percent}%',
+      'clashMatchHeaderVsRival': 'vs {rival}',
+      'clashMatchStatusChipUserPossession': 'Tu posesión',
+      'clashMatchStatusChipRivalPossession': 'Posesión rival',
+      'clashMatchStatusChipDuel': 'Duelo',
+      'clashMatchStatusChipHalftime': 'Descanso',
+      'clashMatchStatusChipFinished': 'Finalizado',
+      'clashMatchActivePlayerTitle': 'Tu jugador activo',
+      'clashMatchRivalActivePlayerTitle': 'Rival activo',
+      'clashMatchPlayerPowerLabel': 'Potencia {power}',
+      'clashMatchActionPanelTitle': 'Acciones',
+      'clashMatchActionResolveDuel': 'Resuelve el duelo primero',
+      'clashMatchActionWaitDefense': 'Espera tu reacción defensiva',
+      'clashMatchPassRiskLabel': 'Riesgo {percent}%',
+      'clashMatchPitchLegendBall': 'Balón',
+      'clashMatchPitchLegendUser': 'Tú',
+      'clashMatchPitchLegendRival': 'Rival',
+      'clashMatchHalftimeItemsHint': 'Solo puedes usar objetos en el descanso',
+      'clashMatchDefendChooseSave': 'Elige parada',
+      'clashMatchRivalPreparingAdvance': 'El rival prepara un avance',
+      'clashMatchRivalPreparingShot': 'El rival prepara un tiro',
+      'clashMatchRivalAwaitingDefense': 'El rival espera tu defensa',
+      'clashMatchDuelVsLabel': 'VS',
       'clashMatchDuelTitle': 'Duelo',
       'clashMatchDuelNormalDribble': 'Regate normal',
       'clashMatchDuelEffectiveDribble': 'Regate efectivo',
@@ -665,7 +687,7 @@ class AppLocalizations {
       'clashMatchDuelSave': 'PARADA',
       'clashMatchDefendAdvanceTitle': 'Defiende el avance',
       'clashMatchDefendShotTitle': 'Detén el tiro',
-      'clashMatchDefendSelectDefenderTitle': 'Elige defensor',
+      'clashMatchDefendSelectDefenderTitle': 'Elige quién defiende',
       'clashMatchDefendNormalDefense': 'Defensa normal',
       'clashMatchDefendNormalSave': 'Parada normal',
       'clashMatchRivalAttackNormal': 'Rival: acción normal',
@@ -1460,6 +1482,28 @@ class AppLocalizations {
       'clashMatchPassPercent': '{percent}%',
       'clashMatchPassOptionPower': 'Power {power}',
       'clashMatchAdvanceChance': 'Advance chance: {percent}%',
+      'clashMatchHeaderVsRival': 'vs {rival}',
+      'clashMatchStatusChipUserPossession': 'Your possession',
+      'clashMatchStatusChipRivalPossession': 'Rival possession',
+      'clashMatchStatusChipDuel': 'Duel',
+      'clashMatchStatusChipHalftime': 'Halftime',
+      'clashMatchStatusChipFinished': 'Finished',
+      'clashMatchActivePlayerTitle': 'Your active player',
+      'clashMatchRivalActivePlayerTitle': 'Active rival',
+      'clashMatchPlayerPowerLabel': 'Power {power}',
+      'clashMatchActionPanelTitle': 'Actions',
+      'clashMatchActionResolveDuel': 'Resolve the duel first',
+      'clashMatchActionWaitDefense': 'Wait for your defensive reaction',
+      'clashMatchPassRiskLabel': 'Risk {percent}%',
+      'clashMatchPitchLegendBall': 'Ball',
+      'clashMatchPitchLegendUser': 'You',
+      'clashMatchPitchLegendRival': 'Rival',
+      'clashMatchHalftimeItemsHint': 'You can only use items at halftime',
+      'clashMatchDefendChooseSave': 'Choose save',
+      'clashMatchRivalPreparingAdvance': 'Rival is preparing an advance',
+      'clashMatchRivalPreparingShot': 'Rival is preparing a shot',
+      'clashMatchRivalAwaitingDefense': 'Rival awaits your defense',
+      'clashMatchDuelVsLabel': 'VS',
       'clashMatchDuelTitle': 'Duel',
       'clashMatchDuelNormalDribble': 'Normal dribble',
       'clashMatchDuelEffectiveDribble': 'Effective dribble',
@@ -1485,7 +1529,7 @@ class AppLocalizations {
       'clashMatchDuelSave': 'SAVE',
       'clashMatchDefendAdvanceTitle': 'Defend the advance',
       'clashMatchDefendShotTitle': 'Stop the shot',
-      'clashMatchDefendSelectDefenderTitle': 'Choose defender',
+      'clashMatchDefendSelectDefenderTitle': 'Choose who defends',
       'clashMatchDefendNormalDefense': 'Normal defense',
       'clashMatchDefendNormalSave': 'Normal save',
       'clashMatchRivalAttackNormal': 'Rival: normal action',
@@ -2524,6 +2568,38 @@ class AppLocalizations {
 
   String clashMatchAdvanceChance(int percent) =>
       _t('clashMatchAdvanceChance').replaceAll('{percent}', '$percent');
+
+  String clashMatchHeaderVsRival(String rival) =>
+      _t('clashMatchHeaderVsRival').replaceAll('{rival}', rival);
+
+  String get clashMatchStatusChipUserPossession =>
+      _t('clashMatchStatusChipUserPossession');
+  String get clashMatchStatusChipRivalPossession =>
+      _t('clashMatchStatusChipRivalPossession');
+  String get clashMatchStatusChipDuel => _t('clashMatchStatusChipDuel');
+  String get clashMatchStatusChipHalftime => _t('clashMatchStatusChipHalftime');
+  String get clashMatchStatusChipFinished => _t('clashMatchStatusChipFinished');
+  String get clashMatchActivePlayerTitle => _t('clashMatchActivePlayerTitle');
+  String get clashMatchRivalActivePlayerTitle =>
+      _t('clashMatchRivalActivePlayerTitle');
+  String clashMatchPlayerPowerLabel(int power) =>
+      _t('clashMatchPlayerPowerLabel').replaceAll('{power}', '$power');
+  String get clashMatchActionPanelTitle => _t('clashMatchActionPanelTitle');
+  String get clashMatchActionResolveDuel => _t('clashMatchActionResolveDuel');
+  String get clashMatchActionWaitDefense => _t('clashMatchActionWaitDefense');
+  String clashMatchPassRiskLabel(int percent) =>
+      _t('clashMatchPassRiskLabel').replaceAll('{percent}', '$percent');
+  String get clashMatchPitchLegendBall => _t('clashMatchPitchLegendBall');
+  String get clashMatchPitchLegendUser => _t('clashMatchPitchLegendUser');
+  String get clashMatchPitchLegendRival => _t('clashMatchPitchLegendRival');
+  String get clashMatchHalftimeItemsHint => _t('clashMatchHalftimeItemsHint');
+  String get clashMatchDefendChooseSave => _t('clashMatchDefendChooseSave');
+  String get clashMatchRivalPreparingAdvance =>
+      _t('clashMatchRivalPreparingAdvance');
+  String get clashMatchRivalPreparingShot => _t('clashMatchRivalPreparingShot');
+  String get clashMatchRivalAwaitingDefense =>
+      _t('clashMatchRivalAwaitingDefense');
+  String get clashMatchDuelVsLabel => _t('clashMatchDuelVsLabel');
 
   String get clashMatchDuelTitle => _t('clashMatchDuelTitle');
   String get clashMatchDuelNormalDribble => _t('clashMatchDuelNormalDribble');

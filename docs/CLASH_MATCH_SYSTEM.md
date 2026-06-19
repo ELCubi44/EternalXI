@@ -649,6 +649,21 @@ Sin `rivalTeamId`, el partido sigue usando `MatchSquadBuilder.buildRivalSquad` (
 
 ---
 
+## Fase 46 — Pulido visual del partido 7v7
+
+| Incluido | Pendiente |
+|---|---|
+| Cabecera con marcador, rival, estado y objetivo | Animaciones complejas |
+| Tarjeta jugador activo (PT, resistencia, zona) | Sprites / arte final |
+| Minipitch con leyenda y zonas más legibles | Comentarios narrativos |
+| Panel de acciones con motivos disabled | Tácticas / sustituciones |
+| Pase con probabilidad y riesgo visible | Backend / replay |
+| Duelos, defensa manual, descanso y fin pulidos | Sonido |
+
+**Sin cambios** de reglas, fórmulas, PT, resistencia ni recompensas.
+
+---
+
 ## 17. Decisiones pendientes
 
 | Tema | Estado |

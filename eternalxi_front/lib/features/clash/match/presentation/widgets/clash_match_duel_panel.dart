@@ -129,29 +129,57 @@ class _DefenderSelectionCard extends StatelessWidget {
             );
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: OutlinedButton(
-                onPressed: () => onSelectDefender(index),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${player.label} · ${player.position.displayNameEs}',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+              child: Card(
+                elevation: 0,
+                color: theme.colorScheme.surfaceContainerHighest,
+                child: InkWell(
+                  onTap: () => onSelectDefender(index),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: theme.colorScheme.primaryContainer,
+                          child: Text(
+                            player.label,
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${player.label} · ${player.position.displayNameEs}',
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              Text(
+                                l10n.clashMatchDefendCandidateMeta(
+                                  player.effectiveDefense,
+                                  player.currentPt,
+                                  player.currentStamina,
+                                  player.style.displayNameEs,
+                                ),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: context.xiTextSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          color: context.xiTextSecondary,
+                        ),
+                      ],
                     ),
-                    Text(
-                      l10n.clashMatchDefendCandidateMeta(
-                        player.effectiveDefense,
-                        player.currentPt,
-                        player.currentStamina,
-                        player.style.displayNameEs,
-                      ),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: context.xiTextSecondary,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             );
@@ -216,6 +244,17 @@ class _ManualDefenseCard extends StatelessWidget {
               fontWeight: FontWeight.w900,
             ),
           ),
+          if (isShot) ...[
+            const SizedBox(height: 4),
+            Text(
+              l10n.clashMatchDefendChooseSave,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: context.xiTextSecondary,
+              ),
+            ),
+          ],
           const SizedBox(height: 8),
           Text(
             rivalAttack,
@@ -240,12 +279,15 @@ class _ManualDefenseCard extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
+                  horizontal: 6,
                   vertical: 28,
                 ),
-                child: Icon(
-                  isShot ? Icons.sports_soccer : Icons.flash_on_rounded,
-                  color: isShot ? Colors.orange : Colors.blueAccent,
+                child: Text(
+                  context.l10n.clashMatchDuelVsLabel,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: context.xiTextSecondary,
+                  ),
                 ),
               ),
               Expanded(
@@ -395,12 +437,15 @@ class _PendingDuelCard extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
+                  horizontal: 6,
                   vertical: 28,
                 ),
-                child: Icon(
-                  isShot ? Icons.sports_soccer : Icons.flash_on_rounded,
-                  color: isShot ? Colors.orange : theme.colorScheme.secondary,
+                child: Text(
+                  context.l10n.clashMatchDuelVsLabel,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: context.xiTextSecondary,
+                  ),
                 ),
               ),
               Expanded(

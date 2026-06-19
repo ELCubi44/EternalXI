@@ -66,6 +66,15 @@ class _ClashMatchHalftimePanelState extends State<ClashMatchHalftimePanel> {
                 fontWeight: FontWeight.w800,
               ),
             ),
+            const SizedBox(height: 6),
+            Text(
+              l10n.clashMatchHalftimeItemsHint,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: context.xiTextSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             const SizedBox(height: 12),
             Text(
               l10n.clashMatchHalftimeSquadTitle,
