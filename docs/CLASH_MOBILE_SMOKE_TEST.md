@@ -58,6 +58,32 @@ debug_screenshots/clash/YYYYMMDD_HHMMSS/
 
 `debug_screenshots/` está en **`.gitignore`** — no subir capturas al repo.
 
+## Paso 2 — Revisión visual básica
+
+Tras capturar, genera un informe automático sobre las PNG:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/clash-review-screenshots.ps1 -Latest
+```
+
+O revisando una sesión concreta:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/clash-review-screenshots.ps1 -SessionDir "debug_screenshots/clash/20260619_102703"
+```
+
+Salida: `visual_review.md` en la carpeta de sesión (tabla de capturas, previews embebidos, checklist manual, problemas detectados).
+
+Parámetros:
+
+| Parámetro | Descripción |
+|-----------|-------------|
+| `-Latest` | Usa la carpeta más reciente en `debug_screenshots/clash/` (default si no se pasa `-SessionDir`). |
+| `-SessionDir <ruta>` | Carpeta de sesión específica. |
+| `-OutputFile <ruta>` | Ruta custom del informe (default: `<sesión>/visual_review.md`). |
+
+Esto sigue siendo **revisión básica** (tamaño, resolución, pantallas casi negras/blancas). No es QA automático ni OCR.
+
 ## Qué hace el script
 
 1. Comprueba `adb` y al menos un dispositivo en estado `device`.
@@ -89,4 +115,5 @@ debug_screenshots/clash/YYYYMMDD_HHMMSS/
 |--------|-----|
 | `scripts/run-mobile.ps1` | Flutter en primer plano (desarrollo). |
 | `scripts/clash-mobile-smoke.ps1` | Capturas ADB + reporte para revisión visual. |
+| `scripts/clash-review-screenshots.ps1` | Revisión básica de PNG + `visual_review.md`. |
 | `scripts/deploy-and-run-mobile.ps1` | Deploy backend + run móvil. |

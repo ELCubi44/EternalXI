@@ -675,4 +675,16 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 45 — Revisión local de screenshots
+
+**Estado:** implementada (tooling local).
+
+- Script `scripts/clash-review-screenshots.ps1`: lista PNG, tamaño/resolución, detección básica negra/blanca.
+- Genera `visual_review.md` en la sesión revisada.
+- Integrado en `docs/CLASH_MOBILE_SMOKE_TEST.md` como paso 2 tras el smoke ADB.
+
+**Sin cambios** de lógica Flutter, OCR ni CI visual.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*
