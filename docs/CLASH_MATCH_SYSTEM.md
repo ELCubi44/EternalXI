@@ -678,6 +678,19 @@ Sin `rivalTeamId`, el partido sigue usando `MatchSquadBuilder.buildRivalSquad` (
 
 ---
 
+## Fase 48 — Resumen post-partido (recompensas y progreso)
+
+| Incluido | Pendiente |
+|---|---|
+| Panel final unificado story/event con victoria/derrota y marcador | Animaciones de subida de nivel |
+| Secciones: objetivos, recompensas obtenidas, pendientes, progreso cartas | Pantalla cinematográfica |
+| Hints simples de objetivos fallidos (clean sheet, técnica tiro) | Loot aleatorio nuevo |
+| Botones Continuar / Reintentar / Volver | Compartir resultado / replay |
+
+**Sin cambios** en cálculo de recompensas, XP ni evaluador de objetivos.
+
+---
+
 ## 17. Decisiones pendientes
 
 | Tema | Estado |

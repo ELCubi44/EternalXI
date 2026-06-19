@@ -327,8 +327,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('¡Victoria!'), findsOneWidget);
-      expect(find.text('Marcador final: 3 - 1'), findsOneWidget);
-      expect(find.text('Ver recompensas'), findsOneWidget);
+      expect(find.text('Tú 3 - 1 Rival'), findsOneWidget);
+      expect(find.text('Continuar'), findsOneWidget);
       expect(find.text('Gemas: +1'), findsOneWidget);
       expect(find.text('Monedas: +500'), findsOneWidget);
     });
@@ -367,7 +367,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Reintentar'), findsOneWidget);
-      expect(find.text('Ver recompensas'), findsNothing);
+      expect(find.text('Continuar'), findsNothing);
     });
 
     testWidgets('continuar rival solo con posesión rival', (tester) async {

@@ -582,6 +582,21 @@ class AppLocalizations {
       'clashMatchObjectiveStatusFailed': 'Fallido',
       'clashMatchObjectiveStatusReviewedAtEnd': 'Se revisa al final',
       'clashMatchObjectivesNone': 'Sin objetivos secundarios',
+      'clashMatchEndCompletedSubtitle': 'Partido completado',
+      'clashMatchEndNoRewards': 'No se obtuvieron recompensas',
+      'clashMatchEndScoreYouRival': 'Tú {user} - {rival} Rival',
+      'clashMatchRewardsEarnedTitle': 'Recompensas obtenidas',
+      'clashMatchRewardsPendingTitle': 'Recompensas pendientes',
+      'clashMatchRewardsEmptyState': 'Sin recompensas en este intento',
+      'clashMatchCardProgressTitle': 'Progreso de cartas',
+      'clashMatchObjectiveRetryHint':
+          'Completa el objetivo en otro intento para conseguirlas.',
+      'clashMatchLineupXpTotal': '+{amount} EXP para la alineación',
+      'clashMatchObjectiveFailConcededGoal': 'Encajaste un gol',
+      'clashMatchObjectiveFailNoShotTechnique':
+          'No marcaste con técnica de tiro',
+      'clashMatchContinue': 'Continuar',
+      'clashMatchCardLevelFromTo': 'Nv. {from} → {to}',
       'clashMatchObjectivesDefeatHint':
           'Debes ganar el partido para recibir recompensas de objetivos',
       'clashMatchRewardsTotalTitle': 'Total obtenido',
@@ -1430,6 +1445,21 @@ class AppLocalizations {
       'clashMatchObjectiveStatusFailed': 'Failed',
       'clashMatchObjectiveStatusReviewedAtEnd': 'Checked at the end',
       'clashMatchObjectivesNone': 'No secondary objectives',
+      'clashMatchEndCompletedSubtitle': 'Match completed',
+      'clashMatchEndNoRewards': 'No rewards earned',
+      'clashMatchEndScoreYouRival': 'You {user} - {rival} Rival',
+      'clashMatchRewardsEarnedTitle': 'Rewards earned',
+      'clashMatchRewardsPendingTitle': 'Pending rewards',
+      'clashMatchRewardsEmptyState': 'No rewards this attempt',
+      'clashMatchCardProgressTitle': 'Card progress',
+      'clashMatchObjectiveRetryHint':
+          'Complete the objective on another attempt to earn them.',
+      'clashMatchLineupXpTotal': '+{amount} XP for the lineup',
+      'clashMatchObjectiveFailConcededGoal': 'You conceded a goal',
+      'clashMatchObjectiveFailNoShotTechnique':
+          'You did not score with a shot technique',
+      'clashMatchContinue': 'Continue',
+      'clashMatchCardLevelFromTo': 'Lv. {from} → {to}',
       'clashMatchObjectivesDefeatHint':
           'You must win the match to receive objective rewards',
       'clashMatchRewardsTotalTitle': 'Total earned',
@@ -2479,6 +2509,28 @@ class AppLocalizations {
   String get clashMatchObjectiveStatusReviewedAtEnd =>
       _t('clashMatchObjectiveStatusReviewedAtEnd');
   String get clashMatchObjectivesNone => _t('clashMatchObjectivesNone');
+  String get clashMatchEndCompletedSubtitle =>
+      _t('clashMatchEndCompletedSubtitle');
+  String get clashMatchEndNoRewards => _t('clashMatchEndNoRewards');
+  String clashMatchEndScoreYouRival(int user, int rival) => _t(
+    'clashMatchEndScoreYouRival',
+  ).replaceAll('{user}', '$user').replaceAll('{rival}', '$rival');
+  String get clashMatchRewardsEarnedTitle => _t('clashMatchRewardsEarnedTitle');
+  String get clashMatchRewardsPendingTitle =>
+      _t('clashMatchRewardsPendingTitle');
+  String get clashMatchRewardsEmptyState => _t('clashMatchRewardsEmptyState');
+  String get clashMatchCardProgressTitle => _t('clashMatchCardProgressTitle');
+  String get clashMatchObjectiveRetryHint => _t('clashMatchObjectiveRetryHint');
+  String clashMatchLineupXpTotal(int amount) =>
+      _t('clashMatchLineupXpTotal').replaceAll('{amount}', '$amount');
+  String get clashMatchObjectiveFailConcededGoal =>
+      _t('clashMatchObjectiveFailConcededGoal');
+  String get clashMatchObjectiveFailNoShotTechnique =>
+      _t('clashMatchObjectiveFailNoShotTechnique');
+  String get clashMatchContinue => _t('clashMatchContinue');
+  String clashMatchCardLevelFromTo(int from, int to) => _t(
+    'clashMatchCardLevelFromTo',
+  ).replaceAll('{from}', '$from').replaceAll('{to}', '$to');
   String get clashMatchObjectivesDefeatHint =>
       _t('clashMatchObjectivesDefeatHint');
   String get clashMatchRewardsTotalTitle => _t('clashMatchRewardsTotalTitle');

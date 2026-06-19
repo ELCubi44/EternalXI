@@ -418,7 +418,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Experiencia de cartas'), findsOneWidget);
+      expect(find.text('Progreso de cartas'), findsOneWidget);
       expect(find.text('Tester'), findsOneWidget);
       expect(find.text('+80 EXP'), findsOneWidget);
     });
@@ -462,7 +462,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Sube de nivel'), findsOneWidget);
+      expect(find.text('Nv. 1 → 2'), findsOneWidget);
     });
 
     testWidgets('derrota no muestra XP ganada', (tester) async {
@@ -491,7 +491,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Sin EXP por derrota'), findsOneWidget);
-      expect(find.text('Experiencia de cartas'), findsNothing);
+      expect(find.text('Progreso de cartas'), findsNothing);
     });
   });
 }

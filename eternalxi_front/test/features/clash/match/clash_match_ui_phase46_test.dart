@@ -410,7 +410,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('¡Victoria!'), findsOneWidget);
-      expect(find.text('Marcador final: 3 - 1'), findsOneWidget);
+      expect(find.text('Tú 3 - 1 Rival'), findsOneWidget);
       expect(find.text('Gemas: +1'), findsOneWidget);
     });
 

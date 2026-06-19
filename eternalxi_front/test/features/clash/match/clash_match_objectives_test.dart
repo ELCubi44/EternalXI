@@ -469,7 +469,7 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(find.text('Ver recompensas'), findsNothing);
+      expect(find.text('Continuar'), findsNothing);
     });
 
     testWidgets('objetivo cleanSheet aparece como fallido si rival marcó', (
@@ -586,7 +586,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Total obtenido'), findsOneWidget);
+      expect(find.text('Recompensas obtenidas'), findsOneWidget);
       expect(find.text('Gemas: +2'), findsOneWidget);
       expect(find.text('Monedas: +500'), findsOneWidget);
     });

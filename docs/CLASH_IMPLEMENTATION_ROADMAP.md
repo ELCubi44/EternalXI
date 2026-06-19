@@ -711,4 +711,16 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 48 — Pulido resumen post-partido
+
+**Estado:** implementada.
+
+- `ClashMatchEndPanel` y `ClashEventMatchEndPanel` con secciones de objetivos, recompensas y XP.
+- Widgets compartidos: header, objetivos, recompensas obtenidas/pendientes, progreso de cartas.
+- Strings ES/EN para resumen post-partido.
+
+**Sin cambios** de cálculo de rewards/XP ni evaluador.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*
