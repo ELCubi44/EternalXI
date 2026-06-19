@@ -649,4 +649,18 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 43 — Pulido prepare rival
+
+**Estado:** implementada (local).
+
+- Ficha visual del rival en prepare story/event (nombre, descripción, dificultad, potencia, estilos).
+- Comparativa tu potencia vs rival/recomendada con avisos (ventaja, igualado, desventaja, muy difícil).
+- Alineación rival expandible con resumen por jugador.
+- Helpers `totalPower`, `requiredPositionsComplete`, `predominantStyles` en `ClashRivalTeam`.
+- Fallback sin `rivalTeamId`: rival estándar + potencia del nivel/stage.
+
+**No cambia** reglas de partido ni dificultad real del motor.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

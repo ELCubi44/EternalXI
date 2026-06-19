@@ -7,6 +7,7 @@ import 'package:eternal_xi/features/clash/rivals/data/clash_rival_match_setup_re
 import 'package:eternal_xi/features/clash/rivals/data/clash_rivals_local_datasource.dart';
 import 'package:eternal_xi/features/clash/rivals/data/clash_rivals_repository.dart';
 import 'package:eternal_xi/features/clash/rivals/domain/clash_rival_player.dart';
+import 'package:eternal_xi/features/clash/rivals/domain/clash_rival_power_comparison.dart';
 import 'package:eternal_xi/features/clash/rivals/domain/clash_rival_team.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -28,9 +29,40 @@ void main() {
       for (final team in teams) {
         expect(team.lineup7v7, hasLength(7));
         expect(team.hasCompleteLineup, isTrue);
+        expect(team.requiredPositionsComplete, isTrue);
         final positions = team.lineup7v7.map((p) => p.position).toSet();
         expect(positions, ClashPosition.values.toSet());
       }
+    });
+
+    test('totalPower suma potencia de jugadores', () async {
+      final team = await ClashRivalsRepository().findTeam(
+        'rival-training-squad',
+      );
+      expect(team, isNotNull);
+      final manual = team!.lineup7v7.fold<int>(
+        0,
+        (sum, player) => sum + player.power,
+      );
+      expect(team.totalPower, manual);
+    });
+
+    test('predominantStyles no está vacío en equipos reales', () async {
+      final team = await ClashRivalsRepository().findTeam(
+        'rival-arin-training',
+      );
+      expect(team!.predominantStyles, isNotEmpty);
+    });
+
+    test('dificultad 1 y 2 distinguen equipos de prueba', () async {
+      final training = await ClashRivalsRepository().findTeam(
+        'rival-training-squad',
+      );
+      final arin = await ClashRivalsRepository().findTeam(
+        'rival-arin-training',
+      );
+      expect(training!.difficulty, 1);
+      expect(arin!.difficulty, 2);
     });
 
     test('stats y técnicas parsean correctamente', () async {
@@ -44,6 +76,27 @@ void main() {
       expect(gk.stats.save, greaterThan(0));
       expect(gk.superTechniques, isNotEmpty);
       expect(gk.superTechniques.first.type, ClashTechniqueType.save);
+    });
+  });
+
+  group('ClashRivalPowerComparison', () {
+    test('evalúa umbrales de preparación', () {
+      expect(
+        ClashRivalPowerComparison.evaluate(ownPower: 120, referencePower: 80),
+        ClashRivalPowerMatchupStatus.clearAdvantage,
+      );
+      expect(
+        ClashRivalPowerComparison.evaluate(ownPower: 70, referencePower: 80),
+        ClashRivalPowerMatchupStatus.even,
+      );
+      expect(
+        ClashRivalPowerComparison.evaluate(ownPower: 50, referencePower: 80),
+        ClashRivalPowerMatchupStatus.disadvantage,
+      );
+      expect(
+        ClashRivalPowerComparison.evaluate(ownPower: 30, referencePower: 80),
+        ClashRivalPowerMatchupStatus.veryHard,
+      );
     });
   });
 

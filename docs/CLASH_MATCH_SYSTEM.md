@@ -636,6 +636,19 @@ Sin `rivalTeamId`, el partido sigue usando `MatchSquadBuilder.buildRivalSquad` (
 
 ---
 
+## Fase 43 — Comparativa visual de rival en preparación
+
+| Incluido | Pendiente |
+|---|---|
+| Ficha rival con nombre, descripción, dificultad y potencia | Elegir rival libremente |
+| Comparativa tu potencia vs rival/recomendada con avisos | Cambiar dificultad antes del partido |
+| Alineación rival expandible (7v7, estilo, rareza, ST) | IA nueva / escalado dinámico |
+| Integración en prepare story y event | Backend de rivales |
+
+**No cambia** reglas de partido, fórmulas de potencia ni dificultad real del motor.
+
+---
+
 ## 17. Decisiones pendientes
 
 | Tema | Estado |

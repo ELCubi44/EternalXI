@@ -129,18 +129,11 @@ class _ClashMatchPrepareScreenState extends State<ClashMatchPrepareScreen> {
             value: '${level.energyCost}',
           ),
           ClashMatchRivalPrepareSection(
-            rivalName: _rivalTeam?.name,
-            difficulty: _rivalTeam?.difficulty,
-            recommendedPower: _rivalTeam?.recommendedPower,
-          ),
-          if (_rivalTeam == null && validation.recommendedPower != null)
-            _InfoTile(
-              label: l10n.clashMatchPrepareRecommendedPower,
-              value: '${validation.recommendedPower}',
-            ),
-          _InfoTile(
-            label: l10n.clashMatchPrepareLineupPower,
-            value: '${validation.lineupPower}',
+            ownPower: validation.lineupPower,
+            rivalTeam: _rivalTeam,
+            fallbackRecommendedPower: _rivalTeam == null
+                ? validation.recommendedPower
+                : null,
           ),
           const SizedBox(height: 12),
           _StatusChip(
@@ -149,7 +142,8 @@ class _ClashMatchPrepareScreenState extends State<ClashMatchPrepareScreen> {
                 ? l10n.clashMatchPrepareLineupComplete
                 : l10n.clashMatchPrepareLineupIncomplete,
           ),
-          if (validation.powerBelowRecommended) ...[
+          if (validation.powerBelowRecommended &&
+              validation.recommendedPower != null) ...[
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(12),

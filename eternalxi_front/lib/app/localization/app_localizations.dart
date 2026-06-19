@@ -535,6 +535,21 @@ class AppLocalizations {
       'clashMatchPrepareStart': 'Comenzar partido',
       'clashMatchPrepareRival': 'Rival',
       'clashMatchPrepareDifficulty': 'Dificultad {difficulty}',
+      'clashMatchPrepareStandardRival': 'Rival estándar',
+      'clashMatchPrepareViewRivalLineup': 'Ver alineación rival',
+      'clashMatchPrepareOwnPower': 'Tu potencia',
+      'clashMatchPrepareRivalPower': 'Potencia rival',
+      'clashMatchPreparePowerDifference': 'Diferencia',
+      'clashMatchPreparePowerAdvantage': 'Ventaja clara',
+      'clashMatchPreparePowerEven': 'Partido igualado',
+      'clashMatchPreparePowerDisadvantage': 'Desventaja',
+      'clashMatchPreparePowerVeryHard': 'Muy difícil',
+      'clashMatchPrepareDifficultyEasy': 'Fácil',
+      'clashMatchPrepareDifficultyNormal': 'Normal',
+      'clashMatchPrepareDifficultyHard': 'Difícil',
+      'clashMatchPrepareDifficultyChip': 'Dificultad {difficulty} · {label}',
+      'clashMatchPrepareRivalPlayersCount': '{current}/{total} jugadores',
+      'clashMatchPreparePredominantStyles': 'Estilos predominantes',
       'clashMatchScoreLabel': '{user} - {rival}',
       'clashMatchWinTarget': 'Objetivo: primero a 3 goles',
       'clashMatchPhaseLabel': 'Fase',
@@ -1340,6 +1355,21 @@ class AppLocalizations {
       'clashMatchPrepareStart': 'Start match',
       'clashMatchPrepareRival': 'Rival',
       'clashMatchPrepareDifficulty': 'Difficulty {difficulty}',
+      'clashMatchPrepareStandardRival': 'Standard rival',
+      'clashMatchPrepareViewRivalLineup': 'View rival lineup',
+      'clashMatchPrepareOwnPower': 'Your power',
+      'clashMatchPrepareRivalPower': 'Rival power',
+      'clashMatchPreparePowerDifference': 'Difference',
+      'clashMatchPreparePowerAdvantage': 'Clear advantage',
+      'clashMatchPreparePowerEven': 'Even match',
+      'clashMatchPreparePowerDisadvantage': 'Disadvantage',
+      'clashMatchPreparePowerVeryHard': 'Very hard',
+      'clashMatchPrepareDifficultyEasy': 'Easy',
+      'clashMatchPrepareDifficultyNormal': 'Normal',
+      'clashMatchPrepareDifficultyHard': 'Hard',
+      'clashMatchPrepareDifficultyChip': 'Difficulty {difficulty} · {label}',
+      'clashMatchPrepareRivalPlayersCount': '{current}/{total} players',
+      'clashMatchPreparePredominantStyles': 'Predominant styles',
       'clashMatchScoreLabel': '{user} - {rival}',
       'clashMatchWinTarget': 'Goal: first to 3',
       'clashMatchPhaseLabel': 'Phase',
@@ -2315,6 +2345,43 @@ class AppLocalizations {
   String clashMatchPrepareDifficulty(int difficulty) => _t(
     'clashMatchPrepareDifficulty',
   ).replaceAll('{difficulty}', '$difficulty');
+  String get clashMatchPrepareStandardRival =>
+      _t('clashMatchPrepareStandardRival');
+  String get clashMatchPrepareViewRivalLineup =>
+      _t('clashMatchPrepareViewRivalLineup');
+  String get clashMatchPrepareOwnPower => _t('clashMatchPrepareOwnPower');
+  String get clashMatchPrepareRivalPower => _t('clashMatchPrepareRivalPower');
+  String get clashMatchPreparePowerDifference =>
+      _t('clashMatchPreparePowerDifference');
+  String get clashMatchPreparePowerAdvantage =>
+      _t('clashMatchPreparePowerAdvantage');
+  String get clashMatchPreparePowerEven => _t('clashMatchPreparePowerEven');
+  String get clashMatchPreparePowerDisadvantage =>
+      _t('clashMatchPreparePowerDisadvantage');
+  String get clashMatchPreparePowerVeryHard =>
+      _t('clashMatchPreparePowerVeryHard');
+  String get clashMatchPrepareDifficultyEasy =>
+      _t('clashMatchPrepareDifficultyEasy');
+  String get clashMatchPrepareDifficultyNormal =>
+      _t('clashMatchPrepareDifficultyNormal');
+  String get clashMatchPrepareDifficultyHard =>
+      _t('clashMatchPrepareDifficultyHard');
+  String clashMatchPrepareDifficultyChip(int difficulty) =>
+      _t('clashMatchPrepareDifficultyChip')
+          .replaceAll('{difficulty}', '$difficulty')
+          .replaceAll('{label}', clashMatchPrepareDifficultyName(difficulty));
+  String clashMatchPrepareDifficultyName(int difficulty) =>
+      switch (difficulty) {
+        1 => clashMatchPrepareDifficultyEasy,
+        2 => clashMatchPrepareDifficultyNormal,
+        3 => clashMatchPrepareDifficultyHard,
+        _ => clashMatchPrepareDifficulty(difficulty),
+      };
+  String clashMatchPrepareRivalPlayersCount(int current, int total) => _t(
+    'clashMatchPrepareRivalPlayersCount',
+  ).replaceAll('{current}', '$current').replaceAll('{total}', '$total');
+  String get clashMatchPreparePredominantStyles =>
+      _t('clashMatchPreparePredominantStyles');
   String get clashMatchWinTarget => _t('clashMatchWinTarget');
   String get clashMatchPhaseLabel => _t('clashMatchPhaseLabel');
   String get clashMatchPhaseCoinToss => _t('clashMatchPhaseCoinToss');

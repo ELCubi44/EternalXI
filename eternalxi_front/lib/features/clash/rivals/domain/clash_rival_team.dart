@@ -1,4 +1,5 @@
 import 'package:eternal_xi/features/clash/cards/domain/clash_json_helpers.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_player_style.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/rivals/domain/clash_rival_player.dart';
 
@@ -20,12 +21,29 @@ class ClashRivalTeam {
   final int recommendedPower;
   final List<ClashRivalPlayer> lineup7v7;
 
-  bool get hasCompleteLineup {
+  bool get hasCompleteLineup => requiredPositionsComplete;
+
+  /// Las 7 posiciones canónicas están cubiertas sin duplicados.
+  bool get requiredPositionsComplete {
     if (lineup7v7.length != ClashPosition.values.length) {
       return false;
     }
     final positions = lineup7v7.map((player) => player.position).toSet();
     return positions.length == ClashPosition.values.length;
+  }
+
+  /// Suma de potencia efectiva de los jugadores del lineup.
+  int get totalPower => lineup7v7.fold(0, (sum, player) => sum + player.power);
+
+  /// Estilos ordenados por frecuencia descendente en el lineup.
+  List<ClashPlayerStyle> get predominantStyles {
+    final counts = <ClashPlayerStyle, int>{};
+    for (final player in lineup7v7) {
+      counts[player.style] = (counts[player.style] ?? 0) + 1;
+    }
+    final entries = counts.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return entries.map((entry) => entry.key).toList(growable: false);
   }
 
   factory ClashRivalTeam.fromJson(Map<String, dynamic> json) {

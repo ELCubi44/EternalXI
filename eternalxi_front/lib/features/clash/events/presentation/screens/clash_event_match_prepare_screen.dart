@@ -102,19 +102,13 @@ class _ClashEventMatchPrepareScreenState
           ),
           const SizedBox(height: 16),
           ClashMatchRivalPrepareSection(
-            rivalName: _rivalTeam?.name,
-            difficulty: _rivalTeam?.difficulty,
-            recommendedPower: recommended,
+            ownPower: lineupPower,
+            rivalTeam: _rivalTeam,
+            fallbackRecommendedPower: _rivalTeam == null
+                ? stage.recommendedPower
+                : null,
           ),
-          if (_rivalTeam == null && stage.recommendedPower != null)
-            _InfoTile(
-              label: l10n.clashMatchPrepareRecommendedPower,
-              value: '${stage.recommendedPower}',
-            ),
-          _InfoTile(
-            label: l10n.clashMatchPrepareLineupPower,
-            value: '$lineupPower',
-          ),
+          const SizedBox(height: 12),
           if (stage.cardXpReward > 0)
             _InfoTile(
               label: l10n.clashEventsCardXpReward,
