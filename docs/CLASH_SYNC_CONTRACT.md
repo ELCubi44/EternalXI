@@ -197,6 +197,12 @@ Código: `clash_pending_sync_notice.dart`, `ClashSyncSettingsStorage.dismissPend
 
 Tabla: `clash_claim`. Código: `ClashClaimController`, `ClashClaimService`.
 
+### Cliente Flutter claims (Fase 82)
+
+`ClashClaimApiClient` — POST idempotente, parseo 201/200, errores tipados. **Sin** uso en flujos de rewards locales todavía.
+
+Código: `clash_claim_contract.dart`, `clash_claim_api_client.dart`, `clash_claim_api_exception.dart`.
+
 Código: `ClashSyncAutoCheckService`, integración en `ClashHomeScreen`.
 
 Estado visible en diagnóstico (memoria + metadata persistida en `clash_sync_metadata_v1`):

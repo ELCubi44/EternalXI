@@ -124,6 +124,14 @@ cd eternalxi_api_back
 mvn test -Dtest=ClashClaimServiceTest,ClashSaveServiceTest
 ```
 
+**Tests Fase 82 (Flutter claim client):**
+
+```bash
+cd eternalxi_front
+flutter test test/features/clash/sync/clash_claim_contract_test.dart
+flutter test test/features/clash/sync/clash_claim_api_client_test.dart
+```
+
 Manual (con token JWT):
 
 1. `POST /api/v1/clash/claims` con body válido → `201`, `alreadyProcessed=false`.

@@ -3,6 +3,7 @@ import 'dart:io';
 /// Fase 71: clientes HTTP en `sync/data/`; el resto del módulo sync sigue sin Dio.
 const clashSyncHttpClientBasenames = {
   'clash_save_api_client.dart',
+  'clash_claim_api_client.dart',
   'http_clash_sync_client.dart',
 };
 

@@ -1206,4 +1206,20 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 82 — Flutter claim API client
+
+**Estado:** implementada.
+
+- DTOs `ClashClaimRequest` / `ClashClaimResponse` (`clash_claim_contract.dart`).
+- `ClashClaimApiClient.submitClaim()` — 201 accepted, 200 alreadyProcessed.
+- Excepciones: `ClashClaimApiException`, validation, unauthorized, conflict.
+- `ApiConstants.clashClaims`.
+- **No** registrado en providers ni flujos gifts/missions/events/shop.
+
+**Objetivo:** contrato/cliente HTTP listo para migración futura de claims.
+
+**Sin cambios** en backend, economía local, `ClashLocalRewardGranter`, Fantasy, leagues, rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*
