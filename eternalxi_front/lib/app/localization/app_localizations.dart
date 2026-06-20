@@ -296,6 +296,9 @@ class AppLocalizations {
       'clashDebugSyncPushConfirmBody':
           'Esto actualizará la partida online con el estado local actual de este dispositivo.',
       'clashDebugSyncPushConfirmAction': 'Subir',
+      'clashDebugSyncLastSuccessfulSync': 'Último sync correcto',
+      'clashDebugSyncPersistedSummary': 'Estado persistido',
+      'clashDebugSyncPersistedError': 'Último error persistido',
       'clashDebugSyncStatusNone': 'Sin intentos',
       'clashDebugSyncStatusValid': 'Snapshot local válido',
       'clashDebugSyncStatusInvalid': 'Snapshot local inválido',
@@ -1343,6 +1346,9 @@ class AppLocalizations {
       'clashDebugSyncPushConfirmBody':
           'This will update the online save with the current local state on this device.',
       'clashDebugSyncPushConfirmAction': 'Upload',
+      'clashDebugSyncLastSuccessfulSync': 'Last successful sync',
+      'clashDebugSyncPersistedSummary': 'Persisted status',
+      'clashDebugSyncPersistedError': 'Last persisted error',
       'clashDebugSyncStatusNone': 'No attempts yet',
       'clashDebugSyncStatusValid': 'Local snapshot valid',
       'clashDebugSyncStatusInvalid': 'Local snapshot invalid',
@@ -2497,6 +2503,11 @@ class AppLocalizations {
       _t('clashDebugSyncPushConfirmBody');
   String get clashDebugSyncPushConfirmAction =>
       _t('clashDebugSyncPushConfirmAction');
+  String get clashDebugSyncLastSuccessfulSync =>
+      _t('clashDebugSyncLastSuccessfulSync');
+  String get clashDebugSyncPersistedSummary =>
+      _t('clashDebugSyncPersistedSummary');
+  String get clashDebugSyncPersistedError => _t('clashDebugSyncPersistedError');
   String get clashDebugSyncStatusNone => _t('clashDebugSyncStatusNone');
   String get clashDebugSyncStatusValid => _t('clashDebugSyncStatusValid');
   String get clashDebugSyncStatusInvalid => _t('clashDebugSyncStatusInvalid');

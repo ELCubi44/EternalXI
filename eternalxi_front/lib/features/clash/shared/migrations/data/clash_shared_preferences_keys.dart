@@ -29,6 +29,9 @@ abstract final class ClashSharedPreferencesKeys {
   /// Último backup local antes de aplicar snapshot remoto (Fase 73).
   static const lastLocalBackup = 'clash_last_local_backup_v1';
 
+  /// Metadatos locales de sync online (Fase 76).
+  static const syncMetadata = 'clash_sync_metadata_v1';
+
   /// Claves de datos de progreso/inventario (excluye metadata de schema).
   static const dataKeys = <String>{
     lineups7v7,

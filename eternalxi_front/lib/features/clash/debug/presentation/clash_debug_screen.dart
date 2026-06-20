@@ -16,6 +16,7 @@ import 'package:eternal_xi/features/clash/shared/rewards/history/data/clash_rewa
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_local_backup.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_metadata_storage.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_operation_result.dart';
@@ -56,6 +57,7 @@ class _ClashDebugScreenState extends State<ClashDebugScreen> {
           coordinator: context.read<ClashSyncCoordinator>(),
           applier: _readOptional<ClashSyncSnapshotApplier>(context),
           backupStore: _readOptional<ClashSyncLocalBackupStore>(context),
+          metadataStorage: _readOptional<ClashSyncMetadataStorage>(context),
         );
     if (!_snapshotLoadStarted) {
       _snapshotLoadStarted = true;
@@ -354,8 +356,19 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             _ClashDebugRow(
+              label: l10n.clashDebugSyncLastSuccessfulSync,
+              value: _formatMetadataTimestamp(
+                l10n,
+                controller.metadata.lastSuccessfulSyncAt,
+              ),
+            ),
+            _ClashDebugRow(
               label: l10n.clashDebugSyncKnownRevision,
               value: _knownRevisionLabel(l10n, controller),
+            ),
+            _ClashDebugRow(
+              label: l10n.clashDebugSyncPersistedSummary,
+              value: _persistedSummaryLabel(l10n, controller),
             ),
             _ClashDebugRow(
               label: l10n.clashDebugSyncPendingRemoteStatus,
@@ -371,27 +384,47 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
             ),
             _ClashDebugRow(
               label: l10n.clashDebugSyncLastValidate,
-              value: _operationStatusLabel(l10n, controller.lastValidateResult),
+              value: _operationStatusLabel(
+                l10n,
+                controller.operationResultForDisplay(
+                  ClashSyncOperation.validate,
+                ),
+              ),
             ),
             _ClashDebugRow(
               label: l10n.clashDebugSyncLastPull,
-              value: _operationStatusLabel(l10n, controller.lastPullResult),
+              value: _operationStatusLabel(
+                l10n,
+                controller.operationResultForDisplay(ClashSyncOperation.pull),
+              ),
             ),
             _ClashDebugRow(
               label: l10n.clashDebugSyncLastApply,
-              value: _applyStatusLabelOrDash(l10n, controller.lastApplyResult),
+              value: _applyStatusLabelOrDash(
+                l10n,
+                controller.applyResultForDisplay(restore: false),
+              ),
             ),
             _ClashDebugRow(
               label: l10n.clashDebugSyncLastRestore,
               value: _applyStatusLabelOrDash(
                 l10n,
-                controller.lastRestoreResult,
+                controller.applyResultForDisplay(restore: true),
               ),
             ),
             _ClashDebugRow(
               label: l10n.clashDebugSyncLastPush,
-              value: _operationStatusLabel(l10n, controller.lastPushResult),
+              value: _operationStatusLabel(
+                l10n,
+                controller.operationResultForDisplay(ClashSyncOperation.push),
+              ),
             ),
+            if (controller.metadata.lastErrorCode != null &&
+                controller.metadata.lastMessage != null)
+              _ClashDebugRow(
+                label: l10n.clashDebugSyncPersistedError,
+                value: controller.metadata.lastMessage!,
+              ),
             if (controller.authRequired)
               Padding(
                 padding: const EdgeInsets.only(top: 4, bottom: 4),
@@ -477,11 +510,34 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
     AppLocalizations l10n,
     ClashDebugSyncController controller,
   ) {
-    final revision = controller.knownServerRevision;
+    final revision = controller.effectiveKnownRevision;
     if (revision == null || revision == 0) {
       return l10n.emptyStateDash;
     }
     return '$revision';
+  }
+
+  String _formatMetadataTimestamp(AppLocalizations l10n, DateTime? timestamp) {
+    if (timestamp == null) {
+      return l10n.emptyStateDash;
+    }
+    return timestamp.toUtc().toIso8601String();
+  }
+
+  String _persistedSummaryLabel(
+    AppLocalizations l10n,
+    ClashDebugSyncController controller,
+  ) {
+    final metadata = controller.metadata;
+    final operation = metadata.lastOperation;
+    if (operation == null) {
+      return l10n.clashDebugSyncStatusNone;
+    }
+    final status = metadata.lastStatus;
+    if (status == null) {
+      return operation;
+    }
+    return '$operation · $status';
   }
 
   String _operationStatusLabel(

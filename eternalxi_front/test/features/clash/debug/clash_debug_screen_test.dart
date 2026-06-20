@@ -42,6 +42,7 @@ Future<void> _pumpUntilDebugLoaded(WidgetTester tester) async {
 Widget _debugApp({
   required List<SingleChildWidget> providers,
   SharedPreferences? sharedPreferences,
+  Key? screenKey,
 }) {
   return MultiProvider(
     providers: providers,
@@ -49,7 +50,10 @@ Widget _debugApp({
       locale: const Locale('es'),
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      home: ClashDebugScreen(sharedPreferences: sharedPreferences),
+      home: ClashDebugScreen(
+        key: screenKey ?? ValueKey(sharedPreferences?.hashCode ?? providers),
+        sharedPreferences: sharedPreferences,
+      ),
     ),
   );
 }
@@ -73,6 +77,7 @@ void main() {
         _debugApp(
           providers: buildClashProviders(testClashProviderDependencies()),
           sharedPreferences: prefs,
+          screenKey: const ValueKey('debug-initial'),
         ),
       );
       await _pumpUntilDebugLoaded(tester);
@@ -141,9 +146,19 @@ void main() {
       );
 
       await tester.pumpWidget(
-        _debugApp(providers: historyProviders, sharedPreferences: prefs),
+        _debugApp(
+          providers: historyProviders,
+          sharedPreferences: prefs,
+          screenKey: const ValueKey('debug-history'),
+        ),
       );
       await _pumpUntilDebugLoaded(tester);
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Historial recompensas'),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('Historial recompensas'), findsOneWidget);
 
       await tester.pumpWidget(const SizedBox.shrink());
@@ -195,7 +210,11 @@ void main() {
       );
 
       await tester.pumpWidget(
-        _debugApp(providers: collectionProviders, sharedPreferences: prefs),
+        _debugApp(
+          providers: collectionProviders,
+          sharedPreferences: prefs,
+          screenKey: const ValueKey('debug-collection'),
+        ),
       );
       await _pumpUntilDebugLoaded(tester);
       await tester.scrollUntilVisible(

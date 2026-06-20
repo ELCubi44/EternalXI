@@ -1,14 +1,17 @@
 import 'package:eternal_xi/features/clash/debug/data/clash_debug_sync_controller.dart';
+import 'package:eternal_xi/features/clash/shared/migrations/data/clash_shared_preferences_keys.dart';
 import 'package:eternal_xi/features/clash/shared/migrations/domain/clash_storage_schema.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_client.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_local_backup.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_builder.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_validator.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_metadata_storage.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
 import 'package:eternal_xi/features/clash/sync/data/fake_clash_sync_client.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_status.dart';
+import 'package:eternal_xi/features/clash/sync/domain/clash_sync_metadata.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_operation_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_snapshot.dart';
@@ -241,6 +244,107 @@ void main() {
       expect(controller.lastRestoreResult, isNull);
     });
   });
+
+  group('ClashDebugSyncController Fase 76', () {
+    setUp(() async {
+      await backupPrefs.remove(ClashSharedPreferencesKeys.syncMetadata);
+    });
+
+    test(
+      'reiniciar controller recupera knownServerRevision desde metadata',
+      () async {
+        final storage = ClashSyncMetadataStorage(
+          sharedPreferences: backupPrefs,
+        );
+        await storage.save(
+          const ClashSyncMetadata(
+            knownServerRevision: 7,
+            lastOperation: 'pull',
+            lastStatus: 'success',
+          ),
+        );
+
+        final first = _controller(metadataStorage: storage);
+        expect(first.knownServerRevision, 7);
+        expect(first.effectiveKnownRevision, 7);
+        first.dispose();
+
+        final second = _controller(metadataStorage: storage);
+        expect(second.knownServerRevision, 7);
+        expect(second.metadata.lastOperation, 'pull');
+        second.dispose();
+      },
+    );
+
+    test('pull success persiste metadata', () async {
+      final storage = ClashSyncMetadataStorage(sharedPreferences: backupPrefs);
+      final client = FakeClashSyncClient();
+      final controller = _controller(client: client, metadataStorage: storage);
+
+      await controller.executePushLocal();
+      await controller.pullRemote();
+
+      expect(storage.load().knownServerRevision, 1);
+      expect(storage.load().lastOperation, 'pull');
+      expect(storage.load().lastPullAt, _epoch);
+    });
+
+    test('conflict persiste lastConflictServerRevision', () async {
+      final storage = ClashSyncMetadataStorage(sharedPreferences: backupPrefs);
+      final client = FakeClashSyncClient();
+      final controller = _controller(client: client, metadataStorage: storage);
+
+      await controller.executePushLocal();
+      await controller.executePushLocal();
+      controller.knownServerRevision = 1;
+
+      await controller.executePushLocal();
+
+      expect(storage.load().lastConflictServerRevision, 2);
+      expect(storage.load().lastStatus, 'conflict');
+    });
+
+    test('validate persiste estado sin HTTP extra', () async {
+      final client = _CountingSyncClient();
+      final storage = ClashSyncMetadataStorage(sharedPreferences: backupPrefs);
+      final controller = _controller(client: client, metadataStorage: storage);
+
+      await controller.validateLocal();
+
+      expect(client.pullCalls, 0);
+      expect(client.pushCalls, 0);
+      expect(storage.load().lastOperation, 'validate');
+      expect(storage.load().lastStatus, 'success');
+    });
+
+    test('operationResultForDisplay usa metadata tras reinicio', () async {
+      final storage = ClashSyncMetadataStorage(sharedPreferences: backupPrefs);
+      await storage.save(
+        const ClashSyncMetadata(
+          lastOperation: 'push',
+          lastStatus: 'success',
+          knownServerRevision: 5,
+        ),
+      );
+
+      final controller = _controller(metadataStorage: storage);
+      final display = controller.operationResultForDisplay(
+        ClashSyncOperation.push,
+      );
+
+      expect(display?.isSuccess, isTrue);
+      expect(display?.serverRevision, 5);
+      expect(controller.lastPushResult, isNull);
+    });
+
+    test('legacy install sin metadata funciona con defaults', () {
+      final storage = ClashSyncMetadataStorage(sharedPreferences: backupPrefs);
+      final controller = _controller(metadataStorage: storage);
+
+      expect(controller.metadata, const ClashSyncMetadata());
+      expect(controller.effectiveKnownRevision, isNull);
+    });
+  });
 }
 
 final _epoch = DateTime.utc(2026, 6, 20, 12);
@@ -249,6 +353,7 @@ ClashDebugSyncController _controller({
   ClashSyncClient? client,
   ClashSyncSnapshotApplier? applier,
   ClashSyncLocalBackupStore? backupStore,
+  ClashSyncMetadataStorage? metadataStorage,
   ClashSyncSnapshotBuilder? builder,
   Future<bool> Function()? isAuthenticated,
 }) {
@@ -261,6 +366,7 @@ ClashDebugSyncController _controller({
     ),
     applier: applier,
     backupStore: backupStore,
+    metadataStorage: metadataStorage,
     isAuthenticated: isAuthenticated,
   );
 }

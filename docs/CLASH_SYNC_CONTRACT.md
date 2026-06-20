@@ -133,7 +133,7 @@ Sin merge, sin restauración automática si falla la escritura (backup disponibl
 
 Código: `clash_sync_snapshot_applier.dart`, `clash_debug_sync_controller.dart`.
 
-## Diagnóstico manual de sync (Fase 72–75)
+## Diagnóstico manual de sync (Fase 72–76)
 
 `ClashDebugSyncController` + sección **Sincronización online** en `/clash/debug`.
 
@@ -144,16 +144,19 @@ Código: `clash_sync_snapshot_applier.dart`, `clash_debug_sync_controller.dart`.
 | Subir partida local actual | `executePushLocal()` — valida local; POST si no hay remoto; PUT con `expectedServerRevision` si hay revisión conocida; 409 → conflicto sin reintento |
 | Aplicar partida online | Confirmación → `ClashSyncSnapshotApplier` — backup + escritura local |
 
-Estado visible en diagnóstico:
+Estado visible en diagnóstico (memoria + metadata persistida en `clash_sync_metadata_v1`):
 
 - `knownServerRevision` (server revision conocida)
-- snapshot remoto pendiente (`pendingRemoteSnapshot`)
-- backup local disponible (`ClashSyncLocalBackupStore`)
+- snapshot remoto pendiente (flag en metadata; snapshot completo solo en memoria de sesión)
+- backup local disponible (`ClashSyncLocalBackupStore` + flag metadata)
 - último resultado por operación: validate / pull / apply / restore / push
+- último sync correcto, estado persistido y último error
+
+Al abrir debug tras reiniciar la app se **carga metadata local** (sin HTTP). La revision y el último estado persistido se muestran aunque la sesión actual no haya ejecutado operaciones.
 
 Subida manual: confirmación explícita si ya existe partida remota. **No** sube automáticamente tras apply/restore. **No** sync automática al abrir debug.
 
-Código: `clash_save_api_client.dart`, `http_clash_sync_client.dart`, `clash_providers.dart`, `clash_sync_snapshot_applier.dart`, `clash_debug_sync_controller.dart`.
+Código: `clash_save_api_client.dart`, `http_clash_sync_client.dart`, `clash_providers.dart`, `clash_sync_snapshot_applier.dart`, `clash_sync_metadata_storage.dart`, `clash_debug_sync_controller.dart`.
 
 ## Coordinador local de sync (Fase 68)
 

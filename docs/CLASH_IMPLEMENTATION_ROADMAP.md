@@ -1111,4 +1111,20 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 76 — Sync metadata local
+
+**Estado:** implementada.
+
+- Key `clash_sync_metadata_v1` en SharedPreferences (JSON pequeño, sin snapshots).
+- `ClashSyncMetadata` + `ClashSyncMetadataStorage` (`load`, `save`, `updateAfterOperation`, `updateAfterApply`).
+- `ClashDebugSyncController` carga metadata al iniciar y persiste tras validate/pull/push/apply.
+- Diagnóstico muestra revision y último estado persistido tras reiniciar app (sin HTTP al cargar).
+- Tests: metadata, storage, controller, compatibility.
+
+**Objetivo:** infraestructura local de metadatos de sync sin sync automática.
+
+**Sin cambios** en sync automática al login, merge, claims, backend, Fantasy, leagues, rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

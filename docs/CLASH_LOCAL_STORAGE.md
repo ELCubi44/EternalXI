@@ -9,6 +9,15 @@ Persistencia **local-first** de Clash en `SharedPreferences`. Sin sync remoto en
 | `clash_schema_version` | `int` | Versión global del esquema local Clash |
 | `clash_last_migrated_at` | `String` (ISO-8601 UTC) | Última migración ejecutada |
 | `clash_last_local_backup_v1` | `String` (JSON) | Último backup local antes de aplicar snapshot remoto (Fase 73) |
+| `clash_sync_metadata_v1` | `String` (JSON) | Metadatos locales de sync online (Fase 76) |
+
+### Formato metadata sync (`clash_sync_metadata_v1`)
+
+JSON pequeño con revision conocida, timestamps de última operación, estado/error y flags (`hasPendingRemoteSnapshot`, `hasLocalBackup`). **No** incluye snapshots completos, `userId` ni tokens.
+
+Campos: `knownServerRevision`, `lastSuccessfulSyncAt`, `lastPullAt`, `lastPushAt`, `lastApplyAt`, `lastRestoreAt`, `lastOperation`, `lastStatus`, `lastErrorCode`, `lastMessage`, `lastConflictServerRevision`, `hasPendingRemoteSnapshot`, `hasLocalBackup`.
+
+Código: `clash_sync_metadata.dart`, `clash_sync_metadata_storage.dart`.
 
 ### Formato backup (`clash_last_local_backup_v1`)
 

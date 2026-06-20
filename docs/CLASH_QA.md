@@ -94,25 +94,28 @@ flutter test test/features/clash/sync/clash_backend_save_contract_test.dart
 
 **Nota:** backend MVP disponible (`GET/POST/PUT /api/v1/clash/save`). Cliente HTTP Flutter creado (Fase 71) — **sin sync automática** ni tests E2E contra servidor real. Ver [`CLASH_BACKEND_SAVE_CONTRACT.md`](./CLASH_BACKEND_SAVE_CONTRACT.md).
 
-## Prueba manual sync online (Fase 72–75)
+## Prueba manual sync online (Fase 72–76)
 
 En dispositivo con usuario logueado:
 
 1. Abrir **Clash → Ayuda → Diagnóstico local**.
-2. Sección **Sincronización online** — revisar revision conocida, remoto pendiente y backup local.
+2. Sección **Sincronización online** — revisar revision conocida, remoto pendiente, backup local y **estado persistido**.
 3. Probar **Validar snapshot local**, **Descargar partida online**, **Subir partida local actual**.
 4. Si ya existe partida remota, confirmar diálogo antes de subir.
 5. Tras descarga exitosa: **Aplicar partida online a este dispositivo** → confirmar diálogo.
+6. **Verificar persistencia:** cerrar y reabrir la app → en diagnóstico debe mostrarse la `serverRevision` conocida y el último estado desde `clash_sync_metadata_v1` (sin llamadas HTTP automáticas).
 
 El pull **no** modifica el almacenamiento local hasta confirmar aplicar. La subida **no** ocurre automáticamente tras apply/restore. Se crea backup en `clash_last_local_backup_v1`.
 
-**Tests Fase 75:** subida sin remoto (POST), con revision (PUT), snapshot inválido sin API, conflicto 409, confirmación/cancelación, sin sync al abrir debug.
+**Tests Fase 76:** metadata JSON, storage load/save, persistencia tras pull/push/conflict/validate, recuperación al reiniciar controller, key no duplica dataKeys.
 
 ```bash
 cd eternalxi_front
+flutter test test/features/clash/sync/clash_sync_metadata_test.dart
+flutter test test/features/clash/sync/clash_sync_metadata_storage_test.dart
 flutter test test/features/clash/debug/clash_debug_sync_controller_test.dart
 flutter test test/features/clash/debug/clash_debug_sync_screen_test.dart
-flutter test test/features/clash/sync/clash_sync_snapshot_applier_test.dart
+flutter test test/features/clash/storage/clash_local_storage_compatibility_test.dart
 ```
 
 ## Flutter save API client (Fase 71)
