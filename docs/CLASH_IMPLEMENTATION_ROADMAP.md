@@ -1013,4 +1013,19 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 69 — Backend save contract
+
+**Estado:** implementada.
+
+- Documento `docs/CLASH_BACKEND_SAVE_CONTRACT.md`: partida por usuario autenticado, tabla `clash_save` MVP, endpoints, conflictos, idempotencia, autoridad server/client.
+- DTOs frontend: `ClashSaveResponse`, `ClashSaveUpdateRequest`, `ClashSaveConflictResponse`, `ClashSaveClaimRequest` en `clash_save_contract.dart`.
+- Suite `test/features/clash/sync/clash_backend_save_contract_test.dart`.
+- Enlaces desde `CLASH_SYNC_CONTRACT.md` y `CLASH_QA.md`.
+
+**Objetivo:** definir contrato backend real para guardado online Clash sin implementar Spring Boot, SQL ni HTTP Flutter.
+
+**Sin cambios** en backend Java, granter, economía, claves SP, Fantasy, leagues, rewards ni UI.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

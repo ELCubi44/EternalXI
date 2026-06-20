@@ -2,6 +2,10 @@
 
 Contrato **frontend-only** para una futura sincronización backend de Clash. En esta fase no hay llamadas HTTP, endpoints reales ni migración de datos locales al servidor.
 
+> **Fases 65–68** cubren contrato local, validación, fake client y coordinator — **sin backend real**.
+>
+> **Fase 69** documenta el contrato backend de guardado online por usuario: [`CLASH_BACKEND_SAVE_CONTRACT.md`](./CLASH_BACKEND_SAVE_CONTRACT.md).
+
 ## Objetivo
 
 - Definir DTOs serializables (`ClashSyncSnapshot`) que representen el estado local Clash listo para enviar/recibir en sync futura.
@@ -232,6 +236,7 @@ flutter test test/features/clash/sync/clash_sync_snapshot_test.dart
 flutter test test/features/clash/sync/clash_sync_snapshot_validator_test.dart
 flutter test test/features/clash/sync/fake_clash_sync_client_test.dart
 flutter test test/features/clash/sync/clash_sync_coordinator_test.dart
+flutter test test/features/clash/sync/clash_backend_save_contract_test.dart
 ```
 
-Ver también: [`CLASH_LOCAL_STORAGE.md`](./CLASH_LOCAL_STORAGE.md), [`CLASH_QA.md`](./CLASH_QA.md).
+Ver también: [`CLASH_BACKEND_SAVE_CONTRACT.md`](./CLASH_BACKEND_SAVE_CONTRACT.md), [`CLASH_LOCAL_STORAGE.md`](./CLASH_LOCAL_STORAGE.md), [`CLASH_QA.md`](./CLASH_QA.md).

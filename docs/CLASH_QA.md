@@ -83,6 +83,17 @@ flutter test test/features/clash/sync/clash_sync_coordinator_test.dart
 
 **Cuándo usarlo:** al cambiar el flujo de operaciones sync o antes de integrar aplicación de snapshots remotos (fase futura).
 
+## Backend save contract (Fase 69)
+
+DTOs de guardado online documentados (`ClashSaveResponse`, `ClashSaveUpdateRequest`, etc.) — serialización frontend, **sin HTTP ni backend real**.
+
+```bash
+cd eternalxi_front
+flutter test test/features/clash/sync/clash_backend_save_contract_test.dart
+```
+
+**Nota:** aún **no** hay tests de integración contra API Spring Boot ni endpoints `/api/v1/clash/save` desplegados. Ver [`CLASH_BACKEND_SAVE_CONTRACT.md`](./CLASH_BACKEND_SAVE_CONTRACT.md).
+
 ## Suite completa Clash
 
 ```bash
@@ -103,6 +114,7 @@ flutter test test/features/clash/
 | Sync validator | ~5 s | Snapshot sync válido/inválido; catálogos opcionales |
 | Fake sync client | ~5 s | Push/pull simulado, revisiones y conflictos sin HTTP |
 | Sync coordinator | ~5 s | Orquestación build/validate/push/pull sin aplicar remoto |
+| Backend save contract | ~5 s | DTOs JSON guardado online; sin HTTP |
 | Suite `test/features/clash/` | ~minutos | Regresiones unitarias/UI de todo el módulo Clash |
 
 ## Analyze (Clash)
@@ -116,4 +128,5 @@ flutter analyze lib/features/clash test/features/clash
 
 - Los smoke tests usan backends in-memory y `SharedPreferences` mock; no dependen del estado del dispositivo.
 - No sustituyen pruebas manuales en móvil ni tests E2E contra backend.
+- **No** hay tests backend reales de Clash save (Fase 69 = contrato documentado + DTOs frontend).
 - Fantasy, leagues y rewards globales tienen sus propias suites; no se ejecutan con estos comandos.
