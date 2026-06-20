@@ -1,4 +1,5 @@
 import 'package:eternal_xi/features/clash/debug/data/clash_debug_sync_controller.dart';
+import 'package:eternal_xi/features/clash/debug/domain/clash_debug_bootstrap_result.dart';
 import 'package:eternal_xi/features/clash/shared/migrations/data/clash_shared_preferences_keys.dart';
 import 'package:eternal_xi/features/clash/shared/migrations/domain/clash_storage_schema.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_client.dart';
@@ -343,6 +344,100 @@ void main() {
 
       expect(controller.metadata, const ClashSyncMetadata());
       expect(controller.effectiveKnownRevision, isNull);
+    });
+  });
+
+  group('ClashDebugSyncController Fase 77', () {
+    setUp(() async {
+      await backupPrefs.remove(ClashSharedPreferencesKeys.syncMetadata);
+    });
+
+    test('bootstrap con remoto existente deja pendingRemoteSnapshot', () async {
+      final client = FakeClashSyncClient();
+      await client.pushSnapshot(_validSnapshot());
+      final storage = ClashSyncMetadataStorage(sharedPreferences: backupPrefs);
+      final applier = _CountingApplier();
+      final controller = _controller(
+        client: client,
+        metadataStorage: storage,
+        applier: applier,
+      );
+
+      await controller.bootstrapOnlineSave();
+
+      expect(controller.pendingRemoteSnapshot, isNotNull);
+      expect(controller.lastBootstrapResult?.isRemoteFound, isTrue);
+      expect(controller.knownServerRevision, 1);
+      expect(applier.applyCalls, 0);
+      expect(storage.load().hasPendingRemoteSnapshot, isTrue);
+      expect(storage.load().lastOperation, 'pull');
+    });
+
+    test('bootstrap sin remoto crea con snapshot local válido', () async {
+      final client = FakeClashSyncClient();
+      final storage = ClashSyncMetadataStorage(sharedPreferences: backupPrefs);
+      final controller = _controller(client: client, metadataStorage: storage);
+
+      await controller.bootstrapOnlineSave();
+
+      expect(client.serverRevision, 1);
+      expect(controller.lastBootstrapResult?.isRemoteCreated, isTrue);
+      expect(controller.pendingRemoteSnapshot, isNull);
+      expect(storage.load().lastOperation, 'push');
+      expect(storage.load().lastSuccessfulSyncAt, _epoch);
+    });
+
+    test('bootstrap con snapshot inválido no crea', () async {
+      final client = _CountingSyncClient();
+      final controller = _controller(
+        client: client,
+        builder: _InvalidSnapshotBuilder(),
+      );
+
+      await controller.bootstrapOnlineSave();
+
+      expect(client.pushCalls, 0);
+      expect(client.serverRevision, 0);
+      expect(
+        controller.lastBootstrapResult?.status,
+        ClashDebugBootstrapStatus.validationFailed,
+      );
+    });
+
+    test('bootstrap 401 muestra estado unauthorized', () async {
+      final controller = _controller(
+        client: _UnauthorizedSyncClient(),
+        isAuthenticated: () async => true,
+      );
+
+      await controller.bootstrapOnlineSave();
+
+      expect(
+        controller.lastBootstrapResult?.status,
+        ClashDebugBootstrapStatus.unauthorized,
+      );
+    });
+
+    test('no se ejecuta bootstrap al construir controller', () {
+      final client = _CountingSyncClient();
+      _controller(client: client);
+
+      expect(client.pullCalls, 0);
+      expect(client.pushCalls, 0);
+    });
+
+    test('sin autenticación bootstrap no llama API', () async {
+      final client = _CountingSyncClient();
+      final controller = _controller(
+        client: client,
+        isAuthenticated: () async => false,
+      );
+
+      await controller.bootstrapOnlineSave();
+
+      expect(client.pullCalls, 0);
+      expect(client.pushCalls, 0);
+      expect(controller.authRequired, isTrue);
     });
   });
 }

@@ -22,6 +22,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../di/clash_providers_test.dart';
 
 Future<SharedPreferences> _mockPrefs() async {
+  SharedPreferences.setMockInitialValues({
+    ClashSharedPreferencesKeys.schemaVersion: 1,
+    ClashSharedPreferencesKeys.lastMigratedAt: '2026-06-11T10:00:00.000Z',
+  });
   return SharedPreferences.getInstance();
 }
 
@@ -38,6 +42,29 @@ Future<void> _pumpUntilDebugLoaded(WidgetTester tester) async {
     await tester.pump(const Duration(milliseconds: 50));
   }
   fail('ClashDebugScreen no terminó de cargar');
+}
+
+Future<void> _bindTallViewport(WidgetTester tester) {
+  tester.view.physicalSize = const Size(800, 2400);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+  return Future.value();
+}
+
+Future<void> _tapSyncAction(WidgetTester tester, String label) async {
+  final finder = find.text(label);
+  await tester.ensureVisible(finder);
+  await tester.pumpAndSettle();
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
+}
+
+Future<void> _tapSyncWidget(WidgetTester tester, Finder finder) async {
+  await tester.ensureVisible(finder);
+  await tester.pumpAndSettle();
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
 }
 
 Widget _debugApp({
@@ -85,8 +112,16 @@ void main() {
     });
   });
 
-  group('ClashDebugScreen sync Fase 72–75', () {
+  group('ClashDebugScreen sync Fase 72–77', () {
+    setUp(() {
+      SharedPreferences.setMockInitialValues({
+        ClashSharedPreferencesKeys.schemaVersion: 1,
+        ClashSharedPreferencesKeys.lastMigratedAt: '2026-06-11T10:00:00.000Z',
+      });
+    });
+
     testWidgets('flujo manual de diagnóstico sync online', (tester) async {
+      await _bindTallViewport(tester);
       final prefs = await _mockPrefs();
       final client = FakeClashSyncClient();
       final controller = _syncController(client);
@@ -112,40 +147,33 @@ void main() {
       expect(controller.lastPullResult, isNull);
       expect(controller.lastPushResult, isNull);
 
-      await tester.tap(find.text('Validar snapshot local'));
-      await tester.pumpAndSettle();
+      await _tapSyncAction(tester, 'Validar snapshot local');
       expect(find.text('Correcto'), findsWidgets);
 
-      await tester.tap(find.text('Descargar partida online'));
-      await tester.pumpAndSettle();
+      await _tapSyncAction(tester, 'Descargar partida online');
       expect(find.text('No hay partida online todavía'), findsOneWidget);
 
-      await tester.tap(find.text('Subir partida local actual'));
-      await tester.pumpAndSettle();
+      await _tapSyncAction(tester, 'Subir partida local actual');
       expect(find.text('¿Subir partida local?'), findsNothing);
       expect(controller.knownServerRevision, 1);
 
-      await tester.tap(find.text('Descargar partida online'));
-      await tester.pumpAndSettle();
+      await _tapSyncAction(tester, 'Descargar partida online');
       expect(controller.lastPullResult?.isSuccess, isTrue);
       expect(controller.lastPullResult?.serverRevision, 1);
 
-      await tester.tap(find.text('Subir partida local actual'));
-      await tester.pumpAndSettle();
+      await _tapSyncAction(tester, 'Subir partida local actual');
       expect(find.text('¿Subir partida local?'), findsOneWidget);
       await tester.tap(find.text('Cancelar'));
       await tester.pumpAndSettle();
       expect(client.serverRevision, 1);
 
-      await tester.tap(find.text('Subir partida local actual'));
-      await tester.pumpAndSettle();
+      await _tapSyncAction(tester, 'Subir partida local actual');
       await tester.tap(find.text('Subir'));
       await tester.pumpAndSettle();
       expect(controller.knownServerRevision, 2);
 
       controller.knownServerRevision = 1;
-      await tester.tap(find.text('Subir partida local actual'));
-      await tester.pumpAndSettle();
+      await _tapSyncAction(tester, 'Subir partida local actual');
       await tester.tap(find.text('Subir'));
       await tester.pumpAndSettle();
       expect(find.textContaining('Conflicto de revisión'), findsOneWidget);
@@ -171,28 +199,27 @@ void main() {
       );
       expect(tester.widget<OutlinedButton>(applyFinder).onPressed, isNull);
 
-      await tester.tap(find.text('Subir partida local actual'));
-      await tester.pumpAndSettle();
+      await _tapSyncAction(tester, 'Subir partida local actual');
       await tester.tap(find.text('Subir'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Descargar partida online'));
-      await tester.pumpAndSettle();
+      await _tapSyncAction(tester, 'Descargar partida online');
 
       expect(applyController.canApplyPendingRemote, isTrue);
       expect(tester.widget<OutlinedButton>(applyFinder).onPressed, isNotNull);
 
-      await tester.tap(applyFinder);
-      await tester.pumpAndSettle();
+      await _tapSyncWidget(tester, applyFinder);
       await tester.tap(find.text('Cancelar'));
       await tester.pumpAndSettle();
       expect(applier.applyCalls, 0);
 
-      await tester.tap(applyFinder);
-      await tester.pumpAndSettle();
+      await _tapSyncWidget(tester, applyFinder);
       await tester.tap(find.text('Aplicar'));
       await tester.pumpAndSettle();
       expect(applier.applyCalls, 1);
       expect(find.text('Aplicada correctamente'), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpAndSettle();
     });
   });
 }

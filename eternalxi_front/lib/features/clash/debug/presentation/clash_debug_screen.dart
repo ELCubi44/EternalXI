@@ -5,6 +5,7 @@ import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_r
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
 import 'package:eternal_xi/features/clash/debug/data/clash_debug_snapshot_loader.dart';
 import 'package:eternal_xi/features/clash/debug/data/clash_debug_sync_controller.dart';
+import 'package:eternal_xi/features/clash/debug/domain/clash_debug_bootstrap_result.dart';
 import 'package:eternal_xi/features/clash/debug/domain/clash_debug_snapshot.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
@@ -354,6 +355,15 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
                 fontStyle: FontStyle.italic,
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                l10n.clashDebugSyncBootstrapHint,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: context.xiTextSecondary),
+              ),
+            ),
             const SizedBox(height: 8),
             _ClashDebugRow(
               label: l10n.clashDebugSyncLastSuccessfulSync,
@@ -446,6 +456,25 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
                 ),
               ),
             const SizedBox(height: 8),
+            OutlinedButton(
+              onPressed: controller.busy
+                  ? null
+                  : controller.bootstrapOnlineSave,
+              child: Text(l10n.clashDebugSyncBootstrapAction),
+            ),
+            if (controller.lastBootstrapResult != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8, bottom: 4),
+                child: Text(
+                  _bootstrapStatusLabel(l10n, controller.lastBootstrapResult!),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: _bootstrapStatusColor(
+                      context,
+                      controller.lastBootstrapResult!,
+                    ),
+                  ),
+                ),
+              ),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -504,6 +533,43 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
         );
       },
     );
+  }
+
+  String _bootstrapStatusLabel(
+    AppLocalizations l10n,
+    ClashDebugBootstrapResult result,
+  ) {
+    return switch (result.status) {
+      ClashDebugBootstrapStatus.remoteFound =>
+        result.serverRevision != null
+            ? l10n.clashDebugSyncBootstrapRemoteFound(result.serverRevision!)
+            : l10n.clashDebugSyncBootstrapRemoteFoundSimple,
+      ClashDebugBootstrapStatus.remoteCreated =>
+        result.serverRevision != null
+            ? l10n.clashDebugSyncBootstrapRemoteCreated(result.serverRevision!)
+            : l10n.clashDebugSyncBootstrapRemoteCreatedSimple,
+      ClashDebugBootstrapStatus.validationFailed =>
+        l10n.clashDebugSyncStatusInvalid,
+      ClashDebugBootstrapStatus.unauthorized => l10n.clashDebugSyncAuthRequired,
+      ClashDebugBootstrapStatus.unavailable =>
+        result.message ?? l10n.clashDebugSyncUnavailable,
+      ClashDebugBootstrapStatus.error =>
+        result.message ?? l10n.clashDebugSyncStatusFailed,
+    };
+  }
+
+  Color? _bootstrapStatusColor(
+    BuildContext context,
+    ClashDebugBootstrapResult result,
+  ) {
+    return switch (result.status) {
+      ClashDebugBootstrapStatus.remoteFound ||
+      ClashDebugBootstrapStatus.remoteCreated => null,
+      ClashDebugBootstrapStatus.validationFailed ||
+      ClashDebugBootstrapStatus.unauthorized ||
+      ClashDebugBootstrapStatus.unavailable ||
+      ClashDebugBootstrapStatus.error => Theme.of(context).colorScheme.error,
+    };
   }
 
   String _knownRevisionLabel(

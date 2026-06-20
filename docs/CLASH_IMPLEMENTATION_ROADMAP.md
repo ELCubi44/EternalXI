@@ -1127,4 +1127,20 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 77 — Manual online save bootstrap
+
+**Estado:** implementada.
+
+- `bootstrapOnlineSave()` en `ClashDebugSyncController`.
+- Botón **Preparar partida online** en diagnóstico con texto auxiliar.
+- GET remoto → pending + metadata; notFound → validar + POST create; 401/conflict/unavailable controlados.
+- Sin aplicación automática de remoto; sin ejecución al abrir pantalla.
+- Tests controller/screen Fase 77.
+
+**Objetivo:** preparación manual de partida online desde diagnóstico.
+
+**Sin cambios** en sync automática al login, merge, claims, backend, Fantasy, leagues, rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

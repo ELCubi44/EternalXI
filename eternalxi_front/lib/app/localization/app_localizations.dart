@@ -299,6 +299,15 @@ class AppLocalizations {
       'clashDebugSyncLastSuccessfulSync': 'Último sync correcto',
       'clashDebugSyncPersistedSummary': 'Estado persistido',
       'clashDebugSyncPersistedError': 'Último error persistido',
+      'clashDebugSyncBootstrapHint':
+          'Busca tu partida online. Si no existe, crea una con el estado local actual.',
+      'clashDebugSyncBootstrapAction': 'Preparar partida online',
+      'clashDebugSyncBootstrapRemoteFoundSimple': 'Partida online encontrada',
+      'clashDebugSyncBootstrapRemoteFound':
+          'Partida online encontrada (revision {revision})',
+      'clashDebugSyncBootstrapRemoteCreatedSimple': 'Partida online creada',
+      'clashDebugSyncBootstrapRemoteCreated':
+          'Partida online creada (revision {revision})',
       'clashDebugSyncStatusNone': 'Sin intentos',
       'clashDebugSyncStatusValid': 'Snapshot local válido',
       'clashDebugSyncStatusInvalid': 'Snapshot local inválido',
@@ -1349,6 +1358,15 @@ class AppLocalizations {
       'clashDebugSyncLastSuccessfulSync': 'Last successful sync',
       'clashDebugSyncPersistedSummary': 'Persisted status',
       'clashDebugSyncPersistedError': 'Last persisted error',
+      'clashDebugSyncBootstrapHint':
+          'Looks up your online save. If none exists, creates one from the current local state.',
+      'clashDebugSyncBootstrapAction': 'Prepare online save',
+      'clashDebugSyncBootstrapRemoteFoundSimple': 'Online save found',
+      'clashDebugSyncBootstrapRemoteFound':
+          'Online save found (revision {revision})',
+      'clashDebugSyncBootstrapRemoteCreatedSimple': 'Online save created',
+      'clashDebugSyncBootstrapRemoteCreated':
+          'Online save created (revision {revision})',
       'clashDebugSyncStatusNone': 'No attempts yet',
       'clashDebugSyncStatusValid': 'Local snapshot valid',
       'clashDebugSyncStatusInvalid': 'Local snapshot invalid',
@@ -2508,6 +2526,19 @@ class AppLocalizations {
   String get clashDebugSyncPersistedSummary =>
       _t('clashDebugSyncPersistedSummary');
   String get clashDebugSyncPersistedError => _t('clashDebugSyncPersistedError');
+  String get clashDebugSyncBootstrapHint => _t('clashDebugSyncBootstrapHint');
+  String get clashDebugSyncBootstrapAction =>
+      _t('clashDebugSyncBootstrapAction');
+  String get clashDebugSyncBootstrapRemoteFoundSimple =>
+      _t('clashDebugSyncBootstrapRemoteFoundSimple');
+  String clashDebugSyncBootstrapRemoteFound(int revision) => _t(
+    'clashDebugSyncBootstrapRemoteFound',
+  ).replaceAll('{revision}', '$revision');
+  String get clashDebugSyncBootstrapRemoteCreatedSimple =>
+      _t('clashDebugSyncBootstrapRemoteCreatedSimple');
+  String clashDebugSyncBootstrapRemoteCreated(int revision) => _t(
+    'clashDebugSyncBootstrapRemoteCreated',
+  ).replaceAll('{revision}', '$revision');
   String get clashDebugSyncStatusNone => _t('clashDebugSyncStatusNone');
   String get clashDebugSyncStatusValid => _t('clashDebugSyncStatusValid');
   String get clashDebugSyncStatusInvalid => _t('clashDebugSyncStatusInvalid');

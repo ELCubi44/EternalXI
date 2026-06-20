@@ -1,3 +1,4 @@
+import 'package:eternal_xi/features/clash/debug/domain/clash_debug_bootstrap_result.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_local_backup.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_metadata_storage.dart';
@@ -10,7 +11,7 @@ import 'package:eternal_xi/features/clash/sync/domain/clash_sync_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_snapshot.dart';
 import 'package:flutter/foundation.dart';
 
-/// Estado del panel manual de sync online en diagnóstico (Fase 72–76).
+/// Estado del panel manual de sync online en diagnóstico (Fase 72–77).
 class ClashDebugSyncController extends ChangeNotifier {
   ClashDebugSyncController({
     required this.coordinator,
@@ -35,6 +36,7 @@ class ClashDebugSyncController extends ChangeNotifier {
   ClashSyncOperationResult? lastPushResult;
   ClashSyncApplyResult? lastApplyResult;
   ClashSyncApplyResult? lastRestoreResult;
+  ClashDebugBootstrapResult? lastBootstrapResult;
   ClashSyncSnapshot? pendingRemoteSnapshot;
   int? knownServerRevision;
   bool busy = false;
@@ -83,6 +85,49 @@ class ClashDebugSyncController extends ChangeNotifier {
       }
       return result;
     });
+  }
+
+  /// Prepara la partida online: GET remoto o POST create si no existe (Fase 77).
+  Future<void> bootstrapOnlineSave() async {
+    if (!await _ensureAuthenticated()) {
+      lastBootstrapResult = const ClashDebugBootstrapResult(
+        status: ClashDebugBootstrapStatus.unauthorized,
+        errorCode: 'unauthorized',
+      );
+      notifyListeners();
+      return;
+    }
+
+    authRequired = false;
+    busy = true;
+    notifyListeners();
+    try {
+      final probe = await coordinator.pullRemoteSnapshot();
+
+      if (probe.isSuccess && probe.snapshot != null) {
+        pendingRemoteSnapshot = probe.snapshot;
+        _rememberRevision(probe);
+        await _recordOperationResult(probe);
+        lastBootstrapResult = ClashDebugBootstrapResult(
+          status: ClashDebugBootstrapStatus.remoteFound,
+          serverRevision: probe.serverRevision,
+        );
+        return;
+      }
+
+      if (probe.isNotFound) {
+        final created = await coordinator.pushLocalSnapshot();
+        await _recordOperationResult(created);
+        lastBootstrapResult = _bootstrapResultFromPush(created);
+        return;
+      }
+
+      await _recordOperationResult(probe);
+      lastBootstrapResult = _bootstrapResultFromPull(probe);
+    } finally {
+      busy = false;
+      notifyListeners();
+    }
   }
 
   /// Comprueba si subir pisaría una partida remota existente (puede hacer GET).
@@ -341,6 +386,75 @@ class ClashDebugSyncController extends ChangeNotifier {
       errorCode: source.errorCode,
       startedAt: source.startedAt,
       completedAt: source.completedAt,
+    );
+  }
+
+  ClashDebugBootstrapResult _bootstrapResultFromPull(
+    ClashSyncOperationResult result,
+  ) {
+    if (result.errorCode == 'unauthorized' ||
+        (result.status == ClashSyncStatus.unavailable &&
+            result.errorCode == 'unauthorized')) {
+      return const ClashDebugBootstrapResult(
+        status: ClashDebugBootstrapStatus.unauthorized,
+        errorCode: 'unauthorized',
+      );
+    }
+    if (result.isConflict) {
+      return ClashDebugBootstrapResult(
+        status: ClashDebugBootstrapStatus.error,
+        serverRevision: result.conflict?.actualRevision,
+        message: result.message,
+        errorCode: result.errorCode ?? 'revision_conflict',
+      );
+    }
+    if (result.status == ClashSyncStatus.unavailable) {
+      return ClashDebugBootstrapResult(
+        status: ClashDebugBootstrapStatus.unavailable,
+        message: result.message,
+        errorCode: result.errorCode,
+      );
+    }
+    return ClashDebugBootstrapResult(
+      status: ClashDebugBootstrapStatus.error,
+      message: result.message,
+      errorCode: result.errorCode,
+    );
+  }
+
+  ClashDebugBootstrapResult _bootstrapResultFromPush(
+    ClashSyncOperationResult result,
+  ) {
+    if (result.isSuccess) {
+      return ClashDebugBootstrapResult(
+        status: ClashDebugBootstrapStatus.remoteCreated,
+        serverRevision: result.serverRevision,
+      );
+    }
+    if (result.isValidationFailed) {
+      return ClashDebugBootstrapResult(
+        status: ClashDebugBootstrapStatus.validationFailed,
+        message: result.message,
+        errorCode: result.errorCode ?? 'validation_failed',
+      );
+    }
+    if (result.errorCode == 'unauthorized') {
+      return const ClashDebugBootstrapResult(
+        status: ClashDebugBootstrapStatus.unauthorized,
+        errorCode: 'unauthorized',
+      );
+    }
+    if (result.status == ClashSyncStatus.unavailable) {
+      return ClashDebugBootstrapResult(
+        status: ClashDebugBootstrapStatus.unavailable,
+        message: result.message,
+        errorCode: result.errorCode,
+      );
+    }
+    return ClashDebugBootstrapResult(
+      status: ClashDebugBootstrapStatus.error,
+      message: result.message,
+      errorCode: result.errorCode,
     );
   }
 
