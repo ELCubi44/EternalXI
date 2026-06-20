@@ -72,6 +72,17 @@ flutter test test/features/clash/sync/fake_clash_sync_client_test.dart
 
 **Cuándo usarlo:** al probar flujos sync locales, conflictos de revisión o integración builder → validator → fake client antes del backend real.
 
+## Sync coordinator (Fase 68)
+
+Orquesta build → validate → push/pull sin aplicar datos remotos ni red.
+
+```bash
+cd eternalxi_front
+flutter test test/features/clash/sync/clash_sync_coordinator_test.dart
+```
+
+**Cuándo usarlo:** al cambiar el flujo de operaciones sync o antes de integrar aplicación de snapshots remotos (fase futura).
+
 ## Suite completa Clash
 
 ```bash
@@ -91,6 +102,7 @@ flutter test test/features/clash/
 | Sync contract | ~5 s | DTOs sync serializan/deserializan; builder local sin HTTP |
 | Sync validator | ~5 s | Snapshot sync válido/inválido; catálogos opcionales |
 | Fake sync client | ~5 s | Push/pull simulado, revisiones y conflictos sin HTTP |
+| Sync coordinator | ~5 s | Orquestación build/validate/push/pull sin aplicar remoto |
 | Suite `test/features/clash/` | ~minutos | Regresiones unitarias/UI de todo el módulo Clash |
 
 ## Analyze (Clash)

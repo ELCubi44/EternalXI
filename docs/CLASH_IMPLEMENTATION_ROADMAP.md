@@ -996,4 +996,21 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 68 — Local sync coordinator
+
+**Estado:** implementada.
+
+- `ClashSyncCoordinator`: `validateLocalSnapshotOnly`, `pushLocalSnapshot`, `pullRemoteSnapshot`.
+- `ClashSyncOperationResult` + `ClashSyncOperation` (validate/push/pull).
+- Validación local antes de push; pull valida remoto sin aplicar a persistencia.
+- Timestamps inyectables (`now`) para tests.
+- Suite `test/features/clash/sync/clash_sync_coordinator_test.dart`.
+- Documentación en `docs/CLASH_SYNC_CONTRACT.md` y `docs/CLASH_QA.md`.
+
+**Objetivo:** orquestar el futuro flujo sync localmente sin HTTP, UI ni mutación de datos locales.
+
+**Sin cambios** en granter, economía, claves SP, Fantasy, leagues, rewards, providers ni backend.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

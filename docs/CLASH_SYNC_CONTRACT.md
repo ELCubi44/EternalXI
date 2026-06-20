@@ -93,6 +93,28 @@ Resultados tipados: `ClashSyncPushResult`, `ClashSyncPullResult`, `ClashSyncConf
 
 Código: `lib/features/clash/sync/data/clash_sync_client.dart`, `fake_clash_sync_client.dart`.
 
+## Coordinador local de sync (Fase 68)
+
+`ClashSyncCoordinator` orquesta el flujo build → validate → push/pull usando:
+
+- `ClashSyncSnapshotBuilder`
+- `ClashSyncSnapshotValidator`
+- `ClashSyncClient`
+
+| Método | Flujo |
+|--------|-------|
+| `validateLocalSnapshotOnly()` | build → validate; **no** llama al client |
+| `pushLocalSnapshot({expectedServerRevision})` | build → validate → si inválido **no** llama al client → si válido `client.pushSnapshot` |
+| `pullRemoteSnapshot()` | `client.pullSnapshot` → valida snapshot remoto si existe → **no aplica** datos locales |
+
+Resultado: `ClashSyncOperationResult` (`operation`: validate/push/pull, `status`, `snapshot`, `validationResult`, `serverRevision`, `conflict`, timestamps inyectables).
+
+**Importante:** el coordinador **no aplica** snapshots remotos sobre SharedPreferences ni storages locales. Solo reporta estados tipados para pruebas y futura integración.
+
+**No** registrado en providers reales, **no** sync automática al arrancar, **no** UI.
+
+Código: `lib/features/clash/sync/data/clash_sync_coordinator.dart`.
+
 ## Ejemplo JSON
 
 ```json
@@ -209,6 +231,7 @@ cd eternalxi_front
 flutter test test/features/clash/sync/clash_sync_snapshot_test.dart
 flutter test test/features/clash/sync/clash_sync_snapshot_validator_test.dart
 flutter test test/features/clash/sync/fake_clash_sync_client_test.dart
+flutter test test/features/clash/sync/clash_sync_coordinator_test.dart
 ```
 
 Ver también: [`CLASH_LOCAL_STORAGE.md`](./CLASH_LOCAL_STORAGE.md), [`CLASH_QA.md`](./CLASH_QA.md).
