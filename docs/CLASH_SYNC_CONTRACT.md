@@ -98,6 +98,22 @@ Resultados tipados: `ClashSyncPushResult`, `ClashSyncPullResult`, `ClashSyncConf
 
 Código: `lib/features/clash/sync/data/clash_sync_client.dart`, `fake_clash_sync_client.dart`.
 
+## Cliente HTTP de sync (Fase 71)
+
+`HttpClashSyncClient` implementa [ClashSyncClient] contra `/api/v1/clash/save` vía `ClashSaveApiClient` (Dio + JWT del `ApiClient` existente).
+
+| Operación sync | HTTP |
+|----------------|------|
+| `pullSnapshot()` | GET save — 404 → `notFound` |
+| `pushSnapshot` sin `expectedServerRevision` | POST create |
+| `pushSnapshot` con `expectedServerRevision` | PUT update — 409 → `conflict` |
+
+Errores tipados: `ClashSaveApiException`, `ClashSaveConflictException`, `ClashSaveNotFoundException`.
+
+**No** registrado en providers de la app, **no** sync automática, **no** aplica snapshot remoto a SP.
+
+Código: `clash_save_api_client.dart`, `http_clash_sync_client.dart`.
+
 ## Coordinador local de sync (Fase 68)
 
 `ClashSyncCoordinator` orquesta el flujo build → validate → push/pull usando:
@@ -238,6 +254,8 @@ flutter test test/features/clash/sync/clash_sync_snapshot_validator_test.dart
 flutter test test/features/clash/sync/fake_clash_sync_client_test.dart
 flutter test test/features/clash/sync/clash_sync_coordinator_test.dart
 flutter test test/features/clash/sync/clash_backend_save_contract_test.dart
+flutter test test/features/clash/sync/clash_save_api_client_test.dart
+flutter test test/features/clash/sync/http_clash_sync_client_test.dart
 ```
 
 Ver también: [`CLASH_BACKEND_SAVE_CONTRACT.md`](./CLASH_BACKEND_SAVE_CONTRACT.md), [`CLASH_LOCAL_STORAGE.md`](./CLASH_LOCAL_STORAGE.md), [`CLASH_QA.md`](./CLASH_QA.md).

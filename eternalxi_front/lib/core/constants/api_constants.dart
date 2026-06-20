@@ -5,6 +5,7 @@ class ApiConstants {
   static const users = '/users';
   static const leagues = '/leagues';
   static const accountDeletion = '/account/deletion';
+  static const clashSave = '/clash/save';
 
   /// URL de la imagen de perfil; [cacheBuster] evita caché tras subir una foto nueva.
   static String userProfilePhotoUrl(int userId, {required int cacheBuster}) {

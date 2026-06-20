@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_evolution_material_inventory_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_material_inventory_storage.dart';
@@ -24,6 +22,7 @@ import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_lo
 import 'package:flutter_test/flutter_test.dart';
 
 import '../storage/clash_local_storage_compatibility_fixtures.dart';
+import 'sync_layer_http_guard.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -274,23 +273,7 @@ void main() {
     });
 
     test('validator no depende de HTTP/API', () {
-      final syncDir = Directory('lib/features/clash/sync');
-      final forbidden = <String>[];
-
-      for (final entity in syncDir.listSync(recursive: true)) {
-        if (entity is! File || !entity.path.endsWith('.dart')) {
-          continue;
-        }
-        final content = entity.readAsStringSync();
-        if (content.contains("import 'package:http/") ||
-            content.contains('import "package:http/') ||
-            content.contains('package:dio/') ||
-            content.contains('ClashApiClient')) {
-          forbidden.add(entity.path);
-        }
-      }
-
-      expect(forbidden, isEmpty);
+      expect(findForbiddenHttpImportsInSyncLayer(), isEmpty);
     });
 
     test(

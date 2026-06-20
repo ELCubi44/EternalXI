@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:eternal_xi/features/clash/shared/migrations/domain/clash_storage_schema.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_client.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
@@ -10,6 +8,8 @@ import 'package:eternal_xi/features/clash/sync/domain/clash_sync_operation_resul
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_snapshot.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'sync_layer_http_guard.dart';
 
 void main() {
   group('ClashSyncCoordinator Fase 68', () {
@@ -137,23 +137,7 @@ void main() {
     });
 
     test('coordinator no importa HTTP/API client', () {
-      final syncDir = Directory('lib/features/clash/sync');
-      final forbidden = <String>[];
-
-      for (final entity in syncDir.listSync(recursive: true)) {
-        if (entity is! File || !entity.path.endsWith('.dart')) {
-          continue;
-        }
-        final content = entity.readAsStringSync();
-        if (content.contains("import 'package:http/") ||
-            content.contains('import "package:http/') ||
-            content.contains('package:dio/') ||
-            content.contains('ClashApiClient')) {
-          forbidden.add(entity.path);
-        }
-      }
-
-      expect(forbidden, isEmpty);
+      expect(findForbiddenHttpImportsInSyncLayer(), isEmpty);
     });
   });
 }

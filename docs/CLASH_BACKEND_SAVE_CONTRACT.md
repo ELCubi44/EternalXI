@@ -4,7 +4,7 @@ Contrato para persistir la partida Clash en el servidor Eternal XI, vinculada al
 
 > **Fase 69:** contrato documentado + DTOs frontend.  
 > **Fase 70:** MVP backend Spring Boot implementado (`GET/POST/PUT /api/v1/clash/save`).  
-> Flutter HTTP client **aún pendiente**.
+> **Fase 71:** cliente HTTP Flutter (`ClashSaveApiClient`, `HttpClashSyncClient`) — **sin sync automática**.
 
 Relacionado con el trabajo frontend/local de las Fases 65–68: [`CLASH_SYNC_CONTRACT.md`](./CLASH_SYNC_CONTRACT.md).
 
@@ -25,6 +25,18 @@ Relacionado con el trabajo frontend/local de las Fases 65–68: [`CLASH_SYNC_CON
 Auth: `AuthenticatedUser.requireUserId()` — **no** se acepta `userId` en el body.
 
 Boot: `SchemaMigrationService` crea `clash_save` si falta (dev/prod sin Flyway).
+
+## Cliente Flutter HTTP (Fase 71)
+
+| Componente | Ruta |
+|------------|------|
+| API client | `lib/features/clash/sync/data/clash_save_api_client.dart` |
+| Sync adapter | `lib/features/clash/sync/data/http_clash_sync_client.dart` |
+| Excepciones | `lib/features/clash/sync/domain/clash_save_api_exception.dart` |
+
+- Usa `ApiClient` / Dio existente (JWT automático).
+- **No** envía `userId` en body.
+- **No** registrado en providers; **no** sync automática al abrir app.
 
 ---
 
@@ -286,7 +298,7 @@ Reintento con el mismo `claimId` → respuesta idempotente (mismo grant, sin dup
 
 ## Pendiente / fuera de alcance
 
-- Cliente HTTP Flutter / sync automática
+- Sync automática al abrir app
 - `POST /api/v1/clash/claims` server-side
 - Aplicación de snapshot remoto sobre SharedPreferences
 - Normalización en tablas relacionales

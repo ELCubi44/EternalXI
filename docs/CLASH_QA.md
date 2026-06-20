@@ -92,7 +92,17 @@ cd eternalxi_front
 flutter test test/features/clash/sync/clash_backend_save_contract_test.dart
 ```
 
-**Nota:** backend MVP disponible (`GET/POST/PUT /api/v1/clash/save`). Aún **no** hay cliente HTTP Flutter ni tests E2E contra API desplegada. Ver [`CLASH_BACKEND_SAVE_CONTRACT.md`](./CLASH_BACKEND_SAVE_CONTRACT.md).
+**Nota:** backend MVP disponible (`GET/POST/PUT /api/v1/clash/save`). Cliente HTTP Flutter creado (Fase 71) — **sin sync automática** ni tests E2E contra servidor real. Ver [`CLASH_BACKEND_SAVE_CONTRACT.md`](./CLASH_BACKEND_SAVE_CONTRACT.md).
+
+## Flutter save API client (Fase 71)
+
+```bash
+cd eternalxi_front
+flutter test test/features/clash/sync/clash_save_api_client_test.dart
+flutter test test/features/clash/sync/http_clash_sync_client_test.dart
+```
+
+**Cuándo usarlo:** tras cambiar parseo HTTP, rutas o adaptador `HttpClashSyncClient`.
 
 ## Suite completa Clash
 
@@ -115,6 +125,8 @@ flutter test test/features/clash/
 | Fake sync client | ~5 s | Push/pull simulado, revisiones y conflictos sin HTTP |
 | Sync coordinator | ~5 s | Orquestación build/validate/push/pull sin aplicar remoto |
 | Backend save contract | ~5 s | DTOs JSON guardado online; sin HTTP |
+| Save API client | ~5 s | GET/POST/PUT parseo y errores tipados (mock Dio) |
+| HTTP sync client | ~5 s | Adaptador HttpClashSyncClient push/pull |
 | Suite `test/features/clash/` | ~minutos | Regresiones unitarias/UI de todo el módulo Clash |
 
 ## Analyze (Clash)

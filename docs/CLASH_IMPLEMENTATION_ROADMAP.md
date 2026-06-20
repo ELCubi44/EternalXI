@@ -1046,4 +1046,21 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 71 — Flutter HTTP save client
+
+**Estado:** implementada.
+
+- `ClashSaveApiClient` + `ClashSaveApiPort` (GET/POST/PUT `/api/v1/clash/save`).
+- `HttpClashSyncClient` adapta a `ClashSyncClient`.
+- Excepciones: `ClashSaveApiException`, `ClashSaveConflictException`, `ClashSaveNotFoundException`.
+- `ApiConstants.clashSave`.
+- Tests: `clash_save_api_client_test.dart`, `http_clash_sync_client_test.dart`.
+- Documentación actualizada.
+
+**Objetivo:** cliente HTTP real sin sync automática, sin aplicar remoto a SP, sin UI pública.
+
+**Sin cambios** en backend, providers reales, gameplay, economía, SP, Fantasy, leagues, rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*
