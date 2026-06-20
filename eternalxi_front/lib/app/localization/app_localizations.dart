@@ -356,6 +356,19 @@ class AppLocalizations {
           'Hay una partida online pendiente de revisar.',
       'clashSyncPendingNoticeReview': 'Revisar',
       'clashSyncPendingNoticeDismiss': 'Ocultar aviso',
+      'clashDebugOnlineClaimsToggle': 'Registrar claims online',
+      'clashDebugOnlineClaimsHint':
+          'Experimental. Registra los claims en el servidor, pero las recompensas siguen siendo locales.',
+      'clashDebugOnlineClaimsTestAction': 'Probar registro de claim online',
+      'clashDebugOnlineClaimsDisabled': 'Registro online desactivado',
+      'clashDebugOnlineClaimsResultAccepted': 'Claim aceptado: {claimId}',
+      'clashDebugOnlineClaimsResultAlreadyProcessed':
+          'Claim ya procesado: {claimId}',
+      'clashDebugOnlineClaimsResultUnauthorized':
+          'Sesión requerida para registrar claims online',
+      'clashDebugOnlineClaimsResultValidationFailed': 'Claim inválido',
+      'clashDebugOnlineClaimsResultConflict': 'Conflicto al registrar claim',
+      'clashDebugOnlineClaimsResultFailed': 'Error al registrar claim',
       'clashAchievementsTitle': 'Logros',
       'clashAchievementsPermanentHint':
           'Progreso permanente. No se reinician cada día.',
@@ -1432,6 +1445,19 @@ class AppLocalizations {
       'clashSyncPendingNoticeBody': 'There is a pending online save to review.',
       'clashSyncPendingNoticeReview': 'Review',
       'clashSyncPendingNoticeDismiss': 'Dismiss notice',
+      'clashDebugOnlineClaimsToggle': 'Register online claims',
+      'clashDebugOnlineClaimsHint':
+          'Experimental. Registers claims on the server, but rewards remain local.',
+      'clashDebugOnlineClaimsTestAction': 'Test online claim registration',
+      'clashDebugOnlineClaimsDisabled': 'Online registration disabled',
+      'clashDebugOnlineClaimsResultAccepted': 'Claim accepted: {claimId}',
+      'clashDebugOnlineClaimsResultAlreadyProcessed':
+          'Claim already processed: {claimId}',
+      'clashDebugOnlineClaimsResultUnauthorized':
+          'Sign in required to register online claims',
+      'clashDebugOnlineClaimsResultValidationFailed': 'Invalid claim',
+      'clashDebugOnlineClaimsResultConflict': 'Conflict registering claim',
+      'clashDebugOnlineClaimsResultFailed': 'Failed to register claim',
       'clashAchievementsTitle': 'Achievements',
       'clashAchievementsPermanentHint':
           'Permanent progress. They do not reset daily.',
@@ -2637,6 +2663,26 @@ class AppLocalizations {
   String get clashSyncPendingNoticeReview => _t('clashSyncPendingNoticeReview');
   String get clashSyncPendingNoticeDismiss =>
       _t('clashSyncPendingNoticeDismiss');
+  String get clashDebugOnlineClaimsToggle => _t('clashDebugOnlineClaimsToggle');
+  String get clashDebugOnlineClaimsHint => _t('clashDebugOnlineClaimsHint');
+  String get clashDebugOnlineClaimsTestAction =>
+      _t('clashDebugOnlineClaimsTestAction');
+  String get clashDebugOnlineClaimsDisabled =>
+      _t('clashDebugOnlineClaimsDisabled');
+  String clashDebugOnlineClaimsResultAccepted(String claimId) => _t(
+    'clashDebugOnlineClaimsResultAccepted',
+  ).replaceAll('{claimId}', claimId);
+  String clashDebugOnlineClaimsResultAlreadyProcessed(String claimId) => _t(
+    'clashDebugOnlineClaimsResultAlreadyProcessed',
+  ).replaceAll('{claimId}', claimId);
+  String get clashDebugOnlineClaimsResultUnauthorized =>
+      _t('clashDebugOnlineClaimsResultUnauthorized');
+  String get clashDebugOnlineClaimsResultValidationFailed =>
+      _t('clashDebugOnlineClaimsResultValidationFailed');
+  String get clashDebugOnlineClaimsResultConflict =>
+      _t('clashDebugOnlineClaimsResultConflict');
+  String get clashDebugOnlineClaimsResultFailed =>
+      _t('clashDebugOnlineClaimsResultFailed');
   String get clashAchievementsTitle => _t('clashAchievementsTitle');
   String get clashAchievementsPermanentHint =>
       _t('clashAchievementsPermanentHint');

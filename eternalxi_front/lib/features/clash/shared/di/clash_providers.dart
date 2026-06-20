@@ -1,4 +1,6 @@
 import 'package:eternal_xi/core/network/api_client.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_claim_api_client.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_online_claim_registrar.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_save_api_client.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_client.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_auto_check_service.dart';
@@ -572,6 +574,16 @@ List<SingleChildWidget> _buildClashSyncApplierProviders(
         settingsStorage: context.read<ClashSyncSettingsStorage>(),
         metadataStorage: context.read<ClashSyncMetadataStorage>(),
         backupStore: context.read<ClashSyncLocalBackupStore>(),
+      ),
+    ),
+    Provider<ClashClaimApiClient>(
+      create: (context) =>
+          ClashClaimApiClient.fromApiClient(context.read<ApiClient>()),
+    ),
+    Provider<ClashOnlineClaimRegistrar>(
+      create: (context) => ClashOnlineClaimRegistrar(
+        settingsStorage: context.read<ClashSyncSettingsStorage>(),
+        claimApiClient: context.read<ClashClaimApiClient>(),
       ),
     ),
     Provider<ClashSyncSnapshotApplier>(

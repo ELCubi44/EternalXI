@@ -201,7 +201,20 @@ Tabla: `clash_claim`. Código: `ClashClaimController`, `ClashClaimService`.
 
 `ClashClaimApiClient` — POST idempotente, parseo 201/200, errores tipados. **Sin** uso en flujos de rewards locales todavía.
 
-Código: `clash_claim_contract.dart`, `clash_claim_api_client.dart`, `clash_claim_api_exception.dart`.
+Código: `clash_claim_contract.dart`, `clash_claim_api_client.dart`, `clash_online_claim_registrar.dart`, `clash_claim_id_builder.dart`.
+
+### Registro online opcional (Fase 83)
+
+Key `clash_online_claims_enabled_v1` (**false** por defecto).
+
+| Estado | `shouldContinueLocalGrant` |
+|--------|---------------------------|
+| `skippedDisabled` | true |
+| `accepted` | true |
+| `alreadyProcessed` | **false** (no duplicar grant local al integrar) |
+| `failed` / `unauthorized` / `validationFailed` / `conflict` | true (modo opcional tolerante) |
+
+Ver cierre MVP: `docs/CLASH_ONLINE_SAVE_CLOSURE.md`.
 
 Código: `ClashSyncAutoCheckService`, integración en `ClashHomeScreen`.
 

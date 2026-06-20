@@ -15,11 +15,13 @@ import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_rep
 import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_repository.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/history/data/clash_reward_history_repository.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_online_claim_registrar.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_local_backup.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_metadata_storage.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_settings_storage.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
+import 'package:eternal_xi/features/clash/sync/domain/clash_online_claim_registration_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_operation_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_result.dart';
@@ -61,6 +63,9 @@ class _ClashDebugScreenState extends State<ClashDebugScreen> {
           backupStore: _readOptional<ClashSyncLocalBackupStore>(context),
           metadataStorage: _readOptional<ClashSyncMetadataStorage>(context),
           settingsStorage: _readOptional<ClashSyncSettingsStorage>(context),
+          onlineClaimRegistrar: _readOptional<ClashOnlineClaimRegistrar>(
+            context,
+          ),
         );
     if (!_snapshotLoadStarted) {
       _snapshotLoadStarted = true;
@@ -408,6 +413,42 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
                   ? null
                   : controller.setAutoCheckEnabledOnClashOpen,
             ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(l10n.clashDebugOnlineClaimsToggle),
+              subtitle: Text(
+                l10n.clashDebugOnlineClaimsHint,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: context.xiTextSecondary),
+              ),
+              value: controller.onlineClaimsEnabled,
+              onChanged: controller.busy
+                  ? null
+                  : controller.setOnlineClaimsEnabled,
+            ),
+            OutlinedButton(
+              onPressed: controller.busy
+                  ? null
+                  : controller.testOnlineClaimRegistration,
+              child: Text(l10n.clashDebugOnlineClaimsTestAction),
+            ),
+            if (controller.lastOnlineClaimTestResult != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8, bottom: 4),
+                child: Text(
+                  _onlineClaimTestResultLabel(
+                    l10n,
+                    controller.lastOnlineClaimTestResult!,
+                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: _onlineClaimTestResultColor(
+                      context,
+                      controller.lastOnlineClaimTestResult!,
+                    ),
+                  ),
+                ),
+              ),
             _ClashDebugRow(
               label: l10n.clashDebugSyncLastValidate,
               value: _operationStatusLabel(
@@ -585,6 +626,48 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
       ClashDebugBootstrapStatus.unauthorized ||
       ClashDebugBootstrapStatus.unavailable ||
       ClashDebugBootstrapStatus.error => Theme.of(context).colorScheme.error,
+    };
+  }
+
+  String _onlineClaimTestResultLabel(
+    AppLocalizations l10n,
+    ClashOnlineClaimRegistrationResult result,
+  ) {
+    return switch (result.status) {
+      ClashOnlineClaimRegistrationStatus.skippedDisabled =>
+        l10n.clashDebugOnlineClaimsDisabled,
+      ClashOnlineClaimRegistrationStatus.accepted =>
+        l10n.clashDebugOnlineClaimsResultAccepted(result.claimId),
+      ClashOnlineClaimRegistrationStatus.alreadyProcessed =>
+        l10n.clashDebugOnlineClaimsResultAlreadyProcessed(result.claimId),
+      ClashOnlineClaimRegistrationStatus.unauthorized =>
+        l10n.clashDebugOnlineClaimsResultUnauthorized,
+      ClashOnlineClaimRegistrationStatus.validationFailed =>
+        result.errorMessage ??
+            l10n.clashDebugOnlineClaimsResultValidationFailed,
+      ClashOnlineClaimRegistrationStatus.conflict =>
+        result.errorMessage ?? l10n.clashDebugOnlineClaimsResultConflict,
+      ClashOnlineClaimRegistrationStatus.failed =>
+        result.errorMessage ?? l10n.clashDebugOnlineClaimsResultFailed,
+    };
+  }
+
+  Color? _onlineClaimTestResultColor(
+    BuildContext context,
+    ClashOnlineClaimRegistrationResult result,
+  ) {
+    return switch (result.status) {
+      ClashOnlineClaimRegistrationStatus.accepted ||
+      ClashOnlineClaimRegistrationStatus.alreadyProcessed => null,
+      ClashOnlineClaimRegistrationStatus.skippedDisabled => Theme.of(
+        context,
+      ).textTheme.bodyMedium?.color,
+      ClashOnlineClaimRegistrationStatus.unauthorized ||
+      ClashOnlineClaimRegistrationStatus.validationFailed ||
+      ClashOnlineClaimRegistrationStatus.conflict ||
+      ClashOnlineClaimRegistrationStatus.failed => Theme.of(
+        context,
+      ).colorScheme.error,
     };
   }
 

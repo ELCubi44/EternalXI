@@ -2,6 +2,7 @@ import 'package:eternal_xi/features/clash/debug/data/clash_debug_sync_controller
 import 'package:eternal_xi/features/clash/debug/domain/clash_debug_bootstrap_result.dart';
 import 'package:eternal_xi/features/clash/shared/migrations/data/clash_shared_preferences_keys.dart';
 import 'package:eternal_xi/features/clash/shared/migrations/domain/clash_storage_schema.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_online_claim_registrar.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_client.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_local_backup.dart';
@@ -11,6 +12,8 @@ import 'package:eternal_xi/features/clash/sync/data/clash_sync_metadata_storage.
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_settings_storage.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
 import 'package:eternal_xi/features/clash/sync/data/fake_clash_sync_client.dart';
+import 'package:eternal_xi/features/clash/sync/data/fake_clash_claim_api_client.dart';
+import 'package:eternal_xi/features/clash/sync/domain/clash_online_claim_registration_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_status.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_metadata.dart';
@@ -469,6 +472,113 @@ void main() {
       expect(storage.load().autoCheckEnabledOnClashOpen, isFalse);
     });
   });
+
+  group('ClashDebugSyncController Fase 83', () {
+    setUp(() async {
+      await backupPrefs.remove(ClashSharedPreferencesKeys.onlineClaimsEnabled);
+    });
+
+    test('online claims desactivado por defecto', () {
+      final storage = ClashSyncSettingsStorage(sharedPreferences: backupPrefs);
+      final controller = _controller(settingsStorage: storage);
+
+      expect(controller.onlineClaimsEnabled, isFalse);
+    });
+
+    test('toggle online claims guarda true y false sin API', () async {
+      final storage = ClashSyncSettingsStorage(sharedPreferences: backupPrefs);
+      final client = _CountingSyncClient();
+      final claimClient = FakeClashClaimApiClient();
+      final registrar = ClashOnlineClaimRegistrar(
+        settingsStorage: storage,
+        claimApiClient: claimClient,
+      );
+      final controller = _controller(
+        client: client,
+        settingsStorage: storage,
+        onlineClaimRegistrar: registrar,
+      );
+
+      await controller.setOnlineClaimsEnabled(true);
+      expect(controller.onlineClaimsEnabled, isTrue);
+      expect(storage.loadOnlineClaimsEnabled(), isTrue);
+      expect(client.pullCalls, 0);
+      expect(claimClient.submitCalls, 0);
+
+      await controller.setOnlineClaimsEnabled(false);
+      expect(controller.onlineClaimsEnabled, isFalse);
+    });
+
+    test('testOnlineClaimRegistration con toggle off no llama API', () async {
+      final storage = ClashSyncSettingsStorage(sharedPreferences: backupPrefs);
+      final claimClient = FakeClashClaimApiClient();
+      final registrar = ClashOnlineClaimRegistrar(
+        settingsStorage: storage,
+        claimApiClient: claimClient,
+      );
+      final controller = _controller(
+        settingsStorage: storage,
+        onlineClaimRegistrar: registrar,
+      );
+
+      await controller.testOnlineClaimRegistration();
+
+      expect(claimClient.submitCalls, 0);
+      expect(
+        controller.lastOnlineClaimTestResult?.status,
+        ClashOnlineClaimRegistrationStatus.skippedDisabled,
+      );
+    });
+
+    test('testOnlineClaimRegistration accepted cuando toggle on', () async {
+      final storage = ClashSyncSettingsStorage(sharedPreferences: backupPrefs);
+      final claimClient = FakeClashClaimApiClient();
+      final registrar = ClashOnlineClaimRegistrar(
+        settingsStorage: storage,
+        claimApiClient: claimClient,
+      );
+      final controller = _controller(
+        settingsStorage: storage,
+        onlineClaimRegistrar: registrar,
+      );
+
+      await controller.setOnlineClaimsEnabled(true);
+      await controller.testOnlineClaimRegistration();
+
+      expect(claimClient.submitCalls, 1);
+      expect(
+        controller.lastOnlineClaimTestResult?.status,
+        ClashOnlineClaimRegistrationStatus.accepted,
+      );
+    });
+
+    test(
+      'testOnlineClaimRegistration alreadyProcessed en segundo intento',
+      () async {
+        final storage = ClashSyncSettingsStorage(
+          sharedPreferences: backupPrefs,
+        );
+        final claimClient = FakeClashClaimApiClient();
+        final registrar = ClashOnlineClaimRegistrar(
+          settingsStorage: storage,
+          claimApiClient: claimClient,
+        );
+        final controller = _controller(
+          settingsStorage: storage,
+          onlineClaimRegistrar: registrar,
+        );
+
+        await controller.setOnlineClaimsEnabled(true);
+        await controller.testOnlineClaimRegistration();
+        await controller.testOnlineClaimRegistration();
+
+        expect(
+          controller.lastOnlineClaimTestResult?.status,
+          ClashOnlineClaimRegistrationStatus.alreadyProcessed,
+        );
+      },
+    );
+  });
 }
 
 final _epoch = DateTime.utc(2026, 6, 20, 12);
@@ -479,6 +589,7 @@ ClashDebugSyncController _controller({
   ClashSyncLocalBackupStore? backupStore,
   ClashSyncMetadataStorage? metadataStorage,
   ClashSyncSettingsStorage? settingsStorage,
+  ClashOnlineClaimRegistrar? onlineClaimRegistrar,
   ClashSyncSnapshotBuilder? builder,
   Future<bool> Function()? isAuthenticated,
 }) {
@@ -493,6 +604,7 @@ ClashDebugSyncController _controller({
     backupStore: backupStore,
     metadataStorage: metadataStorage,
     settingsStorage: settingsStorage,
+    onlineClaimRegistrar: onlineClaimRegistrar,
     isAuthenticated: isAuthenticated,
   );
 }

@@ -1,14 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/core/network/api_client.dart';
+import 'package:eternal_xi/features/clash/sync/data/fake_clash_claim_api_client.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_claim_api_exception.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_claim_contract.dart';
 
-/// Cliente HTTP para claims idempotentes Clash (Fase 82).
+/// Cliente HTTP para claims idempotentes Clash (Fase 82–83).
 ///
 /// Usa [ApiClient] existente (JWT vía interceptores). **No** envía `userId`.
-/// No está registrado en providers ni flujos de rewards todavía.
-class ClashClaimApiClient {
+/// Registrado en providers; uso en flujos reales pendiente de fase futura.
+class ClashClaimApiClient implements ClashClaimApiPort {
   ClashClaimApiClient(this._dio);
 
   factory ClashClaimApiClient.fromApiClient(ApiClient apiClient) {
@@ -20,6 +21,7 @@ class ClashClaimApiClient {
   static const _path = ApiConstants.clashClaims;
 
   /// POST `/api/v1/clash/claims` — aceptado (201) o ya procesado (200).
+  @override
   Future<ClashClaimResponse> submitClaim(ClashClaimRequest request) async {
     _assertNoUserIdInBody(request);
     try {

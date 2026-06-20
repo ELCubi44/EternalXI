@@ -12,6 +12,13 @@ Persistencia **local-first** de Clash en `SharedPreferences`. Sin sync remoto en
 | `clash_sync_metadata_v1` | `String` (JSON) | Metadatos locales de sync online (Fase 76) |
 | `clash_sync_auto_check_enabled_v1` | `bool` | Auto-check remoto al abrir Clash, **off** por defecto (Fase 79) |
 | `clash_sync_pending_notice_dismissed_revision_v1` | `int?` | Revisión del aviso de partida online pendiente ocultada (Fase 80) |
+| `clash_online_claims_enabled_v1` | `bool` | Registro experimental de claims online, **off** por defecto (Fase 83) |
+
+### Online claims settings (`clash_online_claims_enabled_v1`)
+
+Boolean experimental. Cuando es `true`, `ClashOnlineClaimRegistrar` puede registrar claims vía `POST /api/v1/clash/claims`. **No** concede recompensas locales ni modifica progreso. **No** está integrado en flujos reales todavía.
+
+Código: `clash_sync_settings_storage.dart`, `clash_online_claim_registrar.dart`.
 
 ### Aviso pending notice (`clash_sync_pending_notice_dismissed_revision_v1`)
 

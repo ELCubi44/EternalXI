@@ -67,4 +67,48 @@ void main() {
       );
     });
   });
+
+  group('ClashSyncSettingsStorage Fase 83', () {
+    late SharedPreferences prefs;
+    late ClashSyncSettingsStorage storage;
+
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      prefs = await SharedPreferences.getInstance();
+      storage = ClashSyncSettingsStorage(sharedPreferences: prefs);
+    });
+
+    test('online claims desactivado por defecto', () {
+      expect(storage.loadOnlineClaimsEnabled(), isFalse);
+      expect(storage.load().onlineClaimsEnabled, isFalse);
+    });
+
+    test('guardar true persiste online claims', () async {
+      await storage.setOnlineClaimsEnabled(true);
+
+      expect(
+        prefs.getBool(ClashSyncSettingsStorage.onlineClaimsEnabledKey),
+        isTrue,
+      );
+      expect(storage.loadOnlineClaimsEnabled(), isTrue);
+    });
+
+    test('guardar false persiste online claims', () async {
+      await storage.setOnlineClaimsEnabled(true);
+      await storage.setOnlineClaimsEnabled(false);
+
+      expect(storage.loadOnlineClaimsEnabled(), isFalse);
+    });
+
+    test('onlineClaimsEnabledKey no está en dataKeys', () {
+      expect(
+        ClashSharedPreferencesKeys.dataKeys,
+        isNot(contains(ClashSyncSettingsStorage.onlineClaimsEnabledKey)),
+      );
+    });
+
+    test('legacy install sin key funciona', () {
+      expect(storage.load().onlineClaimsEnabled, isFalse);
+    });
+  });
 }

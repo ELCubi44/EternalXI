@@ -130,7 +130,18 @@ mvn test -Dtest=ClashClaimServiceTest,ClashSaveServiceTest
 cd eternalxi_front
 flutter test test/features/clash/sync/clash_claim_contract_test.dart
 flutter test test/features/clash/sync/clash_claim_api_client_test.dart
+flutter test test/features/clash/sync/clash_online_claim_registrar_test.dart
+flutter test test/features/clash/sync/clash_claim_id_builder_test.dart
+flutter test test/features/clash/debug/clash_debug_online_claims_screen_test.dart
 ```
+
+**Prueba manual claims online (Fase 83):**
+
+1. Clash → Ayuda → Diagnóstico local.
+2. Activar **Registrar claims online**.
+3. Pulsar **Probar registro de claim online**.
+4. Primera vez: accepted; segunda: alreadyProcessed.
+5. Confirmar que monedas/recompensas no cambian.
 
 Manual (con token JWT):
 

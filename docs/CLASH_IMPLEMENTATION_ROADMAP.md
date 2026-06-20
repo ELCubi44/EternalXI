@@ -1222,4 +1222,20 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 83 — Optional online claim registration (CIERRE MVP)
+
+**Estado:** implementada.
+
+- Key `clash_online_claims_enabled_v1` (**off**).
+- `ClashClaimIdBuilder`, `ClashOnlineClaimRegistrar`.
+- Toggle + prueba debug en diagnóstico.
+- Providers registrados; **sin** uso en gifts/missions/events/shop/story.
+- Documento de cierre: `docs/CLASH_ONLINE_SAVE_CLOSURE.md`.
+
+**Objetivo:** cerrar guardado online Clash a nivel MVP/manual; claims online registrables de forma opcional.
+
+**Pendiente futuro:** server-authoritative rewards, migración gradual claims, merge/sync login, mutación save desde claims.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

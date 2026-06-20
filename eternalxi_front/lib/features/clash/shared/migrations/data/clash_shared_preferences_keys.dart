@@ -39,6 +39,9 @@ abstract final class ClashSharedPreferencesKeys {
   static const syncPendingNoticeDismissedRevision =
       'clash_sync_pending_notice_dismissed_revision_v1';
 
+  /// Registro experimental de claims online, off por defecto (Fase 83).
+  static const onlineClaimsEnabled = 'clash_online_claims_enabled_v1';
+
   /// Claves de datos de progreso/inventario (excluye metadata de schema).
   static const dataKeys = <String>{
     lineups7v7,

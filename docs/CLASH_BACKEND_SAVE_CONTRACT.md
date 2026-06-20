@@ -249,12 +249,13 @@ Response (repetido — HTTP 200):
 
 DTO frontend existente (sin migrar flujos): `ClashSaveClaimRequest` en `clash_save_contract.dart`. Backend Java: `ClashClaimRequest` / `ClashClaimResponse`.
 
-### Cliente Flutter claims (Fase 82 — no usado en flujos)
+### Cliente Flutter claims (Fase 82–83 — no usado en flujos reales)
 
-- `ClashClaimRequest` / `ClashClaimResponse` en `lib/features/clash/sync/domain/clash_claim_contract.dart`
-- `ClashClaimApiClient.submitClaim()` en `lib/features/clash/sync/data/clash_claim_api_client.dart`
-- Ruta: `ApiConstants.clashClaims` → `/clash/claims`
-- **No** registrado en `clash_providers.dart` ni gifts/missions/events/shop
+- `ClashClaimRequest` / `ClashClaimResponse` en `clash_claim_contract.dart`
+- `ClashClaimApiClient`, `ClashOnlineClaimRegistrar`, `ClashClaimIdBuilder`
+- Toggle experimental `clash_online_claims_enabled_v1` (**off**)
+- Prueba manual en diagnóstico (`debug:claim-test`)
+- Backend **aún no concede rewards reales**
 
 ### `ClashSaveClaimRequest` (contrato frontend previo)
 

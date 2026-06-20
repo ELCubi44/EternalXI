@@ -1,9 +1,12 @@
 import 'package:eternal_xi/features/clash/debug/domain/clash_debug_bootstrap_result.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_online_claim_registrar.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_local_backup.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_metadata_storage.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_settings_storage.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
+import 'package:eternal_xi/features/clash/sync/domain/clash_claim_contract.dart';
+import 'package:eternal_xi/features/clash/sync/domain/clash_online_claim_registration_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_status.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_metadata.dart';
@@ -20,11 +23,13 @@ class ClashDebugSyncController extends ChangeNotifier {
     this.backupStore,
     this.metadataStorage,
     this.settingsStorage,
+    this.onlineClaimRegistrar,
     this.isAuthenticated,
   }) : _metadata = metadataStorage?.load() ?? const ClashSyncMetadata() {
     knownServerRevision = _metadata.knownServerRevision;
     autoCheckEnabledOnClashOpen =
         settingsStorage?.load().autoCheckEnabledOnClashOpen ?? false;
+    onlineClaimsEnabled = settingsStorage?.loadOnlineClaimsEnabled() ?? false;
   }
 
   final ClashSyncCoordinator coordinator;
@@ -32,6 +37,7 @@ class ClashDebugSyncController extends ChangeNotifier {
   final ClashSyncLocalBackupStore? backupStore;
   final ClashSyncMetadataStorage? metadataStorage;
   final ClashSyncSettingsStorage? settingsStorage;
+  final ClashOnlineClaimRegistrar? onlineClaimRegistrar;
   final Future<bool> Function()? isAuthenticated;
 
   ClashSyncMetadata _metadata;
@@ -42,11 +48,13 @@ class ClashDebugSyncController extends ChangeNotifier {
   ClashSyncApplyResult? lastApplyResult;
   ClashSyncApplyResult? lastRestoreResult;
   ClashDebugBootstrapResult? lastBootstrapResult;
+  ClashOnlineClaimRegistrationResult? lastOnlineClaimTestResult;
   ClashSyncSnapshot? pendingRemoteSnapshot;
   int? knownServerRevision;
   bool busy = false;
   bool authRequired = false;
   bool autoCheckEnabledOnClashOpen = false;
+  bool onlineClaimsEnabled = false;
 
   ClashSyncMetadata get metadata => _metadata;
 
@@ -58,6 +66,61 @@ class ClashDebugSyncController extends ChangeNotifier {
     await storage.setAutoCheckEnabledOnClashOpen(enabled);
     autoCheckEnabledOnClashOpen = enabled;
     notifyListeners();
+  }
+
+  Future<void> setOnlineClaimsEnabled(bool enabled) async {
+    final storage = settingsStorage;
+    if (storage == null) {
+      return;
+    }
+    await storage.setOnlineClaimsEnabled(enabled);
+    onlineClaimsEnabled = enabled;
+    notifyListeners();
+  }
+
+  /// Prueba manual del endpoint de claims (Fase 83). No concede recompensas.
+  Future<void> testOnlineClaimRegistration() async {
+    const debugClaimId = 'debug:claim-test';
+    final registrar = onlineClaimRegistrar;
+    if (registrar == null) {
+      return;
+    }
+
+    if (!onlineClaimsEnabled) {
+      lastOnlineClaimTestResult = ClashOnlineClaimRegistrationResult(
+        status: ClashOnlineClaimRegistrationStatus.skippedDisabled,
+        claimId: debugClaimId,
+      );
+      notifyListeners();
+      return;
+    }
+
+    if (!await _ensureAuthenticated()) {
+      lastOnlineClaimTestResult = const ClashOnlineClaimRegistrationResult(
+        status: ClashOnlineClaimRegistrationStatus.unauthorized,
+        claimId: debugClaimId,
+        errorCode: 'unauthorized',
+      );
+      notifyListeners();
+      return;
+    }
+
+    authRequired = false;
+    busy = true;
+    notifyListeners();
+    try {
+      lastOnlineClaimTestResult = await registrar.registerClaim(
+        request: const ClashClaimRequest(
+          claimId: debugClaimId,
+          claimType: 'debug',
+          sourceId: 'clash-debug',
+          payload: {'source': 'debug', 'dryRun': true},
+        ),
+      );
+    } finally {
+      busy = false;
+      notifyListeners();
+    }
   }
 
   int? get effectiveKnownRevision =>

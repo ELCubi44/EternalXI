@@ -122,14 +122,15 @@ void main() {
       await client.submitClaim(_request());
     });
 
-    test('no está registrado en clash_providers', () {
+    test('registrar registrado sin invocar claims al construir providers', () {
       final providersFile = File(
         'lib/features/clash/shared/di/clash_providers.dart',
       );
       final content = providersFile.readAsStringSync();
 
-      expect(content.contains('ClashClaimApiClient'), isFalse);
-      expect(content.contains('clash_claim_api_client'), isFalse);
+      expect(content.contains('ClashClaimApiClient'), isTrue);
+      expect(content.contains('ClashOnlineClaimRegistrar'), isTrue);
+      expect(content.contains('registerClaim('), isFalse);
     });
 
     test('sync layer guard permite solo clientes HTTP declarados', () {
