@@ -117,6 +117,21 @@ El pull **no** modifica el almacenamiento local hasta confirmar aplicar. La subi
 
 **Tests Fase 80:** pending notice visibility, dismiss revision, Review navigation, Home no HTTP, smallPhone overflow.
 
+**Tests Fase 81 (backend claims):**
+
+```bash
+cd eternalxi_api_back
+mvn test -Dtest=ClashClaimServiceTest,ClashSaveServiceTest
+```
+
+Manual (con token JWT):
+
+1. `POST /api/v1/clash/claims` con body válido → `201`, `alreadyProcessed=false`.
+2. Repetir mismo `claimId` → `200`, `alreadyProcessed=true`, mismo `message`.
+3. Otro usuario con mismo `claimId` → `201` independiente.
+4. Body sin `claimId` → `400`.
+5. Verificar que `clash_save` no cambia tras claims.
+
 ```bash
 cd eternalxi_front
 flutter test test/features/clash/sync/clash_sync_settings_storage_test.dart

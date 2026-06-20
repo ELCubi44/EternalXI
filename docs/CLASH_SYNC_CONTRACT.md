@@ -184,6 +184,19 @@ Cuando `hasPendingRemoteSnapshot == true` y existe `knownServerRevision`, Clash 
 
 Código: `clash_pending_sync_notice.dart`, `ClashSyncSettingsStorage.dismissPendingRevision`.
 
+### Claims idempotentes backend (Fase 81)
+
+`POST /api/v1/clash/claims` — registro idempotente por `(usuario autenticado, claimId)`.
+
+| Comportamiento | Detalle |
+|----------------|---------|
+| Nuevo claim | HTTP 201, `status=ACCEPTED`, `alreadyProcessed=false` |
+| Repetido | HTTP 200, `alreadyProcessed=true`, respuesta desde `response_json` |
+| Auth | `userId` solo desde JWT, nunca desde body |
+| Economía | **No** concede rewards ni modifica `clash_save` en esta fase |
+
+Tabla: `clash_claim`. Código: `ClashClaimController`, `ClashClaimService`.
+
 Código: `ClashSyncAutoCheckService`, integración en `ClashHomeScreen`.
 
 Estado visible en diagnóstico (memoria + metadata persistida en `clash_sync_metadata_v1`):

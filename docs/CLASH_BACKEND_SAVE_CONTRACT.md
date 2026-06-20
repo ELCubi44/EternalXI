@@ -142,15 +142,18 @@ Actualiza el snapshot completo.
 | `400` | Validación fallida (economía, contrato, etc.) |
 | `422` | `contractVersion` no soportada |
 
-### `POST /api/v1/clash/claims` (futuro)
+### `POST /api/v1/clash/claims` (Fase 81 — MVP idempotente)
 
-Claim server-side idempotente. Body: `ClashSaveClaimRequest`.
+Claim server-side idempotente. Body: `ClashClaimRequest`. **No concede economía real** en esta fase: registra el claim y devuelve respuesta estable.
 
 | Respuesta | Descripción |
 |-----------|-------------|
-| `200` | Grant aplicado o ya procesado (mismo `claimId`) |
-| `409` | Conflicto de revisión si se exige `expectedServerRevision` |
-| `400` | Claim inválido o no permitido |
+| `201` + `ClashClaimResponse` | Claim nuevo aceptado (`status=ACCEPTED`, `alreadyProcessed=false`) |
+| `200` + `ClashClaimResponse` | Mismo `claimId` ya procesado (`alreadyProcessed=true`, payload estable desde `response_json`) |
+| `400` | Claim inválido (campos obligatorios vacíos) |
+| `401` | No autenticado |
+
+**Prohibido en Fase 81:** modificar `clash_save`, conceder monedas/items, migrar flujos Flutter.
 
 ### Opcionales futuros
 
@@ -203,7 +206,50 @@ DTO frontend: `ClashSaveResponse` en `lib/features/clash/sync/domain/clash_save_
 }
 ```
 
-### `ClashSaveClaimRequest` (futuro)
+### `ClashClaimRequest` / `ClashClaimResponse` (Fase 81)
+
+Request:
+
+```json
+{
+  "claimId": "gift:gift-welcome",
+  "claimType": "gift",
+  "sourceId": "gift-welcome",
+  "stageId": null,
+  "expectedServerRevision": 3,
+  "payload": { "note": "opcional" }
+}
+```
+
+Response (nuevo):
+
+```json
+{
+  "claimId": "gift:gift-welcome",
+  "status": "ACCEPTED",
+  "alreadyProcessed": false,
+  "serverRevision": 3,
+  "rewards": null,
+  "message": "Claim registrado. La concesión de recompensas server-side llegará en una fase posterior."
+}
+```
+
+Response (repetido — HTTP 200):
+
+```json
+{
+  "claimId": "gift:gift-welcome",
+  "status": "ACCEPTED",
+  "alreadyProcessed": true,
+  "serverRevision": 3,
+  "rewards": null,
+  "message": "Claim registrado. La concesión de recompensas server-side llegará en una fase posterior."
+}
+```
+
+DTO frontend existente (sin migrar flujos): `ClashSaveClaimRequest` en `clash_save_contract.dart`. Backend Java: `ClashClaimRequest` / `ClashClaimResponse`.
+
+### `ClashSaveClaimRequest` (contrato frontend previo)
 
 ```json
 {
@@ -265,7 +311,13 @@ Flujo recomendado MVP+:
 
 ## Idempotencia de claims
 
-El backend registra `claimId` procesados (tabla `clash_processed_claim` sugerida en fase posterior).
+Tabla `clash_claim` (Fase 81) con `UNIQUE(id_usuario, claim_id)`.
+
+Campos: `id`, `id_usuario`, `claim_id`, `claim_type`, `source_id`, `stage_id`, `request_json`, `response_json`, `status`, `server_revision`, `created_at`, `processed_at`.
+
+`status` en BD: `ACCEPTED`, `REJECTED`, `FAILED`. La bandera `alreadyProcessed` vive en la respuesta HTTP, no como fila duplicada.
+
+Código backend: `ClashClaimController`, `ClashClaimService`, `ClashClaimRepository`.
 
 ### Formato sugerido de `claimId`
 

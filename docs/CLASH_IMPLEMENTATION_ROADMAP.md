@@ -1186,7 +1186,23 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 **Objetivo:** UX informativa tras auto-check, sin cambiar gameplay ni persistencia de partida.
 
-**Sin cambios** en auto-apply, auto-push, merge, claims, backend, Fantasy, leagues, rewards.
+**Sin cambios** en auto-apply, auto-push, merge, claims Flutter, Fantasy, leagues, rewards.
+
+---
+
+## Fase 81 — Idempotent claim backend
+
+**Estado:** implementada.
+
+- Tabla `clash_claim` con `UNIQUE(id_usuario, claim_id)`.
+- `POST /api/v1/clash/claims` — idempotente, auth JWT.
+- DTOs `ClashClaimRequest` / `ClashClaimResponse`.
+- Registra claim ACCEPTED; **no** concede economía ni toca `clash_save`.
+- Flutter claims locales sin migrar.
+
+**Objetivo:** contrato y base backend para claims server-side futuros.
+
+**Sin cambios** en gifts/missions Flutter, gacha server-side, merge, Fantasy, leagues, rewards.
 
 ---
 
