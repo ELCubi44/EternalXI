@@ -6,6 +6,7 @@ import 'package:eternal_xi/features/clash/achievements/presentation/widgets/clas
 import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_claim_button.dart';
 import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_empty_state_card.dart';
 import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_progress_summary_card.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,36 +37,19 @@ class _ClashAchievementsScreenState extends State<ClashAchievementsScreen> {
   }
 
   Future<void> _claimAchievement(String achievementId) async {
-    final l10n = context.l10n;
     final result = await _controller.claimAchievement(achievementId);
     if (!mounted) {
       return;
     }
-    if (result.success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text(l10n.clashAchievementsClaimSuccess),
-        ),
-      );
-    }
+    ClashRewardFeedback.showAchievementClaimFeedback(context, result);
   }
 
   Future<void> _claimAll() async {
-    final l10n = context.l10n;
     final results = await _controller.claimAll();
     if (!mounted) {
       return;
     }
-    final claimed = results.where((item) => item.success).length;
-    if (claimed > 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text(l10n.clashAchievementsClaimSuccess),
-        ),
-      );
-    }
+    ClashRewardFeedback.showAchievementBatchClaimFeedback(context, results);
   }
 
   String _filterLabel(ClashAchievementFilter filter, dynamic l10n) {

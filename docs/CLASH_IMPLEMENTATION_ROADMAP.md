@@ -854,4 +854,20 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 59 — Feedback unificado de claims
+
+**Estado:** implementada.
+
+- `ClashRewardFeedback`, `ClashRewardFeedbackMessage`, `ClashRewardFeedbackBody`, `showClashRewardFeedbackSheet`.
+- Strings ES/EN `clashRewardFeedback*`.
+- Migración: gifts, logros, misiones diarias/semanales, shop; pantalla de recompensa de evento usa botón Aceptar compartido.
+- `ClashRewardDisplayBuilder.fromGrantResult` para cartas nuevas/duplicadas.
+- Tests: `test/features/clash/rewards/clash_reward_feedback_test.dart`.
+
+**Objetivo:** informar de forma consistente al reclamar/comprar recompensas (éxito, parcial, fallo) sin alterar concesión ni economía.
+
+**Sin cambios** en granter, economía, claves SP, Fantasy, leagues ni rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

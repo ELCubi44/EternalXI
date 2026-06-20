@@ -2,11 +2,11 @@ import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
 import 'package:eternal_xi/features/clash/shop/domain/clash_shop_product.dart';
-import 'package:eternal_xi/features/clash/shop/domain/clash_shop_purchase_error.dart';
 import 'package:eternal_xi/features/clash/shop/domain/clash_shop_section.dart';
 import 'package:eternal_xi/features/clash/shop/presentation/controllers/clash_shop_controller.dart';
 import 'package:eternal_xi/features/clash/shop/presentation/widgets/clash_shop_product_card.dart';
 import 'package:eternal_xi/features/clash/shop/presentation/widgets/clash_shop_purchase_dialog.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -51,29 +51,7 @@ class _ClashShopScreenState extends State<ClashShopScreen> {
       return;
     }
 
-    if (result.success) {
-      final message = result.grants.length == 1
-          ? l10n.clashShopPurchaseSuccessDetail(
-              result.grants.first.quantity,
-              result.grants.first.label,
-            )
-          : l10n.clashShopPurchaseSuccess;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(behavior: SnackBarBehavior.floating, content: Text(message)),
-      );
-      return;
-    }
-
-    final message = switch (result.error) {
-      ClashShopPurchaseError.insufficientCoins =>
-        l10n.clashShopInsufficientCoins,
-      ClashShopPurchaseError.productNotFound => l10n.clashStoryLoadError,
-      ClashShopPurchaseError.grantFailed => l10n.clashStoryLoadError,
-      null => l10n.clashStoryLoadError,
-    };
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(behavior: SnackBarBehavior.floating, content: Text(message)),
-    );
+    ClashRewardFeedback.showShopPurchaseFeedback(context, result);
   }
 
   @override

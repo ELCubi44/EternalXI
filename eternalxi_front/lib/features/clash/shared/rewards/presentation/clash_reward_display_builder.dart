@@ -5,6 +5,7 @@ import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission_re
 import 'package:eternal_xi/features/clash/missions/domain/clash_weekly_mission_reward.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/data/clash_reward_converters.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/domain/clash_reward.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/domain/clash_reward_grant_result.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_display_item.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_display_status.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_icon.dart';
@@ -113,6 +114,43 @@ abstract final class ClashRewardDisplayBuilder {
       return '${item.label} ($detail)';
     }
     return item.label;
+  }
+
+  static List<ClashRewardDisplayItem> fromGrantResult(
+    ClashRewardGrantResult result,
+    AppLocalizations l10n,
+  ) {
+    final items = [...fromClashRewards(result.grantedRewards, l10n)];
+    final cardDetails = items
+        .map((item) => item.detail)
+        .whereType<String>()
+        .toSet();
+
+    for (final cardId in result.newlyGrantedCardIds) {
+      if (cardDetails.contains(cardId)) {
+        continue;
+      }
+      items.add(
+        ClashRewardDisplayItem(
+          icon: ClashRewardIcon.forKind(ClashRewardKind.cardMissing),
+          label: l10n.clashRewardLabelCardNew,
+          detail: cardId,
+        ),
+      );
+      cardDetails.add(cardId);
+    }
+
+    for (final cardId in result.duplicateCardIds) {
+      items.add(
+        ClashRewardDisplayItem(
+          icon: ClashRewardIcon.forKind(ClashRewardKind.cardDuplicate),
+          label: l10n.clashRewardLabelCardDuplicate,
+          detail: cardId,
+        ),
+      );
+    }
+
+    return items;
   }
 
   static List<ClashRewardDisplayItem> fromStoryReward(

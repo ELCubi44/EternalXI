@@ -204,6 +204,19 @@ class AppLocalizations {
       'clashRewardLabelCardNew': 'Carta nueva',
       'clashRewardLabelStarterRoster': 'Plantilla inicial',
       'clashRewardQuantitySuffix': '×{count}',
+      'clashRewardFeedbackSuccessTitle': 'Recompensas recibidas',
+      'clashRewardFeedbackSingleTitle': 'Recompensa recibida',
+      'clashRewardFeedbackPartialTitle':
+          'Algunas recompensas no se pudieron entregar',
+      'clashRewardFeedbackPartialBody':
+          'Se entregó parte del contenido. Revisa tu inventario.',
+      'clashRewardFeedbackBatchPartialBody':
+          '{count} reclamaciones no se completaron',
+      'clashRewardFeedbackFailureTitle':
+          'No se pudieron entregar las recompensas',
+      'clashRewardFeedbackFailureBody': 'Inténtalo de nuevo más tarde.',
+      'clashRewardFeedbackAccept': 'Aceptar',
+      'clashRewardFeedbackViewRewards': 'Ver recompensas',
       'clashAchievementsTitle': 'Logros',
       'clashAchievementsPermanentHint':
           'Progreso permanente. No se reinician cada día.',
@@ -1133,6 +1146,16 @@ class AppLocalizations {
       'clashRewardLabelCardNew': 'New card',
       'clashRewardLabelStarterRoster': 'Starter roster',
       'clashRewardQuantitySuffix': '×{count}',
+      'clashRewardFeedbackSuccessTitle': 'Rewards received',
+      'clashRewardFeedbackSingleTitle': 'Reward received',
+      'clashRewardFeedbackPartialTitle': 'Some rewards could not be delivered',
+      'clashRewardFeedbackPartialBody':
+          'Part of the content was delivered. Check your inventory.',
+      'clashRewardFeedbackBatchPartialBody': '{count} claims did not complete',
+      'clashRewardFeedbackFailureTitle': 'Rewards could not be delivered',
+      'clashRewardFeedbackFailureBody': 'Please try again later.',
+      'clashRewardFeedbackAccept': 'Accept',
+      'clashRewardFeedbackViewRewards': 'View rewards',
       'clashAchievementsTitle': 'Achievements',
       'clashAchievementsPermanentHint':
           'Permanent progress. They do not reset daily.',
@@ -2119,6 +2142,23 @@ class AppLocalizations {
 
   String clashRewardQuantitySuffix(int count) =>
       _t('clashRewardQuantitySuffix').replaceAll('{count}', '$count');
+  String get clashRewardFeedbackSuccessTitle =>
+      _t('clashRewardFeedbackSuccessTitle');
+  String get clashRewardFeedbackSingleTitle =>
+      _t('clashRewardFeedbackSingleTitle');
+  String get clashRewardFeedbackPartialTitle =>
+      _t('clashRewardFeedbackPartialTitle');
+  String get clashRewardFeedbackPartialBody =>
+      _t('clashRewardFeedbackPartialBody');
+  String clashRewardFeedbackBatchPartialBody(int count) =>
+      _t('clashRewardFeedbackBatchPartialBody').replaceAll('{count}', '$count');
+  String get clashRewardFeedbackFailureTitle =>
+      _t('clashRewardFeedbackFailureTitle');
+  String get clashRewardFeedbackFailureBody =>
+      _t('clashRewardFeedbackFailureBody');
+  String get clashRewardFeedbackAccept => _t('clashRewardFeedbackAccept');
+  String get clashRewardFeedbackViewRewards =>
+      _t('clashRewardFeedbackViewRewards');
   String get clashAchievementsTitle => _t('clashAchievementsTitle');
   String get clashAchievementsPermanentHint =>
       _t('clashAchievementsPermanentHint');

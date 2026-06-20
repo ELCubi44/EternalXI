@@ -5,6 +5,7 @@ import 'package:eternal_xi/features/clash/gifts/presentation/widgets/clash_gift_
 import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_claim_button.dart';
 import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_empty_state_card.dart';
 import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_progress_summary_card.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,36 +37,19 @@ class _ClashGiftsScreenState extends State<ClashGiftsScreen> {
   }
 
   Future<void> _claimGift(String giftId) async {
-    final l10n = context.l10n;
     final result = await _controller.claimGift(giftId);
     if (!mounted) {
       return;
     }
-    if (result.success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text(l10n.clashGiftsClaimSuccess),
-        ),
-      );
-    }
+    ClashRewardFeedback.showGiftClaimFeedback(context, result);
   }
 
   Future<void> _claimAll() async {
-    final l10n = context.l10n;
     final results = await _controller.claimAllPending();
     if (!mounted) {
       return;
     }
-    final claimed = results.where((item) => item.success).length;
-    if (claimed > 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text(l10n.clashGiftsClaimSuccess),
-        ),
-      );
-    }
+    ClashRewardFeedback.showGiftBatchClaimFeedback(context, results);
   }
 
   @override

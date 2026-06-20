@@ -127,6 +127,24 @@ Widgets compartidos en `lib/features/clash/shared/rewards/presentation/`:
 
 Tests: `test/features/clash/rewards/clash_reward_presentation_test.dart`.
 
+## Feedback de recompensas (Fase 59)
+
+Helpers en `lib/features/clash/shared/rewards/presentation/`:
+
+| Componente | Uso |
+|------------|-----|
+| `ClashRewardFeedback` | API principal y adaptadores por flujo (gifts, missions, shop…) |
+| `showClashRewardGrantedFeedback` | Alias sobre `ClashRewardGrantResult` |
+| `ClashRewardFeedbackMessage` | Título, subtítulo, items, variante success/partial/failure |
+| `ClashRewardFeedbackBody` | Cuerpo reutilizable |
+| `showClashRewardFeedbackSheet` | Bottom sheet para varias recompensas o avisos parciales |
+
+**Comportamiento:** ≤2 recompensas → SnackBar compacto; más recompensas → bottom sheet; fallo total → SnackBar de error; parcial → sheet con aviso.
+
+**Flujos migrados:** gifts, achievements, daily/weekly missions, shop purchase success.
+
+Tests: `test/features/clash/rewards/clash_reward_feedback_test.dart`.
+
 ## Pendiente (post-Fase 55)
 
 - Sync server-side e idempotencia remota

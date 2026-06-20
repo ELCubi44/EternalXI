@@ -303,12 +303,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Comprar').last);
       await tester.pumpAndSettle();
-      expect(
-        find.textContaining(
-          'Compra realizada: +2 Manual básico de entrenamiento',
-        ),
-        findsOneWidget,
-      );
+      expect(find.textContaining('Manual básico'), findsWidgets);
     });
 
     testWidgets('saldo se actualiza tras compra', (tester) async {

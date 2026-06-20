@@ -1,4 +1,3 @@
-import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_repository.dart';
@@ -26,11 +25,15 @@ class ClashEventRewardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final theme = Theme.of(context);
     final repo = context.read<ClashCharacterEventsRepository>();
     final completion = repo.lastCompletion;
     final rewards =
         completion?.rewardsGranted ?? const ClashCharacterEventReward();
     final cardsRepo = _optionalCardsRepository(context);
+    final feedbackTitle = completion?.firstClear == true
+        ? l10n.clashEventsRewardFirstClear
+        : l10n.clashEventsRewardRepeat;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.clashEventsRewardTitle)),
@@ -38,12 +41,10 @@ class ClashEventRewardScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         children: [
           Text(
-            completion?.firstClear == true
-                ? l10n.clashEventsRewardFirstClear
-                : l10n.clashEventsRewardRepeat,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+            feedbackTitle,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
           ),
           const SizedBox(height: 16),
           _EventGrantedRewards(
@@ -55,9 +56,9 @@ class ClashEventRewardScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               l10n.clashMatchCardXpTitle,
-              style: Theme.of(
-                context,
-              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
             ),
             const SizedBox(height: 8),
             for (final xp in completion.cardXpResults)
@@ -65,14 +66,14 @@ class ClashEventRewardScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 6),
                 child: Text(
                   '${xp.cardName}: +${xp.xpGained} XP',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: theme.textTheme.bodyMedium,
                 ),
               ),
           ],
           const SizedBox(height: 24),
           FilledButton(
             onPressed: () => context.pop(),
-            child: Text(l10n.clashEventsRewardContinue),
+            child: Text(l10n.clashRewardFeedbackAccept),
           ),
         ],
       ),
@@ -117,7 +118,6 @@ class _EventGrantedRewards extends StatelessWidget {
         future: cardsRepo!.fetchAllCards(),
         builder: (context, snapshot) {
           final cardItems = _cardItemsFromIds(
-            l10n,
             newlyGranted,
             snapshot.hasData
                 ? {for (final card in snapshot.data!) card.id: card.name}
@@ -133,7 +133,7 @@ class _EventGrantedRewards extends StatelessWidget {
 
     if (showGrantedCards) {
       return ClashRewardList(
-        items: [...items, ..._cardItemsFromIds(l10n, newlyGranted, null)],
+        items: [...items, ..._cardItemsFromIds(newlyGranted, null)],
         layout: ClashRewardListLayout.column,
       );
     }
@@ -158,7 +158,6 @@ class _EventGrantedRewards extends StatelessWidget {
   }
 
   List<ClashRewardDisplayItem> _cardItemsFromIds(
-    AppLocalizations l10n,
     List<String> cardIds,
     Map<String, String>? namesById,
   ) {

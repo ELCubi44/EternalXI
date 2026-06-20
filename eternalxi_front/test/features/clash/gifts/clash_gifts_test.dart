@@ -299,7 +299,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Reclamar todos'));
       await tester.pumpAndSettle();
-      expect(find.text('Regalo reclamado'), findsOneWidget);
+      expect(find.text('Recompensas recibidas'), findsOneWidget);
       expect(find.text('Reclamado'), findsWidgets);
     });
 
