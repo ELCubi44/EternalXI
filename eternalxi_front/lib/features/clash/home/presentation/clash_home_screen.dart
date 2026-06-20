@@ -67,7 +67,7 @@ class _ClashHomeScreenState extends State<ClashHomeScreen> {
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
         children: [
-          const ClashHomeHeader(),
+          ClashHomeHeader(),
           const SizedBox(height: 20),
           ClashHomeSectionTitle(l10n.clashHomePlaySection),
           const ClashHomePrimaryActionGrid(),

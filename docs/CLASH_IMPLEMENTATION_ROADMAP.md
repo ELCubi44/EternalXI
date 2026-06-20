@@ -1175,4 +1175,19 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 80 — Pending online save notice
+
+**Estado:** implementada.
+
+- Key `clash_sync_pending_notice_dismissed_revision_v1` (int?, revision ocultada).
+- `ClashPendingSyncNotice` en Clash Home cuando `hasPendingRemoteSnapshot` y revision no descartada.
+- Botón **Revisar** → `/clash/debug`; cerrar oculta sin borrar metadata.
+- Sin HTTP, apply, push ni merge.
+
+**Objetivo:** UX informativa tras auto-check, sin cambiar gameplay ni persistencia de partida.
+
+**Sin cambios** en auto-apply, auto-push, merge, claims, backend, Fantasy, leagues, rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

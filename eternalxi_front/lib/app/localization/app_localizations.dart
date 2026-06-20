@@ -351,6 +351,11 @@ class AppLocalizations {
           'Comprobar partida online al abrir Clash',
       'clashDebugSyncAutoCheckHint':
           'Solo descarga estado remoto (GET). No aplica ni sube. Desactivado por defecto.',
+      'clashSyncPendingNoticeTitle': 'Partida online disponible',
+      'clashSyncPendingNoticeBody':
+          'Hay una partida online pendiente de revisar.',
+      'clashSyncPendingNoticeReview': 'Revisar',
+      'clashSyncPendingNoticeDismiss': 'Ocultar aviso',
       'clashAchievementsTitle': 'Logros',
       'clashAchievementsPermanentHint':
           'Progreso permanente. No se reinician cada día.',
@@ -1423,6 +1428,10 @@ class AppLocalizations {
       'clashDebugSyncAutoCheckToggle': 'Check online save when opening Clash',
       'clashDebugSyncAutoCheckHint':
           'Downloads remote state only (GET). Does not apply or upload. Off by default.',
+      'clashSyncPendingNoticeTitle': 'Online save available',
+      'clashSyncPendingNoticeBody': 'There is a pending online save to review.',
+      'clashSyncPendingNoticeReview': 'Review',
+      'clashSyncPendingNoticeDismiss': 'Dismiss notice',
       'clashAchievementsTitle': 'Achievements',
       'clashAchievementsPermanentHint':
           'Permanent progress. They do not reset daily.',
@@ -2623,6 +2632,11 @@ class AppLocalizations {
   String get clashDebugSyncAutoCheckToggle =>
       _t('clashDebugSyncAutoCheckToggle');
   String get clashDebugSyncAutoCheckHint => _t('clashDebugSyncAutoCheckHint');
+  String get clashSyncPendingNoticeTitle => _t('clashSyncPendingNoticeTitle');
+  String get clashSyncPendingNoticeBody => _t('clashSyncPendingNoticeBody');
+  String get clashSyncPendingNoticeReview => _t('clashSyncPendingNoticeReview');
+  String get clashSyncPendingNoticeDismiss =>
+      _t('clashSyncPendingNoticeDismiss');
   String get clashAchievementsTitle => _t('clashAchievementsTitle');
   String get clashAchievementsPermanentHint =>
       _t('clashAchievementsPermanentHint');

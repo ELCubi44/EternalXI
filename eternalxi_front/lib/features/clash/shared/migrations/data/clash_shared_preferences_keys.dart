@@ -35,6 +35,10 @@ abstract final class ClashSharedPreferencesKeys {
   /// Auto-check remoto al abrir Clash, off por defecto (Fase 79).
   static const syncAutoCheckEnabled = 'clash_sync_auto_check_enabled_v1';
 
+  /// Revisión ocultada del aviso de partida online pendiente (Fase 80).
+  static const syncPendingNoticeDismissedRevision =
+      'clash_sync_pending_notice_dismissed_revision_v1';
+
   /// Claves de datos de progreso/inventario (excluye metadata de schema).
   static const dataKeys = <String>{
     lineups7v7,

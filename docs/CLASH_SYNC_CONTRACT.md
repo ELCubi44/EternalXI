@@ -169,6 +169,21 @@ Ajuste `clash_sync_auto_check_enabled_v1` (default **false**), toggle en diagnó
 
 **Prohibido en auto-check:** apply, push, create, bootstrap.
 
+### Aviso partida online pendiente (Fase 80)
+
+Cuando `hasPendingRemoteSnapshot == true` y existe `knownServerRevision`, Clash Home muestra un aviso informativo compacto (`ClashPendingSyncNotice`).
+
+| Comportamiento | Detalle |
+|----------------|---------|
+| Mostrar | `hasPendingRemoteSnapshot` y `knownServerRevision != dismissedRevision` |
+| Ocultar temporalmente | Cerrar aviso → guarda `clash_sync_pending_notice_dismissed_revision_v1` |
+| Reaparecer | Si `knownServerRevision` cambia respecto a la revision ocultada |
+| Revisar | Navega a `/clash/debug` |
+
+**Prohibido en el aviso:** HTTP, apply, push, merge, modificar metadata al ocultar.
+
+Código: `clash_pending_sync_notice.dart`, `ClashSyncSettingsStorage.dismissPendingRevision`.
+
 Código: `ClashSyncAutoCheckService`, integración en `ClashHomeScreen`.
 
 Estado visible en diagnóstico (memoria + metadata persistida en `clash_sync_metadata_v1`):

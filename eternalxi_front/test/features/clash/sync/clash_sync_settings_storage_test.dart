@@ -38,5 +38,33 @@ void main() {
         isNot(contains(ClashSyncSettingsStorage.storageKey)),
       );
     });
+
+    test('dismissed revision null por defecto', () {
+      expect(storage.loadDismissedPendingRevision(), isNull);
+    });
+
+    test('dismissPendingRevision persiste revision', () async {
+      await storage.dismissPendingRevision(4);
+
+      expect(
+        prefs.getInt(ClashSyncSettingsStorage.dismissedPendingRevisionKey),
+        4,
+      );
+      expect(storage.loadDismissedPendingRevision(), 4);
+    });
+
+    test('clearDismissedPendingRevision elimina key', () async {
+      await storage.dismissPendingRevision(4);
+      await storage.clearDismissedPendingRevision();
+
+      expect(storage.loadDismissedPendingRevision(), isNull);
+    });
+
+    test('dismissedPendingRevisionKey no está en dataKeys', () {
+      expect(
+        ClashSharedPreferencesKeys.dataKeys,
+        isNot(contains(ClashSyncSettingsStorage.dismissedPendingRevisionKey)),
+      );
+    });
   });
 }

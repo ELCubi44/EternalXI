@@ -11,6 +11,13 @@ Persistencia **local-first** de Clash en `SharedPreferences`. Sin sync remoto en
 | `clash_last_local_backup_v1` | `String` (JSON) | Último backup local antes de aplicar snapshot remoto (Fase 73) |
 | `clash_sync_metadata_v1` | `String` (JSON) | Metadatos locales de sync online (Fase 76) |
 | `clash_sync_auto_check_enabled_v1` | `bool` | Auto-check remoto al abrir Clash, **off** por defecto (Fase 79) |
+| `clash_sync_pending_notice_dismissed_revision_v1` | `int?` | Revisión del aviso de partida online pendiente ocultada (Fase 80) |
+
+### Aviso pending notice (`clash_sync_pending_notice_dismissed_revision_v1`)
+
+Entero opcional. Guarda la `knownServerRevision` para la cual el usuario cerró el aviso de partida online pendiente. **No** modifica `clash_sync_metadata_v1` ni borra `hasPendingRemoteSnapshot`.
+
+Código: `clash_sync_settings_storage.dart` (`loadDismissedPendingRevision`, `dismissPendingRevision`, `clearDismissedPendingRevision`).
 
 ### Auto-check settings (`clash_sync_auto_check_enabled_v1`)
 

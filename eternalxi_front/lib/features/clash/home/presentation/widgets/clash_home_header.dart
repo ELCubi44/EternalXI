@@ -3,6 +3,7 @@ import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
+import 'package:eternal_xi/features/clash/sync/presentation/clash_pending_sync_notice.dart';
 import 'package:eternal_xi/features/clash/sync/presentation/clash_sync_status_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -52,6 +53,8 @@ class ClashHomeHeader extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const ClashSyncStatusBadgeLoader(),
+          const SizedBox(height: 8),
+          const ClashPendingSyncNoticeLoader(),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,

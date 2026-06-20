@@ -107,18 +107,22 @@ En dispositivo con usuario logueado:
 7. **Verificar persistencia:** cerrar y reabrir la app → en diagnóstico debe mostrarse la `serverRevision` conocida y el último estado desde `clash_sync_metadata_v1` (sin llamadas HTTP automáticas).
 8. Volver a **Clash Home** — el badge debe reflejar metadata (sin llamar backend al abrir Home con flag off).
 9. En diagnóstico, activar **Comprobar partida online al abrir Clash** → reabrir Home → debe hacer GET (pull) sin apply ni push. Desactivar toggle para volver al comportamiento seguro.
+10. Con `hasPendingRemoteSnapshot` en metadata, Home muestra aviso **Partida online disponible**. Pulsar **Revisar** → diagnóstico. Cerrar (X) oculta el aviso sin borrar metadata; si la revision remota cambia, el aviso reaparece.
 
-El pull **no** modifica el almacenamiento local hasta confirmar aplicar. La subida **no** ocurre automáticamente tras apply/restore. Se crea backup en `clash_last_local_backup_v1`. Auto-check **no** aplica remoto ni crea save.
+El pull **no** modifica el almacenamiento local hasta confirmar aplicar. La subida **no** ocurre automáticamente tras apply/restore. Se crea backup en `clash_last_local_backup_v1`. Auto-check **no** aplica remoto ni crea save. El aviso **no** hace HTTP ni apply.
 
-**Verificar que el badge/auto-check no llama push:** con flag off, abrir Home sin red; con flag on, pull solo GET.
+**Verificar que el badge/auto-check/aviso no llama push:** con flag off, abrir Home sin red; con flag on, pull solo GET; aviso solo lee metadata local.
 
 **Tests Fase 79:** settings default, toggle, auto-check service, Home off/on, throttling.
+
+**Tests Fase 80:** pending notice visibility, dismiss revision, Review navigation, Home no HTTP, smallPhone overflow.
 
 ```bash
 cd eternalxi_front
 flutter test test/features/clash/sync/clash_sync_settings_storage_test.dart
 flutter test test/features/clash/sync/clash_sync_auto_check_service_test.dart
 flutter test test/features/clash/sync/clash_sync_status_badge_test.dart
+flutter test test/features/clash/sync/clash_pending_sync_notice_test.dart
 flutter test test/features/clash/debug/clash_debug_sync_controller_test.dart
 ```
 
