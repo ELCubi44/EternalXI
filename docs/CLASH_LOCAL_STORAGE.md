@@ -92,6 +92,17 @@ Pantalla interna de solo lectura en `/clash/debug` (`ClashDebugScreen`).
 
 Código: `lib/features/clash/debug/`.
 
+## Smoke test local (Fase 62)
+
+Suite rápida de regresión para flujos Clash principales (home, historia, eventos, regalos, tienda, inventario, historial, debug).
+
+```bash
+cd eternalxi_front
+flutter test test/features/clash/smoke/clash_local_smoke_test.dart
+```
+
+Ver también: [`CLASH_QA.md`](./CLASH_QA.md).
+
 ## Relación con otros documentos
 
 - Contratos de contenido JSON: [`CLASH_CONTENT_CONTRACTS.md`](./CLASH_CONTENT_CONTRACTS.md)

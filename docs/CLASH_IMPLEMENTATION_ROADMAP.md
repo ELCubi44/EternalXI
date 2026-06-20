@@ -901,4 +901,19 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 62 — Smoke test local Clash
+
+**Estado:** implementada.
+
+- Suite `test/features/clash/smoke/clash_local_smoke_test.dart`.
+- Flujos: home, story, events, gifts claim, shop purchase, inventory, reward history, debug.
+- Datos: backends in-memory, `testClashProviderDependencies()`, factories de `clash_test_support.dart`.
+- Documentación QA: `docs/CLASH_QA.md`.
+
+**Objetivo:** validar rápidamente los flujos locales principales sin alterar gameplay, economía ni UI pública.
+
+**Sin cambios** en granter, economía, claves SP, Fantasy, leagues ni rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*
