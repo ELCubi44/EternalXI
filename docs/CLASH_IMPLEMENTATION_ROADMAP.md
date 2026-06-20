@@ -947,4 +947,21 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 65 — Sync contract frontend
+
+**Estado:** implementada.
+
+- Módulo `lib/features/clash/sync/` (domain + builder).
+- DTOs: `ClashSyncSnapshot`, wallet, collection, inventories, lineups, progreso (story, events, missions, achievements, gifts), gacha, `rewardHistorySummary`.
+- `ClashSyncContractVersion.current = 1` (distinto de `ClashStorageSchema.currentVersion`).
+- `ClashSyncSnapshotBuilder` con dependencias inyectables; solo lectura local.
+- Suite `test/features/clash/sync/clash_sync_snapshot_test.dart`.
+- Documentación: `docs/CLASH_SYNC_CONTRACT.md`; referencias en `CLASH_LOCAL_STORAGE.md` y `CLASH_QA.md`.
+
+**Objetivo:** preparar contrato JSON y mapping local para futura sync backend, sin HTTP ni cambios de gameplay/economía/UI/persistencia.
+
+**Sin cambios** en granter, economía, claves SP, Fantasy, leagues, rewards ni backend.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

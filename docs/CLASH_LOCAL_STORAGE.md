@@ -120,4 +120,5 @@ Ver también: [`CLASH_QA.md`](./CLASH_QA.md).
 ## Relación con otros documentos
 
 - Contratos de contenido JSON: [`CLASH_CONTENT_CONTRACTS.md`](./CLASH_CONTENT_CONTRACTS.md)
+- **Contrato sync frontend (Fase 65):** [`CLASH_SYNC_CONTRACT.md`](./CLASH_SYNC_CONTRACT.md) — DTOs `ClashSyncSnapshot`, builder local, endpoints futuros documentados. No modifica claves SP ni persistencia.
 - Auditoría técnica: [`CLASH_TECHNICAL_AUDIT.md`](./CLASH_TECHNICAL_AUDIT.md)

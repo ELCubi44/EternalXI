@@ -39,6 +39,17 @@ flutter test test/features/clash/storage/clash_local_storage_compatibility_test.
 
 **Cuándo usarlo:** tras cambios en parsing/storage Clash, al añadir campos a snapshots persistidos, o antes de migraciones de schema. Complementa smoke (flujos) y responsive (layout).
 
+## Sync contract (Fase 65)
+
+Valida DTOs de sync frontend (`ClashSyncSnapshot`), serialización JSON y builder desde storages mock — sin red.
+
+```bash
+cd eternalxi_front
+flutter test test/features/clash/sync/clash_sync_snapshot_test.dart
+```
+
+**Cuándo usarlo:** tras cambiar DTOs sync, el builder o campos del contrato documentado en [`CLASH_SYNC_CONTRACT.md`](./CLASH_SYNC_CONTRACT.md).
+
 ## Suite completa Clash
 
 ```bash
@@ -55,6 +66,7 @@ flutter test test/features/clash/
 | Smoke | ~10 s | Flujos locales principales renderizan y no lanzan errores Flutter |
 | Responsive | ~10 s | Overflows RenderFlex, constraints rotos en viewports móviles |
 | Compatibility | ~5 s | Payloads SharedPreferences legacy cargan sin romper parsing |
+| Sync contract | ~5 s | DTOs sync serializan/deserializan; builder local sin HTTP |
 | Suite `test/features/clash/` | ~minutos | Regresiones unitarias/UI de todo el módulo Clash |
 
 ## Analyze (Clash)
