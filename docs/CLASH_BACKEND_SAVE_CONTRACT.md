@@ -4,7 +4,8 @@ Contrato para persistir la partida Clash en el servidor Eternal XI, vinculada al
 
 > **Fase 69:** contrato documentado + DTOs frontend.  
 > **Fase 70:** MVP backend Spring Boot implementado (`GET/POST/PUT /api/v1/clash/save`).  
-> **Fase 71:** cliente HTTP Flutter (`ClashSaveApiClient`, `HttpClashSyncClient`) — **sin sync automática**.
+> **Fase 71:** cliente HTTP Flutter (`ClashSaveApiClient`, `HttpClashSyncClient`) — **sin sync automática**.  
+> **Fase 72:** prueba manual desde **Diagnóstico local → Sincronización online** — pull/push manual, **sin aplicar remoto a SP**.
 
 Relacionado con el trabajo frontend/local de las Fases 65–68: [`CLASH_SYNC_CONTRACT.md`](./CLASH_SYNC_CONTRACT.md).
 
@@ -36,7 +37,14 @@ Boot: `SchemaMigrationService` crea `clash_save` si falta (dev/prod sin Flyway).
 
 - Usa `ApiClient` / Dio existente (JWT automático).
 - **No** envía `userId` en body.
-- **No** registrado en providers; **no** sync automática al abrir app.
+- Registrado en providers Clash (Fase 72) para uso **manual** en diagnóstico.
+- **No** sync automática al abrir app.
+
+### Prueba manual (Fase 72)
+
+En la app: **Clash → Ayuda → Diagnóstico local → Sincronización online**.
+
+Botones: validar snapshot local, descargar partida online, subir partida local. El snapshot remoto descargado **no** se escribe en SharedPreferences.
 
 ---
 

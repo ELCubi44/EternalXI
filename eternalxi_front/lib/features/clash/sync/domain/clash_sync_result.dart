@@ -149,11 +149,14 @@ class ClashSyncPullResult {
     );
   }
 
-  factory ClashSyncPullResult.unavailable({String? message}) {
+  factory ClashSyncPullResult.unavailable({
+    String? message,
+    String? errorCode,
+  }) {
     return ClashSyncPullResult(
       status: ClashSyncStatus.unavailable,
       message: message ?? 'Sync service unavailable',
-      errorCode: 'unavailable',
+      errorCode: errorCode ?? 'unavailable',
     );
   }
 }

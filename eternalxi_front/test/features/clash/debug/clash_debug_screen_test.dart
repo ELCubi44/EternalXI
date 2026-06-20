@@ -20,22 +20,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../di/clash_providers_test.dart';
 
 Future<SharedPreferences> _mockPrefs() async {
-  SharedPreferences.setMockInitialValues({
-    ClashSharedPreferencesKeys.schemaVersion: 1,
-    ClashSharedPreferencesKeys.lastMigratedAt: '2026-06-11T10:00:00.000Z',
-  });
   return SharedPreferences.getInstance();
 }
 
 Future<void> _pumpUntilDebugLoaded(WidgetTester tester) async {
   await tester.pump();
-  for (var i = 0; i < 80; i++) {
-    if (find.byType(CircularProgressIndicator).evaluate().isEmpty &&
-        (find.text('Almacenamiento local').evaluate().isNotEmpty ||
-            find
-                .text('No se pudo cargar el diagnóstico local.')
-                .evaluate()
-                .isNotEmpty)) {
+  for (var i = 0; i < 120; i++) {
+    if (find.text('Sincronización online').evaluate().isNotEmpty ||
+        find.text('Almacenamiento local').evaluate().isNotEmpty ||
+        find
+            .text('No se pudo cargar el diagnóstico local.')
+            .evaluate()
+            .isNotEmpty) {
       return;
     }
     await tester.pump(const Duration(milliseconds: 50));
@@ -61,6 +57,13 @@ Widget _debugApp({
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({
+      ClashSharedPreferencesKeys.schemaVersion: 1,
+      ClashSharedPreferencesKeys.lastMigratedAt: '2026-06-11T10:00:00.000Z',
+    });
+  });
+
   group('ClashDebugScreen Fase 61', () {
     testWidgets('carga diagnóstico, datos clave y ruta interna', (
       tester,
@@ -75,11 +78,37 @@ void main() {
       await _pumpUntilDebugLoaded(tester);
 
       expect(find.text('Diagnóstico Clash'), findsOneWidget);
+      expect(find.text('Sincronización online'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Almacenamiento local'),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('Almacenamiento local'), findsOneWidget);
       expect(find.text('Schema version'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Historial recompensas'),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('Historial recompensas'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Cartas únicas'),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('Cartas únicas'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Monedas'),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('Monedas'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Materiales EXP'),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('Materiales EXP'), findsOneWidget);
       expect(find.textContaining('Reset'), findsNothing);
       expect(find.textContaining('Delete'), findsNothing);
@@ -161,6 +190,7 @@ void main() {
           gachaTicketInventoryBackend: deps.gachaTicketInventoryBackend,
           gachaTicketRepository: deps.gachaTicketRepository,
           rewardHistoryBackend: deps.rewardHistoryBackend,
+          syncClientOverride: deps.syncClientOverride,
         ),
       );
 

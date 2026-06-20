@@ -29,6 +29,12 @@ class HttpClashSyncClient extends ClashSyncClient {
       if (error.statusCode == 404) {
         return ClashSyncPullResult.notFound(message: error.message);
       }
+      if (error.statusCode == 401) {
+        return ClashSyncPullResult.unavailable(
+          message: error.message,
+          errorCode: 'unauthorized',
+        );
+      }
       return ClashSyncPullResult.unavailable(message: error.message);
     }
   }
@@ -73,6 +79,12 @@ class HttpClashSyncClient extends ClashSyncClient {
         message: error.message,
       );
     } on ClashSaveApiException catch (error) {
+      if (error.statusCode == 401) {
+        return ClashSyncPushResult.rejected(
+          errorCode: 'unauthorized',
+          message: error.message,
+        );
+      }
       if (error.statusCode == 409) {
         return ClashSyncPushResult.rejected(
           errorCode: error.errorCode ?? 'conflict',

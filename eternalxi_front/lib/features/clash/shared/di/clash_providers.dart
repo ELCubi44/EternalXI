@@ -1,3 +1,10 @@
+import 'package:eternal_xi/core/network/api_client.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_save_api_client.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_client.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_builder.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_validator.dart';
+import 'package:eternal_xi/features/clash/sync/data/http_clash_sync_client.dart';
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievement_event_sink.dart';
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_local_datasource.dart';
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_repository.dart';
@@ -64,6 +71,7 @@ import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_lo
 import 'package:eternal_xi/features/clash/team/data/repositories/clash_lineups_repository.dart';
 import 'package:eternal_xi/features/clash/team/presentation/controllers/clash_lineups_controller.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/single_child_widget.dart';
@@ -93,6 +101,7 @@ class ClashProviderDependencies {
     required this.gachaTicketRepository,
     required this.rewardHistoryBackend,
     this.migrationResult,
+    this.syncClientOverride,
   });
 
   final ClashLineupsStorageBackend lineupsBackend;
@@ -118,6 +127,9 @@ class ClashProviderDependencies {
   final ClashGachaTicketRepository gachaTicketRepository;
   final ClashRewardHistoryStorageBackend rewardHistoryBackend;
   final ClashMigrationResult? migrationResult;
+
+  /// Cliente sync inyectado (p. ej. [FakeClashSyncClient] en tests). Si es null, usa HTTP.
+  final ClashSyncClient? syncClientOverride;
 }
 
 /// Inicializa backends SharedPreferences y repositorios con seed por defecto.
@@ -471,5 +483,84 @@ List<SingleChildWidget> buildClashProviders(ClashProviderDependencies deps) {
     ChangeNotifierProvider<ClashMatchController>(
       create: (_) => ClashMatchController(),
     ),
+    ..._buildClashSyncProviders(deps),
   ];
+}
+
+List<SingleChildWidget> _buildClashSyncProviders(
+  ClashProviderDependencies deps,
+) {
+  if (deps.syncClientOverride != null) {
+    return [
+      Provider<ClashSyncSnapshotBuilder>(
+        create: (context) => _createClashSyncSnapshotBuilder(context, deps),
+      ),
+      Provider<ClashSyncSnapshotValidator>(
+        create: (_) => const ClashSyncSnapshotValidator(),
+      ),
+      Provider<ClashSyncClient>.value(value: deps.syncClientOverride!),
+      Provider<ClashSyncCoordinator>(
+        create: (context) => ClashSyncCoordinator(
+          builder: context.read<ClashSyncSnapshotBuilder>(),
+          validator: context.read<ClashSyncSnapshotValidator>(),
+          client: context.read<ClashSyncClient>(),
+        ),
+      ),
+    ];
+  }
+
+  return [
+    Provider<ClashSyncSnapshotBuilder>(
+      create: (context) => _createClashSyncSnapshotBuilder(context, deps),
+    ),
+    Provider<ClashSyncSnapshotValidator>(
+      create: (_) => const ClashSyncSnapshotValidator(),
+    ),
+    Provider<ClashSaveApiClient>(
+      create: (context) =>
+          ClashSaveApiClient.fromApiClient(context.read<ApiClient>()),
+    ),
+    Provider<HttpClashSyncClient>(
+      create: (context) =>
+          HttpClashSyncClient(context.read<ClashSaveApiClient>()),
+    ),
+    Provider<ClashSyncClient>(
+      create: (context) => context.read<HttpClashSyncClient>(),
+    ),
+    Provider<ClashSyncCoordinator>(
+      create: (context) => ClashSyncCoordinator(
+        builder: context.read<ClashSyncSnapshotBuilder>(),
+        validator: context.read<ClashSyncSnapshotValidator>(),
+        client: context.read<ClashSyncClient>(),
+      ),
+    ),
+  ];
+}
+
+ClashSyncSnapshotBuilder _createClashSyncSnapshotBuilder(
+  BuildContext context,
+  ClashProviderDependencies deps,
+) {
+  return ClashSyncSnapshotBuilder(
+    dependencies: ClashSyncSnapshotBuilderDependencies(
+      schemaVersion: deps.migrationResult?.toVersion,
+      collectionStorage: deps.collectionBackend,
+      storyProgressStorage: deps.storyProgressBackend,
+      expMaterialStorage: deps.expMaterialInventoryBackend,
+      techniqueBookStorage: deps.techniqueBookInventoryBackend,
+      evolutionMaterialStorage: deps.evolutionMaterialInventoryBackend,
+      ticketInventoryStorage: deps.gachaTicketInventoryBackend,
+      lineupsStorage: deps.lineupsBackend,
+      giftsStorage: deps.giftsBackend,
+      dailyMissionsStorage: deps.dailyMissionsBackend,
+      weeklyMissionsStorage: deps.weeklyMissionsBackend,
+      achievementsStorage: deps.achievementsBackend,
+      characterEventsStorage: deps.characterEventsBackend,
+      gachaHistoryStorage: deps.gachaHistoryBackend,
+      gachaPityStorage: deps.gachaPityBackend,
+      gachaDailyStorage: deps.gachaDailyBackend,
+      rewardHistoryStorage: deps.rewardHistoryBackend,
+      gachaRepository: context.read<ClashGachaRepository>(),
+    ),
+  );
 }

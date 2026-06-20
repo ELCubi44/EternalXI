@@ -1,8 +1,10 @@
+import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
 import 'package:eternal_xi/features/clash/debug/data/clash_debug_snapshot_loader.dart';
+import 'package:eternal_xi/features/clash/debug/data/clash_debug_sync_controller.dart';
 import 'package:eternal_xi/features/clash/debug/domain/clash_debug_snapshot.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_repository.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_repository.dart';
@@ -12,28 +14,56 @@ import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_rep
 import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_repository.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/history/data/clash_reward_history_repository.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
+import 'package:eternal_xi/features/clash/sync/domain/clash_sync_operation_result.dart';
+import 'package:eternal_xi/features/clash/sync/domain/clash_sync_result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class ClashDebugScreen extends StatefulWidget {
-  const ClashDebugScreen({super.key, this.sharedPreferences});
+  const ClashDebugScreen({
+    super.key,
+    this.sharedPreferences,
+    this.syncController,
+  });
 
   /// Solo para tests: evita depender del singleton de [SharedPreferences].
   final SharedPreferences? sharedPreferences;
+
+  /// Inyectable en tests; si es null se crea desde [ClashSyncCoordinator].
+  final ClashDebugSyncController? syncController;
 
   @override
   State<ClashDebugScreen> createState() => _ClashDebugScreenState();
 }
 
 class _ClashDebugScreenState extends State<ClashDebugScreen> {
-  late final Future<ClashDebugSnapshot> _snapshotFuture;
+  Future<ClashDebugSnapshot>? _snapshotFuture;
+  ClashDebugSyncController? _syncController;
+  bool _snapshotLoadStarted = false;
 
   @override
-  void initState() {
-    super.initState();
-    _snapshotFuture = _loadSnapshot();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncController ??=
+        widget.syncController ??
+        ClashDebugSyncController(
+          coordinator: context.read<ClashSyncCoordinator>(),
+        );
+    if (!_snapshotLoadStarted) {
+      _snapshotLoadStarted = true;
+      _snapshotFuture = _loadSnapshot();
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.syncController == null) {
+      _syncController?.dispose();
+    }
+    super.dispose();
   }
 
   Future<ClashDebugSnapshot> _loadSnapshot() {
@@ -65,38 +95,44 @@ class _ClashDebugScreenState extends State<ClashDebugScreen> {
           onPressed: () => context.pop(),
         ),
       ),
-      body: FutureBuilder<ClashDebugSnapshot>(
-        future: _snapshotFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(
-                  l10n.clashDebugLoadError,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            );
-          }
-          final data = snapshot.data;
-          if (data == null) {
-            return Center(child: Text(l10n.clashDebugLoadError));
-          }
-          return _ClashDebugBody(snapshot: data);
-        },
-      ),
+      body: _snapshotFuture == null
+          ? const Center(child: CircularProgressIndicator())
+          : FutureBuilder<ClashDebugSnapshot>(
+              future: _snapshotFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        l10n.clashDebugLoadError,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                }
+                final data = snapshot.data;
+                if (data == null) {
+                  return Center(child: Text(l10n.clashDebugLoadError));
+                }
+                return _ClashDebugBody(
+                  snapshot: data,
+                  syncController: _syncController!,
+                );
+              },
+            ),
     );
   }
 }
 
 class _ClashDebugBody extends StatelessWidget {
-  const _ClashDebugBody({required this.snapshot});
+  const _ClashDebugBody({required this.snapshot, required this.syncController});
 
   final ClashDebugSnapshot snapshot;
+  final ClashDebugSyncController syncController;
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +150,8 @@ class _ClashDebugBody extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
+        _ClashDebugOnlineSyncSection(controller: syncController),
+        const SizedBox(height: 8),
         _ClashDebugSection(
           title: l10n.clashDebugSectionStorage,
           children: [
@@ -284,6 +322,197 @@ class _ClashDebugBody extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class _ClashDebugOnlineSyncSection extends StatelessWidget {
+  const _ClashDebugOnlineSyncSection({required this.controller});
+
+  final ClashDebugSyncController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, _) {
+        final l10n = context.l10n;
+        final result = controller.lastResult;
+        final snapshot = result?.snapshot;
+
+        return _ClashDebugSection(
+          title: l10n.clashDebugSectionOnlineSync,
+          children: [
+            Text(
+              l10n.clashDebugSyncReadOnlyRemote,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: context.xiTextSecondary,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _ClashDebugRow(
+              label: l10n.clashDebugSyncLastAttempt,
+              value: _operationLabel(l10n, result),
+            ),
+            _ClashDebugRow(
+              label: l10n.clashDebugSyncContractVersion,
+              value: snapshot != null
+                  ? '${snapshot.contractVersion}'
+                  : l10n.emptyStateDash,
+            ),
+            _ClashDebugRow(
+              label: l10n.clashDebugSyncSchemaVersion,
+              value: snapshot != null
+                  ? '${snapshot.schemaVersion}'
+                  : l10n.emptyStateDash,
+            ),
+            _ClashDebugRow(
+              label: l10n.clashDebugSyncServerRevision,
+              value: _serverRevisionLabel(l10n, controller, result),
+            ),
+            _ClashDebugRow(
+              label: l10n.clashDebugSyncValidationStatus,
+              value: _validationLabel(l10n, result),
+            ),
+            if (controller.authRequired)
+              Padding(
+                padding: const EdgeInsets.only(top: 4, bottom: 4),
+                child: Text(
+                  l10n.clashDebugSyncAuthRequired,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+              )
+            else if (controller.isUnauthorized)
+              Padding(
+                padding: const EdgeInsets.only(top: 4, bottom: 4),
+                child: Text(
+                  l10n.clashDebugSyncAuthRequired,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+              )
+            else if (result != null &&
+                (result.isSuccess ||
+                    result.isNotFound ||
+                    result.isConflict ||
+                    result.isRejected ||
+                    result.status == ClashSyncStatus.unavailable ||
+                    (result.message?.isNotEmpty ?? false)))
+              Padding(
+                padding: const EdgeInsets.only(top: 4, bottom: 4),
+                child: Text(
+                  _statusMessage(l10n, result),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                OutlinedButton(
+                  onPressed: controller.busy ? null : controller.validateLocal,
+                  child: Text(l10n.clashDebugSyncValidateLocal),
+                ),
+                OutlinedButton(
+                  onPressed: controller.busy ? null : controller.pullRemote,
+                  child: Text(l10n.clashDebugSyncPullRemote),
+                ),
+                OutlinedButton(
+                  onPressed: controller.busy ? null : controller.pushLocal,
+                  child: Text(l10n.clashDebugSyncPushLocal),
+                ),
+              ],
+            ),
+            if (controller.busy)
+              const Padding(
+                padding: EdgeInsets.only(top: 12),
+                child: LinearProgressIndicator(),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _operationLabel(
+    AppLocalizations l10n,
+    ClashSyncOperationResult? result,
+  ) {
+    if (result == null) {
+      return l10n.clashDebugSyncStatusNone;
+    }
+    return switch (result.operation) {
+      ClashSyncOperation.validate => l10n.clashDebugSyncOperationValidate,
+      ClashSyncOperation.pull => l10n.clashDebugSyncOperationPull,
+      ClashSyncOperation.push => l10n.clashDebugSyncOperationPush,
+    };
+  }
+
+  String _serverRevisionLabel(
+    AppLocalizations l10n,
+    ClashDebugSyncController controller,
+    ClashSyncOperationResult? result,
+  ) {
+    final revision = result?.serverRevision ?? controller.knownServerRevision;
+    if (revision == null || revision == 0) {
+      return l10n.emptyStateDash;
+    }
+    return '$revision';
+  }
+
+  String _validationLabel(
+    AppLocalizations l10n,
+    ClashSyncOperationResult? result,
+  ) {
+    final validation = result?.validationResult;
+    if (validation == null) {
+      return l10n.emptyStateDash;
+    }
+    if (validation.isValid) {
+      final warnings = validation.warnings.length;
+      if (warnings == 0) {
+        return l10n.clashDebugSyncStatusValid;
+      }
+      return '${l10n.clashDebugSyncStatusValid} '
+          '(${l10n.clashDebugSyncWarningsCount(warnings)})';
+    }
+    return '${l10n.clashDebugSyncStatusInvalid} '
+        '(${l10n.clashDebugSyncErrorsCount(validation.errors.length)})';
+  }
+
+  String _statusMessage(
+    AppLocalizations l10n,
+    ClashSyncOperationResult result,
+  ) {
+    if (result.errorCode == 'unauthorized') {
+      return l10n.clashDebugSyncAuthRequired;
+    }
+    if (result.isNotFound) {
+      return l10n.clashDebugSyncRemoteNotFound;
+    }
+    if (result.isConflict && result.conflict != null) {
+      return l10n.clashDebugSyncConflict(result.conflict!.actualRevision);
+    }
+    if (result.isSuccess &&
+        result.operation == ClashSyncOperation.pull &&
+        result.serverRevision != null) {
+      return l10n.clashDebugSyncRemoteSuccess(result.serverRevision!);
+    }
+    if (result.status == ClashSyncStatus.unavailable &&
+        result.errorCode == 'unauthorized') {
+      return l10n.clashDebugSyncAuthRequired;
+    }
+    if (result.isRejected && result.errorCode == 'unauthorized') {
+      return l10n.clashDebugSyncAuthRequired;
+    }
+    if (result.status == ClashSyncStatus.unavailable) {
+      return result.message ?? l10n.clashDebugSyncUnavailable;
+    }
+    return result.message ?? l10n.emptyStateDash;
   }
 }
 

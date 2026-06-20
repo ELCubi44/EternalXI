@@ -15,6 +15,7 @@ import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_sto
 import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_storage.dart';
 import 'package:eternal_xi/features/clash/news/data/clash_news_read_storage.dart';
 import 'package:eternal_xi/features/clash/shared/di/clash_providers.dart';
+import 'package:eternal_xi/features/clash/sync/data/fake_clash_sync_client.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/history/data/clash_reward_history_storage.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
@@ -54,6 +55,7 @@ ClashProviderDependencies testClashProviderDependencies() {
     gachaTicketInventoryBackend: InMemoryClashGachaTicketInventoryBackend(),
     gachaTicketRepository: gachaTicketRepository,
     rewardHistoryBackend: InMemoryClashRewardHistoryBackend(),
+    syncClientOverride: FakeClashSyncClient(),
   );
 }
 

@@ -1059,7 +1059,23 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 **Objetivo:** cliente HTTP real sin sync automática, sin aplicar remoto a SP, sin UI pública.
 
-**Sin cambios** en backend, providers reales, gameplay, economía, SP, Fantasy, leagues, rewards.
+**Sin cambios** en backend, gameplay, economía, SP, Fantasy, leagues, rewards.
+
+---
+
+## Fase 72 — Manual sync diagnostics
+
+**Estado:** implementada.
+
+- Providers: `ClashSaveApiClient`, `HttpClashSyncClient`, `ClashSyncCoordinator` (sin auto-ejecución).
+- `ClashDebugSyncController` + sección en diagnóstico local.
+- Botones: validar / descargar / subir.
+- Pull remoto no aplica a SharedPreferences.
+- Tests: `clash_debug_sync_controller_test.dart`, `clash_debug_sync_screen_test.dart`.
+
+**Objetivo:** herramienta manual de diagnóstico sync online para usuario autenticado.
+
+**Sin cambios** en sync automática, merge, claims server-side, backend, Fantasy, leagues, rewards.
 
 ---
 

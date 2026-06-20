@@ -269,6 +269,30 @@ class AppLocalizations {
       'clashDebugAchievementsClaimed': 'Logros reclamados',
       'clashDebugAchievementsCompleted': 'Logros completados',
       'clashDebugClaimProgress': '{done}/{total}',
+      'clashDebugSectionOnlineSync': 'Sincronización online',
+      'clashDebugSyncLastAttempt': 'Último intento',
+      'clashDebugSyncContractVersion': 'Contract version',
+      'clashDebugSyncSchemaVersion': 'Schema snapshot',
+      'clashDebugSyncServerRevision': 'Server revision',
+      'clashDebugSyncValidationStatus': 'Validación',
+      'clashDebugSyncValidateLocal': 'Validar snapshot local',
+      'clashDebugSyncPullRemote': 'Descargar partida online',
+      'clashDebugSyncPushLocal': 'Subir partida local',
+      'clashDebugSyncStatusNone': 'Sin intentos',
+      'clashDebugSyncStatusValid': 'Snapshot local válido',
+      'clashDebugSyncStatusInvalid': 'Snapshot local inválido',
+      'clashDebugSyncRemoteNotFound': 'No hay partida online todavía',
+      'clashDebugSyncRemoteSuccess': 'Partida online (revision {revision})',
+      'clashDebugSyncConflict': 'Conflicto de revisión (remota: {revision})',
+      'clashDebugSyncAuthRequired': 'Inicia sesión para sincronizar online',
+      'clashDebugSyncUnavailable': 'Servicio no disponible',
+      'clashDebugSyncWarningsCount': '{count} avisos',
+      'clashDebugSyncErrorsCount': '{count} errores',
+      'clashDebugSyncReadOnlyRemote':
+          'El snapshot remoto no se aplica al almacenamiento local',
+      'clashDebugSyncOperationValidate': 'Validar',
+      'clashDebugSyncOperationPull': 'Descargar',
+      'clashDebugSyncOperationPush': 'Subir',
       'clashAchievementsTitle': 'Logros',
       'clashAchievementsPermanentHint':
           'Progreso permanente. No se reinician cada día.',
@@ -1260,6 +1284,30 @@ class AppLocalizations {
       'clashDebugAchievementsClaimed': 'Achievements claimed',
       'clashDebugAchievementsCompleted': 'Achievements completed',
       'clashDebugClaimProgress': '{done}/{total}',
+      'clashDebugSectionOnlineSync': 'Online sync',
+      'clashDebugSyncLastAttempt': 'Last attempt',
+      'clashDebugSyncContractVersion': 'Contract version',
+      'clashDebugSyncSchemaVersion': 'Schema snapshot',
+      'clashDebugSyncServerRevision': 'Server revision',
+      'clashDebugSyncValidationStatus': 'Validation',
+      'clashDebugSyncValidateLocal': 'Validate local snapshot',
+      'clashDebugSyncPullRemote': 'Download online save',
+      'clashDebugSyncPushLocal': 'Upload local save',
+      'clashDebugSyncStatusNone': 'No attempts yet',
+      'clashDebugSyncStatusValid': 'Local snapshot valid',
+      'clashDebugSyncStatusInvalid': 'Local snapshot invalid',
+      'clashDebugSyncRemoteNotFound': 'No online save yet',
+      'clashDebugSyncRemoteSuccess': 'Online save (revision {revision})',
+      'clashDebugSyncConflict': 'Revision conflict (remote: {revision})',
+      'clashDebugSyncAuthRequired': 'Sign in to sync online',
+      'clashDebugSyncUnavailable': 'Service unavailable',
+      'clashDebugSyncWarningsCount': '{count} warnings',
+      'clashDebugSyncErrorsCount': '{count} errors',
+      'clashDebugSyncReadOnlyRemote':
+          'Remote snapshot is not applied to local storage',
+      'clashDebugSyncOperationValidate': 'Validate',
+      'clashDebugSyncOperationPull': 'Download',
+      'clashDebugSyncOperationPush': 'Upload',
       'clashAchievementsTitle': 'Achievements',
       'clashAchievementsPermanentHint':
           'Permanent progress. They do not reset daily.',
@@ -2350,6 +2398,36 @@ class AppLocalizations {
   String clashDebugClaimProgress(int done, int total) => _t(
     'clashDebugClaimProgress',
   ).replaceAll('{done}', '$done').replaceAll('{total}', '$total');
+  String get clashDebugSectionOnlineSync => _t('clashDebugSectionOnlineSync');
+  String get clashDebugSyncLastAttempt => _t('clashDebugSyncLastAttempt');
+  String get clashDebugSyncContractVersion =>
+      _t('clashDebugSyncContractVersion');
+  String get clashDebugSyncSchemaVersion => _t('clashDebugSyncSchemaVersion');
+  String get clashDebugSyncServerRevision => _t('clashDebugSyncServerRevision');
+  String get clashDebugSyncValidationStatus =>
+      _t('clashDebugSyncValidationStatus');
+  String get clashDebugSyncValidateLocal => _t('clashDebugSyncValidateLocal');
+  String get clashDebugSyncPullRemote => _t('clashDebugSyncPullRemote');
+  String get clashDebugSyncPushLocal => _t('clashDebugSyncPushLocal');
+  String get clashDebugSyncStatusNone => _t('clashDebugSyncStatusNone');
+  String get clashDebugSyncStatusValid => _t('clashDebugSyncStatusValid');
+  String get clashDebugSyncStatusInvalid => _t('clashDebugSyncStatusInvalid');
+  String get clashDebugSyncRemoteNotFound => _t('clashDebugSyncRemoteNotFound');
+  String clashDebugSyncRemoteSuccess(int revision) =>
+      _t('clashDebugSyncRemoteSuccess').replaceAll('{revision}', '$revision');
+  String clashDebugSyncConflict(int revision) =>
+      _t('clashDebugSyncConflict').replaceAll('{revision}', '$revision');
+  String get clashDebugSyncAuthRequired => _t('clashDebugSyncAuthRequired');
+  String get clashDebugSyncUnavailable => _t('clashDebugSyncUnavailable');
+  String clashDebugSyncWarningsCount(int count) =>
+      _t('clashDebugSyncWarningsCount').replaceAll('{count}', '$count');
+  String clashDebugSyncErrorsCount(int count) =>
+      _t('clashDebugSyncErrorsCount').replaceAll('{count}', '$count');
+  String get clashDebugSyncReadOnlyRemote => _t('clashDebugSyncReadOnlyRemote');
+  String get clashDebugSyncOperationValidate =>
+      _t('clashDebugSyncOperationValidate');
+  String get clashDebugSyncOperationPull => _t('clashDebugSyncOperationPull');
+  String get clashDebugSyncOperationPush => _t('clashDebugSyncOperationPush');
   String get clashAchievementsTitle => _t('clashAchievementsTitle');
   String get clashAchievementsPermanentHint =>
       _t('clashAchievementsPermanentHint');

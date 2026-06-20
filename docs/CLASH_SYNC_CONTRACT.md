@@ -110,9 +110,23 @@ Código: `lib/features/clash/sync/data/clash_sync_client.dart`, `fake_clash_sync
 
 Errores tipados: `ClashSaveApiException`, `ClashSaveConflictException`, `ClashSaveNotFoundException`.
 
-**No** registrado en providers de la app, **no** sync automática, **no** aplica snapshot remoto a SP.
+**No** sync automática al arrancar. Pull remoto **no** se aplica a SharedPreferences (Fase 72: solo diagnóstico manual).
 
-Código: `clash_save_api_client.dart`, `http_clash_sync_client.dart`.
+Código: `clash_save_api_client.dart`, `http_clash_sync_client.dart`, `clash_providers.dart`.
+
+## Diagnóstico manual de sync (Fase 72)
+
+`ClashDebugSyncController` + sección **Sincronización online** en `/clash/debug`.
+
+| Acción | Comportamiento |
+|--------|----------------|
+| Validar snapshot local | `validateLocalSnapshotOnly()` |
+| Descargar partida online | `pullRemoteSnapshot()` — muestra revision/resumen, **no aplica a SP** |
+| Subir partida local | `pushLocalSnapshot()` — POST si no hay remoto, PUT si hay `serverRevision` |
+
+Estado en memoria (`knownServerRevision`, último resultado). 401 / no autenticado → mensaje claro.
+
+Código: `clash_debug_sync_controller.dart`, `clash_debug_screen.dart`.
 
 ## Coordinador local de sync (Fase 68)
 
