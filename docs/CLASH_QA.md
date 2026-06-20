@@ -28,6 +28,17 @@ flutter test test/features/clash/responsive/clash_responsive_test.dart
 
 **Cuándo usarlo:** tras cambios de layout en pantallas Clash, antes de cerrar una fase con muchas pantallas densas, o cuando sospeches roturas en móviles estrechos. Complementa el smoke: el smoke valida flujos; el responsive valida constraints y overflows.
 
+## Compatibilidad storage (Fase 64)
+
+Valida que payloads SharedPreferences antiguos siguen cargando en los backends actuales (colección, inventarios, misiones, gacha, story, reward history, etc.).
+
+```bash
+cd eternalxi_front
+flutter test test/features/clash/storage/clash_local_storage_compatibility_test.dart
+```
+
+**Cuándo usarlo:** tras cambios en parsing/storage Clash, al añadir campos a snapshots persistidos, o antes de migraciones de schema. Complementa smoke (flujos) y responsive (layout).
+
 ## Suite completa Clash
 
 ```bash
@@ -37,12 +48,13 @@ flutter test test/features/clash/
 
 **Cuándo usarla:** antes de cerrar una fase del roadmap, tras cambios en economía local, storage, migraciones o pantallas con mucha cobertura de tests.
 
-### Resumen: smoke vs responsive vs suite completa
+### Resumen: smoke vs responsive vs compatibility vs suite completa
 
 | Comando | Duración | Qué detecta |
 |---------|----------|-------------|
 | Smoke | ~10 s | Flujos locales principales renderizan y no lanzan errores Flutter |
 | Responsive | ~10 s | Overflows RenderFlex, constraints rotos en viewports móviles |
+| Compatibility | ~5 s | Payloads SharedPreferences legacy cargan sin romper parsing |
 | Suite `test/features/clash/` | ~minutos | Regresiones unitarias/UI de todo el módulo Clash |
 
 ## Analyze (Clash)

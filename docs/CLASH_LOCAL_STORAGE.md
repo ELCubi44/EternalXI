@@ -79,8 +79,22 @@ Integración: `prepareClashProviders()` ejecuta el runner **antes** de crear bac
 ```bash
 cd eternalxi_front
 flutter test test/features/clash/migrations/clash_local_migration_runner_test.dart
+flutter test test/features/clash/storage/clash_local_storage_compatibility_test.dart
 flutter test test/features/clash/debug/clash_debug_screen_test.dart
 ```
+
+## Compatibilidad de datos antiguos (Fase 64)
+
+Suite que monta `SharedPreferences` mock con payloads legacy mínimos y verifica que los backends actuales los cargan sin pérdida ni excepciones.
+
+**Storages cubiertos:** schema/migración 0→1, colección v1/v2, inventarios (EXP, técnica, evolución, tickets), lineups, gifts, misiones daily/weekly, achievements, character events, gacha history/pity/daily, story progress/wallet, reward history.
+
+```bash
+cd eternalxi_front
+flutter test test/features/clash/storage/clash_local_storage_compatibility_test.dart
+```
+
+**Cuándo usarla:** tras cambiar parsing de storage, añadir campos nuevos a snapshots, o antes de una migración 1→2. Complementa `migrations/` (metadata de schema) con compatibilidad de payloads reales.
 
 ## Panel de diagnóstico local (Fase 61)
 

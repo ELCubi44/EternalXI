@@ -932,4 +932,19 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 64 — Local storage compatibility tests
+
+**Estado:** implementada.
+
+- Suite `test/features/clash/storage/clash_local_storage_compatibility_test.dart`.
+- Fixtures mínimas en `clash_local_storage_compatibility_fixtures.dart`.
+- Casos: schema 0→1, collection v1/v2, inventarios, lineups, gifts, missions, achievements, character events, gacha history/pity/daily, story progress/wallet, reward history, keys centralizadas.
+- Documentación ampliada en `docs/CLASH_LOCAL_STORAGE.md` y `docs/CLASH_QA.md`.
+
+**Objetivo:** QA de persistencia — asegurar que datos locales antiguos siguen cargando sin cambiar gameplay, economía ni UI.
+
+**Sin cambios** en granter, economía, claves SP, Fantasy, leagues ni rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*
