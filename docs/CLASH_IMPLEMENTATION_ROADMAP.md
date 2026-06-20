@@ -916,4 +916,20 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 63 — Responsive / anti-overflow tests
+
+**Estado:** implementada.
+
+- Suite `test/features/clash/responsive/clash_responsive_test.dart`.
+- Helper `clash_responsive_test_support.dart`: viewports 360×640, 390×844, 430×932; pump con MaterialApp/localizations/providers; `expectNoFlutterLayoutErrors()`.
+- Pantallas: home, story map/reward, events list/detail/match prepare, gifts, daily/weekly missions, achievements, shop (+ confirm dialog), inventory, reward history, debug, help.
+- Ajustes mínimos de layout en inventario (tiles y secciones) cuando los tests detectaron overflow real.
+- Documentación QA ampliada en `docs/CLASH_QA.md`.
+
+**Objetivo:** QA visual automatizada para detectar overflows y roturas básicas en móviles pequeños/medianos sin cambiar gameplay, economía ni datos.
+
+**Sin cambios** en granter, economía, claves SP, Fantasy, leagues ni rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

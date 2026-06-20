@@ -45,10 +45,14 @@ class ClashInventoryCategorySection extends StatelessWidget {
             const SizedBox(width: 10),
             Icon(_iconFor(category), size: 18, color: accent),
             const SizedBox(width: 8),
-            Text(
-              _categoryLabel(l10n, category),
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
+            Expanded(
+              child: Text(
+                _categoryLabel(l10n, category),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
           ],

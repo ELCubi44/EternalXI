@@ -13,6 +13,21 @@ flutter test test/features/clash/smoke/clash_local_smoke_test.dart
 
 **Cuándo usarlo:** antes de commit/push de cambios Clash, tras refactors de navegación o providers, o como comprobación rápida de regresión UI local.
 
+## Responsive / anti-overflow (Fase 63)
+
+Valida que pantallas clave renderizan sin overflows de layout en viewports móviles pequeños y medianos.
+
+```bash
+cd eternalxi_front
+flutter test test/features/clash/responsive/clash_responsive_test.dart
+```
+
+**Viewports:** 360×640 (small), 390×844 (medium), 430×932 (tall).
+
+**Pantallas:** home, story (mapa + reward), events (lista, detalle Mika, preparación stage), gifts, misiones daily/weekly, achievements, shop (+ diálogo compra), inventory, reward history (vacío/con entrada), debug, help.
+
+**Cuándo usarlo:** tras cambios de layout en pantallas Clash, antes de cerrar una fase con muchas pantallas densas, o cuando sospeches roturas en móviles estrechos. Complementa el smoke: el smoke valida flujos; el responsive valida constraints y overflows.
+
 ## Suite completa Clash
 
 ```bash
@@ -21,6 +36,14 @@ flutter test test/features/clash/
 ```
 
 **Cuándo usarla:** antes de cerrar una fase del roadmap, tras cambios en economía local, storage, migraciones o pantallas con mucha cobertura de tests.
+
+### Resumen: smoke vs responsive vs suite completa
+
+| Comando | Duración | Qué detecta |
+|---------|----------|-------------|
+| Smoke | ~10 s | Flujos locales principales renderizan y no lanzan errores Flutter |
+| Responsive | ~10 s | Overflows RenderFlex, constraints rotos en viewports móviles |
+| Suite `test/features/clash/` | ~minutos | Regresiones unitarias/UI de todo el módulo Clash |
 
 ## Analyze (Clash)
 
