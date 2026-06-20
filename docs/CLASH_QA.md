@@ -50,6 +50,17 @@ flutter test test/features/clash/sync/clash_sync_snapshot_test.dart
 
 **Cuándo usarlo:** tras cambiar DTOs sync, el builder o campos del contrato documentado en [`CLASH_SYNC_CONTRACT.md`](./CLASH_SYNC_CONTRACT.md).
 
+## Sync snapshot validator (Fase 66)
+
+Valida inconsistencias estructurales e IDs contra catálogos opcionales (`ClashSyncSnapshotValidator`).
+
+```bash
+cd eternalxi_front
+flutter test test/features/clash/sync/clash_sync_snapshot_validator_test.dart
+```
+
+**Cuándo usarlo:** tras añadir checks al validador, cambiar reglas de coherencia del snapshot o antes de conectar sync backend.
+
 ## Suite completa Clash
 
 ```bash
@@ -67,6 +78,7 @@ flutter test test/features/clash/
 | Responsive | ~10 s | Overflows RenderFlex, constraints rotos en viewports móviles |
 | Compatibility | ~5 s | Payloads SharedPreferences legacy cargan sin romper parsing |
 | Sync contract | ~5 s | DTOs sync serializan/deserializan; builder local sin HTTP |
+| Sync validator | ~5 s | Snapshot sync válido/inválido; catálogos opcionales |
 | Suite `test/features/clash/` | ~minutos | Regresiones unitarias/UI de todo el módulo Clash |
 
 ## Analyze (Clash)

@@ -44,6 +44,36 @@ Son independientes: una app puede estar en schema local `1` y enviar snapshots c
 
 Builder: `ClashSyncSnapshotBuilder` — lectura de storages inyectables, sin red ni mutación.
 
+## Validación local del snapshot (Fase 66)
+
+`ClashSyncSnapshotValidator` valida un `ClashSyncSnapshot` **antes** de una futura sync, sin reparar datos ni usar red.
+
+Resultado: `ClashSyncValidationResult` (`isValid`, `errors`, `warnings`, `checkedAt`, `hasErrors`, `hasWarnings`).
+
+Cada issue: `ClashSyncValidationIssue` (`code`, `message`, `path`, `severity`: error | warning).
+
+### Checks actuales
+
+| Área | Errores (estructura) | Con catálogo inyectado |
+|------|----------------------|-------------------------|
+| Contrato | `contractVersion == 1`, `schemaVersion >= 1` | — |
+| Wallet | `coins`, `gems` >= 0 | — |
+| Inventarios | cantidades >= 0, IDs no vacíos | IDs en catálogos de materiales/tickets |
+| Colección | `duplicateCopies` >= 0, `uniqueCount` coherente, IDs no vacíos | `knownCardIds` |
+| Lineups | contadores >= 0, `activeLineupId` no vacío | `lineupSlotsByLineupId` + cartas conocidas/propias |
+| Historia | IDs de nivel/recompensa no vacíos | — |
+| Eventos | stage IDs no vacíos, `clearCounts` >= 0 | `knownEventStageIdsByEvent` |
+| Misiones | progreso >= 0, IDs no vacíos | `knownMissionIds` |
+| Logros / regalos | IDs no vacíos | `knownAchievementIds`, `knownGiftIds` |
+| Gacha | pity/history >= 0, `bannerId` no vacío | `knownBannerIds` |
+| Reward history | counts >= 0, partial/failure <= entryCount | — |
+
+Catálogos opcionales (`ClashSyncSnapshotValidatorCatalogs`): `knownCardIds`, `knownEventIds`, `knownEventStageIdsByEvent`, `knownMissionIds`, `knownAchievementIds`, `knownGiftIds`, `knownBannerIds`, `knownRewardItemIds`, `knownExpMaterialIds`, `knownTechniqueBookIds`, `knownEvolutionMaterialIds`, `knownTicketIds`, `lineupSlotsByLineupId`.
+
+Sin catálogos: no falla por IDs desconocidos; emite **warnings** cuando hay datos que no pudieron verificarse.
+
+Código: `lib/features/clash/sync/data/clash_sync_snapshot_validator.dart`.
+
 ## Ejemplo JSON
 
 ```json
@@ -158,6 +188,7 @@ Resolución real, borrado remoto/local y sync automática **no están implementa
 ```bash
 cd eternalxi_front
 flutter test test/features/clash/sync/clash_sync_snapshot_test.dart
+flutter test test/features/clash/sync/clash_sync_snapshot_validator_test.dart
 ```
 
 Ver también: [`CLASH_LOCAL_STORAGE.md`](./CLASH_LOCAL_STORAGE.md), [`CLASH_QA.md`](./CLASH_QA.md).

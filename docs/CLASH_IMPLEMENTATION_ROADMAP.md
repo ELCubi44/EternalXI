@@ -964,4 +964,20 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 66 — Sync snapshot validator
+
+**Estado:** implementada.
+
+- `ClashSyncValidationResult`, `ClashSyncValidationIssue` en domain.
+- `ClashSyncSnapshotValidator` + `ClashSyncSnapshotValidatorCatalogs` (catálogos opcionales).
+- Checks: contrato, wallet, inventarios, colección, lineups (slots inyectables), story/events, missions/achievements/gifts, gacha, reward history summary.
+- Suite `test/features/clash/sync/clash_sync_snapshot_validator_test.dart`.
+- Documentación ampliada en `docs/CLASH_SYNC_CONTRACT.md` y `docs/CLASH_QA.md`.
+
+**Objetivo:** QA local del snapshot antes de futura sync; sin HTTP, reparación automática ni cambios de gameplay/economía/UI/persistencia.
+
+**Sin cambios** en granter, economía, claves SP, Fantasy, leagues, rewards ni backend.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*
