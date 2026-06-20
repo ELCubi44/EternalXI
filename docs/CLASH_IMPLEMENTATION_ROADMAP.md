@@ -1079,4 +1079,20 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 73 — Manual remote snapshot apply
+
+**Estado:** implementada.
+
+- `ClashSyncSnapshotApplier` + `ClashSyncLocalBackupStore` (`clash_last_local_backup_v1`).
+- `ClashSyncApplyResult` con secciones aplicadas/omitidas.
+- Diagnóstico: botón **Aplicar partida online** con confirmación explícita.
+- Backup local antes de escribir; validación remota previa; sin sync automática.
+- Tests: `clash_sync_snapshot_applier_test.dart`, controller/screen/responsive actualizados.
+
+**Objetivo:** aplicación manual segura de snapshot remoto a SP local.
+
+**Sin cambios** en merge real, sync automática, backend, Fantasy, leagues, rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

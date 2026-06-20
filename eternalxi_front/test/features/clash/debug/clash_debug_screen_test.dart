@@ -198,6 +198,11 @@ void main() {
         _debugApp(providers: collectionProviders, sharedPreferences: prefs),
       );
       await _pumpUntilDebugLoaded(tester);
+      await tester.scrollUntilVisible(
+        find.text('Cartas únicas'),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('Cartas únicas'), findsOneWidget);
       expect(find.text('2'), findsWidgets);
 

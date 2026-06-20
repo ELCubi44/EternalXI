@@ -26,6 +26,9 @@ abstract final class ClashSharedPreferencesKeys {
   static const storyProgress = 'clash_story_progress_v1';
   static const rewardHistory = 'clash_reward_history_v1';
 
+  /// Último backup local antes de aplicar snapshot remoto (Fase 73).
+  static const lastLocalBackup = 'clash_last_local_backup_v1';
+
   /// Claves de datos de progreso/inventario (excluye metadata de schema).
   static const dataKeys = <String>{
     lineups7v7,

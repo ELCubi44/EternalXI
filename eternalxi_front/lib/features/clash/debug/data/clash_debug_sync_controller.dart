@@ -1,19 +1,37 @@
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
+import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_operation_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_result.dart';
+import 'package:eternal_xi/features/clash/sync/domain/clash_sync_snapshot.dart';
 import 'package:flutter/foundation.dart';
 
-/// Estado en memoria del panel manual de sync online en diagnóstico (Fase 72).
+/// Estado en memoria del panel manual de sync online en diagnóstico (Fase 72–73).
 class ClashDebugSyncController extends ChangeNotifier {
-  ClashDebugSyncController({required this.coordinator, this.isAuthenticated});
+  ClashDebugSyncController({
+    required this.coordinator,
+    this.applier,
+    this.isAuthenticated,
+  });
 
   final ClashSyncCoordinator coordinator;
+  final ClashSyncSnapshotApplier? applier;
   final Future<bool> Function()? isAuthenticated;
 
   ClashSyncOperationResult? lastResult;
+  ClashSyncApplyResult? lastApplyResult;
+  ClashSyncSnapshot? pendingRemoteSnapshot;
   int? knownServerRevision;
   bool busy = false;
   bool authRequired = false;
+
+  bool get hasPendingRemoteSnapshot => pendingRemoteSnapshot != null;
+
+  bool get canApplyPendingRemote =>
+      pendingRemoteSnapshot != null &&
+      lastResult?.operation == ClashSyncOperation.pull &&
+      lastResult?.isSuccess == true &&
+      applier != null;
 
   Future<void> validateLocal() async {
     if (!await _ensureAuthenticated()) {
@@ -29,6 +47,9 @@ class ClashDebugSyncController extends ChangeNotifier {
     await _run(() async {
       final result = await coordinator.pullRemoteSnapshot();
       _rememberRevision(result);
+      if (result.isSuccess && result.snapshot != null) {
+        pendingRemoteSnapshot = result.snapshot;
+      }
       return result;
     });
   }
@@ -63,6 +84,32 @@ class ClashDebugSyncController extends ChangeNotifier {
       _rememberRevision(updated);
       return updated;
     });
+  }
+
+  /// Aplica el snapshot remoto pendiente. Requiere confirmación en UI antes de llamar.
+  Future<ClashSyncApplyResult?> applyPendingRemote() async {
+    final remote = pendingRemoteSnapshot;
+    final snapshotApplier = applier;
+    if (remote == null || snapshotApplier == null) {
+      return null;
+    }
+    if (!await _ensureAuthenticated()) {
+      return null;
+    }
+
+    authRequired = false;
+    busy = true;
+    notifyListeners();
+    try {
+      lastApplyResult = await snapshotApplier.applyRemoteSnapshot(
+        remote,
+        serverRevision: knownServerRevision,
+      );
+      return lastApplyResult;
+    } finally {
+      busy = false;
+      notifyListeners();
+    }
   }
 
   Future<void> _run(Future<ClashSyncOperationResult> Function() action) async {

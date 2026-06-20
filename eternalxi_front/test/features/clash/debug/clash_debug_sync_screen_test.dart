@@ -8,6 +8,9 @@ import 'package:eternal_xi/features/clash/sync/data/clash_sync_client.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_builder.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_validator.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
+import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_result.dart';
+import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_status.dart';
 import 'package:eternal_xi/features/clash/sync/data/fake_clash_sync_client.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_snapshot.dart';
@@ -57,7 +60,10 @@ Widget _debugApp({
   );
 }
 
-ClashDebugSyncController _syncController(ClashSyncClient client) {
+ClashDebugSyncController _syncController(
+  ClashSyncClient client, {
+  ClashSyncSnapshotApplier? applier,
+}) {
   return ClashDebugSyncController(
     coordinator: ClashSyncCoordinator(
       builder: _StubSnapshotBuilder(_validSnapshot()),
@@ -65,6 +71,7 @@ ClashDebugSyncController _syncController(ClashSyncClient client) {
       client: client,
       now: () => _epoch,
     ),
+    applier: applier,
   );
 }
 
@@ -120,13 +127,58 @@ void main() {
       await tester.tap(find.text('Subir partida local'));
       await tester.pumpAndSettle();
       expect(find.textContaining('Conflicto de revisión'), findsOneWidget);
+
+      final applier = _CountingApplier(prefs: prefs);
+      final applyController = _syncController(client, applier: applier);
+      addTearDown(applyController.dispose);
+
+      await tester.pumpWidget(
+        _debugApp(
+          providers: buildClashProviders(
+            _depsWithClient(client, sharedPreferences: prefs),
+          ),
+          sharedPreferences: prefs,
+          syncController: applyController,
+        ),
+      );
+      await _pumpUntilDebugLoaded(tester);
+
+      final applyFinder = find.widgetWithText(
+        OutlinedButton,
+        'Aplicar partida online a este dispositivo',
+      );
+      expect(tester.widget<OutlinedButton>(applyFinder).onPressed, isNull);
+
+      await tester.tap(find.text('Subir partida local'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Descargar partida online'));
+      await tester.pumpAndSettle();
+
+      expect(applyController.canApplyPendingRemote, isTrue);
+      expect(tester.widget<OutlinedButton>(applyFinder).onPressed, isNotNull);
+
+      await tester.tap(applyFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancelar'));
+      await tester.pumpAndSettle();
+      expect(applier.applyCalls, 0);
+
+      await tester.tap(applyFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Aplicar'));
+      await tester.pumpAndSettle();
+      expect(applier.applyCalls, 1);
+      expect(find.text('Aplicada correctamente'), findsOneWidget);
     });
   });
 }
 
 final _epoch = DateTime.utc(2026, 6, 20, 12);
 
-ClashProviderDependencies _depsWithClient(ClashSyncClient client) {
+ClashProviderDependencies _depsWithClient(
+  ClashSyncClient client, {
+  SharedPreferences? sharedPreferences,
+}) {
   final deps = testClashProviderDependencies();
   return ClashProviderDependencies(
     lineupsBackend: deps.lineupsBackend,
@@ -150,6 +202,7 @@ ClashProviderDependencies _depsWithClient(ClashSyncClient client) {
     gachaTicketInventoryBackend: deps.gachaTicketInventoryBackend,
     gachaTicketRepository: deps.gachaTicketRepository,
     rewardHistoryBackend: deps.rewardHistoryBackend,
+    sharedPreferences: sharedPreferences,
     syncClientOverride: client,
   );
 }
@@ -175,4 +228,35 @@ class _StubSnapshotBuilder extends ClashSyncSnapshotBuilder {
 
   @override
   Future<ClashSyncSnapshot> build() async => _snapshot;
+}
+
+class _CountingApplier extends ClashSyncSnapshotApplier {
+  _CountingApplier({
+    required SharedPreferences prefs,
+    ClashSyncApplyResult? result,
+  }) : _result =
+           result ??
+           const ClashSyncApplyResult(
+             status: ClashSyncApplyStatus.success,
+             backupCreated: true,
+           ),
+       super(
+         builder: _StubSnapshotBuilder(_validSnapshot()),
+         validator: const ClashSyncSnapshotValidator(),
+         dependencies: ClashSyncSnapshotApplierDependencies(
+           sharedPreferences: prefs,
+         ),
+       );
+
+  final ClashSyncApplyResult _result;
+  int applyCalls = 0;
+
+  @override
+  Future<ClashSyncApplyResult> applyRemoteSnapshot(
+    ClashSyncSnapshot remote, {
+    int? serverRevision,
+  }) async {
+    applyCalls += 1;
+    return _result;
+  }
 }

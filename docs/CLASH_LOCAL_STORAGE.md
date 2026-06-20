@@ -8,6 +8,22 @@ Persistencia **local-first** de Clash en `SharedPreferences`. Sin sync remoto en
 |-------|------|-------------|
 | `clash_schema_version` | `int` | Versión global del esquema local Clash |
 | `clash_last_migrated_at` | `String` (ISO-8601 UTC) | Última migración ejecutada |
+| `clash_last_local_backup_v1` | `String` (JSON) | Último backup local antes de aplicar snapshot remoto (Fase 73) |
+
+### Formato backup (`clash_last_local_backup_v1`)
+
+JSON con:
+
+| Campo | Descripción |
+|-------|-------------|
+| `generatedAt` | ISO-8601 UTC |
+| `source` | `beforeRemoteApply` |
+| `serverRevision` | Revisión remota conocida (opcional) |
+| `snapshot` | `ClashSyncSnapshot` completo del estado local previo |
+
+Solo se conserva el **último** backup (no historial). No forma parte de `dataKeys`.
+
+Código: `clash_sync_local_backup.dart`, `ClashSyncLocalBackupStore`.
 
 - **Versión actual de la app:** `1` (`ClashStorageSchema.currentVersion`)
 - **Instalaciones sin clave:** se consideran versión `0` (legacy)

@@ -66,6 +66,17 @@ void main() {
         );
       });
 
+      test('storageKey de backups no está en dataKeys', () {
+        expect(
+          ClashSharedPreferencesKeys.lastLocalBackup,
+          'clash_last_local_backup_v1',
+        );
+        expect(
+          ClashSharedPreferencesKeys.dataKeys,
+          isNot(contains(ClashSharedPreferencesKeys.lastLocalBackup)),
+        );
+      });
+
       test(
         'storageKey de backends coincide con ClashSharedPreferencesKeys',
         () {

@@ -3,6 +3,7 @@ import 'package:eternal_xi/features/clash/sync/data/clash_save_api_client.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_client.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_builder.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_validator.dart';
 import 'package:eternal_xi/features/clash/sync/data/http_clash_sync_client.dart';
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievement_event_sink.dart';
@@ -100,6 +101,7 @@ class ClashProviderDependencies {
     required this.gachaTicketInventoryBackend,
     required this.gachaTicketRepository,
     required this.rewardHistoryBackend,
+    this.sharedPreferences,
     this.migrationResult,
     this.syncClientOverride,
   });
@@ -126,6 +128,7 @@ class ClashProviderDependencies {
   final ClashGachaTicketInventoryStorageBackend gachaTicketInventoryBackend;
   final ClashGachaTicketRepository gachaTicketRepository;
   final ClashRewardHistoryStorageBackend rewardHistoryBackend;
+  final SharedPreferences? sharedPreferences;
   final ClashMigrationResult? migrationResult;
 
   /// Cliente sync inyectado (p. ej. [FakeClashSyncClient] en tests). Si es null, usa HTTP.
@@ -228,6 +231,7 @@ Future<ClashProviderDependencies> prepareClashProviders() async {
     gachaTicketInventoryBackend: gachaTicketInventoryBackend,
     gachaTicketRepository: gachaTicketRepository,
     rewardHistoryBackend: rewardHistoryBackend,
+    sharedPreferences: prefs,
     migrationResult: migrationResult,
   );
 }
@@ -506,6 +510,7 @@ List<SingleChildWidget> _buildClashSyncProviders(
           client: context.read<ClashSyncClient>(),
         ),
       ),
+      ..._buildClashSyncApplierProviders(deps),
     ];
   }
 
@@ -532,6 +537,27 @@ List<SingleChildWidget> _buildClashSyncProviders(
         builder: context.read<ClashSyncSnapshotBuilder>(),
         validator: context.read<ClashSyncSnapshotValidator>(),
         client: context.read<ClashSyncClient>(),
+      ),
+    ),
+    ..._buildClashSyncApplierProviders(deps),
+  ];
+}
+
+List<SingleChildWidget> _buildClashSyncApplierProviders(
+  ClashProviderDependencies deps,
+) {
+  if (deps.sharedPreferences == null) {
+    return const [];
+  }
+  return [
+    Provider<ClashSyncSnapshotApplier>(
+      create: (context) => ClashSyncSnapshotApplier(
+        builder: context.read<ClashSyncSnapshotBuilder>(),
+        validator: context.read<ClashSyncSnapshotValidator>(),
+        dependencies: _createClashSyncSnapshotApplierDependencies(
+          context,
+          deps,
+        ),
       ),
     ),
   ];
@@ -562,5 +588,30 @@ ClashSyncSnapshotBuilder _createClashSyncSnapshotBuilder(
       rewardHistoryStorage: deps.rewardHistoryBackend,
       gachaRepository: context.read<ClashGachaRepository>(),
     ),
+  );
+}
+
+ClashSyncSnapshotApplierDependencies
+_createClashSyncSnapshotApplierDependencies(
+  BuildContext context,
+  ClashProviderDependencies deps,
+) {
+  return ClashSyncSnapshotApplierDependencies(
+    sharedPreferences: deps.sharedPreferences!,
+    collectionStorage: deps.collectionBackend,
+    storyProgressStorage: deps.storyProgressBackend,
+    expMaterialStorage: deps.expMaterialInventoryBackend,
+    techniqueBookStorage: deps.techniqueBookInventoryBackend,
+    evolutionMaterialStorage: deps.evolutionMaterialInventoryBackend,
+    ticketInventoryStorage: deps.gachaTicketInventoryBackend,
+    dailyMissionsStorage: deps.dailyMissionsBackend,
+    weeklyMissionsStorage: deps.weeklyMissionsBackend,
+    achievementsStorage: deps.achievementsBackend,
+    giftsStorage: deps.giftsBackend,
+    characterEventsStorage: deps.characterEventsBackend,
+    gachaHistoryStorage: deps.gachaHistoryBackend,
+    gachaPityStorage: deps.gachaPityBackend,
+    gachaDailyStorage: deps.gachaDailyBackend,
+    rewardHistoryStorage: deps.rewardHistoryBackend,
   );
 }

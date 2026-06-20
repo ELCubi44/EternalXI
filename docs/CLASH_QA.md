@@ -94,20 +94,22 @@ flutter test test/features/clash/sync/clash_backend_save_contract_test.dart
 
 **Nota:** backend MVP disponible (`GET/POST/PUT /api/v1/clash/save`). Cliente HTTP Flutter creado (Fase 71) — **sin sync automática** ni tests E2E contra servidor real. Ver [`CLASH_BACKEND_SAVE_CONTRACT.md`](./CLASH_BACKEND_SAVE_CONTRACT.md).
 
-## Prueba manual sync online (Fase 72)
+## Prueba manual sync online (Fase 72–73)
 
 En dispositivo con usuario logueado:
 
 1. Abrir **Clash → Ayuda → Diagnóstico local**.
 2. Sección **Sincronización online**.
 3. Probar **Validar snapshot local**, **Descargar partida online**, **Subir partida local**.
+4. Tras descarga exitosa: **Aplicar partida online a este dispositivo** → confirmar diálogo.
 
-El snapshot remoto **no** modifica el almacenamiento local.
+El pull **no** modifica el almacenamiento local hasta confirmar aplicar. Se crea backup en `clash_last_local_backup_v1`.
 
 ```bash
 cd eternalxi_front
 flutter test test/features/clash/debug/clash_debug_sync_controller_test.dart
 flutter test test/features/clash/debug/clash_debug_sync_screen_test.dart
+flutter test test/features/clash/sync/clash_sync_snapshot_applier_test.dart
 ```
 
 ## Flutter save API client (Fase 71)

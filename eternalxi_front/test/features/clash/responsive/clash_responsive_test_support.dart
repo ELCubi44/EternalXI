@@ -173,9 +173,10 @@ Future<void> pumpUntilFinder(
 
 Future<void> pumpUntilDebugLoaded(WidgetTester tester) async {
   await tester.pump();
-  for (var step = 0; step < 80; step++) {
+  for (var step = 0; step < 120; step++) {
     if (find.byType(CircularProgressIndicator).evaluate().isEmpty &&
-        (find.text('Almacenamiento local').evaluate().isNotEmpty ||
+        (find.text('Sincronización online').evaluate().isNotEmpty ||
+            find.text('Almacenamiento local').evaluate().isNotEmpty ||
             find
                 .text('No se pudo cargar el diagnóstico local.')
                 .evaluate()

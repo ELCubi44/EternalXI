@@ -261,6 +261,12 @@ void main() {
           afterPump: pumpUntilDebugLoaded,
         );
         expect(find.text('Diagnóstico Clash'), findsOneWidget);
+        expect(find.text('Sincronización online'), findsOneWidget);
+        await tester.scrollUntilVisible(
+          find.text('Almacenamiento local'),
+          120,
+          scrollable: find.byType(Scrollable).first,
+        );
         expect(find.text('Almacenamiento local'), findsOneWidget);
       }
     });

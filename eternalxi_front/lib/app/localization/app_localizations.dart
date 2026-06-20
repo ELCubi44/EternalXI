@@ -293,6 +293,20 @@ class AppLocalizations {
       'clashDebugSyncOperationValidate': 'Validar',
       'clashDebugSyncOperationPull': 'Descargar',
       'clashDebugSyncOperationPush': 'Subir',
+      'clashDebugSyncPendingRemote':
+          'Partida online descargada en memoria (no aplicada).',
+      'clashDebugSyncApplyRemote': 'Aplicar partida online a este dispositivo',
+      'clashDebugSyncApplyConfirmTitle': '¿Aplicar partida online?',
+      'clashDebugSyncApplyConfirmBody':
+          'Esto sustituirá la partida local de Clash por la online. Se creará una copia de seguridad local.',
+      'clashDebugSyncApplyConfirmAction': 'Aplicar',
+      'clashDebugSyncApplyStatus': 'Última aplicación',
+      'clashDebugSyncApplySuccess': 'Aplicada correctamente',
+      'clashDebugSyncApplyValidationFailed': 'Snapshot remoto inválido',
+      'clashDebugSyncApplyBackupFailed': 'No se pudo crear backup',
+      'clashDebugSyncApplyUnsupported': 'Aplicación no soportada',
+      'clashDebugSyncApplyFailed': 'Error al aplicar',
+      'clashDebugSyncApplySkippedSections': 'Secciones omitidas: {sections}',
       'clashAchievementsTitle': 'Logros',
       'clashAchievementsPermanentHint':
           'Progreso permanente. No se reinician cada día.',
@@ -1308,6 +1322,20 @@ class AppLocalizations {
       'clashDebugSyncOperationValidate': 'Validate',
       'clashDebugSyncOperationPull': 'Download',
       'clashDebugSyncOperationPush': 'Upload',
+      'clashDebugSyncPendingRemote':
+          'Online save downloaded in memory (not applied).',
+      'clashDebugSyncApplyRemote': 'Apply online save to this device',
+      'clashDebugSyncApplyConfirmTitle': 'Apply online save?',
+      'clashDebugSyncApplyConfirmBody':
+          'This will replace your local Clash save with the online one. A local backup will be created.',
+      'clashDebugSyncApplyConfirmAction': 'Apply',
+      'clashDebugSyncApplyStatus': 'Last apply',
+      'clashDebugSyncApplySuccess': 'Applied successfully',
+      'clashDebugSyncApplyValidationFailed': 'Invalid remote snapshot',
+      'clashDebugSyncApplyBackupFailed': 'Could not create backup',
+      'clashDebugSyncApplyUnsupported': 'Apply not supported',
+      'clashDebugSyncApplyFailed': 'Apply failed',
+      'clashDebugSyncApplySkippedSections': 'Skipped sections: {sections}',
       'clashAchievementsTitle': 'Achievements',
       'clashAchievementsPermanentHint':
           'Permanent progress. They do not reset daily.',
@@ -2428,6 +2456,26 @@ class AppLocalizations {
       _t('clashDebugSyncOperationValidate');
   String get clashDebugSyncOperationPull => _t('clashDebugSyncOperationPull');
   String get clashDebugSyncOperationPush => _t('clashDebugSyncOperationPush');
+  String get clashDebugSyncPendingRemote => _t('clashDebugSyncPendingRemote');
+  String get clashDebugSyncApplyRemote => _t('clashDebugSyncApplyRemote');
+  String get clashDebugSyncApplyConfirmTitle =>
+      _t('clashDebugSyncApplyConfirmTitle');
+  String get clashDebugSyncApplyConfirmBody =>
+      _t('clashDebugSyncApplyConfirmBody');
+  String get clashDebugSyncApplyConfirmAction =>
+      _t('clashDebugSyncApplyConfirmAction');
+  String get clashDebugSyncApplyStatus => _t('clashDebugSyncApplyStatus');
+  String get clashDebugSyncApplySuccess => _t('clashDebugSyncApplySuccess');
+  String get clashDebugSyncApplyValidationFailed =>
+      _t('clashDebugSyncApplyValidationFailed');
+  String get clashDebugSyncApplyBackupFailed =>
+      _t('clashDebugSyncApplyBackupFailed');
+  String get clashDebugSyncApplyUnsupported =>
+      _t('clashDebugSyncApplyUnsupported');
+  String get clashDebugSyncApplyFailed => _t('clashDebugSyncApplyFailed');
+  String clashDebugSyncApplySkippedSections(String sections) => _t(
+    'clashDebugSyncApplySkippedSections',
+  ).replaceAll('{sections}', sections);
   String get clashAchievementsTitle => _t('clashAchievementsTitle');
   String get clashAchievementsPermanentHint =>
       _t('clashAchievementsPermanentHint');

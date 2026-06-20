@@ -15,6 +15,8 @@ import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_re
 import 'package:eternal_xi/features/clash/shared/rewards/history/data/clash_reward_history_repository.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
+import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_operation_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,6 +53,7 @@ class _ClashDebugScreenState extends State<ClashDebugScreen> {
         widget.syncController ??
         ClashDebugSyncController(
           coordinator: context.read<ClashSyncCoordinator>(),
+          applier: _readOptional<ClashSyncSnapshotApplier>(context),
         );
     if (!_snapshotLoadStarted) {
       _snapshotLoadStarted = true;
@@ -349,6 +352,21 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
                 fontStyle: FontStyle.italic,
               ),
             ),
+            if (controller.hasPendingRemoteSnapshot)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  l10n.clashDebugSyncPendingRemote,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: context.xiTextSecondary,
+                  ),
+                ),
+              ),
+            if (controller.lastApplyResult != null)
+              _ClashDebugRow(
+                label: l10n.clashDebugSyncApplyStatus,
+                value: _applyStatusLabel(l10n, controller.lastApplyResult!),
+              ),
             const SizedBox(height: 8),
             _ClashDebugRow(
               label: l10n.clashDebugSyncLastAttempt,
@@ -425,8 +443,37 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
                   onPressed: controller.busy ? null : controller.pushLocal,
                   child: Text(l10n.clashDebugSyncPushLocal),
                 ),
+                OutlinedButton(
+                  onPressed:
+                      controller.busy || !controller.canApplyPendingRemote
+                      ? null
+                      : () => _confirmApplyRemote(context, controller),
+                  child: Text(l10n.clashDebugSyncApplyRemote),
+                ),
               ],
             ),
+            if (controller.lastApplyResult != null &&
+                controller.lastApplyResult!.message != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  controller.lastApplyResult!.message!,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+            if (controller.lastApplyResult?.isSuccess == true &&
+                controller.lastApplyResult!.skippedSections.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  l10n.clashDebugSyncApplySkippedSections(
+                    controller.lastApplyResult!.skippedSections.join(', '),
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: context.xiTextSecondary,
+                  ),
+                ),
+              ),
             if (controller.busy)
               const Padding(
                 padding: EdgeInsets.only(top: 12),
@@ -513,6 +560,58 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
       return result.message ?? l10n.clashDebugSyncUnavailable;
     }
     return result.message ?? l10n.emptyStateDash;
+  }
+
+  Future<void> _confirmApplyRemote(
+    BuildContext context,
+    ClashDebugSyncController controller,
+  ) async {
+    final l10n = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.clashDebugSyncApplyConfirmTitle),
+        content: Text(l10n.clashDebugSyncApplyConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l10n.clashDebugSyncApplyConfirmAction),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) {
+      return;
+    }
+    await controller.applyPendingRemote();
+  }
+
+  String _applyStatusLabel(AppLocalizations l10n, ClashSyncApplyResult result) {
+    if (result.isSuccess) {
+      return l10n.clashDebugSyncApplySuccess;
+    }
+    if (result.isValidationFailed) {
+      return l10n.clashDebugSyncApplyValidationFailed;
+    }
+    if (result.isBackupFailed) {
+      return l10n.clashDebugSyncApplyBackupFailed;
+    }
+    if (result.isUnsupported) {
+      return l10n.clashDebugSyncApplyUnsupported;
+    }
+    return l10n.clashDebugSyncApplyFailed;
+  }
+}
+
+T? _readOptional<T>(BuildContext context) {
+  try {
+    return context.read<T>();
+  } catch (_) {
+    return null;
   }
 }
 

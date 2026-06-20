@@ -5,7 +5,7 @@ Contrato para persistir la partida Clash en el servidor Eternal XI, vinculada al
 > **Fase 69:** contrato documentado + DTOs frontend.  
 > **Fase 70:** MVP backend Spring Boot implementado (`GET/POST/PUT /api/v1/clash/save`).  
 > **Fase 71:** cliente HTTP Flutter (`ClashSaveApiClient`, `HttpClashSyncClient`) — **sin sync automática**.  
-> **Fase 72:** prueba manual desde **Diagnóstico local → Sincronización online** — pull/push manual, **sin aplicar remoto a SP**.
+> **Fase 72–73:** prueba manual desde **Diagnóstico local → Sincronización online** — pull/push manual; aplicar remoto solo con confirmación y backup (Fase 73).
 
 Relacionado con el trabajo frontend/local de las Fases 65–68: [`CLASH_SYNC_CONTRACT.md`](./CLASH_SYNC_CONTRACT.md).
 
