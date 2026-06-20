@@ -133,7 +133,7 @@ Sin merge, sin restauración automática si falla la escritura (backup disponibl
 
 Código: `clash_sync_snapshot_applier.dart`, `clash_debug_sync_controller.dart`.
 
-## Diagnóstico manual de sync (Fase 72–73)
+## Diagnóstico manual de sync (Fase 72–75)
 
 `ClashDebugSyncController` + sección **Sincronización online** en `/clash/debug`.
 
@@ -141,12 +141,19 @@ Código: `clash_sync_snapshot_applier.dart`, `clash_debug_sync_controller.dart`.
 |--------|----------------|
 | Validar snapshot local | `validateLocalSnapshotOnly()` |
 | Descargar partida online | `pullRemoteSnapshot()` — guarda en memoria, **no aplica a SP** |
-| Subir partida local | `pushLocalSnapshot()` — POST si no hay remoto, PUT si hay `serverRevision` |
+| Subir partida local actual | `executePushLocal()` — valida local; POST si no hay remoto; PUT con `expectedServerRevision` si hay revisión conocida; 409 → conflicto sin reintento |
 | Aplicar partida online | Confirmación → `ClashSyncSnapshotApplier` — backup + escritura local |
 
-Estado en memoria (`pendingRemoteSnapshot`, `knownServerRevision`, último resultado). 401 / no autenticado → mensaje claro.
+Estado visible en diagnóstico:
 
-Código: `clash_save_api_client.dart`, `http_clash_sync_client.dart`, `clash_providers.dart`, `clash_sync_snapshot_applier.dart`.
+- `knownServerRevision` (server revision conocida)
+- snapshot remoto pendiente (`pendingRemoteSnapshot`)
+- backup local disponible (`ClashSyncLocalBackupStore`)
+- último resultado por operación: validate / pull / apply / restore / push
+
+Subida manual: confirmación explícita si ya existe partida remota. **No** sube automáticamente tras apply/restore. **No** sync automática al abrir debug.
+
+Código: `clash_save_api_client.dart`, `http_clash_sync_client.dart`, `clash_providers.dart`, `clash_sync_snapshot_applier.dart`, `clash_debug_sync_controller.dart`.
 
 ## Coordinador local de sync (Fase 68)
 

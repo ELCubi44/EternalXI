@@ -3,6 +3,7 @@ import 'package:eternal_xi/features/clash/sync/data/clash_save_api_client.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_client.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_builder.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_local_backup.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_validator.dart';
 import 'package:eternal_xi/features/clash/sync/data/http_clash_sync_client.dart';
@@ -550,6 +551,10 @@ List<SingleChildWidget> _buildClashSyncApplierProviders(
     return const [];
   }
   return [
+    Provider<ClashSyncLocalBackupStore>(
+      create: (_) =>
+          ClashSyncLocalBackupStore(sharedPreferences: deps.sharedPreferences!),
+    ),
     Provider<ClashSyncSnapshotApplier>(
       create: (context) => ClashSyncSnapshotApplier(
         builder: context.read<ClashSyncSnapshotBuilder>(),

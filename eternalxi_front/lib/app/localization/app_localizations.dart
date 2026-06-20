@@ -277,7 +277,25 @@ class AppLocalizations {
       'clashDebugSyncValidationStatus': 'Validación',
       'clashDebugSyncValidateLocal': 'Validar snapshot local',
       'clashDebugSyncPullRemote': 'Descargar partida online',
-      'clashDebugSyncPushLocal': 'Subir partida local',
+      'clashDebugSyncPushLocal': 'Subir partida local actual',
+      'clashDebugSyncKnownRevision': 'Server revision conocida',
+      'clashDebugSyncPendingRemoteStatus': 'Snapshot remoto pendiente',
+      'clashDebugSyncLocalBackupStatus': 'Backup local',
+      'clashDebugSyncBackupAvailable': 'Disponible',
+      'clashDebugSyncBackupUnavailable': 'No disponible',
+      'clashDebugSyncLastValidate': 'Último validate',
+      'clashDebugSyncLastPull': 'Último pull',
+      'clashDebugSyncLastApply': 'Último apply',
+      'clashDebugSyncLastRestore': 'Último restore',
+      'clashDebugSyncLastPush': 'Último push',
+      'clashDebugSyncStatusSuccess': 'Correcto',
+      'clashDebugSyncStatusFailed': 'Error',
+      'clashDebugSyncYes': 'Sí',
+      'clashDebugSyncNo': 'No',
+      'clashDebugSyncPushConfirmTitle': '¿Subir partida local?',
+      'clashDebugSyncPushConfirmBody':
+          'Esto actualizará la partida online con el estado local actual de este dispositivo.',
+      'clashDebugSyncPushConfirmAction': 'Subir',
       'clashDebugSyncStatusNone': 'Sin intentos',
       'clashDebugSyncStatusValid': 'Snapshot local válido',
       'clashDebugSyncStatusInvalid': 'Snapshot local inválido',
@@ -1306,7 +1324,25 @@ class AppLocalizations {
       'clashDebugSyncValidationStatus': 'Validation',
       'clashDebugSyncValidateLocal': 'Validate local snapshot',
       'clashDebugSyncPullRemote': 'Download online save',
-      'clashDebugSyncPushLocal': 'Upload local save',
+      'clashDebugSyncPushLocal': 'Upload current local save',
+      'clashDebugSyncKnownRevision': 'Known server revision',
+      'clashDebugSyncPendingRemoteStatus': 'Pending remote snapshot',
+      'clashDebugSyncLocalBackupStatus': 'Local backup',
+      'clashDebugSyncBackupAvailable': 'Available',
+      'clashDebugSyncBackupUnavailable': 'Unavailable',
+      'clashDebugSyncLastValidate': 'Last validate',
+      'clashDebugSyncLastPull': 'Last pull',
+      'clashDebugSyncLastApply': 'Last apply',
+      'clashDebugSyncLastRestore': 'Last restore',
+      'clashDebugSyncLastPush': 'Last push',
+      'clashDebugSyncStatusSuccess': 'Success',
+      'clashDebugSyncStatusFailed': 'Failed',
+      'clashDebugSyncYes': 'Yes',
+      'clashDebugSyncNo': 'No',
+      'clashDebugSyncPushConfirmTitle': 'Upload local save?',
+      'clashDebugSyncPushConfirmBody':
+          'This will update the online save with the current local state on this device.',
+      'clashDebugSyncPushConfirmAction': 'Upload',
       'clashDebugSyncStatusNone': 'No attempts yet',
       'clashDebugSyncStatusValid': 'Local snapshot valid',
       'clashDebugSyncStatusInvalid': 'Local snapshot invalid',
@@ -2437,6 +2473,30 @@ class AppLocalizations {
   String get clashDebugSyncValidateLocal => _t('clashDebugSyncValidateLocal');
   String get clashDebugSyncPullRemote => _t('clashDebugSyncPullRemote');
   String get clashDebugSyncPushLocal => _t('clashDebugSyncPushLocal');
+  String get clashDebugSyncKnownRevision => _t('clashDebugSyncKnownRevision');
+  String get clashDebugSyncPendingRemoteStatus =>
+      _t('clashDebugSyncPendingRemoteStatus');
+  String get clashDebugSyncLocalBackupStatus =>
+      _t('clashDebugSyncLocalBackupStatus');
+  String get clashDebugSyncBackupAvailable =>
+      _t('clashDebugSyncBackupAvailable');
+  String get clashDebugSyncBackupUnavailable =>
+      _t('clashDebugSyncBackupUnavailable');
+  String get clashDebugSyncLastValidate => _t('clashDebugSyncLastValidate');
+  String get clashDebugSyncLastPull => _t('clashDebugSyncLastPull');
+  String get clashDebugSyncLastApply => _t('clashDebugSyncLastApply');
+  String get clashDebugSyncLastRestore => _t('clashDebugSyncLastRestore');
+  String get clashDebugSyncLastPush => _t('clashDebugSyncLastPush');
+  String get clashDebugSyncStatusSuccess => _t('clashDebugSyncStatusSuccess');
+  String get clashDebugSyncStatusFailed => _t('clashDebugSyncStatusFailed');
+  String get clashDebugSyncYes => _t('clashDebugSyncYes');
+  String get clashDebugSyncNo => _t('clashDebugSyncNo');
+  String get clashDebugSyncPushConfirmTitle =>
+      _t('clashDebugSyncPushConfirmTitle');
+  String get clashDebugSyncPushConfirmBody =>
+      _t('clashDebugSyncPushConfirmBody');
+  String get clashDebugSyncPushConfirmAction =>
+      _t('clashDebugSyncPushConfirmAction');
   String get clashDebugSyncStatusNone => _t('clashDebugSyncStatusNone');
   String get clashDebugSyncStatusValid => _t('clashDebugSyncStatusValid');
   String get clashDebugSyncStatusInvalid => _t('clashDebugSyncStatusInvalid');

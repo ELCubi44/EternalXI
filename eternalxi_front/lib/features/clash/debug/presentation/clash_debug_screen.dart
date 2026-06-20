@@ -15,6 +15,7 @@ import 'package:eternal_xi/features/clash/missions/data/clash_weekly_missions_re
 import 'package:eternal_xi/features/clash/shared/rewards/history/data/clash_reward_history_repository.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_local_backup.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_operation_result.dart';
@@ -54,6 +55,7 @@ class _ClashDebugScreenState extends State<ClashDebugScreen> {
         ClashDebugSyncController(
           coordinator: context.read<ClashSyncCoordinator>(),
           applier: _readOptional<ClashSyncSnapshotApplier>(context),
+          backupStore: _readOptional<ClashSyncLocalBackupStore>(context),
         );
     if (!_snapshotLoadStarted) {
       _snapshotLoadStarted = true;
@@ -339,8 +341,6 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
       animation: controller,
       builder: (context, _) {
         final l10n = context.l10n;
-        final result = controller.lastResult;
-        final snapshot = result?.snapshot;
 
         return _ClashDebugSection(
           title: l10n.clashDebugSectionOnlineSync,
@@ -352,45 +352,45 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
                 fontStyle: FontStyle.italic,
               ),
             ),
-            if (controller.hasPendingRemoteSnapshot)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  l10n.clashDebugSyncPendingRemote,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: context.xiTextSecondary,
-                  ),
-                ),
-              ),
-            if (controller.lastApplyResult != null)
-              _ClashDebugRow(
-                label: l10n.clashDebugSyncApplyStatus,
-                value: _applyStatusLabel(l10n, controller.lastApplyResult!),
-              ),
             const SizedBox(height: 8),
             _ClashDebugRow(
-              label: l10n.clashDebugSyncLastAttempt,
-              value: _operationLabel(l10n, result),
+              label: l10n.clashDebugSyncKnownRevision,
+              value: _knownRevisionLabel(l10n, controller),
             ),
             _ClashDebugRow(
-              label: l10n.clashDebugSyncContractVersion,
-              value: snapshot != null
-                  ? '${snapshot.contractVersion}'
-                  : l10n.emptyStateDash,
+              label: l10n.clashDebugSyncPendingRemoteStatus,
+              value: controller.hasPendingRemoteSnapshot
+                  ? l10n.clashDebugSyncYes
+                  : l10n.clashDebugSyncNo,
             ),
             _ClashDebugRow(
-              label: l10n.clashDebugSyncSchemaVersion,
-              value: snapshot != null
-                  ? '${snapshot.schemaVersion}'
-                  : l10n.emptyStateDash,
+              label: l10n.clashDebugSyncLocalBackupStatus,
+              value: controller.hasLocalBackup
+                  ? l10n.clashDebugSyncBackupAvailable
+                  : l10n.clashDebugSyncBackupUnavailable,
             ),
             _ClashDebugRow(
-              label: l10n.clashDebugSyncServerRevision,
-              value: _serverRevisionLabel(l10n, controller, result),
+              label: l10n.clashDebugSyncLastValidate,
+              value: _operationStatusLabel(l10n, controller.lastValidateResult),
             ),
             _ClashDebugRow(
-              label: l10n.clashDebugSyncValidationStatus,
-              value: _validationLabel(l10n, result),
+              label: l10n.clashDebugSyncLastPull,
+              value: _operationStatusLabel(l10n, controller.lastPullResult),
+            ),
+            _ClashDebugRow(
+              label: l10n.clashDebugSyncLastApply,
+              value: _applyStatusLabelOrDash(l10n, controller.lastApplyResult),
+            ),
+            _ClashDebugRow(
+              label: l10n.clashDebugSyncLastRestore,
+              value: _applyStatusLabelOrDash(
+                l10n,
+                controller.lastRestoreResult,
+              ),
+            ),
+            _ClashDebugRow(
+              label: l10n.clashDebugSyncLastPush,
+              value: _operationStatusLabel(l10n, controller.lastPushResult),
             ),
             if (controller.authRequired)
               Padding(
@@ -411,20 +411,6 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
                     color: Theme.of(context).colorScheme.error,
                   ),
                 ),
-              )
-            else if (result != null &&
-                (result.isSuccess ||
-                    result.isNotFound ||
-                    result.isConflict ||
-                    result.isRejected ||
-                    result.status == ClashSyncStatus.unavailable ||
-                    (result.message?.isNotEmpty ?? false)))
-              Padding(
-                padding: const EdgeInsets.only(top: 4, bottom: 4),
-                child: Text(
-                  _statusMessage(l10n, result),
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
               ),
             const SizedBox(height: 8),
             Wrap(
@@ -440,7 +426,9 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
                   child: Text(l10n.clashDebugSyncPullRemote),
                 ),
                 OutlinedButton(
-                  onPressed: controller.busy ? null : controller.pushLocal,
+                  onPressed: controller.busy
+                      ? null
+                      : () => _confirmPushLocal(context, controller),
                   child: Text(l10n.clashDebugSyncPushLocal),
                 ),
                 OutlinedButton(
@@ -485,58 +473,29 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
     );
   }
 
-  String _operationLabel(
-    AppLocalizations l10n,
-    ClashSyncOperationResult? result,
-  ) {
-    if (result == null) {
-      return l10n.clashDebugSyncStatusNone;
-    }
-    return switch (result.operation) {
-      ClashSyncOperation.validate => l10n.clashDebugSyncOperationValidate,
-      ClashSyncOperation.pull => l10n.clashDebugSyncOperationPull,
-      ClashSyncOperation.push => l10n.clashDebugSyncOperationPush,
-    };
-  }
-
-  String _serverRevisionLabel(
+  String _knownRevisionLabel(
     AppLocalizations l10n,
     ClashDebugSyncController controller,
-    ClashSyncOperationResult? result,
   ) {
-    final revision = result?.serverRevision ?? controller.knownServerRevision;
+    final revision = controller.knownServerRevision;
     if (revision == null || revision == 0) {
       return l10n.emptyStateDash;
     }
     return '$revision';
   }
 
-  String _validationLabel(
+  String _operationStatusLabel(
     AppLocalizations l10n,
     ClashSyncOperationResult? result,
   ) {
-    final validation = result?.validationResult;
-    if (validation == null) {
-      return l10n.emptyStateDash;
+    if (result == null) {
+      return l10n.clashDebugSyncStatusNone;
     }
-    if (validation.isValid) {
-      final warnings = validation.warnings.length;
-      if (warnings == 0) {
-        return l10n.clashDebugSyncStatusValid;
-      }
-      return '${l10n.clashDebugSyncStatusValid} '
-          '(${l10n.clashDebugSyncWarningsCount(warnings)})';
+    if (result.isSuccess) {
+      return l10n.clashDebugSyncStatusSuccess;
     }
-    return '${l10n.clashDebugSyncStatusInvalid} '
-        '(${l10n.clashDebugSyncErrorsCount(validation.errors.length)})';
-  }
-
-  String _statusMessage(
-    AppLocalizations l10n,
-    ClashSyncOperationResult result,
-  ) {
-    if (result.errorCode == 'unauthorized') {
-      return l10n.clashDebugSyncAuthRequired;
+    if (result.isValidationFailed) {
+      return l10n.clashDebugSyncStatusInvalid;
     }
     if (result.isNotFound) {
       return l10n.clashDebugSyncRemoteNotFound;
@@ -544,22 +503,57 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
     if (result.isConflict && result.conflict != null) {
       return l10n.clashDebugSyncConflict(result.conflict!.actualRevision);
     }
-    if (result.isSuccess &&
-        result.operation == ClashSyncOperation.pull &&
-        result.serverRevision != null) {
-      return l10n.clashDebugSyncRemoteSuccess(result.serverRevision!);
-    }
-    if (result.status == ClashSyncStatus.unavailable &&
-        result.errorCode == 'unauthorized') {
-      return l10n.clashDebugSyncAuthRequired;
-    }
-    if (result.isRejected && result.errorCode == 'unauthorized') {
+    if (result.errorCode == 'unauthorized') {
       return l10n.clashDebugSyncAuthRequired;
     }
     if (result.status == ClashSyncStatus.unavailable) {
       return result.message ?? l10n.clashDebugSyncUnavailable;
     }
-    return result.message ?? l10n.emptyStateDash;
+    return result.message ?? l10n.clashDebugSyncStatusFailed;
+  }
+
+  String _applyStatusLabelOrDash(
+    AppLocalizations l10n,
+    ClashSyncApplyResult? result,
+  ) {
+    if (result == null) {
+      return l10n.clashDebugSyncStatusNone;
+    }
+    return _applyStatusLabel(l10n, result);
+  }
+
+  Future<void> _confirmPushLocal(
+    BuildContext context,
+    ClashDebugSyncController controller,
+  ) async {
+    final l10n = context.l10n;
+    final overwrite = await controller.willOverwriteRemoteSave();
+    if (!context.mounted) {
+      return;
+    }
+    if (overwrite) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(l10n.clashDebugSyncPushConfirmTitle),
+          content: Text(l10n.clashDebugSyncPushConfirmBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.clashDebugSyncPushConfirmAction),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !context.mounted) {
+        return;
+      }
+    }
+    await controller.executePushLocal();
   }
 
   Future<void> _confirmApplyRemote(

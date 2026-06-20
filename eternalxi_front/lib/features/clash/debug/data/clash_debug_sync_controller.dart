@@ -1,4 +1,5 @@
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_local_backup.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_operation_result.dart';
@@ -6,20 +7,26 @@ import 'package:eternal_xi/features/clash/sync/domain/clash_sync_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_snapshot.dart';
 import 'package:flutter/foundation.dart';
 
-/// Estado en memoria del panel manual de sync online en diagnóstico (Fase 72–73).
+/// Estado en memoria del panel manual de sync online en diagnóstico (Fase 72–75).
 class ClashDebugSyncController extends ChangeNotifier {
   ClashDebugSyncController({
     required this.coordinator,
     this.applier,
+    this.backupStore,
     this.isAuthenticated,
   });
 
   final ClashSyncCoordinator coordinator;
   final ClashSyncSnapshotApplier? applier;
+  final ClashSyncLocalBackupStore? backupStore;
   final Future<bool> Function()? isAuthenticated;
 
   ClashSyncOperationResult? lastResult;
+  ClashSyncOperationResult? lastValidateResult;
+  ClashSyncOperationResult? lastPullResult;
+  ClashSyncOperationResult? lastPushResult;
   ClashSyncApplyResult? lastApplyResult;
+  ClashSyncApplyResult? lastRestoreResult;
   ClashSyncSnapshot? pendingRemoteSnapshot;
   int? knownServerRevision;
   bool busy = false;
@@ -27,10 +34,14 @@ class ClashDebugSyncController extends ChangeNotifier {
 
   bool get hasPendingRemoteSnapshot => pendingRemoteSnapshot != null;
 
+  bool get hasLocalBackup => backupStore?.read() != null;
+
+  bool get hasKnownRemoteSave =>
+      knownServerRevision != null && knownServerRevision! > 0;
+
   bool get canApplyPendingRemote =>
       pendingRemoteSnapshot != null &&
-      lastResult?.operation == ClashSyncOperation.pull &&
-      lastResult?.isSuccess == true &&
+      lastPullResult?.isSuccess == true &&
       applier != null;
 
   Future<void> validateLocal() async {
@@ -50,16 +61,38 @@ class ClashDebugSyncController extends ChangeNotifier {
       if (result.isSuccess && result.snapshot != null) {
         pendingRemoteSnapshot = result.snapshot;
       }
+      if (result.isNotFound) {
+        pendingRemoteSnapshot = null;
+      }
       return result;
     });
   }
 
-  Future<void> pushLocal() async {
+  /// Comprueba si subir pisaría una partida remota existente (puede hacer GET).
+  Future<bool> willOverwriteRemoteSave() async {
+    if (hasKnownRemoteSave) {
+      return true;
+    }
+    if (!await _ensureAuthenticated()) {
+      return false;
+    }
+    final probe = await coordinator.pullRemoteSnapshot();
+    _recordOperationResult(probe);
+    _rememberRevision(probe);
+    if (probe.isSuccess && probe.snapshot != null) {
+      pendingRemoteSnapshot = probe.snapshot;
+    }
+    notifyListeners();
+    return probe.isSuccess;
+  }
+
+  /// Sube el snapshot local validado. Requiere confirmación previa si remoto existe.
+  Future<void> executePushLocal() async {
     if (!await _ensureAuthenticated()) {
       return;
     }
     await _run(() async {
-      if (knownServerRevision != null) {
+      if (hasKnownRemoteSave) {
         final result = await coordinator.pushLocalSnapshot(
           expectedServerRevision: knownServerRevision,
         );
@@ -68,6 +101,8 @@ class ClashDebugSyncController extends ChangeNotifier {
       }
 
       final probe = await coordinator.pullRemoteSnapshot();
+      _recordOperationResult(probe);
+      _rememberRevision(probe);
       if (probe.isNotFound) {
         final created = await coordinator.pushLocalSnapshot();
         _rememberRevision(created);
@@ -77,6 +112,9 @@ class ClashDebugSyncController extends ChangeNotifier {
         return _asPushResult(probe);
       }
 
+      if (probe.snapshot != null) {
+        pendingRemoteSnapshot = probe.snapshot;
+      }
       knownServerRevision = probe.serverRevision;
       final updated = await coordinator.pushLocalSnapshot(
         expectedServerRevision: knownServerRevision,
@@ -117,10 +155,23 @@ class ClashDebugSyncController extends ChangeNotifier {
     busy = true;
     notifyListeners();
     try {
-      lastResult = await action();
+      final result = await action();
+      _recordOperationResult(result);
     } finally {
       busy = false;
       notifyListeners();
+    }
+  }
+
+  void _recordOperationResult(ClashSyncOperationResult result) {
+    lastResult = result;
+    switch (result.operation) {
+      case ClashSyncOperation.validate:
+        lastValidateResult = result;
+      case ClashSyncOperation.pull:
+        lastPullResult = result;
+      case ClashSyncOperation.push:
+        lastPushResult = result;
     }
   }
 

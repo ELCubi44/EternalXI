@@ -12,7 +12,6 @@ import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_status.dart';
 import 'package:eternal_xi/features/clash/sync/data/fake_clash_sync_client.dart';
-import 'package:eternal_xi/features/clash/sync/domain/clash_sync_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_snapshot.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -53,6 +52,7 @@ Widget _debugApp({
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       home: ClashDebugScreen(
+        key: ValueKey(syncController ?? sharedPreferences),
         sharedPreferences: sharedPreferences,
         syncController: syncController,
       ),
@@ -85,7 +85,7 @@ void main() {
     });
   });
 
-  group('ClashDebugScreen sync Fase 72', () {
+  group('ClashDebugScreen sync Fase 72–75', () {
     testWidgets('flujo manual de diagnóstico sync online', (tester) async {
       final prefs = await _mockPrefs();
       final client = FakeClashSyncClient();
@@ -94,7 +94,9 @@ void main() {
 
       await tester.pumpWidget(
         _debugApp(
-          providers: buildClashProviders(_depsWithClient(client)),
+          providers: buildClashProviders(
+            _depsWithClient(client, sharedPreferences: prefs),
+          ),
           sharedPreferences: prefs,
           syncController: controller,
         ),
@@ -104,27 +106,47 @@ void main() {
       expect(find.text('Sincronización online'), findsOneWidget);
       expect(find.text('Validar snapshot local'), findsOneWidget);
       expect(find.text('Descargar partida online'), findsOneWidget);
-      expect(find.text('Subir partida local'), findsOneWidget);
+      expect(find.text('Subir partida local actual'), findsOneWidget);
+      expect(find.text('Server revision conocida'), findsOneWidget);
+      expect(controller.lastValidateResult, isNull);
+      expect(controller.lastPullResult, isNull);
+      expect(controller.lastPushResult, isNull);
 
       await tester.tap(find.text('Validar snapshot local'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Snapshot local válido'), findsOneWidget);
+      expect(find.text('Correcto'), findsWidgets);
 
       await tester.tap(find.text('Descargar partida online'));
       await tester.pumpAndSettle();
       expect(find.text('No hay partida online todavía'), findsOneWidget);
 
-      await tester.tap(find.text('Subir partida local'));
+      await tester.tap(find.text('Subir partida local actual'));
       await tester.pumpAndSettle();
+      expect(find.text('¿Subir partida local?'), findsNothing);
       expect(controller.knownServerRevision, 1);
 
       await tester.tap(find.text('Descargar partida online'));
       await tester.pumpAndSettle();
-      expect(controller.lastResult?.isSuccess, isTrue);
-      expect(controller.lastResult?.serverRevision, 1);
+      expect(controller.lastPullResult?.isSuccess, isTrue);
+      expect(controller.lastPullResult?.serverRevision, 1);
 
-      controller.knownServerRevision = 0;
-      await tester.tap(find.text('Subir partida local'));
+      await tester.tap(find.text('Subir partida local actual'));
+      await tester.pumpAndSettle();
+      expect(find.text('¿Subir partida local?'), findsOneWidget);
+      await tester.tap(find.text('Cancelar'));
+      await tester.pumpAndSettle();
+      expect(client.serverRevision, 1);
+
+      await tester.tap(find.text('Subir partida local actual'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Subir'));
+      await tester.pumpAndSettle();
+      expect(controller.knownServerRevision, 2);
+
+      controller.knownServerRevision = 1;
+      await tester.tap(find.text('Subir partida local actual'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Subir'));
       await tester.pumpAndSettle();
       expect(find.textContaining('Conflicto de revisión'), findsOneWidget);
 
@@ -149,7 +171,9 @@ void main() {
       );
       expect(tester.widget<OutlinedButton>(applyFinder).onPressed, isNull);
 
-      await tester.tap(find.text('Subir partida local'));
+      await tester.tap(find.text('Subir partida local actual'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Subir'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Descargar partida online'));
       await tester.pumpAndSettle();

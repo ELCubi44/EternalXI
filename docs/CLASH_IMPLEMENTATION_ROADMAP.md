@@ -1095,4 +1095,20 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 75 — Manual secure upload flow
+
+**Estado:** implementada.
+
+- Panel de diagnóstico ampliado: revision conocida, remoto pendiente, backup local, últimos resultados por operación.
+- `executePushLocal()` + `willOverwriteRemoteSave()` — validación local previa, GET→POST/PUT, manejo 409.
+- Confirmación antes de subir si ya existe partida remota.
+- Provider `ClashSyncLocalBackupStore` en DI para estado de backup en debug.
+- Tests Fase 75 en controller/screen; sin sync automática al abrir debug.
+
+**Objetivo:** subida manual segura del estado local tras flujo validate/pull/apply/restore.
+
+**Sin cambios** en sync automática al login, merge, claims server-side, backend, Fantasy, leagues, rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*
