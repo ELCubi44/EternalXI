@@ -133,7 +133,7 @@ Sin merge, sin restauración automática si falla la escritura (backup disponibl
 
 Código: `clash_sync_snapshot_applier.dart`, `clash_debug_sync_controller.dart`.
 
-## Diagnóstico manual de sync (Fase 72–77)
+## Diagnóstico manual de sync (Fase 72–78)
 
 `ClashDebugSyncController` + sección **Sincronización online** en `/clash/debug`.
 
@@ -144,6 +144,16 @@ Código: `clash_sync_snapshot_applier.dart`, `clash_debug_sync_controller.dart`.
 | Descargar partida online | `pullRemoteSnapshot()` — guarda en memoria, **no aplica a SP** |
 | Subir partida local actual | `executePushLocal()` — valida local; POST si no hay remoto; PUT con `expectedServerRevision` si hay revisión conocida; 409 → conflicto sin reintento |
 | Aplicar partida online | Confirmación → `ClashSyncSnapshotApplier` — backup + escritura local |
+
+### Indicador informativo (Fase 78)
+
+`ClashSyncStatusBadge` en Clash Home lee `clash_sync_metadata_v1` vía `ClashSyncMetadataStorage.load()`.
+
+Estados: sin preparar online, sincronizado, pendiente local, conflicto, error, backup disponible.
+
+- **Solo lectura** de metadata local.
+- Tap → `/clash/debug`.
+- **Sin** HTTP, sync, push, pull, apply ni bootstrap automático.
 
 Estado visible en diagnóstico (memoria + metadata persistida en `clash_sync_metadata_v1`):
 

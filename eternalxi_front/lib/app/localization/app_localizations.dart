@@ -337,6 +337,16 @@ class AppLocalizations {
       'clashDebugSyncApplyUnsupported': 'Aplicación no soportada',
       'clashDebugSyncApplyFailed': 'Error al aplicar',
       'clashDebugSyncApplySkippedSections': 'Secciones omitidas: {sections}',
+      'clashSyncBadgeNotPrepared': 'Sin preparar online',
+      'clashSyncBadgeSynced': 'Sincronizado',
+      'clashSyncBadgePendingLocal': 'Estado local pendiente',
+      'clashSyncBadgeConflict': 'Conflicto de sync',
+      'clashSyncBadgeError': 'Error de sync',
+      'clashSyncBadgeBackup': 'Backup disponible',
+      'clashSyncBadgeRevision': 'Rev. {revision}',
+      'clashSyncBadgeLastSync': 'Sync {date}',
+      'clashSyncBadgeConflictRevision': 'Remota rev. {revision}',
+      'clashSyncBadgeOpenDiagnostics': 'Ver diagnóstico',
       'clashAchievementsTitle': 'Logros',
       'clashAchievementsPermanentHint':
           'Progreso permanente. No se reinician cada día.',
@@ -1396,6 +1406,16 @@ class AppLocalizations {
       'clashDebugSyncApplyUnsupported': 'Apply not supported',
       'clashDebugSyncApplyFailed': 'Apply failed',
       'clashDebugSyncApplySkippedSections': 'Skipped sections: {sections}',
+      'clashSyncBadgeNotPrepared': 'Online save not prepared',
+      'clashSyncBadgeSynced': 'Synced',
+      'clashSyncBadgePendingLocal': 'Local state pending',
+      'clashSyncBadgeConflict': 'Sync conflict',
+      'clashSyncBadgeError': 'Sync error',
+      'clashSyncBadgeBackup': 'Backup available',
+      'clashSyncBadgeRevision': 'Rev. {revision}',
+      'clashSyncBadgeLastSync': 'Sync {date}',
+      'clashSyncBadgeConflictRevision': 'Remote rev. {revision}',
+      'clashSyncBadgeOpenDiagnostics': 'Open diagnostics',
       'clashAchievementsTitle': 'Achievements',
       'clashAchievementsPermanentHint':
           'Permanent progress. They do not reset daily.',
@@ -2578,6 +2598,21 @@ class AppLocalizations {
   String clashDebugSyncApplySkippedSections(String sections) => _t(
     'clashDebugSyncApplySkippedSections',
   ).replaceAll('{sections}', sections);
+  String get clashSyncBadgeNotPrepared => _t('clashSyncBadgeNotPrepared');
+  String get clashSyncBadgeSynced => _t('clashSyncBadgeSynced');
+  String get clashSyncBadgePendingLocal => _t('clashSyncBadgePendingLocal');
+  String get clashSyncBadgeConflict => _t('clashSyncBadgeConflict');
+  String get clashSyncBadgeError => _t('clashSyncBadgeError');
+  String get clashSyncBadgeBackup => _t('clashSyncBadgeBackup');
+  String clashSyncBadgeRevision(int revision) =>
+      _t('clashSyncBadgeRevision').replaceAll('{revision}', '$revision');
+  String clashSyncBadgeLastSync(String date) =>
+      _t('clashSyncBadgeLastSync').replaceAll('{date}', date);
+  String clashSyncBadgeConflictRevision(int revision) => _t(
+    'clashSyncBadgeConflictRevision',
+  ).replaceAll('{revision}', '$revision');
+  String get clashSyncBadgeOpenDiagnostics =>
+      _t('clashSyncBadgeOpenDiagnostics');
   String get clashAchievementsTitle => _t('clashAchievementsTitle');
   String get clashAchievementsPermanentHint =>
       _t('clashAchievementsPermanentHint');

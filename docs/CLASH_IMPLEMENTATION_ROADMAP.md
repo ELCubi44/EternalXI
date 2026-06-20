@@ -1143,4 +1143,20 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 78 — Sync status badge
+
+**Estado:** implementada.
+
+- `ClashSyncStatusBadge` + `ClashSyncStatusBadgeLoader` en Clash Home.
+- Lee `ClashSyncMetadata` local; estados informativos compactos.
+- Tap → `/clash/debug`.
+- Sin HTTP ni sync automática.
+- Tests badge, Home sin HTTP, responsive.
+
+**Objetivo:** visibilidad del estado de sync sin ejecutar operaciones.
+
+**Sin cambios** en sync automática al login, merge, claims, backend, Fantasy, leagues, rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

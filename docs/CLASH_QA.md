@@ -94,7 +94,7 @@ flutter test test/features/clash/sync/clash_backend_save_contract_test.dart
 
 **Nota:** backend MVP disponible (`GET/POST/PUT /api/v1/clash/save`). Cliente HTTP Flutter creado (Fase 71) — **sin sync automática** ni tests E2E contra servidor real. Ver [`CLASH_BACKEND_SAVE_CONTRACT.md`](./CLASH_BACKEND_SAVE_CONTRACT.md).
 
-## Prueba manual sync online (Fase 72–77)
+## Prueba manual sync online (Fase 72–78)
 
 En dispositivo con usuario logueado:
 
@@ -102,21 +102,24 @@ En dispositivo con usuario logueado:
 2. Sección **Sincronización online** — revisar revision conocida, remoto pendiente, backup local y **estado persistido**.
 3. Pulsar **Preparar partida online** — debe encontrar save remoto o crear uno desde local.
 4. Probar **Validar snapshot local**, **Descargar partida online**, **Subir partida local actual**.
-4. Si ya existe partida remota, confirmar diálogo antes de subir.
-5. Tras descarga exitosa: **Aplicar partida online a este dispositivo** → confirmar diálogo.
-6. **Verificar persistencia:** cerrar y reabrir la app → en diagnóstico debe mostrarse la `serverRevision` conocida y el último estado desde `clash_sync_metadata_v1` (sin llamadas HTTP automáticas).
+5. Si ya existe partida remota, confirmar diálogo antes de subir.
+6. Tras descarga exitosa: **Aplicar partida online a este dispositivo** → confirmar diálogo.
+7. **Verificar persistencia:** cerrar y reabrir la app → en diagnóstico debe mostrarse la `serverRevision` conocida y el último estado desde `clash_sync_metadata_v1` (sin llamadas HTTP automáticas).
+8. Volver a **Clash Home** — el badge debe reflejar metadata (sin llamar backend al abrir Home).
 
 El pull **no** modifica el almacenamiento local hasta confirmar aplicar. La subida **no** ocurre automáticamente tras apply/restore. Se crea backup en `clash_last_local_backup_v1`.
 
-**Tests Fase 77:** bootstrap remoto existente (pull + pending), create sin remoto, snapshot inválido, 401, metadata, sin auto-ejecución.
+**Verificar que el badge no llama backend:** abrir Home sin red; el badge solo lee metadata persistida y no dispara GET/POST/PUT.
+
+**Tests Fase 78:** badge estados, navegación a debug, Home sin HTTP, responsive smallPhone.
 
 ```bash
 cd eternalxi_front
+flutter test test/features/clash/sync/clash_sync_status_badge_test.dart
 flutter test test/features/clash/debug/clash_debug_sync_controller_test.dart
 flutter test test/features/clash/debug/clash_debug_bootstrap_screen_test.dart
-flutter test test/features/clash/debug/clash_debug_sync_screen_test.dart
-flutter test test/features/clash/sync/clash_sync_metadata_storage_test.dart
-flutter test test/features/clash/storage/clash_local_storage_compatibility_test.dart
+flutter test test/features/clash/responsive/clash_responsive_test.dart
+flutter test test/features/clash/smoke/clash_local_smoke_test.dart
 ```
 
 ## Flutter save API client (Fase 71)
