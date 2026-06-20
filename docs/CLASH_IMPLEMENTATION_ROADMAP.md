@@ -1028,4 +1028,22 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 70 — Backend save MVP
+
+**Estado:** implementada.
+
+- Tabla `clash_save` (migración SQL + `SchemaMigrationService`).
+- `ClashSaveRepository`, `ClashSaveService`, `ClashSaveController`.
+- Endpoints: `GET/POST/PUT /api/v1/clash/save`.
+- Auth vía `AuthenticatedUser.requireUserId()`; sin `userId` en body.
+- `serverRevision` optimista; `409` con `ClashSaveConflictResponse` en conflicto.
+- Tests: `ClashSaveServiceTest` (Mockito).
+- Documentación actualizada en `CLASH_BACKEND_SAVE_CONTRACT.md`.
+
+**Objetivo:** persistir partida Clash online por usuario autenticado sin conectar Flutter HTTP.
+
+**Sin cambios** en Flutter features, Fantasy, leagues, rewards globales, economía local ni claims server-side.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

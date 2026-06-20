@@ -92,7 +92,7 @@ cd eternalxi_front
 flutter test test/features/clash/sync/clash_backend_save_contract_test.dart
 ```
 
-**Nota:** aún **no** hay tests de integración contra API Spring Boot ni endpoints `/api/v1/clash/save` desplegados. Ver [`CLASH_BACKEND_SAVE_CONTRACT.md`](./CLASH_BACKEND_SAVE_CONTRACT.md).
+**Nota:** backend MVP disponible (`GET/POST/PUT /api/v1/clash/save`). Aún **no** hay cliente HTTP Flutter ni tests E2E contra API desplegada. Ver [`CLASH_BACKEND_SAVE_CONTRACT.md`](./CLASH_BACKEND_SAVE_CONTRACT.md).
 
 ## Suite completa Clash
 

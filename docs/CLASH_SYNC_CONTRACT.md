@@ -2,7 +2,8 @@
 
 Contrato **frontend-only** para una futura sincronización backend de Clash. En esta fase no hay llamadas HTTP, endpoints reales ni migración de datos locales al servidor.
 
-> **Fases 65–68** cubren contrato local, validación, fake client y coordinator — **sin backend real**.
+> **Fases 65–68** cubren contrato local, validación, fake client y coordinator — **sin HTTP Flutter**.  
+> **Fase 70** implementa backend MVP. Ver [`CLASH_BACKEND_SAVE_CONTRACT.md`](./CLASH_BACKEND_SAVE_CONTRACT.md).
 >
 > **Fase 69** documenta el contrato backend de guardado online por usuario: [`CLASH_BACKEND_SAVE_CONTRACT.md`](./CLASH_BACKEND_SAVE_CONTRACT.md).
 

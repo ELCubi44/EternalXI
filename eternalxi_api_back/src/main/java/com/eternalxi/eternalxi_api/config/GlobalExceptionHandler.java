@@ -1,7 +1,9 @@
 package com.eternalxi.eternalxi_api.config;
 
 import com.eternalxi.eternalxi_api.dto.error.ApiErrorResponse;
+import com.eternalxi.eternalxi_api.dto.clash.ClashSaveConflictResponse;
 import com.eternalxi.eternalxi_api.exception.BusinessException;
+import com.eternalxi.eternalxi_api.exception.ClashSaveRevisionConflictException;
 import com.eternalxi.eternalxi_api.exception.EmailDeliveryException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,6 +58,14 @@ public class GlobalExceptionHandler {
                 req.getRequestURI()
         );
         return ResponseEntity.status(ex.getHttpStatus()).body(body);
+    }
+
+    @ExceptionHandler(ClashSaveRevisionConflictException.class)
+    public ResponseEntity<ClashSaveConflictResponse> handleClashSaveRevisionConflict(
+            ClashSaveRevisionConflictException ex,
+            HttpServletRequest req
+    ) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getConflictResponse());
     }
 
     @ExceptionHandler(BusinessException.class)

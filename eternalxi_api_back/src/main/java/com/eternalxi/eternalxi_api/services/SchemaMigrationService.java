@@ -49,6 +49,21 @@ public class SchemaMigrationService {
 
             addColumnIfMissing(st, "usuarios", "fecha_nacimiento", "DATE NULL");
 
+            exec(st, """
+                    CREATE TABLE IF NOT EXISTS clash_save (
+                        id               BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        id_usuario       BIGINT        NOT NULL,
+                        contract_version INT           NOT NULL,
+                        schema_version   INT           NOT NULL,
+                        server_revision  INT           NOT NULL,
+                        save_data_json   JSON          NOT NULL,
+                        created_at       TIMESTAMP(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+                        updated_at       TIMESTAMP(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+                        last_sync_at     TIMESTAMP(3)  NULL,
+                        UNIQUE KEY uk_clash_save_usuario (id_usuario)
+                    )
+                    """);
+
             log.info("Schema migrations applied");
         }
     }

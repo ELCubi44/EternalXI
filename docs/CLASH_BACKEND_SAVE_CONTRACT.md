@@ -1,8 +1,30 @@
-# Contrato backend — guardado online Clash (Fase 69)
+# Contrato backend — guardado online Clash (Fase 69 / MVP Fase 70)
 
-Contrato **documentado** para persistir la partida Clash en el servidor Eternal XI, vinculada al usuario autenticado. **No hay implementación backend ni HTTP en esta fase.**
+Contrato para persistir la partida Clash en el servidor Eternal XI, vinculada al usuario autenticado.
+
+> **Fase 69:** contrato documentado + DTOs frontend.  
+> **Fase 70:** MVP backend Spring Boot implementado (`GET/POST/PUT /api/v1/clash/save`).  
+> Flutter HTTP client **aún pendiente**.
 
 Relacionado con el trabajo frontend/local de las Fases 65–68: [`CLASH_SYNC_CONTRACT.md`](./CLASH_SYNC_CONTRACT.md).
+
+---
+
+## Implementación backend (Fase 70)
+
+| Componente | Ruta |
+|------------|------|
+| Migración SQL | `eternalxi_api_back/src/main/resources/db/migration/V20260613170000__clash_save.sql` |
+| Modelo | `model/ClashSave.java` |
+| Repository JDBC | `repository/ClashSaveRepository.java` |
+| Service | `services/ClashSaveService.java` |
+| Controller | `controller/clash/ClashSaveController.java` |
+| DTOs | `dto/clash/ClashSave*.java` |
+| Tests | `services/ClashSaveServiceTest.java` |
+
+Auth: `AuthenticatedUser.requireUserId()` — **no** se acepta `userId` en el body.
+
+Boot: `SchemaMigrationService` crea `clash_save` si falta (dev/prod sin Flyway).
 
 ---
 
@@ -34,7 +56,7 @@ Tabla sugerida: **`clash_save`**
 | Columna | Tipo | Notas |
 |---------|------|-------|
 | `id` | BIGINT PK | Identificador interno |
-| `user_id` | BIGINT UNIQUE NOT NULL | FK al usuario Eternal XI |
+| `user_id` | BIGINT UNIQUE NOT NULL | Columna real: `id_usuario` |
 | `contract_version` | INT NOT NULL | p. ej. `1` |
 | `schema_version` | INT NOT NULL | último schema reportado por cliente |
 | `server_revision` | INT NOT NULL | >= 1, incrementa en cada `PUT` aceptado |
@@ -57,9 +79,9 @@ Tabla sugerida: **`clash_save`**
 
 ---
 
-## Endpoints futuros
+## Endpoints (implementados Fase 70)
 
-Base: `/api/v1/clash/save` — requiere usuario autenticado en todos los casos.
+Base: `/api/v1/clash/save` — requiere JWT (usuario autenticado).
 
 ### `GET /api/v1/clash/save`
 
@@ -79,7 +101,7 @@ Crea la partida inicial si no existe para el usuario.
 | Respuesta | Descripción |
 |-----------|-------------|
 | `201` + `ClashSaveResponse` | Creada (`serverRevision = 1`) |
-| `409` | Ya existe partida para el usuario |
+| `409` | Ya existe partida (`CLASH_SAVE_ALREADY_EXISTS`) |
 
 Body: snapshot inicial (`ClashSaveUpdateRequest` sin `expectedServerRevision` o con `expectedServerRevision = 0` según convención backend).
 
@@ -262,14 +284,13 @@ Reintento con el mismo `claimId` → respuesta idempotente (mismo grant, sin dup
 
 ---
 
-## Pendiente / fuera de alcance Fase 69
+## Pendiente / fuera de alcance
 
-- Entidades JPA, migraciones SQL, Spring controllers
-- Cliente HTTP Flutter
-- Sync automática al arrancar
-- Aplicación de snapshot remoto sobre SP
-- Login Clash separado
-- Cambios en JSON de contenido Clash (assets)
+- Cliente HTTP Flutter / sync automática
+- `POST /api/v1/clash/claims` server-side
+- Aplicación de snapshot remoto sobre SharedPreferences
+- Normalización en tablas relacionales
+- Validación economía/gacha server-side completa
 
 ---
 
@@ -278,6 +299,13 @@ Reintento con el mismo `claimId` → respuesta idempotente (mismo grant, sin dup
 ```bash
 cd eternalxi_front
 flutter test test/features/clash/sync/clash_backend_save_contract_test.dart
+```
+
+Backend (service MVP):
+
+```bash
+cd eternalxi_api_back
+mvn test -Dtest=ClashSaveServiceTest
 ```
 
 Serialización de DTOs en `clash_save_contract.dart` — sin HTTP.
