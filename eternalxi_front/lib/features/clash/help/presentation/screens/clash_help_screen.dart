@@ -105,6 +105,14 @@ class _ClashHelpScreenState extends State<ClashHelpScreen> {
                               context.push(AppRoutes.clashHelpTopic(topic.id)),
                         ),
                       ),
+                    const SizedBox(height: 24),
+                    Center(
+                      child: TextButton.icon(
+                        onPressed: () => context.push(AppRoutes.clashDebug),
+                        icon: const Icon(Icons.bug_report_outlined, size: 18),
+                        label: Text(l10n.clashDebugOpen),
+                      ),
+                    ),
                   ],
                 ),
         );

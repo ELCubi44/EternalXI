@@ -886,4 +886,19 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 61 — Panel interno de diagnóstico local
+
+**Estado:** implementada.
+
+- `ClashDebugSnapshot`, `ClashDebugSnapshotLoader`, pantalla `/clash/debug`.
+- Secciones: almacenamiento, colección, inventarios, eventos, gacha, claims (solo lectura).
+- Enlace discreto desde ayuda Clash.
+- Tests: `clash_debug_screen_test.dart`.
+
+**Objetivo:** inspeccionar el estado local Clash durante desarrollo sin alterar gameplay, economía ni UI pública principal.
+
+**Sin cambios** en granter, economía, claves SP, Fantasy, leagues ni rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

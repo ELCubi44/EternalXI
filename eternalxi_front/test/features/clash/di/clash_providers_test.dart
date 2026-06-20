@@ -25,7 +25,7 @@ import 'package:provider/provider.dart';
 
 import '../cards/clash_test_support.dart';
 
-ClashProviderDependencies _testClashProviderDependencies() {
+ClashProviderDependencies testClashProviderDependencies() {
   final expMaterialsRepository = createTestExpMaterialsRepository();
   final techniqueBooksRepository = createTestTechniqueBooksRepository();
   final evolutionMaterialsRepository = createTestEvolutionMaterialsRepository();
@@ -62,7 +62,7 @@ void main() {
 
   group('buildClashProviders', () {
     test('devuelve lista no vacía con providers Clash', () {
-      final providers = buildClashProviders(_testClashProviderDependencies());
+      final providers = buildClashProviders(testClashProviderDependencies());
       expect(providers, isNotEmpty);
       expect(providers.length, greaterThanOrEqualTo(40));
     });
@@ -72,7 +72,7 @@ void main() {
     ) async {
       await tester.pumpWidget(
         MultiProvider(
-          providers: buildClashProviders(_testClashProviderDependencies()),
+          providers: buildClashProviders(testClashProviderDependencies()),
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,

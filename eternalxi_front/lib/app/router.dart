@@ -16,6 +16,7 @@ import 'package:eternal_xi/features/clash/presentation/clash_tab_host.dart';
 import 'package:eternal_xi/features/clash/help/presentation/screens/clash_help_screen.dart';
 import 'package:eternal_xi/features/clash/help/presentation/screens/clash_help_topic_screen.dart';
 import 'package:eternal_xi/features/clash/gacha/presentation/screens/clash_gacha_history_screen.dart';
+import 'package:eternal_xi/features/clash/debug/presentation/clash_debug_screen.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/history/presentation/clash_reward_history_screen.dart';
 import 'package:eternal_xi/features/clash/inventory/presentation/screens/clash_inventory_screen.dart';
 import 'package:eternal_xi/features/clash/achievements/presentation/screens/clash_achievements_screen.dart';
@@ -219,6 +220,10 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: 'rewards/history',
               builder: (context, state) => const ClashRewardHistoryScreen(),
+            ),
+            GoRoute(
+              path: 'debug',
+              builder: (context, state) => const ClashDebugScreen(),
             ),
             GoRoute(
               path: 'cards',

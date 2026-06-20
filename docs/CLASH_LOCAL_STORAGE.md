@@ -79,7 +79,18 @@ Integración: `prepareClashProviders()` ejecuta el runner **antes** de crear bac
 ```bash
 cd eternalxi_front
 flutter test test/features/clash/migrations/clash_local_migration_runner_test.dart
+flutter test test/features/clash/debug/clash_debug_screen_test.dart
 ```
+
+## Panel de diagnóstico local (Fase 61)
+
+Pantalla interna de solo lectura en `/clash/debug` (`ClashDebugScreen`).
+
+- Resume schema version, última migración, colección, inventarios, eventos, gacha y claims sin modificar datos.
+- Acceso discreto desde ayuda Clash (`clashDebugOpen`).
+- No expone reset, borrado ni edición de inventario.
+
+Código: `lib/features/clash/debug/`.
 
 ## Relación con otros documentos
 

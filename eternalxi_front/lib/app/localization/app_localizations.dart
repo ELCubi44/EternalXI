@@ -230,6 +230,45 @@ class AppLocalizations {
       'clashRewardHistorySourceEvent': 'Evento',
       'clashRewardHistorySourceStory': 'Historia',
       'clashRewardHistoryDate': '{day}/{month}/{year} {hour}:{minute}',
+      'clashDebugTitle': 'Diagnóstico Clash',
+      'clashDebugReadOnlyHint':
+          'Panel interno de solo lectura. No modifica datos locales.',
+      'clashDebugLoadError': 'No se pudo cargar el diagnóstico local.',
+      'clashDebugOpen': 'Diagnóstico local',
+      'clashDebugSectionStorage': 'Almacenamiento local',
+      'clashDebugSectionCollection': 'Colección',
+      'clashDebugSectionInventory': 'Inventarios',
+      'clashDebugSectionEvents': 'Eventos',
+      'clashDebugSectionGacha': 'Gacha',
+      'clashDebugSectionClaims': 'Claims',
+      'clashDebugSchemaVersion': 'Schema version',
+      'clashDebugLastMigratedAt': 'Última migración',
+      'clashDebugRewardHistoryCount': 'Historial recompensas',
+      'clashDebugCollectionTotalCards': 'Total cartas',
+      'clashDebugCollectionUniqueCards': 'Cartas únicas',
+      'clashDebugCollectionDuplicates': 'Duplicados',
+      'clashDebugWalletCoins': 'Monedas',
+      'clashDebugWalletGems': 'Gemas',
+      'clashDebugExpMaterials': 'Materiales EXP',
+      'clashDebugTechniqueBooks': 'Libros técnicos',
+      'clashDebugEvolutionMaterials': 'Insignias',
+      'clashDebugTickets': 'Tickets',
+      'clashDebugEventsTotal': 'Total eventos',
+      'clashDebugEventsWithProgress': 'Con progreso',
+      'clashDebugEventStagesProgress': '{completed}/{total} fases',
+      'clashDebugGachaHistoryCount': 'Historial gacha',
+      'clashDebugGachaDailyAvailable': 'Daily disponible',
+      'clashDebugGachaDailyUsed': 'Daily usado hoy',
+      'clashDebugGachaPityLine': '{since}/{threshold} (pulls {total})',
+      'clashDebugGiftsClaimed': 'Regalos reclamados',
+      'clashDebugGiftsPending': 'Regalos pendientes',
+      'clashDebugDailyMissionsClaimed': 'Misiones diarias reclamadas',
+      'clashDebugDailyMissionsCompleted': 'Misiones diarias completadas',
+      'clashDebugWeeklyMissionsClaimed': 'Misiones semanales reclamadas',
+      'clashDebugWeeklyMissionsCompleted': 'Misiones semanales completadas',
+      'clashDebugAchievementsClaimed': 'Logros reclamados',
+      'clashDebugAchievementsCompleted': 'Logros completados',
+      'clashDebugClaimProgress': '{done}/{total}',
       'clashAchievementsTitle': 'Logros',
       'clashAchievementsPermanentHint':
           'Progreso permanente. No se reinician cada día.',
@@ -1182,6 +1221,45 @@ class AppLocalizations {
       'clashRewardHistorySourceEvent': 'Event',
       'clashRewardHistorySourceStory': 'Story',
       'clashRewardHistoryDate': '{month}/{day}/{year} {hour}:{minute}',
+      'clashDebugTitle': 'Clash diagnostics',
+      'clashDebugReadOnlyHint':
+          'Internal read-only panel. Does not modify local data.',
+      'clashDebugLoadError': 'Could not load local diagnostics.',
+      'clashDebugOpen': 'Local diagnostics',
+      'clashDebugSectionStorage': 'Local storage',
+      'clashDebugSectionCollection': 'Collection',
+      'clashDebugSectionInventory': 'Inventories',
+      'clashDebugSectionEvents': 'Events',
+      'clashDebugSectionGacha': 'Gacha',
+      'clashDebugSectionClaims': 'Claims',
+      'clashDebugSchemaVersion': 'Schema version',
+      'clashDebugLastMigratedAt': 'Last migration',
+      'clashDebugRewardHistoryCount': 'Reward history',
+      'clashDebugCollectionTotalCards': 'Total cards',
+      'clashDebugCollectionUniqueCards': 'Unique cards',
+      'clashDebugCollectionDuplicates': 'Duplicates',
+      'clashDebugWalletCoins': 'Coins',
+      'clashDebugWalletGems': 'Gems',
+      'clashDebugExpMaterials': 'EXP materials',
+      'clashDebugTechniqueBooks': 'Technique books',
+      'clashDebugEvolutionMaterials': 'Evolution materials',
+      'clashDebugTickets': 'Tickets',
+      'clashDebugEventsTotal': 'Total events',
+      'clashDebugEventsWithProgress': 'With progress',
+      'clashDebugEventStagesProgress': '{completed}/{total} stages',
+      'clashDebugGachaHistoryCount': 'Gacha history',
+      'clashDebugGachaDailyAvailable': 'Daily available',
+      'clashDebugGachaDailyUsed': 'Daily used today',
+      'clashDebugGachaPityLine': '{since}/{threshold} (pulls {total})',
+      'clashDebugGiftsClaimed': 'Gifts claimed',
+      'clashDebugGiftsPending': 'Gifts pending',
+      'clashDebugDailyMissionsClaimed': 'Daily missions claimed',
+      'clashDebugDailyMissionsCompleted': 'Daily missions completed',
+      'clashDebugWeeklyMissionsClaimed': 'Weekly missions claimed',
+      'clashDebugWeeklyMissionsCompleted': 'Weekly missions completed',
+      'clashDebugAchievementsClaimed': 'Achievements claimed',
+      'clashDebugAchievementsCompleted': 'Achievements completed',
+      'clashDebugClaimProgress': '{done}/{total}',
       'clashAchievementsTitle': 'Achievements',
       'clashAchievementsPermanentHint':
           'Permanent progress. They do not reset daily.',
@@ -2216,6 +2294,62 @@ class AppLocalizations {
       .replaceAll('{day}', '$day')
       .replaceAll('{hour}', '$hour')
       .replaceAll('{minute}', minute);
+  String get clashDebugTitle => _t('clashDebugTitle');
+  String get clashDebugReadOnlyHint => _t('clashDebugReadOnlyHint');
+  String get clashDebugLoadError => _t('clashDebugLoadError');
+  String get clashDebugOpen => _t('clashDebugOpen');
+  String get clashDebugSectionStorage => _t('clashDebugSectionStorage');
+  String get clashDebugSectionCollection => _t('clashDebugSectionCollection');
+  String get clashDebugSectionInventory => _t('clashDebugSectionInventory');
+  String get clashDebugSectionEvents => _t('clashDebugSectionEvents');
+  String get clashDebugSectionGacha => _t('clashDebugSectionGacha');
+  String get clashDebugSectionClaims => _t('clashDebugSectionClaims');
+  String get clashDebugSchemaVersion => _t('clashDebugSchemaVersion');
+  String get clashDebugLastMigratedAt => _t('clashDebugLastMigratedAt');
+  String get clashDebugRewardHistoryCount => _t('clashDebugRewardHistoryCount');
+  String get clashDebugCollectionTotalCards =>
+      _t('clashDebugCollectionTotalCards');
+  String get clashDebugCollectionUniqueCards =>
+      _t('clashDebugCollectionUniqueCards');
+  String get clashDebugCollectionDuplicates =>
+      _t('clashDebugCollectionDuplicates');
+  String get clashDebugWalletCoins => _t('clashDebugWalletCoins');
+  String get clashDebugWalletGems => _t('clashDebugWalletGems');
+  String get clashDebugExpMaterials => _t('clashDebugExpMaterials');
+  String get clashDebugTechniqueBooks => _t('clashDebugTechniqueBooks');
+  String get clashDebugEvolutionMaterials => _t('clashDebugEvolutionMaterials');
+  String get clashDebugTickets => _t('clashDebugTickets');
+  String get clashDebugEventsTotal => _t('clashDebugEventsTotal');
+  String get clashDebugEventsWithProgress => _t('clashDebugEventsWithProgress');
+  String clashDebugEventStagesProgress(int completed, int total) => _t(
+    'clashDebugEventStagesProgress',
+  ).replaceAll('{completed}', '$completed').replaceAll('{total}', '$total');
+  String get clashDebugGachaHistoryCount => _t('clashDebugGachaHistoryCount');
+  String get clashDebugGachaDailyAvailable =>
+      _t('clashDebugGachaDailyAvailable');
+  String get clashDebugGachaDailyUsed => _t('clashDebugGachaDailyUsed');
+  String clashDebugGachaPityLine(int since, int threshold, int total) =>
+      _t('clashDebugGachaPityLine')
+          .replaceAll('{since}', '$since')
+          .replaceAll('{threshold}', '$threshold')
+          .replaceAll('{total}', '$total');
+  String get clashDebugGiftsClaimed => _t('clashDebugGiftsClaimed');
+  String get clashDebugGiftsPending => _t('clashDebugGiftsPending');
+  String get clashDebugDailyMissionsClaimed =>
+      _t('clashDebugDailyMissionsClaimed');
+  String get clashDebugDailyMissionsCompleted =>
+      _t('clashDebugDailyMissionsCompleted');
+  String get clashDebugWeeklyMissionsClaimed =>
+      _t('clashDebugWeeklyMissionsClaimed');
+  String get clashDebugWeeklyMissionsCompleted =>
+      _t('clashDebugWeeklyMissionsCompleted');
+  String get clashDebugAchievementsClaimed =>
+      _t('clashDebugAchievementsClaimed');
+  String get clashDebugAchievementsCompleted =>
+      _t('clashDebugAchievementsCompleted');
+  String clashDebugClaimProgress(int done, int total) => _t(
+    'clashDebugClaimProgress',
+  ).replaceAll('{done}', '$done').replaceAll('{total}', '$total');
   String get clashAchievementsTitle => _t('clashAchievementsTitle');
   String get clashAchievementsPermanentHint =>
       _t('clashAchievementsPermanentHint');
