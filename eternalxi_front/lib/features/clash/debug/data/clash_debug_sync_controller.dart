@@ -2,6 +2,7 @@ import 'package:eternal_xi/features/clash/debug/domain/clash_debug_bootstrap_res
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_local_backup.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_metadata_storage.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_settings_storage.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_status.dart';
@@ -11,22 +12,26 @@ import 'package:eternal_xi/features/clash/sync/domain/clash_sync_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_snapshot.dart';
 import 'package:flutter/foundation.dart';
 
-/// Estado del panel manual de sync online en diagnóstico (Fase 72–77).
+/// Estado del panel manual de sync online en diagnóstico (Fase 72–79).
 class ClashDebugSyncController extends ChangeNotifier {
   ClashDebugSyncController({
     required this.coordinator,
     this.applier,
     this.backupStore,
     this.metadataStorage,
+    this.settingsStorage,
     this.isAuthenticated,
   }) : _metadata = metadataStorage?.load() ?? const ClashSyncMetadata() {
     knownServerRevision = _metadata.knownServerRevision;
+    autoCheckEnabledOnClashOpen =
+        settingsStorage?.load().autoCheckEnabledOnClashOpen ?? false;
   }
 
   final ClashSyncCoordinator coordinator;
   final ClashSyncSnapshotApplier? applier;
   final ClashSyncLocalBackupStore? backupStore;
   final ClashSyncMetadataStorage? metadataStorage;
+  final ClashSyncSettingsStorage? settingsStorage;
   final Future<bool> Function()? isAuthenticated;
 
   ClashSyncMetadata _metadata;
@@ -41,8 +46,19 @@ class ClashDebugSyncController extends ChangeNotifier {
   int? knownServerRevision;
   bool busy = false;
   bool authRequired = false;
+  bool autoCheckEnabledOnClashOpen = false;
 
   ClashSyncMetadata get metadata => _metadata;
+
+  Future<void> setAutoCheckEnabledOnClashOpen(bool enabled) async {
+    final storage = settingsStorage;
+    if (storage == null) {
+      return;
+    }
+    await storage.setAutoCheckEnabledOnClashOpen(enabled);
+    autoCheckEnabledOnClashOpen = enabled;
+    notifyListeners();
+  }
 
   int? get effectiveKnownRevision =>
       knownServerRevision ?? _metadata.knownServerRevision;

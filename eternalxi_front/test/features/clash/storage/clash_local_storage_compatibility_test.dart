@@ -18,6 +18,7 @@ import 'package:eternal_xi/features/clash/shared/rewards/history/data/clash_rewa
 import 'package:eternal_xi/features/clash/shared/rewards/history/domain/clash_reward_history_entry.dart';
 import 'package:eternal_xi/features/clash/story/data/datasources/clash_story_progress_storage.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_metadata_storage.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_settings_storage.dart';
 import 'package:eternal_xi/features/clash/team/data/datasources/clash_lineups_local_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -90,6 +91,21 @@ void main() {
         expect(
           ClashSharedPreferencesKeys.dataKeys,
           isNot(contains(ClashSharedPreferencesKeys.syncMetadata)),
+        );
+      });
+
+      test('storageKey de auto-check no está en dataKeys', () {
+        expect(
+          ClashSharedPreferencesKeys.syncAutoCheckEnabled,
+          'clash_sync_auto_check_enabled_v1',
+        );
+        expect(
+          ClashSyncSettingsStorage.storageKey,
+          ClashSharedPreferencesKeys.syncAutoCheckEnabled,
+        );
+        expect(
+          ClashSharedPreferencesKeys.dataKeys,
+          isNot(contains(ClashSharedPreferencesKeys.syncAutoCheckEnabled)),
         );
       });
 

@@ -8,6 +8,7 @@ import 'package:eternal_xi/features/clash/sync/data/clash_sync_local_backup.dart
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_builder.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_validator.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_metadata_storage.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_settings_storage.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
 import 'package:eternal_xi/features/clash/sync/data/fake_clash_sync_client.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_result.dart';
@@ -440,6 +441,34 @@ void main() {
       expect(controller.authRequired, isTrue);
     });
   });
+
+  group('ClashDebugSyncController Fase 79', () {
+    setUp(() async {
+      await backupPrefs.remove(ClashSharedPreferencesKeys.syncAutoCheckEnabled);
+    });
+
+    test('auto-check desactivado por defecto', () {
+      final storage = ClashSyncSettingsStorage(sharedPreferences: backupPrefs);
+      final controller = _controller(settingsStorage: storage);
+
+      expect(controller.autoCheckEnabledOnClashOpen, isFalse);
+    });
+
+    test('toggle guarda true y false', () async {
+      final storage = ClashSyncSettingsStorage(sharedPreferences: backupPrefs);
+      final client = _CountingSyncClient();
+      final controller = _controller(client: client, settingsStorage: storage);
+
+      await controller.setAutoCheckEnabledOnClashOpen(true);
+      expect(controller.autoCheckEnabledOnClashOpen, isTrue);
+      expect(storage.load().autoCheckEnabledOnClashOpen, isTrue);
+      expect(client.pullCalls, 0);
+
+      await controller.setAutoCheckEnabledOnClashOpen(false);
+      expect(controller.autoCheckEnabledOnClashOpen, isFalse);
+      expect(storage.load().autoCheckEnabledOnClashOpen, isFalse);
+    });
+  });
 }
 
 final _epoch = DateTime.utc(2026, 6, 20, 12);
@@ -449,6 +478,7 @@ ClashDebugSyncController _controller({
   ClashSyncSnapshotApplier? applier,
   ClashSyncLocalBackupStore? backupStore,
   ClashSyncMetadataStorage? metadataStorage,
+  ClashSyncSettingsStorage? settingsStorage,
   ClashSyncSnapshotBuilder? builder,
   Future<bool> Function()? isAuthenticated,
 }) {
@@ -462,6 +492,7 @@ ClashDebugSyncController _controller({
     applier: applier,
     backupStore: backupStore,
     metadataStorage: metadataStorage,
+    settingsStorage: settingsStorage,
     isAuthenticated: isAuthenticated,
   );
 }

@@ -94,7 +94,7 @@ flutter test test/features/clash/sync/clash_backend_save_contract_test.dart
 
 **Nota:** backend MVP disponible (`GET/POST/PUT /api/v1/clash/save`). Cliente HTTP Flutter creado (Fase 71) — **sin sync automática** ni tests E2E contra servidor real. Ver [`CLASH_BACKEND_SAVE_CONTRACT.md`](./CLASH_BACKEND_SAVE_CONTRACT.md).
 
-## Prueba manual sync online (Fase 72–78)
+## Prueba manual sync online (Fase 72–79)
 
 En dispositivo con usuario logueado:
 
@@ -105,21 +105,21 @@ En dispositivo con usuario logueado:
 5. Si ya existe partida remota, confirmar diálogo antes de subir.
 6. Tras descarga exitosa: **Aplicar partida online a este dispositivo** → confirmar diálogo.
 7. **Verificar persistencia:** cerrar y reabrir la app → en diagnóstico debe mostrarse la `serverRevision` conocida y el último estado desde `clash_sync_metadata_v1` (sin llamadas HTTP automáticas).
-8. Volver a **Clash Home** — el badge debe reflejar metadata (sin llamar backend al abrir Home).
+8. Volver a **Clash Home** — el badge debe reflejar metadata (sin llamar backend al abrir Home con flag off).
+9. En diagnóstico, activar **Comprobar partida online al abrir Clash** → reabrir Home → debe hacer GET (pull) sin apply ni push. Desactivar toggle para volver al comportamiento seguro.
 
-El pull **no** modifica el almacenamiento local hasta confirmar aplicar. La subida **no** ocurre automáticamente tras apply/restore. Se crea backup en `clash_last_local_backup_v1`.
+El pull **no** modifica el almacenamiento local hasta confirmar aplicar. La subida **no** ocurre automáticamente tras apply/restore. Se crea backup en `clash_last_local_backup_v1`. Auto-check **no** aplica remoto ni crea save.
 
-**Verificar que el badge no llama backend:** abrir Home sin red; el badge solo lee metadata persistida y no dispara GET/POST/PUT.
+**Verificar que el badge/auto-check no llama push:** con flag off, abrir Home sin red; con flag on, pull solo GET.
 
-**Tests Fase 78:** badge estados, navegación a debug, Home sin HTTP, responsive smallPhone.
+**Tests Fase 79:** settings default, toggle, auto-check service, Home off/on, throttling.
 
 ```bash
 cd eternalxi_front
+flutter test test/features/clash/sync/clash_sync_settings_storage_test.dart
+flutter test test/features/clash/sync/clash_sync_auto_check_service_test.dart
 flutter test test/features/clash/sync/clash_sync_status_badge_test.dart
 flutter test test/features/clash/debug/clash_debug_sync_controller_test.dart
-flutter test test/features/clash/debug/clash_debug_bootstrap_screen_test.dart
-flutter test test/features/clash/responsive/clash_responsive_test.dart
-flutter test test/features/clash/smoke/clash_local_smoke_test.dart
 ```
 
 ## Flutter save API client (Fase 71)

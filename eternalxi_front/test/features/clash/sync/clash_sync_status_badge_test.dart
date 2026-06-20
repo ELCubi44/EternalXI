@@ -3,8 +3,14 @@ import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/features/clash/home/presentation/clash_home_screen.dart';
 import 'package:eternal_xi/features/clash/shared/di/clash_providers.dart';
 import 'package:eternal_xi/features/clash/shared/migrations/data/clash_shared_preferences_keys.dart';
+import 'package:eternal_xi/features/clash/shared/migrations/domain/clash_storage_schema.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_auto_check_service.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_client.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_metadata_storage.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_settings_storage.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_builder.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_validator.dart';
 import 'package:eternal_xi/features/clash/sync/data/fake_clash_sync_client.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_metadata.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_result.dart';
@@ -293,6 +299,89 @@ void main() {
       expect(find.text('Sin preparar online'), findsOneWidget);
     });
 
+    testWidgets('Clash Home con auto-check activo ejecuta pull una vez', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      SharedPreferences.setMockInitialValues({
+        ClashSharedPreferencesKeys.schemaVersion: 1,
+        ClashSharedPreferencesKeys.lastMigratedAt: '2026-06-11T10:00:00.000Z',
+        ClashSharedPreferencesKeys.syncAutoCheckEnabled: true,
+      });
+      final prefs = await SharedPreferences.getInstance();
+      final client = _CountingSyncClient();
+      final baseDeps = testClashProviderDependencies();
+      final epoch = DateTime.utc(2026, 6, 20, 12);
+      await client.pushSnapshot(_validSnapshot());
+      client.pushCalls = 0;
+      final autoCheckService = ClashSyncAutoCheckService(
+        coordinator: ClashSyncCoordinator(
+          builder: _StubSnapshotBuilder(_validSnapshot()),
+          validator: const ClashSyncSnapshotValidator(),
+          client: client,
+          now: () => epoch,
+        ),
+        settingsStorage: ClashSyncSettingsStorage(sharedPreferences: prefs),
+        metadataStorage: ClashSyncMetadataStorage(sharedPreferences: prefs),
+        now: () => epoch,
+      );
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: buildClashProviders(
+            ClashProviderDependencies(
+              lineupsBackend: baseDeps.lineupsBackend,
+              collectionBackend: baseDeps.collectionBackend,
+              expMaterialInventoryBackend: baseDeps.expMaterialInventoryBackend,
+              expMaterialsRepository: baseDeps.expMaterialsRepository,
+              techniqueBookInventoryBackend:
+                  baseDeps.techniqueBookInventoryBackend,
+              techniqueBooksRepository: baseDeps.techniqueBooksRepository,
+              evolutionMaterialInventoryBackend:
+                  baseDeps.evolutionMaterialInventoryBackend,
+              evolutionMaterialsRepository:
+                  baseDeps.evolutionMaterialsRepository,
+              storyProgressBackend: baseDeps.storyProgressBackend,
+              gachaDailyBackend: baseDeps.gachaDailyBackend,
+              gachaHistoryBackend: baseDeps.gachaHistoryBackend,
+              gachaPityBackend: baseDeps.gachaPityBackend,
+              dailyMissionsBackend: baseDeps.dailyMissionsBackend,
+              achievementsBackend: baseDeps.achievementsBackend,
+              weeklyMissionsBackend: baseDeps.weeklyMissionsBackend,
+              newsReadBackend: baseDeps.newsReadBackend,
+              giftsBackend: baseDeps.giftsBackend,
+              characterEventsBackend: baseDeps.characterEventsBackend,
+              gachaTicketInventoryBackend: baseDeps.gachaTicketInventoryBackend,
+              gachaTicketRepository: baseDeps.gachaTicketRepository,
+              rewardHistoryBackend: baseDeps.rewardHistoryBackend,
+              sharedPreferences: prefs,
+              syncClientOverride: client,
+            ),
+          ),
+          child: MaterialApp(
+            locale: const Locale('es'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            home: ClashHomeScreen(autoCheckService: autoCheckService),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      expect(client.pullCalls, 1);
+      expect(
+        ClashSyncMetadataStorage(
+          sharedPreferences: prefs,
+        ).load().hasPendingRemoteSnapshot,
+        isTrue,
+      );
+    });
+
     testWidgets('responsive smallPhone sin overflow', (tester) async {
       SharedPreferences.setMockInitialValues({
         ClashSharedPreferencesKeys.schemaVersion: 1,
@@ -327,6 +416,29 @@ void main() {
       expect(find.text('Sin preparar online'), findsOneWidget);
     });
   });
+}
+
+ClashSyncSnapshot _validSnapshot() {
+  return ClashSyncSnapshot(
+    generatedAt: DateTime.utc(2026, 6, 20, 12),
+    schemaVersion: ClashStorageSchema.currentVersion,
+    wallet: const ClashSyncWallet(coins: 1500, gems: 12),
+    collection: const ClashSyncCollection(
+      ownedCardIds: ['card-a'],
+      uniqueCount: 1,
+      totalCopies: 1,
+    ),
+  );
+}
+
+class _StubSnapshotBuilder extends ClashSyncSnapshotBuilder {
+  _StubSnapshotBuilder(this._snapshot)
+    : super(dependencies: const ClashSyncSnapshotBuilderDependencies());
+
+  final ClashSyncSnapshot _snapshot;
+
+  @override
+  Future<ClashSyncSnapshot> build() async => _snapshot;
 }
 
 class _CountingSyncClient extends FakeClashSyncClient {

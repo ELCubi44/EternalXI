@@ -347,6 +347,10 @@ class AppLocalizations {
       'clashSyncBadgeLastSync': 'Sync {date}',
       'clashSyncBadgeConflictRevision': 'Remota rev. {revision}',
       'clashSyncBadgeOpenDiagnostics': 'Ver diagnóstico',
+      'clashDebugSyncAutoCheckToggle':
+          'Comprobar partida online al abrir Clash',
+      'clashDebugSyncAutoCheckHint':
+          'Solo descarga estado remoto (GET). No aplica ni sube. Desactivado por defecto.',
       'clashAchievementsTitle': 'Logros',
       'clashAchievementsPermanentHint':
           'Progreso permanente. No se reinician cada día.',
@@ -1416,6 +1420,9 @@ class AppLocalizations {
       'clashSyncBadgeLastSync': 'Sync {date}',
       'clashSyncBadgeConflictRevision': 'Remote rev. {revision}',
       'clashSyncBadgeOpenDiagnostics': 'Open diagnostics',
+      'clashDebugSyncAutoCheckToggle': 'Check online save when opening Clash',
+      'clashDebugSyncAutoCheckHint':
+          'Downloads remote state only (GET). Does not apply or upload. Off by default.',
       'clashAchievementsTitle': 'Achievements',
       'clashAchievementsPermanentHint':
           'Permanent progress. They do not reset daily.',
@@ -2613,6 +2620,9 @@ class AppLocalizations {
   ).replaceAll('{revision}', '$revision');
   String get clashSyncBadgeOpenDiagnostics =>
       _t('clashSyncBadgeOpenDiagnostics');
+  String get clashDebugSyncAutoCheckToggle =>
+      _t('clashDebugSyncAutoCheckToggle');
+  String get clashDebugSyncAutoCheckHint => _t('clashDebugSyncAutoCheckHint');
   String get clashAchievementsTitle => _t('clashAchievementsTitle');
   String get clashAchievementsPermanentHint =>
       _t('clashAchievementsPermanentHint');

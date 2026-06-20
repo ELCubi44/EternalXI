@@ -18,6 +18,7 @@ import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_re
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_local_backup.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_metadata_storage.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_settings_storage.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_apply_result.dart';
 import 'package:eternal_xi/features/clash/sync/domain/clash_sync_operation_result.dart';
@@ -59,6 +60,7 @@ class _ClashDebugScreenState extends State<ClashDebugScreen> {
           applier: _readOptional<ClashSyncSnapshotApplier>(context),
           backupStore: _readOptional<ClashSyncLocalBackupStore>(context),
           metadataStorage: _readOptional<ClashSyncMetadataStorage>(context),
+          settingsStorage: _readOptional<ClashSyncSettingsStorage>(context),
         );
     if (!_snapshotLoadStarted) {
       _snapshotLoadStarted = true;
@@ -391,6 +393,20 @@ class _ClashDebugOnlineSyncSection extends StatelessWidget {
               value: controller.hasLocalBackup
                   ? l10n.clashDebugSyncBackupAvailable
                   : l10n.clashDebugSyncBackupUnavailable,
+            ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(l10n.clashDebugSyncAutoCheckToggle),
+              subtitle: Text(
+                l10n.clashDebugSyncAutoCheckHint,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: context.xiTextSecondary),
+              ),
+              value: controller.autoCheckEnabledOnClashOpen,
+              onChanged: controller.busy
+                  ? null
+                  : controller.setAutoCheckEnabledOnClashOpen,
             ),
             _ClashDebugRow(
               label: l10n.clashDebugSyncLastValidate,

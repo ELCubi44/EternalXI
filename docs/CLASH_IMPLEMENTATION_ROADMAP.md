@@ -1159,4 +1159,20 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 79 — Optional remote auto-check
+
+**Estado:** implementada.
+
+- Key `clash_sync_auto_check_enabled_v1` (default false).
+- Toggle en diagnóstico: **Comprobar partida online al abrir Clash**.
+- `ClashSyncAutoCheckService.runIfEnabled()` — GET only, throttling 5 min.
+- Integración no bloqueante en `ClashHomeScreen`.
+- Sin apply, push ni create.
+
+**Objetivo:** preparar sync automática futura de forma segura.
+
+**Sin cambios** en auto-apply, auto-push, merge, claims, backend, Fantasy, leagues, rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

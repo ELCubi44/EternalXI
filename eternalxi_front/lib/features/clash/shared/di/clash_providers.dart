@@ -1,10 +1,12 @@
 import 'package:eternal_xi/core/network/api_client.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_save_api_client.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_client.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_auto_check_service.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_coordinator.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_builder.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_local_backup.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_metadata_storage.dart';
+import 'package:eternal_xi/features/clash/sync/data/clash_sync_settings_storage.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_applier.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_snapshot_validator.dart';
 import 'package:eternal_xi/features/clash/sync/data/http_clash_sync_client.dart';
@@ -559,6 +561,18 @@ List<SingleChildWidget> _buildClashSyncApplierProviders(
     Provider<ClashSyncMetadataStorage>(
       create: (_) =>
           ClashSyncMetadataStorage(sharedPreferences: deps.sharedPreferences!),
+    ),
+    Provider<ClashSyncSettingsStorage>(
+      create: (_) =>
+          ClashSyncSettingsStorage(sharedPreferences: deps.sharedPreferences!),
+    ),
+    Provider<ClashSyncAutoCheckService>(
+      create: (context) => ClashSyncAutoCheckService(
+        coordinator: context.read<ClashSyncCoordinator>(),
+        settingsStorage: context.read<ClashSyncSettingsStorage>(),
+        metadataStorage: context.read<ClashSyncMetadataStorage>(),
+        backupStore: context.read<ClashSyncLocalBackupStore>(),
+      ),
     ),
     Provider<ClashSyncSnapshotApplier>(
       create: (context) => ClashSyncSnapshotApplier(

@@ -133,7 +133,7 @@ Sin merge, sin restauración automática si falla la escritura (backup disponibl
 
 Código: `clash_sync_snapshot_applier.dart`, `clash_debug_sync_controller.dart`.
 
-## Diagnóstico manual de sync (Fase 72–78)
+## Diagnóstico manual de sync (Fase 72–79)
 
 `ClashDebugSyncController` + sección **Sincronización online** en `/clash/debug`.
 
@@ -154,6 +154,22 @@ Estados: sin preparar online, sincronizado, pendiente local, conflicto, error, b
 - **Solo lectura** de metadata local.
 - Tap → `/clash/debug`.
 - **Sin** HTTP, sync, push, pull, apply ni bootstrap automático.
+
+### Auto-check remoto opcional (Fase 79)
+
+Ajuste `clash_sync_auto_check_enabled_v1` (default **false**), toggle en diagnóstico.
+
+| Comportamiento | Detalle |
+|----------------|---------|
+| Flag off | `ClashSyncAutoCheckService.runIfEnabled()` → `null`, sin HTTP |
+| Flag on + abrir Clash Home | GET/pull remoto, throttling 5 min desde `lastPullAt` |
+| Success | Metadata: `knownServerRevision`, `hasPendingRemoteSnapshot=true`, `lastPullAt` |
+| notFound | Metadata actualizada, **no** POST create |
+| 401/conflict/unavailable | Metadata/error persistido |
+
+**Prohibido en auto-check:** apply, push, create, bootstrap.
+
+Código: `ClashSyncAutoCheckService`, integración en `ClashHomeScreen`.
 
 Estado visible en diagnóstico (memoria + metadata persistida en `clash_sync_metadata_v1`):
 

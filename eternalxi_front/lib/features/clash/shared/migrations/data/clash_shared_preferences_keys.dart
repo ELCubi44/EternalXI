@@ -32,6 +32,9 @@ abstract final class ClashSharedPreferencesKeys {
   /// Metadatos locales de sync online (Fase 76).
   static const syncMetadata = 'clash_sync_metadata_v1';
 
+  /// Auto-check remoto al abrir Clash, off por defecto (Fase 79).
+  static const syncAutoCheckEnabled = 'clash_sync_auto_check_enabled_v1';
+
   /// Claves de datos de progreso/inventario (excluye metadata de schema).
   static const dataKeys = <String>{
     lineups7v7,

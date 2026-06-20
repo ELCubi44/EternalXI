@@ -10,6 +10,13 @@ Persistencia **local-first** de Clash en `SharedPreferences`. Sin sync remoto en
 | `clash_last_migrated_at` | `String` (ISO-8601 UTC) | Última migración ejecutada |
 | `clash_last_local_backup_v1` | `String` (JSON) | Último backup local antes de aplicar snapshot remoto (Fase 73) |
 | `clash_sync_metadata_v1` | `String` (JSON) | Metadatos locales de sync online (Fase 76) |
+| `clash_sync_auto_check_enabled_v1` | `bool` | Auto-check remoto al abrir Clash, **off** por defecto (Fase 79) |
+
+### Auto-check settings (`clash_sync_auto_check_enabled_v1`)
+
+Boolean simple. Cuando es `true`, al entrar en Clash Home el cliente puede hacer GET remoto (pull) con throttling de 5 minutos. **No** aplica snapshot, **no** sube local, **no** crea save.
+
+Código: `clash_sync_settings.dart`, `clash_sync_settings_storage.dart`, `clash_sync_auto_check_service.dart`.
 
 ### Formato metadata sync (`clash_sync_metadata_v1`)
 
