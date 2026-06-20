@@ -217,6 +217,19 @@ class AppLocalizations {
       'clashRewardFeedbackFailureBody': 'Inténtalo de nuevo más tarde.',
       'clashRewardFeedbackAccept': 'Aceptar',
       'clashRewardFeedbackViewRewards': 'Ver recompensas',
+      'clashRewardHistoryTitle': 'Historial de recompensas',
+      'clashRewardHistoryEmpty': 'Aún no hay recompensas registradas.',
+      'clashRewardHistoryView': 'Ver historial',
+      'clashRewardHistoryStatusPartial': 'Entrega parcial',
+      'clashRewardHistoryStatusFailure': 'Entrega fallida',
+      'clashRewardHistorySourceGift': 'Regalo',
+      'clashRewardHistorySourceAchievement': 'Logro',
+      'clashRewardHistorySourceDailyMission': 'Misión diaria',
+      'clashRewardHistorySourceWeeklyMission': 'Misión semanal',
+      'clashRewardHistorySourceShop': 'Tienda',
+      'clashRewardHistorySourceEvent': 'Evento',
+      'clashRewardHistorySourceStory': 'Historia',
+      'clashRewardHistoryDate': '{day}/{month}/{year} {hour}:{minute}',
       'clashAchievementsTitle': 'Logros',
       'clashAchievementsPermanentHint':
           'Progreso permanente. No se reinician cada día.',
@@ -1156,6 +1169,19 @@ class AppLocalizations {
       'clashRewardFeedbackFailureBody': 'Please try again later.',
       'clashRewardFeedbackAccept': 'Accept',
       'clashRewardFeedbackViewRewards': 'View rewards',
+      'clashRewardHistoryTitle': 'Reward history',
+      'clashRewardHistoryEmpty': 'No rewards recorded yet.',
+      'clashRewardHistoryView': 'View history',
+      'clashRewardHistoryStatusPartial': 'Partial delivery',
+      'clashRewardHistoryStatusFailure': 'Delivery failed',
+      'clashRewardHistorySourceGift': 'Gift',
+      'clashRewardHistorySourceAchievement': 'Achievement',
+      'clashRewardHistorySourceDailyMission': 'Daily mission',
+      'clashRewardHistorySourceWeeklyMission': 'Weekly mission',
+      'clashRewardHistorySourceShop': 'Shop',
+      'clashRewardHistorySourceEvent': 'Event',
+      'clashRewardHistorySourceStory': 'Story',
+      'clashRewardHistoryDate': '{month}/{day}/{year} {hour}:{minute}',
       'clashAchievementsTitle': 'Achievements',
       'clashAchievementsPermanentHint':
           'Permanent progress. They do not reset daily.',
@@ -2159,6 +2185,37 @@ class AppLocalizations {
   String get clashRewardFeedbackAccept => _t('clashRewardFeedbackAccept');
   String get clashRewardFeedbackViewRewards =>
       _t('clashRewardFeedbackViewRewards');
+  String get clashRewardHistoryTitle => _t('clashRewardHistoryTitle');
+  String get clashRewardHistoryEmpty => _t('clashRewardHistoryEmpty');
+  String get clashRewardHistoryView => _t('clashRewardHistoryView');
+  String get clashRewardHistoryStatusPartial =>
+      _t('clashRewardHistoryStatusPartial');
+  String get clashRewardHistoryStatusFailure =>
+      _t('clashRewardHistoryStatusFailure');
+  String get clashRewardHistorySourceGift => _t('clashRewardHistorySourceGift');
+  String get clashRewardHistorySourceAchievement =>
+      _t('clashRewardHistorySourceAchievement');
+  String get clashRewardHistorySourceDailyMission =>
+      _t('clashRewardHistorySourceDailyMission');
+  String get clashRewardHistorySourceWeeklyMission =>
+      _t('clashRewardHistorySourceWeeklyMission');
+  String get clashRewardHistorySourceShop => _t('clashRewardHistorySourceShop');
+  String get clashRewardHistorySourceEvent =>
+      _t('clashRewardHistorySourceEvent');
+  String get clashRewardHistorySourceStory =>
+      _t('clashRewardHistorySourceStory');
+  String clashRewardHistoryDate(
+    int year,
+    int month,
+    int day,
+    int hour,
+    String minute,
+  ) => _t('clashRewardHistoryDate')
+      .replaceAll('{year}', '$year')
+      .replaceAll('{month}', '$month')
+      .replaceAll('{day}', '$day')
+      .replaceAll('{hour}', '$hour')
+      .replaceAll('{minute}', minute);
   String get clashAchievementsTitle => _t('clashAchievementsTitle');
   String get clashAchievementsPermanentHint =>
       _t('clashAchievementsPermanentHint');

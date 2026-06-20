@@ -24,6 +24,7 @@ abstract final class ClashSharedPreferencesKeys {
   static const gachaPity = 'clash_gacha_pity_v1';
   static const gachaDaily = 'clash_gacha_daily_v1';
   static const storyProgress = 'clash_story_progress_v1';
+  static const rewardHistory = 'clash_reward_history_v1';
 
   /// Claves de datos de progreso/inventario (excluye metadata de schema).
   static const dataKeys = <String>{
@@ -44,5 +45,6 @@ abstract final class ClashSharedPreferencesKeys {
     gachaPity,
     gachaDaily,
     storyProgress,
+    rewardHistory,
   };
 }

@@ -51,6 +51,8 @@ import 'package:eternal_xi/features/clash/shared/migrations/data/clash_local_mig
 import 'package:eternal_xi/features/clash/shared/migrations/domain/clash_migration_result.dart';
 import 'package:eternal_xi/features/clash/shared/migrations/domain/clash_storage_schema.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/data/clash_local_reward_granter.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/history/data/clash_reward_history_repository.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/history/data/clash_reward_history_storage.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_grant_service.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_local_datasource.dart';
 import 'package:eternal_xi/features/clash/shop/data/clash_shop_repository.dart';
@@ -89,6 +91,7 @@ class ClashProviderDependencies {
     required this.characterEventsBackend,
     required this.gachaTicketInventoryBackend,
     required this.gachaTicketRepository,
+    required this.rewardHistoryBackend,
     this.migrationResult,
   });
 
@@ -113,6 +116,7 @@ class ClashProviderDependencies {
   final ClashCharacterEventsStorageBackend characterEventsBackend;
   final ClashGachaTicketInventoryStorageBackend gachaTicketInventoryBackend;
   final ClashGachaTicketRepository gachaTicketRepository;
+  final ClashRewardHistoryStorageBackend rewardHistoryBackend;
   final ClashMigrationResult? migrationResult;
 }
 
@@ -187,6 +191,8 @@ Future<ClashProviderDependencies> prepareClashProviders() async {
     dataSource: ClashGachaTicketsLocalDataSource(),
     inventoryStorage: gachaTicketInventoryBackend,
   );
+  final rewardHistoryBackend =
+      await SharedPreferencesClashRewardHistoryBackend.create();
 
   return ClashProviderDependencies(
     lineupsBackend: lineupsBackend,
@@ -209,6 +215,7 @@ Future<ClashProviderDependencies> prepareClashProviders() async {
     characterEventsBackend: characterEventsBackend,
     gachaTicketInventoryBackend: gachaTicketInventoryBackend,
     gachaTicketRepository: gachaTicketRepository,
+    rewardHistoryBackend: rewardHistoryBackend,
     migrationResult: migrationResult,
   );
 }
@@ -258,6 +265,14 @@ List<SingleChildWidget> buildClashProviders(ClashProviderDependencies deps) {
     ),
     Provider<ClashGachaTicketRepository>.value(
       value: deps.gachaTicketRepository,
+    ),
+    Provider<ClashRewardHistoryStorageBackend>.value(
+      value: deps.rewardHistoryBackend,
+    ),
+    Provider<ClashRewardHistoryRepository>(
+      create: (context) => ClashRewardHistoryRepository(
+        storage: context.read<ClashRewardHistoryStorageBackend>(),
+      ),
     ),
     Provider<ClashDailyMissionsStorageBackend>.value(
       value: deps.dailyMissionsBackend,

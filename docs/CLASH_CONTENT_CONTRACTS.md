@@ -145,6 +145,36 @@ Helpers en `lib/features/clash/shared/rewards/presentation/`:
 
 Tests: `test/features/clash/rewards/clash_reward_feedback_test.dart`.
 
+---
+
+## Historial local de recompensas (Fase 60)
+
+**Clave:** `clash_reward_history_v1` (`ClashSharedPreferencesKeys.rewardHistory`).
+
+**Módulo:** `lib/features/clash/shared/rewards/history/`.
+
+Cada entrada (`ClashRewardHistoryEntry`) incluye:
+
+| Campo | Descripción |
+|-------|-------------|
+| `id` | Identificador local único |
+| `sourceType` | `gift`, `achievement`, `dailyMission`, `weeklyMission`, `shop`, `event`, `story` |
+| `sourceId` | ID opcional del origen (regalo, logro, producto, etc.) |
+| `title` | Título mostrable |
+| `createdAt` | ISO-8601 UTC |
+| `rewards` | Recompensas concedidas (`ClashReward` serializado) |
+| `failedRewards` | Fallos parciales si existen |
+| `isPartial` / `isFailure` | Estado de entrega |
+| `newlyGrantedCardIds` / `duplicateCardIds` | Metadatos de cartas |
+
+**Límite:** 100 entradas recientes (las más antiguas se recortan al añadir).
+
+**Registro:** adaptadores de `ClashRewardFeedback` (claims/compras) y pantallas de recompensa de evento/historia (`recordCompletionScreenHistory`, una vez por pantalla).
+
+**UI:** `/clash/rewards/history` — acceso desde inventario Clash.
+
+Tests: `test/features/clash/rewards/clash_reward_history_storage_test.dart`, `clash_reward_history_test.dart`.
+
 ## Pendiente (post-Fase 55)
 
 - Sync server-side e idempotencia remota

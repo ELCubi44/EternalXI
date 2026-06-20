@@ -3,6 +3,8 @@ import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/domain/clash_reward.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/history/domain/clash_reward_history_entry.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_feedback.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_display_builder.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_display_item.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_icon.dart';
@@ -14,10 +16,45 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class ClashStoryRewardScreen extends StatelessWidget {
+class ClashStoryRewardScreen extends StatefulWidget {
   const ClashStoryRewardScreen({required this.levelId, super.key});
 
   final String levelId;
+
+  @override
+  State<ClashStoryRewardScreen> createState() => _ClashStoryRewardScreenState();
+}
+
+class _ClashStoryRewardScreenState extends State<ClashStoryRewardScreen> {
+  var _historyRecorded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _recordHistoryOnce());
+  }
+
+  void _recordHistoryOnce() {
+    if (_historyRecorded || !mounted) {
+      return;
+    }
+    final controller = context.read<ClashStoryController>();
+    final completion = controller.lastCompletion;
+    if (completion == null) {
+      return;
+    }
+    _historyRecorded = true;
+    ClashRewardFeedback.recordCompletionScreenHistory(
+      context,
+      sourceType: ClashRewardHistorySourceType.story,
+      sourceId: widget.levelId,
+      title: context.l10n.clashStoryRewardTitle,
+      result: ClashRewardFeedback.fromStoryReward(
+        completion.rewardsGranted,
+        newlyGrantedCardIds: completion.newlyGrantedCardIds,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +63,7 @@ class ClashStoryRewardScreen extends StatelessWidget {
     final completion = controller.lastCompletion;
     final rewards = completion?.rewardsGranted ?? const ClashStoryReward();
     final cardsRepo = context.read<ClashCardsRepository>();
-    final nextLevel = controller.nextUnlockedLevelAfter(levelId);
+    final nextLevel = controller.nextUnlockedLevelAfter(widget.levelId);
     final isTeamFormation =
         rewards.starterRosterKey != null &&
         (completion?.newlyGrantedCardIds.isNotEmpty == true ||

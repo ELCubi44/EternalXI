@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/features/clash/achievements/domain/clash_achievement_claim_result.dart';
@@ -11,6 +13,8 @@ import 'package:eternal_xi/features/clash/missions/domain/clash_weekly_mission_r
 import 'package:eternal_xi/features/clash/shared/rewards/data/clash_reward_converters.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/domain/clash_reward.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/domain/clash_reward_grant_result.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/history/data/clash_reward_history_repository.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/history/domain/clash_reward_history_entry.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_display_builder.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_feedback_message.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_feedback_sheet.dart';
@@ -19,6 +23,7 @@ import 'package:eternal_xi/features/clash/shop/domain/clash_shop_purchase_error.
 import 'package:eternal_xi/features/clash/shop/domain/clash_shop_purchase_result.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_reward.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 /// Feedback unificado al recibir recompensas Clash (Fase 59).
 abstract final class ClashRewardFeedback {
@@ -187,6 +192,9 @@ abstract final class ClashRewardFeedback {
     String? successTitle,
     String? partialTitle,
     String? failureTitle,
+    ClashRewardHistorySourceType? historySourceType,
+    String? historySourceId,
+    String? historyTitle,
   }) {
     if (!context.mounted) {
       return;
@@ -199,7 +207,33 @@ abstract final class ClashRewardFeedback {
       partialTitle: partialTitle,
       failureTitle: failureTitle,
     );
+    if (historySourceType != null) {
+      _recordGrant(
+        context,
+        sourceType: historySourceType,
+        sourceId: historySourceId,
+        title: historyTitle ?? message.title,
+        result: result,
+      );
+    }
     _presentMessage(context, message);
+  }
+
+  /// Registra historial desde pantallas de recompensa dedicadas (Fase 60).
+  static void recordCompletionScreenHistory(
+    BuildContext context, {
+    required ClashRewardHistorySourceType sourceType,
+    required String title,
+    required ClashRewardGrantResult result,
+    String? sourceId,
+  }) {
+    _recordGrant(
+      context,
+      sourceType: sourceType,
+      sourceId: sourceId,
+      title: title,
+      result: result,
+    );
   }
 
   static void showGiftClaimFeedback(
@@ -209,16 +243,35 @@ abstract final class ClashRewardFeedback {
     if (!context.mounted) {
       return;
     }
+    final l10n = context.l10n;
     if (!result.success) {
+      _recordFailure(
+        context,
+        sourceType: ClashRewardHistorySourceType.gift,
+        sourceId: result.giftId,
+        title: l10n.clashRewardFeedbackFailureTitle,
+      );
       _showClaimFailureSnackBar(context);
       return;
     }
     final rewards = result.rewards;
     if (rewards == null || rewards.isEmpty) {
-      _showSimpleSuccessSnackBar(context, context.l10n.clashGiftsClaimSuccess);
+      _recordGrant(
+        context,
+        sourceType: ClashRewardHistorySourceType.gift,
+        sourceId: result.giftId,
+        title: l10n.clashGiftsClaimSuccess,
+        result: syntheticFromClashRewards(const []),
+      );
+      _showSimpleSuccessSnackBar(context, l10n.clashGiftsClaimSuccess);
       return;
     }
-    showGrantedFeedback(context, fromAchievementReward(rewards));
+    showGrantedFeedback(
+      context,
+      fromAchievementReward(rewards),
+      historySourceType: ClashRewardHistorySourceType.gift,
+      historySourceId: result.giftId,
+    );
   }
 
   static void showGiftBatchClaimFeedback(
@@ -228,6 +281,7 @@ abstract final class ClashRewardFeedback {
     _showBatchClaimFeedback(
       context,
       results,
+      ClashRewardHistorySourceType.gift,
       (result) =>
           result.success && result.rewards != null && !result.rewards!.isEmpty
           ? fromAchievementReward(result.rewards!)
@@ -242,19 +296,35 @@ abstract final class ClashRewardFeedback {
     if (!context.mounted) {
       return;
     }
+    final l10n = context.l10n;
     if (!result.success) {
+      _recordFailure(
+        context,
+        sourceType: ClashRewardHistorySourceType.achievement,
+        sourceId: result.achievementId,
+        title: l10n.clashRewardFeedbackFailureTitle,
+      );
       _showClaimFailureSnackBar(context);
       return;
     }
     final reward = result.reward;
     if (reward == null || reward.isEmpty) {
-      _showSimpleSuccessSnackBar(
+      _recordGrant(
         context,
-        context.l10n.clashAchievementsClaimSuccess,
+        sourceType: ClashRewardHistorySourceType.achievement,
+        sourceId: result.achievementId,
+        title: l10n.clashAchievementsClaimSuccess,
+        result: syntheticFromClashRewards(const []),
       );
+      _showSimpleSuccessSnackBar(context, l10n.clashAchievementsClaimSuccess);
       return;
     }
-    showGrantedFeedback(context, fromAchievementReward(reward));
+    showGrantedFeedback(
+      context,
+      fromAchievementReward(reward),
+      historySourceType: ClashRewardHistorySourceType.achievement,
+      historySourceId: result.achievementId,
+    );
   }
 
   static void showAchievementBatchClaimFeedback(
@@ -264,6 +334,7 @@ abstract final class ClashRewardFeedback {
     _showBatchClaimFeedback(
       context,
       results,
+      ClashRewardHistorySourceType.achievement,
       (result) =>
           result.success && result.reward != null && !result.reward!.isEmpty
           ? fromAchievementReward(result.reward!)
@@ -278,19 +349,35 @@ abstract final class ClashRewardFeedback {
     if (!context.mounted) {
       return;
     }
+    final l10n = context.l10n;
     if (!result.success) {
+      _recordFailure(
+        context,
+        sourceType: ClashRewardHistorySourceType.dailyMission,
+        sourceId: result.missionId,
+        title: l10n.clashRewardFeedbackFailureTitle,
+      );
       _showClaimFailureSnackBar(context);
       return;
     }
     final reward = result.reward;
     if (reward == null || reward.isEmpty) {
-      _showSimpleSuccessSnackBar(
+      _recordGrant(
         context,
-        context.l10n.clashDailyMissionsClaimSuccess,
+        sourceType: ClashRewardHistorySourceType.dailyMission,
+        sourceId: result.missionId,
+        title: l10n.clashDailyMissionsClaimSuccess,
+        result: syntheticFromClashRewards(const []),
       );
+      _showSimpleSuccessSnackBar(context, l10n.clashDailyMissionsClaimSuccess);
       return;
     }
-    showGrantedFeedback(context, fromDailyMissionReward(reward));
+    showGrantedFeedback(
+      context,
+      fromDailyMissionReward(reward),
+      historySourceType: ClashRewardHistorySourceType.dailyMission,
+      historySourceId: result.missionId,
+    );
   }
 
   static void showDailyMissionBatchClaimFeedback(
@@ -300,6 +387,7 @@ abstract final class ClashRewardFeedback {
     _showBatchClaimFeedback(
       context,
       results,
+      ClashRewardHistorySourceType.dailyMission,
       (result) =>
           result.success && result.reward != null && !result.reward!.isEmpty
           ? fromDailyMissionReward(result.reward!)
@@ -314,19 +402,35 @@ abstract final class ClashRewardFeedback {
     if (!context.mounted) {
       return;
     }
+    final l10n = context.l10n;
     if (!result.success) {
+      _recordFailure(
+        context,
+        sourceType: ClashRewardHistorySourceType.weeklyMission,
+        sourceId: result.missionId,
+        title: l10n.clashRewardFeedbackFailureTitle,
+      );
       _showClaimFailureSnackBar(context);
       return;
     }
     final reward = result.reward;
     if (reward == null || reward.isEmpty) {
-      _showSimpleSuccessSnackBar(
+      _recordGrant(
         context,
-        context.l10n.clashWeeklyMissionsClaimSuccess,
+        sourceType: ClashRewardHistorySourceType.weeklyMission,
+        sourceId: result.missionId,
+        title: l10n.clashWeeklyMissionsClaimSuccess,
+        result: syntheticFromClashRewards(const []),
       );
+      _showSimpleSuccessSnackBar(context, l10n.clashWeeklyMissionsClaimSuccess);
       return;
     }
-    showGrantedFeedback(context, fromWeeklyMissionReward(reward));
+    showGrantedFeedback(
+      context,
+      fromWeeklyMissionReward(reward),
+      historySourceType: ClashRewardHistorySourceType.weeklyMission,
+      historySourceId: result.missionId,
+    );
   }
 
   static void showWeeklyMissionBatchClaimFeedback(
@@ -336,6 +440,7 @@ abstract final class ClashRewardFeedback {
     _showBatchClaimFeedback(
       context,
       results,
+      ClashRewardHistorySourceType.weeklyMission,
       (result) =>
           result.success && result.reward != null && !result.reward!.isEmpty
           ? fromWeeklyMissionReward(result.reward!)
@@ -353,6 +458,13 @@ abstract final class ClashRewardFeedback {
     final l10n = context.l10n;
     if (result.success) {
       if (result.grants.isEmpty) {
+        _recordGrant(
+          context,
+          sourceType: ClashRewardHistorySourceType.shop,
+          sourceId: result.productId,
+          title: l10n.clashShopPurchaseSuccess,
+          result: syntheticFromClashRewards(const []),
+        );
         _showSimpleSuccessSnackBar(context, l10n.clashShopPurchaseSuccess);
         return;
       }
@@ -360,8 +472,20 @@ abstract final class ClashRewardFeedback {
         context,
         fromShopGrants(result.grants),
         successTitle: l10n.clashShopPurchaseSuccess,
+        historySourceType: ClashRewardHistorySourceType.shop,
+        historySourceId: result.productId,
+        historyTitle: l10n.clashShopPurchaseSuccess,
       );
       return;
+    }
+
+    if (result.error == ClashShopPurchaseError.grantFailed) {
+      _recordFailure(
+        context,
+        sourceType: ClashRewardHistorySourceType.shop,
+        sourceId: result.productId,
+        title: l10n.clashRewardFeedbackFailureTitle,
+      );
     }
 
     final message = switch (result.error) {
@@ -396,12 +520,17 @@ abstract final class ClashRewardFeedback {
       successTitle: firstClear
           ? l10n.clashEventsRewardFirstClear
           : l10n.clashEventsRewardRepeat,
+      historySourceType: ClashRewardHistorySourceType.event,
+      historyTitle: firstClear
+          ? l10n.clashEventsRewardFirstClear
+          : l10n.clashEventsRewardRepeat,
     );
   }
 
   static void _showBatchClaimFeedback<T>(
     BuildContext context,
     List<T> results,
+    ClashRewardHistorySourceType historySourceType,
     ClashRewardGrantResult? Function(T result) toGrantResult,
   ) {
     if (!context.mounted) {
@@ -420,6 +549,11 @@ abstract final class ClashRewardFeedback {
 
     if (grants.isEmpty) {
       if (failures > 0) {
+        _recordFailure(
+          context,
+          sourceType: historySourceType,
+          title: context.l10n.clashRewardFeedbackFailureTitle,
+        );
         _showClaimFailureSnackBar(context);
       }
       return;
@@ -429,6 +563,12 @@ abstract final class ClashRewardFeedback {
     if (failures > 0) {
       final l10n = context.l10n;
       final message = buildMessage(l10n, merged);
+      _recordGrant(
+        context,
+        sourceType: historySourceType,
+        title: l10n.clashRewardFeedbackPartialTitle,
+        result: merged,
+      );
       _presentMessage(
         context,
         ClashRewardFeedbackMessage(
@@ -442,7 +582,57 @@ abstract final class ClashRewardFeedback {
       return;
     }
 
-    showGrantedFeedback(context, merged);
+    showGrantedFeedback(context, merged, historySourceType: historySourceType);
+  }
+
+  static ClashRewardHistoryRepository? _historyRepository(
+    BuildContext context,
+  ) {
+    try {
+      return context.read<ClashRewardHistoryRepository>();
+    } on ProviderNotFoundException {
+      return null;
+    }
+  }
+
+  static void _recordGrant(
+    BuildContext context, {
+    required ClashRewardHistorySourceType sourceType,
+    required String title,
+    required ClashRewardGrantResult result,
+    String? sourceId,
+  }) {
+    final repository = _historyRepository(context);
+    if (repository == null) {
+      return;
+    }
+    unawaited(
+      repository.recordGrant(
+        sourceType: sourceType,
+        sourceId: sourceId,
+        title: title,
+        result: result,
+      ),
+    );
+  }
+
+  static void _recordFailure(
+    BuildContext context, {
+    required ClashRewardHistorySourceType sourceType,
+    required String title,
+    String? sourceId,
+  }) {
+    final repository = _historyRepository(context);
+    if (repository == null) {
+      return;
+    }
+    unawaited(
+      repository.recordFailure(
+        sourceType: sourceType,
+        sourceId: sourceId,
+        title: title,
+      ),
+    );
   }
 
   static void _presentMessage(

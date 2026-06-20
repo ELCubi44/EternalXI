@@ -35,6 +35,7 @@ Definidas en `ClashSharedPreferencesKeys`:
 | Regalos | `clash_gifts_v1` |
 | Eventos personaje | `clash_character_events_v1` |
 | Historial gacha | `clash_gacha_history_v1` |
+| Historial recompensas | `clash_reward_history_v1` |
 | Pity gacha | `clash_gacha_pity_v1` |
 | Descuento diario gacha | `clash_gacha_daily_v1` |
 | Progreso historia/wallet | `clash_story_progress_v1` |

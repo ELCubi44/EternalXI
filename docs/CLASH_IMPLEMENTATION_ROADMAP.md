@@ -870,4 +870,20 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 60 — Historial local de recompensas
+
+**Estado:** implementada.
+
+- `ClashRewardHistoryEntry`, storage/repository, pantalla `/clash/rewards/history`.
+- Clave `clash_reward_history_v1` (máx. 100 entradas).
+- Registro desde `ClashRewardFeedback` y pantallas de recompensa evento/historia.
+- Acceso mínimo desde inventario Clash.
+- Tests: `clash_reward_history_storage_test.dart`, `clash_reward_history_test.dart`.
+
+**Objetivo:** auditar claims recientes localmente sin alterar concesión ni economía.
+
+**Sin cambios** en granter, economía, claves SP existentes, Fantasy, leagues ni rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

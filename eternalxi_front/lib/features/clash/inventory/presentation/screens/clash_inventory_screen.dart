@@ -1,4 +1,5 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/inventory/data/clash_inventory_repository.dart';
 import 'package:eternal_xi/features/clash/inventory/domain/clash_inventory_category.dart';
@@ -142,6 +143,12 @@ class _ReadyInventory extends StatelessWidget {
             const SizedBox(height: 8),
           ],
         ],
+        const SizedBox(height: 16),
+        OutlinedButton.icon(
+          onPressed: () => context.push(AppRoutes.clashRewardHistory),
+          icon: const Icon(Icons.history_rounded),
+          label: Text(l10n.clashRewardHistoryView),
+        ),
       ],
     );
   }
