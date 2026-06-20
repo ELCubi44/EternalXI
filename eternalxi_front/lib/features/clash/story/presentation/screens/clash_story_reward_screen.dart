@@ -2,6 +2,11 @@ import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/domain/clash_reward.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_display_builder.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_display_item.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_icon.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_list.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level_type.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_reward.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
@@ -39,21 +44,11 @@ class ClashStoryRewardScreen extends StatelessWidget {
             ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 16),
-          if (rewards.gems > 0)
-            _RewardRow(
-              icon: Icons.diamond_rounded,
-              label: l10n.clashStoryRewardGems(rewards.gems),
-            ),
-          if (rewards.coins > 0)
-            _RewardRow(
-              icon: Icons.paid_rounded,
-              label: l10n.clashStoryRewardCoins(rewards.coins),
-            ),
-          for (final item in rewards.items)
-            _RewardRow(
-              icon: Icons.inventory_2_rounded,
-              label: '${item.name} x${item.quantity}',
-            ),
+          _StoryGrantedRewards(
+            rewards: rewards,
+            newlyGrantedCardIds: completion?.newlyGrantedCardIds ?? const [],
+            cardsRepo: cardsRepo,
+          ),
           if (isTeamFormation) ...[
             const SizedBox(height: 12),
             Container(
@@ -72,42 +67,6 @@ class ClashStoryRewardScreen extends StatelessWidget {
               ),
             ),
           ],
-          if (completion != null && completion.newlyGrantedCardIds.isNotEmpty)
-            FutureBuilder(
-              future: cardsRepo.fetchAllCards(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const SizedBox.shrink();
-                }
-                final names = snapshot.data!
-                    .where(
-                      (entry) =>
-                          completion.newlyGrantedCardIds.contains(entry.id),
-                    )
-                    .map((entry) => entry.name)
-                    .toList();
-                if (names.isEmpty) {
-                  return const SizedBox.shrink();
-                }
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 12),
-                    Text(
-                      l10n.clashStoryCardsReceived,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    ...names.map(
-                      (name) =>
-                          _RewardRow(icon: Icons.style_rounded, label: name),
-                    ),
-                  ],
-                );
-              },
-            ),
           const SizedBox(height: 24),
           FilledButton(
             onPressed: () {
@@ -137,23 +96,50 @@ class ClashStoryRewardScreen extends StatelessWidget {
   }
 }
 
-class _RewardRow extends StatelessWidget {
-  const _RewardRow({required this.icon, required this.label});
+class _StoryGrantedRewards extends StatelessWidget {
+  const _StoryGrantedRewards({
+    required this.rewards,
+    required this.newlyGrantedCardIds,
+    required this.cardsRepo,
+  });
 
-  final IconData icon;
-  final String label;
+  final ClashStoryReward rewards;
+  final List<String> newlyGrantedCardIds;
+  final ClashCardsRepository cardsRepo;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Icon(icon, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(width: 10),
-          Expanded(child: Text(label)),
-        ],
-      ),
-    );
+    final l10n = context.l10n;
+    var items = ClashRewardDisplayBuilder.fromStoryReward(rewards, l10n);
+
+    if (newlyGrantedCardIds.isNotEmpty) {
+      items = items
+          .where((item) => item.label != l10n.clashRewardLabelCardNew)
+          .toList(growable: false);
+
+      return FutureBuilder(
+        future: cardsRepo.fetchAllCards(),
+        builder: (context, snapshot) {
+          final namesById = snapshot.hasData
+              ? {for (final card in snapshot.data!) card.id: card.name}
+              : null;
+          final cardItems = newlyGrantedCardIds
+              .map(
+                (cardId) => ClashRewardDisplayItem(
+                  icon: ClashRewardIcon.forKind(ClashRewardKind.cardMissing),
+                  label: namesById?[cardId] ?? cardId,
+                ),
+              )
+              .toList(growable: false);
+
+          return ClashRewardList(
+            items: [...items, ...cardItems],
+            layout: ClashRewardListLayout.column,
+          );
+        },
+      );
+    }
+
+    return ClashRewardList(items: items, layout: ClashRewardListLayout.column);
   }
 }

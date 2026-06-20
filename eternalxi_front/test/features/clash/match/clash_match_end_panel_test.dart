@@ -258,8 +258,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Recompensas obtenidas'), findsOneWidget);
-      expect(find.text('Gemas: +2'), findsOneWidget);
-      expect(find.text('Monedas: +500'), findsOneWidget);
+      expect(find.text('Gemas'), findsOneWidget);
+      expect(find.text('×2'), findsOneWidget);
+      expect(find.text('Monedas'), findsOneWidget);
+      expect(find.text('×500'), findsOneWidget);
     });
 
     testWidgets('objetivos fallidos muestran recompensas pendientes', (
@@ -407,8 +409,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Recompensas obtenidas'), findsOneWidget);
-      expect(find.text('Gemas: +5'), findsOneWidget);
-      expect(find.text('Monedas: +200'), findsOneWidget);
+      expect(find.text('Gemas'), findsOneWidget);
+      expect(find.text('×5'), findsOneWidget);
+      expect(find.text('Monedas'), findsOneWidget);
+      expect(find.text('×200'), findsOneWidget);
       expect(find.text('Continuar'), findsOneWidget);
     });
 

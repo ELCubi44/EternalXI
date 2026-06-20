@@ -2,6 +2,8 @@ import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/shop/domain/clash_shop_product.dart';
 import 'package:eternal_xi/features/clash/shop/domain/clash_shop_section.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_display_builder.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_list.dart';
 import 'package:flutter/material.dart';
 
 class ClashShopProductCard extends StatelessWidget {
@@ -101,15 +103,9 @@ class ClashShopProductCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children: [
-              for (final grant in product.grants)
-                _GrantChip(
-                  label: l10n.clashShopGrantLine(grant.label, grant.quantity),
-                ),
-            ],
+          ClashRewardList(
+            items: ClashRewardDisplayBuilder.fromShopProduct(product, l10n),
+            layout: ClashRewardListLayout.wrap,
           ),
           const SizedBox(height: 14),
           FilledButton(
@@ -167,30 +163,6 @@ class _CategoryBadge extends StatelessWidget {
           fontWeight: FontWeight.w700,
           color: color,
         ),
-      ),
-    );
-  }
-}
-
-class _GrantChip extends StatelessWidget {
-  const _GrantChip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: context.xiChipBackground,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: context.xiDivider),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(
-          context,
-        ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
       ),
     );
   }

@@ -106,6 +106,27 @@ Suite completa Clash (incluye esta validación):
 flutter test test/features/clash/
 ```
 
+## Presentación visual de recompensas (Fase 58)
+
+Widgets compartidos en `lib/features/clash/shared/rewards/presentation/`:
+
+| Widget / helper | Uso |
+|-----------------|-----|
+| `ClashRewardLabel` | Labels legibles por `itemId` conocido (fallback: id crudo) |
+| `ClashRewardIcon` | Iconos Material por `ClashRewardKind` o tipo shop |
+| `ClashRewardDisplayBuilder` | Construye `ClashRewardDisplayItem` desde dominio (eventos, misiones, logros, shop, story) |
+| `ClashRewardChip` | Chip con icono, label, cantidad y detalle opcional |
+| `ClashRewardList` | Lista wrap o columna de chips |
+| `ClashRewardPreviewRow` | Fila compacta con título «Recompensa» para tarjetas de engagement |
+
+**Labels canónicos (ES):** Monedas, Gemas, Manual básico/avanzado/maestro, Libro técnico básico/avanzado/maestro, Insignia R/SR, Ticket inicial, Carta destacada, Copia duplicada, Carta nueva.
+
+**Pantallas migradas:** eventos (detail/stages/reward), gifts, misiones diarias/semanales, logros, shop, story preview, fin de partido.
+
+**Sin cambios:** cantidades, IDs, granter, economía, JSON de assets.
+
+Tests: `test/features/clash/rewards/clash_reward_presentation_test.dart`.
+
 ## Pendiente (post-Fase 55)
 
 - Sync server-side e idempotencia remota

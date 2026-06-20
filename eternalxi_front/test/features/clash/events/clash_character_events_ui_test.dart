@@ -212,7 +212,7 @@ void main() {
 
       expect(find.text('Entrenamiento de Arin'), findsOneWidget);
       expect(find.text('Arin'), findsOneWidget);
-      expect(find.text('Carta destacada'), findsOneWidget);
+      expect(find.text('Carta destacada'), findsWidgets);
       expect(find.text('Historia'), findsOneWidget);
       expect(find.text('Partido 7vs7'), findsWidgets);
       expect(find.text('Primera vez'), findsWidgets);
@@ -447,7 +447,7 @@ void main() {
 
       expect(find.text('Carrera de Mika'), findsOneWidget);
       expect(find.text('Mika'), findsOneWidget);
-      expect(find.text('Carta destacada'), findsOneWidget);
+      expect(find.text('Carta destacada'), findsWidgets);
       expect(find.text('Arranque rápido'), findsOneWidget);
       expect(find.text('Pases a toda velocidad'), findsOneWidget);
       expect(find.text('Rayo final'), findsOneWidget);

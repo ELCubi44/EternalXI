@@ -1,6 +1,8 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/shop/domain/clash_shop_product.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_display_builder.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_list.dart';
 import 'package:flutter/material.dart';
 
 /// Diálogo de confirmación de compra en tienda Clash (Fase 39).
@@ -61,14 +63,10 @@ Future<bool?> showClashShopPurchaseDialog(
               ),
             ),
             const SizedBox(height: 6),
-            for (final grant in product.grants)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  l10n.clashShopGrantLine(grant.label, grant.quantity),
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ),
+            ClashRewardList(
+              items: ClashRewardDisplayBuilder.fromShopProduct(product, l10n),
+              layout: ClashRewardListLayout.column,
+            ),
           ],
         ),
       ),

@@ -769,8 +769,11 @@ void main() {
       final setup = await createTestAchievementsSetup();
       await tester.pumpWidget(await _achievementsApp(setup.achievements));
       await tester.pumpAndSettle();
-      expect(find.textContaining('500 monedas'), findsOneWidget);
-      expect(find.textContaining('2 gemas'), findsWidgets);
+      expect(find.textContaining('500 monedas'), findsNothing);
+      expect(find.text('Monedas'), findsOneWidget);
+      expect(find.text('×500'), findsOneWidget);
+      expect(find.text('Gemas'), findsWidgets);
+      expect(find.text('×2'), findsWidgets);
     });
   });
 }

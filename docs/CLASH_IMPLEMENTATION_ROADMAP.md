@@ -839,4 +839,19 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 58 — Presentación visual compartida de recompensas
+
+**Estado:** implementada.
+
+- `lib/features/clash/shared/rewards/presentation/`: labels, iconos, chips, listas y builder de presentación.
+- Strings ES/EN en `app_localizations.dart` (`clashRewardLabel*`).
+- UI migrada: eventos, gifts, misiones, logros, shop, story, fin de partido.
+- Tests: `test/features/clash/rewards/clash_reward_presentation_test.dart`.
+
+**Objetivo:** consistencia visual al mostrar recompensas locales sin alterar concesión ni economía.
+
+**Sin cambios** en granter, cantidades, IDs, JSON de assets, Fantasy, leagues ni rewards.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*

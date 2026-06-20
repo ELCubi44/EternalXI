@@ -3,10 +3,12 @@ import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/events/domain/clash_character_event_reward.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_evaluator.dart';
 import 'package:eternal_xi/features/clash/match/domain/clash_match_objective_progress.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_display_builder.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_list.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_reward.dart';
 import 'package:flutter/material.dart';
 
-/// Recompensas obtenidas y pendientes al final del partido (Fase 48).
+/// Recompensas obtenidas y pendientes al final del partido (Fase 48 / 58).
 class ClashMatchEndRewardsObtainedSection extends StatelessWidget {
   const ClashMatchEndRewardsObtainedSection.story({
     required this.rewards,
@@ -26,9 +28,12 @@ class ClashMatchEndRewardsObtainedSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final lines = rewards != null
-        ? _storyLines(context, rewards!)
-        : _eventLines(context, eventReward!);
+    final items = rewards != null
+        ? ClashRewardDisplayBuilder.fromStoryReward(rewards!, l10n)
+        : ClashRewardDisplayBuilder.fromCharacterEventReward(
+            eventReward!,
+            l10n,
+          );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -40,7 +45,7 @@ class ClashMatchEndRewardsObtainedSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        if (lines.isEmpty)
+        if (items.isEmpty)
           Text(
             l10n.clashMatchRewardsEmptyState,
             style: theme.textTheme.bodySmall?.copyWith(
@@ -48,116 +53,9 @@ class ClashMatchEndRewardsObtainedSection extends StatelessWidget {
             ),
           )
         else
-          ...lines.map((line) => _RewardLineTile(line: line)),
+          ClashRewardList(items: items, layout: ClashRewardListLayout.column),
       ],
     );
-  }
-
-  static List<_RewardLine> _storyLines(
-    BuildContext context,
-    ClashStoryReward rewards,
-  ) {
-    final l10n = context.l10n;
-    final lines = <_RewardLine>[];
-    if (rewards.gems > 0) {
-      lines.add(
-        _RewardLine(
-          Icons.diamond_outlined,
-          l10n.clashMatchRewardGems(rewards.gems),
-        ),
-      );
-    }
-    if (rewards.coins > 0) {
-      lines.add(
-        _RewardLine(
-          Icons.monetization_on_outlined,
-          l10n.clashMatchRewardCoins(rewards.coins),
-        ),
-      );
-    }
-    for (final item in rewards.items) {
-      lines.add(
-        _RewardLine(
-          Icons.inventory_2_outlined,
-          '${item.name} x${item.quantity}',
-        ),
-      );
-    }
-    for (final material in rewards.materials) {
-      lines.add(
-        _RewardLine(
-          Icons.science_outlined,
-          '${material.name} x${material.quantity}',
-        ),
-      );
-    }
-    if (rewards.cardIds.isNotEmpty) {
-      lines.add(
-        _RewardLine(
-          Icons.style_outlined,
-          l10n.clashMatchRewardCards(rewards.cardIds.length),
-        ),
-      );
-    }
-    return lines;
-  }
-
-  static List<_RewardLine> _eventLines(
-    BuildContext context,
-    ClashCharacterEventReward reward,
-  ) {
-    final l10n = context.l10n;
-    final lines = <_RewardLine>[];
-    if (reward.gems > 0) {
-      lines.add(
-        _RewardLine(
-          Icons.diamond_outlined,
-          l10n.clashMatchRewardGems(reward.gems),
-        ),
-      );
-    }
-    if (reward.coins > 0) {
-      lines.add(
-        _RewardLine(
-          Icons.monetization_on_outlined,
-          l10n.clashMatchRewardCoins(reward.coins),
-        ),
-      );
-    }
-    if (reward.expMaterial != null) {
-      lines.add(
-        _RewardLine(
-          Icons.science_outlined,
-          l10n.clashShopGrantLine(
-            reward.expMaterial!.id,
-            reward.expMaterial!.quantity,
-          ),
-        ),
-      );
-    }
-    if (reward.techniqueBook != null) {
-      lines.add(
-        _RewardLine(
-          Icons.menu_book_outlined,
-          l10n.clashShopGrantLine(
-            reward.techniqueBook!.id,
-            reward.techniqueBook!.quantity,
-          ),
-        ),
-      );
-    }
-    if (reward.ticket != null) {
-      lines.add(
-        _RewardLine(
-          Icons.confirmation_number_outlined,
-          l10n.clashShopGrantLine(reward.ticket!.id, reward.ticket!.quantity),
-        ),
-      );
-    }
-    if (reward.featuredCardId != null) {
-      lines.add(_RewardLine(Icons.person_outline, reward.featuredCardId!));
-    }
-    return lines;
   }
 }
 
@@ -189,10 +87,7 @@ class ClashMatchEndPendingRewardsSection extends StatelessWidget {
     final merged = ClashMatchObjectiveEvaluator.mergeRewards(
       pendingObjectives.map((r) => r.objective.rewards),
     );
-    final lines = ClashMatchEndRewardsObtainedSection._storyLines(
-      context,
-      merged,
-    );
+    final items = ClashRewardDisplayBuilder.fromStoryReward(merged, l10n);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -223,53 +118,15 @@ class ClashMatchEndPendingRewardsSection extends StatelessWidget {
               ),
             ),
           ),
-        if (lines.isNotEmpty) ...[
+        if (items.isNotEmpty) ...[
           const SizedBox(height: 6),
-          ...lines.map((line) => _RewardLineTile(line: line, muted: true)),
+          ClashRewardList(
+            items: items,
+            muted: true,
+            layout: ClashRewardListLayout.column,
+          ),
         ],
       ],
-    );
-  }
-}
-
-class _RewardLine {
-  const _RewardLine(this.icon, this.label);
-
-  final IconData icon;
-  final String label;
-}
-
-class _RewardLineTile extends StatelessWidget {
-  const _RewardLineTile({required this.line, this.muted = false});
-
-  final _RewardLine line;
-  final bool muted;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        children: [
-          Icon(
-            line.icon,
-            size: 18,
-            color: muted
-                ? context.xiTextSecondary
-                : Theme.of(context).colorScheme.primary,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              line.label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: muted ? context.xiTextSecondary : null,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

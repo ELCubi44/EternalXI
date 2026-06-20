@@ -411,7 +411,8 @@ void main() {
 
       expect(find.text('¡Victoria!'), findsOneWidget);
       expect(find.text('Tú 3 - 1 Rival'), findsOneWidget);
-      expect(find.text('Gemas: +1'), findsOneWidget);
+      expect(find.text('Gemas'), findsOneWidget);
+      expect(find.text('×1'), findsOneWidget);
     });
 
     testWidgets('fin evento sigue funcionando', (tester) async {

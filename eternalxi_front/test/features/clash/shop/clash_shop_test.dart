@@ -246,10 +246,8 @@ void main() {
       await tester.pumpWidget(await shopApp(repo));
       await tester.pumpAndSettle();
       expect(find.text('300 monedas'), findsOneWidget);
-      expect(
-        find.textContaining('Manual básico de entrenamiento ×2'),
-        findsOneWidget,
-      );
+      expect(find.text('Manual básico'), findsOneWidget);
+      expect(find.text('×2'), findsOneWidget);
     });
 
     testWidgets('tienda muestra productos', (tester) async {

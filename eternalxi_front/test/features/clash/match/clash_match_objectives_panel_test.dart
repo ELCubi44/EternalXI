@@ -174,7 +174,7 @@ void main() {
       expect(find.text('Objetivos'), findsOneWidget);
       expect(find.text('Ganar sin recibir goles'), findsOneWidget);
       expect(find.text('Marcar con supertécnica de Tiro'), findsOneWidget);
-      expect(find.text('Gemas: +1'), findsOneWidget);
+      expect(find.textContaining('Gemas ×1'), findsOneWidget);
     });
 
     testWidgets('cleanSheet aparece En progreso', (tester) async {

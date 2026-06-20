@@ -414,7 +414,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Recompensa'), findsWidgets);
       expect(find.text('En progreso'), findsWidgets);
-      expect(find.textContaining('monedas'), findsWidgets);
+      expect(find.text('Monedas'), findsWidgets);
     });
 
     testWidgets('misión completada muestra Reclamar', (tester) async {

@@ -328,7 +328,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Primera vez'), findsWidgets);
-      expect(find.text('Gemas: +2'), findsOneWidget);
+      expect(find.text('Gemas'), findsWidgets);
+      expect(find.text('×2'), findsWidgets);
       expect(find.text('Ganar el partido'), findsOneWidget);
     });
 

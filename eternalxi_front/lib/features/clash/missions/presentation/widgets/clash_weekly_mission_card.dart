@@ -1,10 +1,10 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_weekly_mission.dart';
-import 'package:eternal_xi/features/clash/missions/domain/clash_weekly_mission_reward.dart';
 import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_claim_button.dart';
 import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_progress_status_chip.dart';
 import 'package:eternal_xi/features/clash/shared/presentation/widgets/clash_reward_preview_row.dart';
+import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_display_builder.dart';
 import 'package:flutter/material.dart';
 
 class ClashWeeklyMissionCard extends StatelessWidget {
@@ -108,7 +108,12 @@ class ClashWeeklyMissionCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          ClashRewardPreviewRow(rewards: _rewardParts(context, mission.reward)),
+          ClashRewardPreviewRow(
+            items: ClashRewardDisplayBuilder.fromWeeklyMissionReward(
+              mission.reward,
+              l10n,
+            ),
+          ),
           if (progress.canClaim) ...[
             const SizedBox(height: 14),
             ClashClaimButton(
@@ -120,49 +125,5 @@ class ClashWeeklyMissionCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  List<String> _rewardParts(
-    BuildContext context,
-    ClashWeeklyMissionReward reward,
-  ) {
-    final l10n = context.l10n;
-    final parts = <String>[];
-    if (reward.coins > 0) {
-      parts.add(l10n.clashWeeklyMissionsRewardCoins(reward.coins));
-    }
-    if (reward.gems > 0) {
-      parts.add(l10n.clashWeeklyMissionsRewardGems(reward.gems));
-    }
-    if (reward.expMaterial != null) {
-      parts.add(
-        l10n.clashShopGrantLine(
-          reward.expMaterial!.id,
-          reward.expMaterial!.quantity,
-        ),
-      );
-    }
-    if (reward.techniqueBook != null) {
-      parts.add(
-        l10n.clashShopGrantLine(
-          reward.techniqueBook!.id,
-          reward.techniqueBook!.quantity,
-        ),
-      );
-    }
-    if (reward.evolutionMaterial != null) {
-      parts.add(
-        l10n.clashShopGrantLine(
-          reward.evolutionMaterial!.id,
-          reward.evolutionMaterial!.quantity,
-        ),
-      );
-    }
-    if (reward.ticket != null) {
-      parts.add(
-        l10n.clashShopGrantLine(reward.ticket!.id, reward.ticket!.quantity),
-      );
-    }
-    return parts;
   }
 }

@@ -188,6 +188,22 @@ class AppLocalizations {
       'clashDailyMissionsProgress': '{current}/{target}',
       'clashDailyMissionsEmpty': 'No hay misiones disponibles',
       'clashEngagementRewardsLabel': 'Recompensa',
+      'clashRewardLabelCoins': 'Monedas',
+      'clashRewardLabelGems': 'Gemas',
+      'clashRewardLabelBasicTrainingManual': 'Manual básico',
+      'clashRewardLabelAdvancedTrainingManual': 'Manual avanzado',
+      'clashRewardLabelMasterTrainingManual': 'Manual maestro',
+      'clashRewardLabelBasicTechniqueBook': 'Libro técnico básico',
+      'clashRewardLabelAdvancedTechniqueBook': 'Libro técnico avanzado',
+      'clashRewardLabelMasterTechniqueBook': 'Libro técnico maestro',
+      'clashRewardLabelInsigniaR': 'Insignia R',
+      'clashRewardLabelInsigniaSr': 'Insignia SR',
+      'clashRewardLabelStarterTicket': 'Ticket inicial',
+      'clashRewardLabelFeaturedCard': 'Carta destacada',
+      'clashRewardLabelCardDuplicate': 'Copia duplicada',
+      'clashRewardLabelCardNew': 'Carta nueva',
+      'clashRewardLabelStarterRoster': 'Plantilla inicial',
+      'clashRewardQuantitySuffix': '×{count}',
       'clashAchievementsTitle': 'Logros',
       'clashAchievementsPermanentHint':
           'Progreso permanente. No se reinician cada día.',
@@ -1101,6 +1117,22 @@ class AppLocalizations {
       'clashDailyMissionsProgress': '{current}/{target}',
       'clashDailyMissionsEmpty': 'No missions available',
       'clashEngagementRewardsLabel': 'Reward',
+      'clashRewardLabelCoins': 'Coins',
+      'clashRewardLabelGems': 'Gems',
+      'clashRewardLabelBasicTrainingManual': 'Basic manual',
+      'clashRewardLabelAdvancedTrainingManual': 'Advanced manual',
+      'clashRewardLabelMasterTrainingManual': 'Master manual',
+      'clashRewardLabelBasicTechniqueBook': 'Basic technique book',
+      'clashRewardLabelAdvancedTechniqueBook': 'Advanced technique book',
+      'clashRewardLabelMasterTechniqueBook': 'Master technique book',
+      'clashRewardLabelInsigniaR': 'R badge',
+      'clashRewardLabelInsigniaSr': 'SR badge',
+      'clashRewardLabelStarterTicket': 'Starter ticket',
+      'clashRewardLabelFeaturedCard': 'Featured card',
+      'clashRewardLabelCardDuplicate': 'Duplicate copy',
+      'clashRewardLabelCardNew': 'New card',
+      'clashRewardLabelStarterRoster': 'Starter roster',
+      'clashRewardQuantitySuffix': '×{count}',
       'clashAchievementsTitle': 'Achievements',
       'clashAchievementsPermanentHint':
           'Permanent progress. They do not reset daily.',
@@ -2045,6 +2077,48 @@ class AppLocalizations {
   ).replaceAll('{current}', '$current').replaceAll('{target}', '$target');
   String get clashDailyMissionsEmpty => _t('clashDailyMissionsEmpty');
   String get clashEngagementRewardsLabel => _t('clashEngagementRewardsLabel');
+
+  String get clashRewardLabelCoins => _t('clashRewardLabelCoins');
+
+  String get clashRewardLabelGems => _t('clashRewardLabelGems');
+
+  String get clashRewardLabelBasicTrainingManual =>
+      _t('clashRewardLabelBasicTrainingManual');
+
+  String get clashRewardLabelAdvancedTrainingManual =>
+      _t('clashRewardLabelAdvancedTrainingManual');
+
+  String get clashRewardLabelMasterTrainingManual =>
+      _t('clashRewardLabelMasterTrainingManual');
+
+  String get clashRewardLabelBasicTechniqueBook =>
+      _t('clashRewardLabelBasicTechniqueBook');
+
+  String get clashRewardLabelAdvancedTechniqueBook =>
+      _t('clashRewardLabelAdvancedTechniqueBook');
+
+  String get clashRewardLabelMasterTechniqueBook =>
+      _t('clashRewardLabelMasterTechniqueBook');
+
+  String get clashRewardLabelInsigniaR => _t('clashRewardLabelInsigniaR');
+
+  String get clashRewardLabelInsigniaSr => _t('clashRewardLabelInsigniaSr');
+
+  String get clashRewardLabelStarterTicket =>
+      _t('clashRewardLabelStarterTicket');
+
+  String get clashRewardLabelFeaturedCard => _t('clashRewardLabelFeaturedCard');
+
+  String get clashRewardLabelCardDuplicate =>
+      _t('clashRewardLabelCardDuplicate');
+
+  String get clashRewardLabelCardNew => _t('clashRewardLabelCardNew');
+
+  String get clashRewardLabelStarterRoster =>
+      _t('clashRewardLabelStarterRoster');
+
+  String clashRewardQuantitySuffix(int count) =>
+      _t('clashRewardQuantitySuffix').replaceAll('{count}', '$count');
   String get clashAchievementsTitle => _t('clashAchievementsTitle');
   String get clashAchievementsPermanentHint =>
       _t('clashAchievementsPermanentHint');

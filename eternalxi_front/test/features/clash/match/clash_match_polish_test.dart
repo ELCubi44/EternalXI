@@ -329,8 +329,12 @@ void main() {
       expect(find.text('¡Victoria!'), findsOneWidget);
       expect(find.text('Tú 3 - 1 Rival'), findsOneWidget);
       expect(find.text('Continuar'), findsOneWidget);
-      expect(find.text('Gemas: +1'), findsOneWidget);
-      expect(find.text('Monedas: +500'), findsOneWidget);
+      expect(find.textContaining('Gemas ×1'), findsNothing);
+      expect(find.text('Gemas'), findsOneWidget);
+      expect(find.text('×1'), findsOneWidget);
+      expect(find.textContaining('Monedas ×500'), findsNothing);
+      expect(find.text('Monedas'), findsOneWidget);
+      expect(find.text('×500'), findsOneWidget);
     });
 
     testWidgets('derrota muestra marcador sin recompensas', (tester) async {
