@@ -74,6 +74,25 @@ Sin catálogos: no falla por IDs desconocidos; emite **warnings** cuando hay dat
 
 Código: `lib/features/clash/sync/data/clash_sync_snapshot_validator.dart`.
 
+## Cliente fake de sync (Fase 67)
+
+Interfaz `ClashSyncClient` (`pushSnapshot`, `pullSnapshot`) sin HTTP. Implementación de prueba: `FakeClashSyncClient` — almacena snapshot remoto **en memoria**.
+
+| Operación | Comportamiento fake |
+|-----------|---------------------|
+| `pullSnapshot` | `notFound` si no hay snapshot remoto; `success` + `serverRevision` si existe |
+| `pushSnapshot` | Valida con `ClashSyncSnapshotValidator`; `validationFailed` si inválido (no pisa remoto) |
+| | `rejected` si `contractVersion` no soportada |
+| | `conflict` si `expectedServerRevision` ≠ revisión remota actual |
+| | `success` e incrementa `serverRevision` (1, 2, …) |
+| | `unavailable` si el fake está deshabilitado (`available = false`) |
+
+Resultados tipados: `ClashSyncPushResult`, `ClashSyncPullResult`, `ClashSyncConflict`, `ClashSyncStatus`.
+
+**No** registrado en providers de la app, **no** sync automática, **no** red ni persistencia SP del snapshot remoto.
+
+Código: `lib/features/clash/sync/data/clash_sync_client.dart`, `fake_clash_sync_client.dart`.
+
 ## Ejemplo JSON
 
 ```json
@@ -189,6 +208,7 @@ Resolución real, borrado remoto/local y sync automática **no están implementa
 cd eternalxi_front
 flutter test test/features/clash/sync/clash_sync_snapshot_test.dart
 flutter test test/features/clash/sync/clash_sync_snapshot_validator_test.dart
+flutter test test/features/clash/sync/fake_clash_sync_client_test.dart
 ```
 
 Ver también: [`CLASH_LOCAL_STORAGE.md`](./CLASH_LOCAL_STORAGE.md), [`CLASH_QA.md`](./CLASH_QA.md).

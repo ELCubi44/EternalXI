@@ -61,6 +61,17 @@ flutter test test/features/clash/sync/clash_sync_snapshot_validator_test.dart
 
 **Cuándo usarlo:** tras añadir checks al validador, cambiar reglas de coherencia del snapshot o antes de conectar sync backend.
 
+## Fake sync client (Fase 67)
+
+Simula push/pull de snapshot y `serverRevision` en memoria, sin red.
+
+```bash
+cd eternalxi_front
+flutter test test/features/clash/sync/fake_clash_sync_client_test.dart
+```
+
+**Cuándo usarlo:** al probar flujos sync locales, conflictos de revisión o integración builder → validator → fake client antes del backend real.
+
 ## Suite completa Clash
 
 ```bash
@@ -79,6 +90,7 @@ flutter test test/features/clash/
 | Compatibility | ~5 s | Payloads SharedPreferences legacy cargan sin romper parsing |
 | Sync contract | ~5 s | DTOs sync serializan/deserializan; builder local sin HTTP |
 | Sync validator | ~5 s | Snapshot sync válido/inválido; catálogos opcionales |
+| Fake sync client | ~5 s | Push/pull simulado, revisiones y conflictos sin HTTP |
 | Suite `test/features/clash/` | ~minutos | Regresiones unitarias/UI de todo el módulo Clash |
 
 ## Analyze (Clash)

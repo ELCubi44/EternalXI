@@ -980,4 +980,20 @@ Estimaciones **muy aproximadas** (1 dev Flutter + backend parcial):
 
 ---
 
+## Fase 67 — Fake sync client
+
+**Estado:** implementada.
+
+- Interfaz `ClashSyncClient` (`pushSnapshot`, `pullSnapshot`).
+- Resultados: `ClashSyncPushResult`, `ClashSyncPullResult`, `ClashSyncConflict`, `ClashSyncStatus`.
+- `FakeClashSyncClient`: memoria, validación previa, `serverRevision`, conflict/rejected/unavailable.
+- Suite `test/features/clash/sync/fake_clash_sync_client_test.dart`.
+- Documentación en `docs/CLASH_SYNC_CONTRACT.md` y `docs/CLASH_QA.md`.
+
+**Objetivo:** simular respuestas del futuro backend sync sin HTTP ni integración en app real.
+
+**Sin cambios** en granter, economía, claves SP, Fantasy, leagues, rewards, providers ni backend.
+
+---
+
 *Roadmap sujeto a revisión tras confirmación del equipo. No iniciar fase 1 sin aprobación explícita.*
