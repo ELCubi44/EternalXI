@@ -1,449 +1,272 @@
 {
   "cards": [
     {
-      "id": "exi-n-gk-001",
-      "playerId": 9001,
-      "name": "Marco Reyes",
+      "id": "showcase-rarity-n",
+      "playerId": 99001,
+      "name": "Aiden Prisma",
       "team": "Eternal XI",
+      "dorsal": 9,
+      "teamId": 17,
       "rarity": "n",
       "level": 1,
       "style": "valiente",
-      "position": "goalkeeper",
+      "position": "striker",
       "basicPortraitPath": "placeholder",
       "stats": {
-        "save": 42,
-        "defense": 18,
+        "save": 3,
+        "defense": 12,
         "pass": 14,
-        "dribble": 8,
-        "shot": 6,
-        "techniquePoints": 20,
-        "stamina": 105
-      },
-      "superTechniques": [
-        {
-          "id": "exi-n-gk-001-st1",
-          "name": "Muralla Eterna",
-          "description": "Parada contundente en el área chica.",
-          "type": "save",
-          "style": "valiente",
-          "basePower": 48,
-          "ptCost": 12,
-          "level": "normal"
-        }
-      ]
-    },
-    {
-      "id": "exi-n-cb-001",
-      "playerId": 9002,
-      "name": "Dante Silva",
-      "team": "Eternal XI",
-      "rarity": "n",
-      "level": 1,
-      "style": "potente",
-      "position": "centreBack",
-      "basicPortraitPath": "placeholder",
-      "stats": {
-        "save": 6,
-        "defense": 38,
-        "pass": 16,
-        "dribble": 10,
-        "shot": 8,
-        "techniquePoints": 18,
-        "stamina": 102
-      },
-      "superTechniques": [
-        {
-          "id": "exi-n-cb-001-st1",
-          "name": "Corte de Hierro",
-          "description": "Entrada firme para recuperar el balón.",
-          "type": "defense",
-          "style": "potente",
-          "basePower": 44,
-          "ptCost": 10,
-          "level": "normal"
-        }
-      ]
-    },
-    {
-      "id": "exi-n-cb-002",
-      "playerId": 9003,
-      "name": "Leon Hart",
-      "team": "Eternal XI",
-      "rarity": "n",
-      "level": 1,
-      "style": "preciso",
-      "position": "centreBack",
-      "basicPortraitPath": "placeholder",
-      "stats": {
-        "save": 5,
-        "defense": 36,
-        "pass": 20,
-        "dribble": 12,
-        "shot": 7,
-        "techniquePoints": 18,
-        "stamina": 101
-      },
-      "superTechniques": [
-        {
-          "id": "exi-n-cb-002-st1",
-          "name": "Lectura Perfecta",
-          "description": "Anticipación precisa en la línea defensiva.",
-          "type": "defense",
-          "style": "preciso",
-          "basePower": 42,
-          "ptCost": 10,
-          "level": "normal"
-        }
-      ]
-    },
-    {
-      "id": "exi-n-fb-001",
-      "playerId": 9004,
-      "name": "Rio Vega",
-      "team": "Eternal XI",
-      "rarity": "n",
-      "level": 1,
-      "style": "agil",
-      "position": "fullBack",
-      "basicPortraitPath": "placeholder",
-      "stats": {
-        "save": 4,
-        "defense": 28,
-        "pass": 22,
-        "dribble": 24,
-        "shot": 10,
-        "techniquePoints": 16,
-        "stamina": 103
-      },
-      "superTechniques": [
-        {
-          "id": "exi-n-fb-001-st1",
-          "name": "Muro Lateral",
-          "description": "Entrada firme en la banda.",
-          "type": "defense",
-          "style": "agil",
-          "basePower": 40,
-          "ptCost": 9,
-          "level": "normal"
-        }
-      ]
-    },
-    {
-      "id": "exi-n-fb-002",
-      "playerId": 9005,
-      "name": "Soren Kai",
-      "team": "Eternal XI",
-      "rarity": "n",
-      "level": 1,
-      "style": "picaro",
-      "position": "fullBack",
-      "basicPortraitPath": "placeholder",
-      "stats": {
-        "save": 4,
-        "defense": 26,
-        "pass": 20,
-        "dribble": 26,
-        "shot": 12,
+        "dribble": 18,
+        "shot": 28,
         "techniquePoints": 16,
         "stamina": 100
       },
       "superTechniques": [
         {
-          "id": "exi-n-fb-002-st1",
-          "name": "Corte Lateral",
-          "description": "Anticipación en defensa por la banda.",
-          "type": "defense",
-          "style": "picaro",
-          "basePower": 38,
+          "id": "showcase-rarity-n-st1",
+          "name": "Disparo demo",
+          "description": "Supertécnica de muestra N.",
+          "type": "shot",
+          "style": "valiente",
+          "basePower": 30,
           "ptCost": 9,
           "level": "normal"
         }
       ]
     },
     {
-      "id": "exi-n-dm-001",
-      "playerId": 9006,
-      "name": "Axel Thorn",
+      "id": "showcase-rarity-r",
+      "playerId": 99001,
+      "name": "Aiden Prisma",
       "team": "Eternal XI",
-      "rarity": "n",
+      "dorsal": 9,
+      "teamId": 17,
+      "rarity": "r",
       "level": 1,
-      "style": "potente",
-      "position": "defensiveMidfielder",
-      "basicPortraitPath": "placeholder",
-      "stats": {
-        "save": 4,
-        "defense": 32,
-        "pass": 24,
-        "dribble": 14,
-        "shot": 14,
-        "techniquePoints": 18,
-        "stamina": 104
-      },
-      "superTechniques": [
-        {
-          "id": "exi-n-dm-001-st1",
-          "name": "Ancla Central",
-          "description": "Recuperación contundente en el medio.",
-          "type": "defense",
-          "style": "potente",
-          "basePower": 43,
-          "ptCost": 11,
-          "level": "normal"
-        }
-      ]
-    },
-    {
-      "id": "exi-n-am-001",
-      "playerId": 9007,
-      "name": "Mira Sol",
-      "team": "Eternal XI",
-      "rarity": "n",
-      "level": 1,
-      "style": "preciso",
-      "position": "attackingMidfielder",
-      "basicPortraitPath": "placeholder",
-      "stats": {
-        "save": 3,
-        "defense": 16,
-        "pass": 34,
-        "dribble": 22,
-        "shot": 18,
-        "techniquePoints": 20,
-        "stamina": 101
-      },
-      "superTechniques": [
-        {
-          "id": "exi-n-am-001-st1",
-          "name": "Giro Interior",
-          "description": "Regate fluido entre líneas.",
-          "type": "dribble",
-          "style": "preciso",
-          "basePower": 41,
-          "ptCost": 10,
-          "level": "normal"
-        }
-      ]
-    },
-    {
-      "id": "exi-n-am-002",
-      "playerId": 9008,
-      "name": "Luna Cross",
-      "team": "Eternal XI",
-      "rarity": "n",
-      "level": 1,
-      "style": "agil",
-      "position": "attackingMidfielder",
+      "style": "valiente",
+      "position": "striker",
       "basicPortraitPath": "placeholder",
       "stats": {
         "save": 3,
         "defense": 14,
-        "pass": 30,
-        "dribble": 28,
-        "shot": 16,
-        "techniquePoints": 19,
-        "stamina": 100
-      },
-      "superTechniques": [
-        {
-          "id": "exi-n-am-002-st1",
-          "name": "Giro Etéreo",
-          "description": "Regate fluido entre defensas.",
-          "type": "dribble",
-          "style": "agil",
-          "basePower": 39,
-          "ptCost": 9,
-          "level": "normal"
-        }
-      ]
-    },
-    {
-      "id": "exi-n-wg-001",
-      "playerId": 9009,
-      "name": "Nova Ash",
-      "team": "Eternal XI",
-      "rarity": "n",
-      "level": 1,
-      "style": "agil",
-      "position": "winger",
-      "basicPortraitPath": "placeholder",
-      "stats": {
-        "save": 2,
-        "defense": 12,
-        "pass": 22,
-        "dribble": 32,
-        "shot": 20,
-        "techniquePoints": 17,
-        "stamina": 102
-      },
-      "superTechniques": [
-        {
-          "id": "exi-n-wg-001-st1",
-          "name": "Centrifuga",
-          "description": "Aceleración en cono hacia la portería.",
-          "type": "dribble",
-          "style": "agil",
-          "basePower": 42,
-          "ptCost": 10,
-          "level": "normal"
-        }
-      ]
-    },
-    {
-      "id": "exi-n-wg-002",
-      "playerId": 9010,
-      "name": "Kira Wind",
-      "team": "Eternal XI",
-      "rarity": "n",
-      "level": 1,
-      "style": "picaro",
-      "position": "winger",
-      "basicPortraitPath": "placeholder",
-      "stats": {
-        "save": 2,
-        "defense": 10,
-        "pass": 20,
-        "dribble": 30,
-        "shot": 22,
-        "techniquePoints": 17,
-        "stamina": 100
-      },
-      "superTechniques": [
-        {
-          "id": "exi-n-wg-002-st1",
-          "name": "Disparo Cruzado",
-          "description": "Remate colocado desde la banda.",
-          "type": "shot",
-          "style": "picaro",
-          "basePower": 40,
-          "ptCost": 9,
-          "level": "normal"
-        }
-      ]
-    },
-    {
-      "id": "exi-n-st-001",
-      "playerId": 9011,
-      "name": "Zayn Frost",
-      "team": "Eternal XI",
-      "rarity": "n",
-      "level": 1,
-      "style": "potente",
-      "position": "striker",
-      "basicPortraitPath": "placeholder",
-      "stats": {
-        "save": 2,
-        "defense": 10,
         "pass": 16,
-        "dribble": 18,
-        "shot": 36,
+        "dribble": 20,
+        "shot": 32,
         "techniquePoints": 18,
-        "stamina": 101
-      },
-      "superTechniques": [
-        {
-          "id": "exi-n-st-001-st1",
-          "name": "Cañonazo",
-          "description": "Disparo potente desde el área.",
-          "type": "shot",
-          "style": "potente",
-          "basePower": 46,
-          "ptCost": 12,
-          "level": "normal"
-        }
-      ]
-    },
-    {
-      "id": "exi-n-st-002",
-      "playerId": 9012,
-      "name": "Eli Crown",
-      "team": "Eternal XI",
-      "rarity": "n",
-      "level": 1,
-      "style": "valiente",
-      "position": "striker",
-      "basicPortraitPath": "placeholder",
-      "stats": {
-        "save": 2,
-        "defense": 12,
-        "pass": 14,
-        "dribble": 16,
-        "shot": 34,
-        "techniquePoints": 18,
-        "stamina": 103
-      },
-      "superTechniques": [
-        {
-          "id": "exi-n-st-002-st1",
-          "name": "Remate Decisivo",
-          "description": "Finalización valiente en el área chica.",
-          "type": "shot",
-          "style": "valiente",
-          "basePower": 44,
-          "ptCost": 11,
-          "level": "normal"
-        }
-      ]
-    },
-    {
-      "id": "exi-n-dm-002",
-      "playerId": 9013,
-      "name": "Victor Nox",
-      "team": "Eternal XI",
-      "rarity": "n",
-      "level": 1,
-      "style": "valiente",
-      "position": "defensiveMidfielder",
-      "basicPortraitPath": "placeholder",
-      "stats": {
-        "save": 4,
-        "defense": 30,
-        "pass": 22,
-        "dribble": 12,
-        "shot": 12,
-        "techniquePoints": 17,
         "stamina": 105
       },
       "superTechniques": [
         {
-          "id": "exi-n-dm-002-st1",
-          "name": "Presión Total",
-          "description": "Entrada valiente para cortar el contraataque.",
-          "type": "defense",
+          "id": "showcase-rarity-r-st1",
+          "name": "Disparo demo",
+          "description": "Supertécnica de muestra R.",
+          "type": "shot",
           "style": "valiente",
-          "basePower": 41,
+          "basePower": 34,
+          "ptCost": 9,
+          "level": "normal"
+        },
+        {
+          "id": "showcase-rarity-r-st2",
+          "name": "Regate demo",
+          "description": "Segunda supertécnica R.",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 28,
           "ptCost": 10,
           "level": "normal"
         }
       ]
     },
     {
-      "id": "exi-n-st-003",
-      "playerId": 9014,
-      "name": "Ash Polaris",
+      "id": "showcase-rarity-sr",
+      "playerId": 99001,
+      "name": "Aiden Prisma",
       "team": "Eternal XI",
-      "rarity": "n",
+      "dorsal": 9,
+      "teamId": 17,
+      "rarity": "sr",
       "level": 1,
-      "style": "preciso",
+      "style": "valiente",
       "position": "striker",
       "basicPortraitPath": "placeholder",
       "stats": {
-        "save": 2,
-        "defense": 10,
+        "save": 4,
+        "defense": 16,
         "pass": 18,
-        "dribble": 20,
-        "shot": 32,
-        "techniquePoints": 19,
-        "stamina": 100
+        "dribble": 24,
+        "shot": 38,
+        "techniquePoints": 22,
+        "stamina": 110
       },
       "superTechniques": [
         {
-          "id": "exi-n-st-003-st1",
-          "name": "Definición Clínica",
-          "description": "Tiro colocado al palo largo.",
+          "id": "showcase-rarity-sr-st1",
+          "name": "Disparo demo",
+          "description": "Supertécnica SR 1.",
           "type": "shot",
+          "style": "valiente",
+          "basePower": 38,
+          "ptCost": 9,
+          "level": "normal"
+        },
+        {
+          "id": "showcase-rarity-sr-st2",
+          "name": "Regate demo",
+          "description": "Supertécnica SR 2.",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 32,
+          "ptCost": 10,
+          "level": "normal"
+        },
+        {
+          "id": "showcase-rarity-sr-st3",
+          "name": "Pase demo",
+          "description": "Supertécnica SR 3.",
+          "type": "dribble",
           "style": "preciso",
-          "basePower": 43,
-          "ptCost": 11,
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "showcase-rarity-sr-st4",
+          "name": "Defensa demo",
+          "description": "Supertécnica SR 4.",
+          "type": "defense",
+          "style": "potente",
+          "basePower": 28,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "showcase-rarity-lr",
+      "playerId": 99001,
+      "name": "Aiden Prisma",
+      "team": "Eternal XI",
+      "dorsal": 9,
+      "teamId": 17,
+      "rarity": "lr",
+      "level": 1,
+      "style": "valiente",
+      "position": "striker",
+      "basicPortraitPath": "placeholder",
+      "stats": {
+        "save": 4,
+        "defense": 18,
+        "pass": 20,
+        "dribble": 28,
+        "shot": 45,
+        "techniquePoints": 26,
+        "stamina": 115
+      },
+      "superTechniques": [
+        {
+          "id": "showcase-rarity-lr-st1",
+          "name": "Disparo demo",
+          "description": "Supertécnica LR 1.",
+          "type": "shot",
+          "style": "valiente",
+          "basePower": 42,
+          "ptCost": 9,
+          "level": "normal"
+        },
+        {
+          "id": "showcase-rarity-lr-st2",
+          "name": "Regate demo",
+          "description": "Supertécnica LR 2.",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 36,
+          "ptCost": 10,
+          "level": "normal"
+        },
+        {
+          "id": "showcase-rarity-lr-st3",
+          "name": "Pase demo",
+          "description": "Supertécnica LR 3.",
+          "type": "dribble",
+          "style": "preciso",
+          "basePower": 34,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "showcase-rarity-lr-st4",
+          "name": "Defensa demo",
+          "description": "Supertécnica LR 4.",
+          "type": "defense",
+          "style": "potente",
+          "basePower": 32,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "showcase-rarity-xi",
+      "playerId": 99001,
+      "name": "Aiden Prisma",
+      "team": "Eternal XI",
+      "dorsal": 9,
+      "teamId": 17,
+      "rarity": "xi",
+      "level": 1,
+      "style": "valiente",
+      "position": "striker",
+      "basicPortraitPath": "placeholder",
+      "passiveId": "showcase-passive-xi",
+      "stats": {
+        "save": 5,
+        "defense": 20,
+        "pass": 24,
+        "dribble": 32,
+        "shot": 52,
+        "techniquePoints": 30,
+        "stamina": 120
+      },
+      "superTechniques": [
+        {
+          "id": "showcase-rarity-xi-st1",
+          "name": "Disparo demo",
+          "description": "Supertécnica XI 1.",
+          "type": "shot",
+          "style": "valiente",
+          "basePower": 48,
+          "ptCost": 9,
+          "level": "normal"
+        },
+        {
+          "id": "showcase-rarity-xi-st2",
+          "name": "Regate demo",
+          "description": "Supertécnica XI 2.",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 40,
+          "ptCost": 10,
+          "level": "normal"
+        },
+        {
+          "id": "showcase-rarity-xi-st3",
+          "name": "Pase demo",
+          "description": "Supertécnica XI 3.",
+          "type": "dribble",
+          "style": "preciso",
+          "basePower": 38,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "showcase-rarity-xi-st4",
+          "name": "Defensa demo",
+          "description": "Supertécnica XI 4.",
+          "type": "defense",
+          "style": "potente",
+          "basePower": 36,
+          "ptCost": 8,
           "level": "normal"
         }
       ]

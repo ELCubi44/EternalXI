@@ -314,7 +314,15 @@ class ClashGachaRepository {
     if (banner.poolCardIds.isNotEmpty) {
       return banner.poolCardIds;
     }
-    _defaultPoolCache ??= (await _cardsRepository.fetchAllCards())
+    final allCards = await _cardsRepository.fetchAllCards();
+    final teamFilter = banner.teamFilter?.trim();
+    if (teamFilter != null && teamFilter.isNotEmpty) {
+      return allCards
+          .where((entry) => entry.team == teamFilter)
+          .map((entry) => entry.id)
+          .toList(growable: false);
+    }
+    _defaultPoolCache ??= allCards
         .map((entry) => entry.id)
         .toList(growable: false);
     return _defaultPoolCache!;

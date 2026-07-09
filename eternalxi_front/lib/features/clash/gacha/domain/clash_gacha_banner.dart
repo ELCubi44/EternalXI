@@ -11,6 +11,7 @@ class ClashGachaBanner {
     required this.dailyDiscountCost,
     required this.dailyDiscountAvailable,
     this.poolCardIds = const [],
+    this.teamFilter,
   });
 
   final String id;
@@ -22,6 +23,7 @@ class ClashGachaBanner {
   final int dailyDiscountCost;
   final bool dailyDiscountAvailable;
   final List<String> poolCardIds;
+  final String? teamFilter;
 
   factory ClashGachaBanner.fromJson(Map<String, dynamic> json) {
     final poolRaw = json['poolCardIds'] as List? ?? const [];
@@ -38,6 +40,7 @@ class ClashGachaBanner {
       ),
       dailyDiscountAvailable: json['dailyDiscountAvailable'] == true,
       poolCardIds: poolRaw.map((id) => id.toString()).toList(growable: false),
+      teamFilter: json['teamFilter']?.toString(),
     );
   }
 }

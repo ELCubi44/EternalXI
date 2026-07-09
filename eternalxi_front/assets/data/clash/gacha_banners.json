@@ -9,13 +9,14 @@
   "banners": [
     {
       "id": "starter-banner-001",
-      "name": "Invocación inicial",
-      "description": "Primer banner local de prueba",
+      "name": "Banner de inicio",
+      "description": "Eternal XI",
       "singleCost": 10,
       "multiCost": 95,
       "multiCount": 10,
       "dailyDiscountCost": 1,
-      "dailyDiscountAvailable": true
+      "dailyDiscountAvailable": false,
+      "teamFilter": "Eternal XI"
     }
   ]
 }
