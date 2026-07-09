@@ -40,34 +40,31 @@ applicationId = "es.eternalxi.app"        // You can update the following values
     }
 
     signingConfigs {
-        create("release") {
-            if (!keystorePropertiesFile.exists()) {
-                throw GradleException(
-                    "Release build requiere eternalxi_front/android/key.properties con un keystore válido. " +
-                    "Copia key.properties.example y configura tu upload keystore."
-                )
-            }
+        if (keystorePropertiesFile.exists()) {
+            create("release") {
+                val storeFilePath = keystoreProperties["storeFile"] as String?
+                if (storeFilePath.isNullOrBlank()) {
+                    throw GradleException("key.properties: falta storeFile")
+                }
 
-            val storeFilePath = keystoreProperties["storeFile"] as String?
-            if (storeFilePath.isNullOrBlank()) {
-                throw GradleException("key.properties: falta storeFile")
-            }
+                val storeFileRef = file(storeFilePath)
+                if (!storeFileRef.exists()) {
+                    throw GradleException("key.properties: keystore no encontrado en $storeFilePath")
+                }
 
-            val storeFileRef = file(storeFilePath)
-            if (!storeFileRef.exists()) {
-                throw GradleException("key.properties: keystore no encontrado en $storeFilePath")
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = storeFileRef
+                storePassword = keystoreProperties["storePassword"] as String
             }
-
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = storeFileRef
-            storePassword = keystoreProperties["storePassword"] as String
         }
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            if (keystorePropertiesFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 }
