@@ -1,0 +1,496 @@
+﻿{
+  "trials": [
+    {
+      "id": "trial-attack",
+      "title": "Cadena de Ataque",
+      "description": "Roba delanteros y extremos para marcar. Usa supertecnicas de tiro y regate.",
+      "line": "attack",
+      "order": 1,
+      "floors": [
+        {
+          "id": "attack-01",
+          "title": "Piso 1 - Primer contacto",
+          "description": "Piso 1 - Primer contacto: La calle exige goles. Sus delanteros no perdonan.",
+          "order": 1,
+          "baseRecommendedPower": 75,
+          "powerScalePerClear": 10,
+          "rivalTeamId": "rival-favela-estrela",
+          "cardXpReward": 15,
+          "techniqueBonusTarget": 1,
+          "techniqueBonusRewards": {
+            "coins": 100
+          },
+          "firstClearRewards": {
+            "coins": 350,
+            "gems": 1
+          },
+          "repeatRewards": {
+            "coins": 80
+          }
+        },
+        {
+          "id": "attack-02",
+          "title": "Piso 2 - Desmarque",
+          "order": 2,
+          "baseRecommendedPower": 95,
+          "powerScalePerClear": 12,
+          "rivalTeamId": "rival-furia-menuda",
+          "cardXpReward": 20,
+          "techniqueBonusTarget": 2,
+          "techniqueBonusRewards": {
+            "techniqueBook": {
+              "id": "basic-technique-book",
+              "quantity": 1
+            }
+          },
+          "firstClearRewards": {
+            "coins": 450,
+            "gems": 2
+          },
+          "repeatRewards": {
+            "coins": 100,
+            "gems": 1
+          },
+          "description": "Piso 2 - Desmarque: Pequenos pero letales. Velocidad pura en ataque."
+        },
+        {
+          "id": "attack-03",
+          "title": "Piso 3 - Area rival",
+          "order": 3,
+          "baseRecommendedPower": 115,
+          "powerScalePerClear": 14,
+          "rivalTeamId": "rival-instinto-real",
+          "cardXpReward": 25,
+          "techniqueBonusTarget": 2,
+          "techniqueBonusRewards": {
+            "coins": 200
+          },
+          "firstClearRewards": {
+            "coins": 550,
+            "gems": 2
+          },
+          "repeatRewards": {
+            "coins": 120
+          },
+          "description": "Piso 3 - Area rival: Juegan sin miedo. Cada contra es una sentencia."
+        },
+        {
+          "id": "attack-04",
+          "title": "Piso 4 - Definicion",
+          "order": 4,
+          "baseRecommendedPower": 140,
+          "powerScalePerClear": 16,
+          "rivalTeamId": "rival-academia-tianlong",
+          "cardXpReward": 30,
+          "techniqueBonusTarget": 3,
+          "techniqueBonusRewards": {
+            "expMaterial": {
+              "id": "basic-training-manual",
+              "quantity": 2
+            }
+          },
+          "firstClearRewards": {
+            "coins": 650,
+            "gems": 3
+          },
+          "repeatRewards": {
+            "coins": 140,
+            "gems": 1
+          },
+          "description": "Piso 4 - Definicion: Disciplina oriental y remates desde lejos."
+        },
+        {
+          "id": "attack-05",
+          "title": "Piso 5 - Golden Boot",
+          "order": 5,
+          "baseRecommendedPower": 170,
+          "powerScalePerClear": 18,
+          "rivalTeamId": "rival-dunas-movedizas",
+          "cardXpReward": 40,
+          "techniqueBonusTarget": 3,
+          "techniqueBonusRewards": {
+            "ticket": {
+              "id": "starter-single-ticket",
+              "quantity": 1
+            }
+          },
+          "firstClearRewards": {
+            "coins": 800,
+            "gems": 5
+          },
+          "repeatRewards": {
+            "coins": 180,
+            "gems": 2
+          },
+          "description": "Piso 5 - Golden Boot: El desierto los endurecio. Ataque implacable."
+        }
+      ]
+    },
+    {
+      "id": "trial-midfield",
+      "title": "Cadena de Medio",
+      "description": "Controla el centro del campo. Pases, regates y transiciones.",
+      "line": "midfield",
+      "order": 2,
+      "floors": [
+        {
+          "id": "mid-01",
+          "title": "Piso 1 - Salida limpia",
+          "order": 1,
+          "baseRecommendedPower": 70,
+          "powerScalePerClear": 10,
+          "rivalTeamId": "rival-academia-zenith",
+          "cardXpReward": 15,
+          "techniqueBonusTarget": 1,
+          "techniqueBonusRewards": {
+            "coins": 100
+          },
+          "firstClearRewards": {
+            "coins": 350,
+            "gems": 1
+          },
+          "repeatRewards": {
+            "coins": 80
+          },
+          "description": "Piso 1 - Salida limpia: Control total del balon en el centro del campo."
+        },
+        {
+          "id": "mid-02",
+          "title": "Piso 2 - Presion alta",
+          "order": 2,
+          "baseRecommendedPower": 90,
+          "powerScalePerClear": 12,
+          "rivalTeamId": "rival-colegio-runaria",
+          "cardXpReward": 20,
+          "techniqueBonusTarget": 2,
+          "techniqueBonusRewards": {
+            "coins": 150
+          },
+          "firstClearRewards": {
+            "coins": 450,
+            "gems": 2
+          },
+          "repeatRewards": {
+            "coins": 100
+          },
+          "description": "Piso 2 - Presion alta: Formacion academica con pases de precision."
+        },
+        {
+          "id": "mid-03",
+          "title": "Piso 3 - Dominio",
+          "order": 3,
+          "baseRecommendedPower": 110,
+          "powerScalePerClear": 14,
+          "rivalTeamId": "rival-faro-del-alba",
+          "cardXpReward": 25,
+          "techniqueBonusTarget": 2,
+          "techniqueBonusRewards": {
+            "techniqueBook": {
+              "id": "basic-technique-book",
+              "quantity": 1
+            }
+          },
+          "firstClearRewards": {
+            "coins": 550,
+            "gems": 2
+          },
+          "repeatRewards": {
+            "coins": 120,
+            "gems": 1
+          },
+          "description": "Piso 3 - Dominio: Presion alta y transiciones rapidas."
+        },
+        {
+          "id": "mid-04",
+          "title": "Piso 4 - Asistencia clave",
+          "order": 4,
+          "baseRecommendedPower": 135,
+          "powerScalePerClear": 16,
+          "rivalTeamId": "rival-legado-unido",
+          "cardXpReward": 30,
+          "techniqueBonusTarget": 3,
+          "techniqueBonusRewards": {
+            "coins": 220
+          },
+          "firstClearRewards": {
+            "coins": 650,
+            "gems": 3
+          },
+          "repeatRewards": {
+            "coins": 140
+          },
+          "description": "Piso 4 - Asistencia clave: Mediocampo solido que domina el ritmo."
+        },
+        {
+          "id": "mid-05",
+          "title": "Piso 5 - Maestro del balon",
+          "order": 5,
+          "baseRecommendedPower": 165,
+          "powerScalePerClear": 18,
+          "rivalTeamId": "rival-asfalto-sur",
+          "cardXpReward": 40,
+          "techniqueBonusTarget": 3,
+          "techniqueBonusRewards": {
+            "ticket": {
+              "id": "starter-single-ticket",
+              "quantity": 1
+            }
+          },
+          "firstClearRewards": {
+            "coins": 800,
+            "gems": 5
+          },
+          "repeatRewards": {
+            "coins": 180,
+            "gems": 2
+          },
+          "description": "Piso 5 - Maestro del balon: Fisico y garra en cada duelo del centro."
+        }
+      ]
+    },
+    {
+      "id": "trial-defense",
+      "title": "Cadena Defensiva",
+      "description": "Centrales y laterales en cada duelo. Corta jugadas y para remates.",
+      "line": "defense",
+      "order": 3,
+      "floors": [
+        {
+          "id": "def-01",
+          "title": "Piso 1 - Linea baja",
+          "order": 1,
+          "baseRecommendedPower": 70,
+          "powerScalePerClear": 10,
+          "rivalTeamId": "rival-bastion-adler",
+          "cardXpReward": 15,
+          "techniqueBonusTarget": 1,
+          "techniqueBonusRewards": {
+            "coins": 100
+          },
+          "firstClearRewards": {
+            "coins": 350,
+            "gems": 1
+          },
+          "repeatRewards": {
+            "coins": 80
+          },
+          "description": "Piso 1 - Linea baja: Muralla alemana. Defensa impenetrable."
+        },
+        {
+          "id": "def-02",
+          "title": "Piso 2 - Entrada limpia",
+          "order": 2,
+          "baseRecommendedPower": 90,
+          "powerScalePerClear": 12,
+          "rivalTeamId": "rival-pico-artico",
+          "cardXpReward": 20,
+          "techniqueBonusTarget": 2,
+          "techniqueBonusRewards": {
+            "coins": 150
+          },
+          "firstClearRewards": {
+            "coins": 450,
+            "gems": 2
+          },
+          "repeatRewards": {
+            "coins": 100
+          },
+          "description": "Piso 2 - Entrada limpia: Frialdad bajo cero en cada entrada."
+        },
+        {
+          "id": "def-03",
+          "title": "Piso 3 - Muro",
+          "order": 3,
+          "baseRecommendedPower": 110,
+          "powerScalePerClear": 14,
+          "rivalTeamId": "rival-sistema-cero",
+          "cardXpReward": 25,
+          "techniqueBonusTarget": 2,
+          "techniqueBonusRewards": {
+            "techniqueBook": {
+              "id": "basic-technique-book",
+              "quantity": 1
+            }
+          },
+          "firstClearRewards": {
+            "coins": 550,
+            "gems": 2
+          },
+          "repeatRewards": {
+            "coins": 120,
+            "gems": 1
+          },
+          "description": "Piso 3 - Muro: Maquina defensiva. Cero espacios."
+        },
+        {
+          "id": "def-04",
+          "title": "Piso 4 - Contraataque",
+          "order": 4,
+          "baseRecommendedPower": 135,
+          "powerScalePerClear": 16,
+          "rivalTeamId": "rival-ojo-vigilante",
+          "cardXpReward": 30,
+          "techniqueBonusTarget": 3,
+          "techniqueBonusRewards": {
+            "coins": 220
+          },
+          "firstClearRewards": {
+            "coins": 650,
+            "gems": 3
+          },
+          "repeatRewards": {
+            "coins": 140
+          },
+          "description": "Piso 4 - Contraataque: Vigilan cada linea de pase sin descanso."
+        },
+        {
+          "id": "def-05",
+          "title": "Piso 5 - Muralla XI",
+          "order": 5,
+          "baseRecommendedPower": 165,
+          "powerScalePerClear": 18,
+          "rivalTeamId": "rival-panteon-caido",
+          "cardXpReward": 40,
+          "techniqueBonusTarget": 3,
+          "techniqueBonusRewards": {
+            "ticket": {
+              "id": "starter-single-ticket",
+              "quantity": 1
+            }
+          },
+          "firstClearRewards": {
+            "coins": 800,
+            "gems": 5
+          },
+          "repeatRewards": {
+            "coins": 180,
+            "gems": 2
+          },
+          "description": "Piso 5 - Muralla XI: Defensas legendarios resucitan en cada piso."
+        }
+      ]
+    },
+    {
+      "id": "trial-goalkeeper",
+      "title": "Cadena del Portero",
+      "description": "Solo porteros en el mazo. Paradas decisivas y supertecnicas de save.",
+      "line": "goalkeeper",
+      "order": 4,
+      "floors": [
+        {
+          "id": "gk-01",
+          "title": "Piso 1 - Primer vuelo",
+          "order": 1,
+          "baseRecommendedPower": 65,
+          "powerScalePerClear": 10,
+          "rivalTeamId": "rival-colegio-runaria",
+          "cardXpReward": 15,
+          "techniqueBonusTarget": 1,
+          "techniqueBonusRewards": {
+            "coins": 100
+          },
+          "firstClearRewards": {
+            "coins": 350,
+            "gems": 1
+          },
+          "repeatRewards": {
+            "coins": 80
+          },
+          "description": "Piso 1 - Primer vuelo: Formacion academica con pases de precision."
+        },
+        {
+          "id": "gk-02",
+          "title": "Piso 2 - Reflejos",
+          "order": 2,
+          "baseRecommendedPower": 85,
+          "powerScalePerClear": 12,
+          "rivalTeamId": "rival-faro-del-alba",
+          "cardXpReward": 20,
+          "techniqueBonusTarget": 2,
+          "techniqueBonusRewards": {
+            "coins": 150
+          },
+          "firstClearRewards": {
+            "coins": 450,
+            "gems": 2
+          },
+          "repeatRewards": {
+            "coins": 100
+          },
+          "description": "Piso 2 - Reflejos: Presion alta y transiciones rapidas."
+        },
+        {
+          "id": "gk-03",
+          "title": "Piso 3 - One on one",
+          "order": 3,
+          "baseRecommendedPower": 105,
+          "powerScalePerClear": 14,
+          "rivalTeamId": "rival-legado-unido",
+          "cardXpReward": 25,
+          "techniqueBonusTarget": 2,
+          "techniqueBonusRewards": {
+            "techniqueBook": {
+              "id": "basic-technique-book",
+              "quantity": 1
+            }
+          },
+          "firstClearRewards": {
+            "coins": 550,
+            "gems": 2
+          },
+          "repeatRewards": {
+            "coins": 120,
+            "gems": 1
+          },
+          "description": "Piso 3 - One on one: Mediocampo solido que domina el ritmo."
+        },
+        {
+          "id": "gk-04",
+          "title": "Piso 4 - Penalti",
+          "order": 4,
+          "baseRecommendedPower": 130,
+          "powerScalePerClear": 16,
+          "rivalTeamId": "rival-academia-zenith",
+          "cardXpReward": 30,
+          "techniqueBonusTarget": 3,
+          "techniqueBonusRewards": {
+            "coins": 220
+          },
+          "firstClearRewards": {
+            "coins": 650,
+            "gems": 3
+          },
+          "repeatRewards": {
+            "coins": 140
+          },
+          "description": "Piso 4 - Penalti: Control total del balon en el centro del campo."
+        },
+        {
+          "id": "gk-05",
+          "title": "Piso 5 - Guante de oro",
+          "order": 5,
+          "baseRecommendedPower": 160,
+          "powerScalePerClear": 18,
+          "rivalTeamId": "rival-instinto-real",
+          "cardXpReward": 40,
+          "techniqueBonusTarget": 3,
+          "techniqueBonusRewards": {
+            "ticket": {
+              "id": "starter-single-ticket",
+              "quantity": 1
+            }
+          },
+          "firstClearRewards": {
+            "coins": 800,
+            "gems": 5
+          },
+          "repeatRewards": {
+            "coins": 180,
+            "gems": 2
+          },
+          "description": "Piso 5 - Guante de oro: Juegan sin miedo. Cada contra es una sentencia."
+        }
+      ]
+    }
+  ]
+}
