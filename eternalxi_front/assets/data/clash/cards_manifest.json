@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "cardsVersion": 1,
+  "cardsUrl": "https://api.eternalxi.com/api/v1/assets/clash/cards.json",
+  "cardsBytes": 7180,
+  "playerCount": 5,
+  "cardCount": 5
+}
