@@ -146,7 +146,8 @@ void main() {
       expect(find.text('Fantasy'), findsOneWidget);
       expect(find.text('Clash'), findsOneWidget);
       expect(find.text('Entrar a Fantasy'), findsOneWidget);
-      expect(find.text('Entrar a Clash'), findsOneWidget);
+      expect(find.text('Próximamente'), findsWidgets);
+      expect(find.text('Entrar a Clash'), findsNothing);
       expect(find.text('Tester'), findsOneWidget);
     });
 
@@ -170,7 +171,9 @@ void main() {
       expect(find.text('Leagues Test Page'), findsOneWidget);
     });
 
-    testWidgets('Clash navega a /clash', (tester) async {
+    testWidgets('Clash permanece bloqueado en selección de modo', (
+      tester,
+    ) async {
       final auth = _authWithUser(
         const UserModel(
           id: 1,
@@ -184,11 +187,9 @@ void main() {
       await tester.pumpWidget(_routerApp(router, auth));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Entrar a Clash'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Eternal XI Clash'), findsOneWidget);
-      expect(find.text('Inicio'), findsOneWidget);
+      expect(find.text('Entrar a Clash'), findsNothing);
+      expect(find.text('Eternal XI Clash'), findsNothing);
+      expect(find.text('Clash'), findsOneWidget);
     });
   });
 

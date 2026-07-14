@@ -1,3 +1,4 @@
+import 'package:eternal_xi/core/constants/clash_feature_flags.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
@@ -83,8 +84,13 @@ class ModeSelectionScreen extends StatelessWidget {
                         iconColor: XiColors.techCyan,
                         title: l10n.modeClashTitle,
                         description: l10n.modeClashDescription,
-                        actionLabel: l10n.modeClashEnter,
-                        onTap: () => context.go(AppRoutes.clash),
+                        actionLabel: ClashFeatureFlags.modeSelectionEnabled
+                            ? l10n.modeClashEnter
+                            : l10n.clashTeamComingSoonBadge,
+                        enabled: ClashFeatureFlags.modeSelectionEnabled,
+                        onTap: ClashFeatureFlags.modeSelectionEnabled
+                            ? () => context.go(AppRoutes.clash)
+                            : null,
                       ),
                     ],
                   ),
@@ -105,7 +111,8 @@ class _ModeOptionCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.actionLabel,
-    required this.onTap,
+    this.enabled = true,
+    this.onTap,
   });
 
   final IconData icon;
@@ -113,69 +120,97 @@ class _ModeOptionCard extends StatelessWidget {
   final String title;
   final String description;
   final String actionLabel;
-  final VoidCallback onTap;
+  final bool enabled;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final cardOpacity = enabled ? 1.0 : 0.72;
 
-    return Material(
-      color: context.xiCardSurface,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: context.xiDivider),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 22, 20, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: iconColor.withValues(alpha: 0.14),
-                      borderRadius: BorderRadius.circular(14),
+    return Opacity(
+      opacity: cardOpacity,
+      child: Material(
+        color: context.xiCardSurface,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: context.xiDivider),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: enabled ? onTap : null,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 22, 20, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: iconColor.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(icon, color: iconColor, size: 26),
                     ),
-                    child: Icon(icon, color: iconColor, size: 26),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: context.xiTextPrimary,
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: context.xiTextPrimary,
+                        ),
                       ),
                     ),
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    size: 16,
-                    color: context.xiTextSecondary.withValues(alpha: 0.5),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-              Text(
-                description,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: context.xiTextSecondary.withValues(alpha: 0.9),
-                  height: 1.5,
+                    if (!enabled)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: context.xiChipBackground,
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(color: context.xiDivider),
+                        ),
+                        child: Text(
+                          actionLabel,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: context.xiTextSecondary,
+                          ),
+                        ),
+                      )
+                    else
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 16,
+                        color: context.xiTextSecondary.withValues(alpha: 0.5),
+                      ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 18),
-              Align(
-                alignment: Alignment.centerRight,
-                child: FilledButton(onPressed: onTap, child: Text(actionLabel)),
-              ),
-            ],
+                const SizedBox(height: 14),
+                Text(
+                  description,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: context.xiTextSecondary.withValues(alpha: 0.9),
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: FilledButton(
+                    onPressed: enabled ? onTap : null,
+                    child: Text(actionLabel),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
