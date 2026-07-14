@@ -14,10 +14,9 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_unlock_r
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_inventory_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_use_result.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
-import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_detail_header.dart';
+import 'package:eternal_xi/features/clash/cards/presentation/epic/clash_card_epic_showcase.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_evolution_section.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_skill_tree_section.dart';
-import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_stats_panel.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_technique_section.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_upgrade_section.dart';
 import 'package:flutter/material.dart';
@@ -294,61 +293,74 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
     final card = entry.displayCard;
 
     return Material(
-      color: Colors.transparent,
+      color: context.xiBackground,
       child: ListView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        padding: EdgeInsets.zero,
         children: [
-          Row(
+          Stack(
             children: [
-              IconButton(
-                onPressed: () => context.pop(),
-                icon: const Icon(Icons.arrow_back_rounded),
-              ),
-              Expanded(
-                child: Text(
-                  l10n.clashCardDetailTitle,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: context.xiTextPrimary,
+              ClashCardEpicShowcase(entry: entry),
+              SafeArea(
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: IconButton(
+                    onPressed: () => context.pop(),
+                    icon: const Icon(Icons.arrow_back_rounded),
+                    color: Colors.white,
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.black.withValues(alpha: 0.35),
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          ClashCardDetailHeader(entry: entry),
-          const SizedBox(height: 16),
-          ClashCardStatsPanel(entry: entry),
-          for (final technique in card.superTechniques) ...[
-            const SizedBox(height: 16),
-            ClashCardTechniqueSection(
-              baseTechnique: technique,
-              progress: entry.progress,
-              books: _techniqueBooks,
-              isBusy: _usingTechniqueBookFor == technique.id,
-              onUseBook: (bookId) => _useTechniqueBook(technique.id, bookId),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l10n.clashCardDetailTitle,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: context.xiTextPrimary,
+                  ),
+                ),
+                for (final technique in card.superTechniques) ...[
+                  const SizedBox(height: 16),
+                  ClashCardTechniqueSection(
+                    baseTechnique: technique,
+                    progress: entry.progress,
+                    books: _techniqueBooks,
+                    isBusy: _usingTechniqueBookFor == technique.id,
+                    onUseBook: (bookId) =>
+                        _useTechniqueBook(technique.id, bookId),
+                  ),
+                ],
+                const SizedBox(height: 16),
+                ClashCardUpgradeSection(
+                  entry: entry,
+                  materials: _materials,
+                  isBusy: _usingMaterial,
+                  onUseMaterial: _useMaterial,
+                ),
+                const SizedBox(height: 16),
+                ClashCardEvolutionSection(
+                  entry: entry,
+                  evolutionMaterials: _evolutionMaterials,
+                  isBusy: _evolving,
+                  onEvolve: _evolveCard,
+                ),
+                const SizedBox(height: 16),
+                ClashCardSkillTreeSection(
+                  entry: entry,
+                  isBusy: _unlockingSkillNode,
+                  onUnlock: _unlockSkillTreeNode,
+                ),
+              ],
             ),
-          ],
-          const SizedBox(height: 16),
-          ClashCardUpgradeSection(
-            entry: entry,
-            materials: _materials,
-            isBusy: _usingMaterial,
-            onUseMaterial: _useMaterial,
-          ),
-          const SizedBox(height: 16),
-          ClashCardEvolutionSection(
-            entry: entry,
-            evolutionMaterials: _evolutionMaterials,
-            isBusy: _evolving,
-            onEvolve: _evolveCard,
-          ),
-          const SizedBox(height: 16),
-          ClashCardSkillTreeSection(
-            entry: entry,
-            isBusy: _unlockingSkillNode,
-            onUnlock: _unlockSkillTreeNode,
           ),
         ],
       ),

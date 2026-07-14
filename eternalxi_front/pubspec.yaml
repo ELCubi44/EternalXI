@@ -48,6 +48,11 @@ dependencies:
   firebase_messaging: ^16.2.0
   flutter_animate: ^4.5.2
   shared_preferences: ^2.5.3
+  path_provider: ^2.1.5
+  google_sign_in: ^6.2.2
+  sign_in_with_apple: ^6.1.4
+  crypto: ^3.0.6
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
@@ -73,7 +78,13 @@ flutter:
   assets:
     - assets/app/
     - assets/fonts/
+    - assets/images/clash/epic/backgrounds/
+    - assets/images/clash/epic/frames/
+    - assets/images/clash/epic/auras/
+    - assets/images/clash/epic/banners/
+    - assets/images/clash/epic/stats/
     - assets/data/clash/cards.json
+    - assets/data/clash/cards_manifest.json
     - assets/data/clash/exp_materials.json
     - assets/data/clash/technique_books.json
     - assets/data/clash/evolution_materials.json
@@ -87,6 +98,7 @@ flutter:
     - assets/data/clash/news.json
     - assets/data/clash/gifts.json
     - assets/data/clash/character_events.json
+    - assets/data/clash/trials.json
     - assets/data/clash/rivals.json
     - assets/data/clash/story/sagas.json
     - assets/data/clash/story/chapter_01.json
@@ -96,6 +108,7 @@ flutter:
     - family: Lumiare
       fonts:
         - asset: assets/fonts/Lumiare.otf
+          weight: 400
 
 flutter_launcher_icons:
   android: true
