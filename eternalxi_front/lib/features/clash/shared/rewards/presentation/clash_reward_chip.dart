@@ -48,7 +48,6 @@ class ClashRewardChip extends StatelessWidget {
                 Text(
                   item.label,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
                     color: textColor,
                   ),
                 ),
@@ -68,7 +67,6 @@ class ClashRewardChip extends StatelessWidget {
             Text(
               quantityText,
               style: theme.textTheme.labelSmall?.copyWith(
-                fontWeight: FontWeight.w800,
                 color: textColor,
               ),
             ),

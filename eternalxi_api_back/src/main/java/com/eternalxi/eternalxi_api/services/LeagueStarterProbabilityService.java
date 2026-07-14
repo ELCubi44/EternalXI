@@ -847,7 +847,7 @@ public class LeagueStarterProbabilityService {
                                FROM jugadores_puntos_jornada jp
                                WHERE jp.id_liga_jugador = lj.id
                                ORDER BY jp.id_jornada DESC
-                               LIMIT 3
+                               LIMIT 5
                            ) t
                        ), 0) AS media_ultimos_3,
                        COALESCE((

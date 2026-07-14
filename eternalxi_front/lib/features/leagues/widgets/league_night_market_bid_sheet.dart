@@ -212,8 +212,7 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
           Text(
             _item.miPuja == null ? ll.bidForPlayer : ll.updateBid,
             style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+              ),
           ),
           const SizedBox(height: 16),
           Row(
@@ -241,8 +240,7 @@ class _LeagueNightMarketBidSheetState extends State<LeagueNightMarketBidSheet> {
                           ? _item.nombre
                           : _item.nombreVisible,
                       style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                        ),
                     ),
                     const SizedBox(height: 6),
                     Row(
@@ -445,8 +443,7 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               value,
               style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                ),
             ),
           ),
         ],

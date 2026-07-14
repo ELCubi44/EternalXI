@@ -250,6 +250,7 @@ ClashProviderDependencies _depsWithClient(
     newsReadBackend: deps.newsReadBackend,
     giftsBackend: deps.giftsBackend,
     characterEventsBackend: deps.characterEventsBackend,
+    trialsBackend: deps.trialsBackend,
     gachaTicketInventoryBackend: deps.gachaTicketInventoryBackend,
     gachaTicketRepository: deps.gachaTicketRepository,
     rewardHistoryBackend: deps.rewardHistoryBackend,

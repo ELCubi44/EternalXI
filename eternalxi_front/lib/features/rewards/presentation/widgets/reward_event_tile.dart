@@ -31,7 +31,6 @@ class RewardEventTile extends StatelessWidget {
                   rl10n.rewardEventTypeLabel(event.tipo),
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: Colors.white,
-                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),

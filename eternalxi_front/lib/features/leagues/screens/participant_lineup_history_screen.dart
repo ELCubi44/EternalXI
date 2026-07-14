@@ -231,8 +231,7 @@ class _ParticipantLineupHistoryScreenState
                   Text(
                     ll.couldNotLoadHistoryTitle,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                   const SizedBox(height: 8),
                   Text(_error!, style: theme.textTheme.bodyMedium),
@@ -259,8 +258,7 @@ class _ParticipantLineupHistoryScreenState
                   Text(
                     ll.noMatchdaysAvailable,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
@@ -280,8 +278,7 @@ class _ParticipantLineupHistoryScreenState
                   Text(
                     nick,
                     style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
@@ -401,7 +398,6 @@ class _RoundHeader extends StatelessWidget {
                     : ll.matchdayShort(row.numeroJornada),
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: style.foreground,
-                  fontWeight: FontWeight.w800,
                 ),
               ),
             ),
@@ -415,15 +411,13 @@ class _RoundHeader extends StatelessWidget {
                         ? ll.roundInProgressMatchday
                         : ll.matchday(row.numeroJornada),
                     style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     style.label,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: style.foreground,
-                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   if (row.inicioJornada != null) ...[
@@ -442,7 +436,6 @@ class _RoundHeader extends StatelessWidget {
               Text(
                 '${points.toStringAsFixed(points % 1 == 0 ? 0 : 1)} pts',
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
                   color: row.isInProgress
                       ? colorScheme.tertiary
                       : null,
@@ -544,8 +537,7 @@ class _RoundErrorState extends StatelessWidget {
             Text(
               context.leagueL10n.couldNotLoadLineup,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+                ),
             ),
             const SizedBox(height: 6),
             Text(
@@ -605,7 +597,7 @@ class _BenchSection extends StatelessWidget {
       children: [
         Text(
           ll.benchLabel,
-          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          style: theme.textTheme.titleSmall?.copyWith(),
         ),
         const SizedBox(height: 10),
         Row(
@@ -641,7 +633,6 @@ class _BenchSection extends StatelessWidget {
             textAlign: TextAlign.center,
             style: theme.textTheme.labelSmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w800,
             ),
           ),
           const SizedBox(height: 8),
@@ -736,7 +727,6 @@ class _HistoryBenchPlayerBubble extends StatelessWidget {
                           pointsBadge,
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.onPrimaryContainer,
-                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
@@ -765,7 +755,6 @@ class _HistoryBenchPlayerBubble extends StatelessWidget {
                   _displayName,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: Colors.white,
-                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),

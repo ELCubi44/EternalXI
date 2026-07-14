@@ -76,7 +76,7 @@ class ClashMatchEndPanel extends StatelessWidget {
               textAlign: TextAlign.center,
               style: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+              ).textTheme.bodyMedium?.copyWith(),
             ),
             const SizedBox(height: 14),
             ClashMatchEndRewardsObtainedSection.story(rewards: previewRewards),

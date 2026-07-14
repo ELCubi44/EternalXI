@@ -54,8 +54,7 @@ class _ConfirmAccountDeletionScreenState
                   Text(
                     correo,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                 ],
                 const SizedBox(height: 20),

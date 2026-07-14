@@ -51,7 +51,6 @@ class ClashStoryLevelStatusChip extends StatelessWidget {
         label,
         style: theme.textTheme.labelMedium?.copyWith(
           color: fg,
-          fontWeight: FontWeight.w800,
         ),
       ),
     );

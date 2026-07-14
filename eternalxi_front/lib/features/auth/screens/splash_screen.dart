@@ -2,11 +2,17 @@ import 'dart:math' as math;
 
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
+import 'package:eternal_xi/app/theme/xi_typography.dart';
+import 'package:eternal_xi/shared/widgets/xi_brand_wordmark.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/features/auth/widgets/app_settings_sheet.dart';
+import 'package:eternal_xi/features/clash/content/clash_content_download_service.dart';
+import 'package:eternal_xi/features/clash/content/clash_content_manifest.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,8 +24,17 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _dotsCtrl;
+  late final AnimationController _pulseCtrl;
+
+  bool _sessionReady = false;
+  bool _hasSession = false;
+  bool _contentReady = false;
+  bool _contentFailed = false;
+  ClashContentDownloadProgress? _downloadProgress;
+
+  final _contentDownload = ClashContentDownloadService();
 
   @override
   void initState() {
@@ -39,70 +54,128 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 1200),
     )..repeat();
 
+    _pulseCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat(reverse: true);
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final auth = context.read<AuthController>();
-      final hasSession = await auth.restoreSession();
+      final hasSession =
+          auth.currentUser != null || await auth.restoreSession();
       if (!mounted) return;
-      context.go(hasSession ? AppRoutes.mode : AppRoutes.login);
+      setState(() {
+        _sessionReady = true;
+        _hasSession = hasSession;
+      });
+      await _downloadClashContent();
     });
+  }
+
+  Future<void> _downloadClashContent() async {
+    try {
+      final result = await _contentDownload.ensureContent(
+        onProgress: (progress) {
+          if (!mounted) return;
+          setState(() => _downloadProgress = progress);
+        },
+      );
+      if (!mounted) return;
+      setState(() {
+        _contentReady = result.success;
+        _contentFailed = !result.success;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _contentReady = false;
+        _contentFailed = true;
+      });
+    }
   }
 
   @override
   void dispose() {
     _dotsCtrl.dispose();
+    _pulseCtrl.dispose();
     super.dispose();
   }
 
+  void _enter() {
+    if (!_sessionReady || !_contentReady) return;
+    context.go(_hasSession ? AppRoutes.mode : AppRoutes.login);
+  }
+
+  void _openSettings() => AppSettingsSheet.show(context);
+
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
+    final auth = context.watch<AuthController>();
+    final nickname = auth.currentUser?.nickname.trim();
+    final sessionName = (nickname != null && nickname.isNotEmpty)
+        ? nickname
+        : null;
 
     return Scaffold(
       backgroundColor: XiColors.nightBlue,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            SplashScreen.splashArtAsset,
-            fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
-            filterQuality: FilterQuality.high,
-          ),
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: [0.0, 0.52, 0.72, 1.0],
-                colors: [
-                  Color(0x1A101B35),
-                  Colors.transparent,
-                  Color(0x99101B35),
-                  Color(0xE6101B35),
-                ],
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _sessionReady && _contentReady ? _enter : null,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              SplashScreen.splashArtAsset,
+              fit: BoxFit.cover,
+              alignment: Alignment.topCenter,
+              filterQuality: FilterQuality.high,
+            ),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0.0, 0.52, 0.72, 1.0],
+                  colors: [
+                    Color(0x1A101B35),
+                    Colors.transparent,
+                    Color(0x99101B35),
+                    Color(0xE6101B35),
+                  ],
+                ),
               ),
             ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(24, 0, 24, 28 + bottomInset),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Eternal XI',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Lumiare',
+            Positioned(
+              top: MediaQuery.paddingOf(context).top + 8,
+              right: 12,
+              child: IconButton.filledTonal(
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.black38,
+                  foregroundColor: XiColors.warmWhite,
+                ),
+                onPressed: _openSettings,
+                icon: const Icon(Icons.settings_rounded),
+                tooltip: l10n.splashSettingsTitle,
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(24, 0, 24, 28 + bottomInset),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    XiBrandWordmark(
+                      uppercase: false,
                       fontSize: 34,
-                      fontWeight: FontWeight.w900,
                       color: XiColors.warmWhite,
-                      letterSpacing: 2.5,
-                      height: 1.1,
-                      shadows: [
+                      letterSpacing: 1.2,
+                      textAlign: TextAlign.center,
+                      shadows: const [
                         Shadow(
                           color: Color(0xCC101B35),
                           blurRadius: 16,
@@ -115,61 +188,169 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    width: 72,
-                    height: 2,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.transparent,
-                          XiColors.classicGold,
-                          XiColors.techCyan,
-                          Colors.transparent,
-                        ],
+                    const SizedBox(height: 12),
+                    Container(
+                      width: 72,
+                      height: 2,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            XiColors.classicGold,
+                            XiColors.techCyan,
+                            Colors.transparent,
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 22),
-                  AnimatedBuilder(
-                    animation: _dotsCtrl,
-                    builder: (_, __) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(3, (i) {
-                          final phase = (_dotsCtrl.value - i * 0.22) % 1.0;
-                          final v = math.sin(phase * math.pi).clamp(0.0, 1.0);
-                          return Container(
-                            width: 8,
-                            height: 8,
-                            margin: const EdgeInsets.symmetric(horizontal: 5),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color.lerp(
-                                XiColors.royalBlue.withValues(alpha: 0.35),
-                                XiColors.techCyan,
-                                v,
+                    const SizedBox(height: 22),
+                    if (!_sessionReady || !_contentReady)
+                      Column(
+                        children: [
+                          Text(
+                            l10n.splashDownloadingContent,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: 'Lumiare',
+                              fontSize: 14,
+                              color: XiColors.warmWhite.withValues(alpha: 0.92),
+                              letterSpacing: 0.6,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          if (_downloadProgress != null) ...[
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: LinearProgressIndicator(
+                                value: _downloadProgress!.fraction > 0
+                                    ? _downloadProgress!.fraction
+                                    : null,
+                                minHeight: 6,
+                                backgroundColor:
+                                    XiColors.royalBlue.withValues(alpha: 0.35),
+                                color: XiColors.techCyan,
                               ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: XiColors.techCyan.withValues(
-                                    alpha: 0.45 * v,
-                                  ),
-                                  blurRadius: 10,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              _downloadProgress!.mbLabel,
+                              style: TextStyle(
+                                fontFamily: 'Lumiare',
+                                fontSize: 13,
+                                color: XiColors.techCyan.withValues(alpha: 0.95),
+                              ),
+                            ),
+                          ] else
+                            AnimatedBuilder(
+                              animation: _dotsCtrl,
+                              builder: (_, __) {
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(3, (i) {
+                                    final phase =
+                                        (_dotsCtrl.value - i * 0.22) % 1.0;
+                                    final v = math
+                                        .sin(phase * math.pi)
+                                        .clamp(0.0, 1.0);
+                                    return Container(
+                                      width: 8,
+                                      height: 8,
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Color.lerp(
+                                          XiColors.royalBlue
+                                              .withValues(alpha: 0.35),
+                                          XiColors.techCyan,
+                                          v,
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                );
+                              },
+                            ),
+                          if (_contentFailed) ...[
+                            const SizedBox(height: 10),
+                            Text(
+                              'Error de descarga. Reintenta cerrando la app.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'Lumiare',
+                                fontSize: 12,
+                                color: XiColors.classicGold.withValues(
+                                  alpha: 0.95,
                                 ),
-                              ],
+                              ),
+                            ),
+                          ],
+                        ],
+                      )
+                    else ...[
+                      if (_hasSession) ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.verified_user_rounded,
+                              size: 16,
+                              color: XiColors.techCyan.withValues(alpha: 0.95),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              l10n.splashSessionActive,
+                              style: TextStyle(
+                                fontFamily: 'Lumiare',
+                                fontSize: 13,
+                                color: XiColors.techCyan.withValues(alpha: 0.95),
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (sessionName != null) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            sessionName,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontFamily: 'Lumiare',
+                              fontSize: 17,
+                              color: XiColors.classicGold,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 16),
+                      ],
+                      AnimatedBuilder(
+                        animation: _pulseCtrl,
+                        builder: (_, __) {
+                          final scale = 0.96 + (_pulseCtrl.value * 0.04);
+                          return Transform.scale(
+                            scale: scale,
+                            child: Text(
+                              l10n.splashTapToEnter,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontFamily: 'Lumiare',
+                                fontSize: 15,
+                                color: XiColors.warmWhite,
+                                letterSpacing: 1.2,
+                              ),
                             ),
                           );
-                        }),
-                      );
-                    },
-                  ),
-                ],
+                        },
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

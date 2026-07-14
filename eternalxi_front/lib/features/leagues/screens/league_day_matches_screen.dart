@@ -325,7 +325,6 @@ class _TeamRow extends StatelessWidget {
             name,
             textAlign: alignEnd ? TextAlign.end : TextAlign.start,
             style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
               height: 1.15,
             ),
             maxLines: 3,
@@ -381,7 +380,6 @@ class _MatchCenterBadge extends StatelessWidget {
               t,
               textAlign: TextAlign.center,
               style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w900,
                 letterSpacing: 0.5,
               ),
             ),
@@ -390,7 +388,6 @@ class _MatchCenterBadge extends StatelessWidget {
               ll.kickoffLabel,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w700,
               ),
             ),
           ],
@@ -406,8 +403,7 @@ class _MatchCenterBadge extends StatelessWidget {
                       ? theme.textTheme.titleLarge
                       : theme.textTheme.headlineSmall)
                   ?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+                ),
             ),
             if (minuteLabel != null) ...[
               const SizedBox(height: 3),
@@ -415,7 +411,6 @@ class _MatchCenterBadge extends StatelessWidget {
                 minuteLabel!,
                 style: theme.textTheme.labelMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
@@ -429,8 +424,7 @@ class _MatchCenterBadge extends StatelessWidget {
               '$golesLocal - $golesVisitante',
               textAlign: TextAlign.center,
               style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+                ),
             ),
           ],
         );
@@ -478,7 +472,7 @@ class _StatusChip extends StatelessWidget {
       backgroundColor: bg,
       labelStyle: Theme.of(
         context,
-      ).textTheme.labelLarge?.copyWith(color: fg, fontWeight: FontWeight.w800),
+      ).textTheme.labelLarge?.copyWith(color: fg),
     );
   }
 }

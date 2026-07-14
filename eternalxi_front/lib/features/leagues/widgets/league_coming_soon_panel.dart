@@ -50,8 +50,7 @@ class LeagueComingSoonPanel extends StatelessWidget {
               Text(
                 title,
                 style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                  ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),

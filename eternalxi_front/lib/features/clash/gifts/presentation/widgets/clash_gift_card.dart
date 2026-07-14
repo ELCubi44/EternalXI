@@ -91,8 +91,7 @@ class ClashGiftCard extends StatelessWidget {
                           child: Text(
                             gift.title,
                             style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
+                              ),
                           ),
                         ),
                       ],

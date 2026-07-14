@@ -8,9 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AchievementsTab extends StatelessWidget {
-  const AchievementsTab({super.key, this.onRetry});
+  const AchievementsTab({
+    super.key,
+    this.onRetry,
+    this.embedded = false,
+  });
 
   final Future<void> Function()? onRetry;
+  final bool embedded;
 
   static const _categoryIcons = <String, IconData>{
     'LEAGUE': Icons.emoji_events_outlined,
@@ -65,7 +70,10 @@ class AchievementsTab extends StatelessWidget {
     final total = progress.logros.length;
 
     return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
+      shrinkWrap: embedded,
+      physics: embedded
+          ? const NeverScrollableScrollPhysics()
+          : const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       children: [
         if (progressCtrl.isFromCache)
@@ -96,7 +104,6 @@ class AchievementsTab extends StatelessWidget {
         Text(
           l10n.achievementsUnlockedSummary(unlocked, total),
           style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
             color: cs.onSurfaceVariant,
           ),
         ),
@@ -119,8 +126,7 @@ class AchievementsTab extends StatelessWidget {
                     Text(
                       label,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                        ),
                     ),
                   ],
                 ),
@@ -169,8 +175,7 @@ class _AchievementTile extends StatelessWidget {
               Text(
                 description,
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                  ),
               ),
               const SizedBox(height: 12),
               Text(
@@ -185,7 +190,6 @@ class _AchievementTile extends StatelessWidget {
                     achievement.progresoObjetivo ?? 0,
                   ),
                   style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
                     color: theme.colorScheme.primary,
                   ),
                 ),
@@ -254,7 +258,6 @@ class _AchievementTile extends StatelessWidget {
                         child: Text(
                           title,
                           style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
                             color: unlocked ? cs.onSurface : cs.onSurfaceVariant,
                           ),
                         ),
@@ -287,7 +290,6 @@ class _AchievementTile extends StatelessWidget {
                     Text(
                       '${achievement.progresoActual}/${achievement.progresoObjetivo}',
                       style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
                         color: cs.primary,
                       ),
                     ),
@@ -301,7 +303,6 @@ class _AchievementTile extends StatelessWidget {
               child: Text(
                 '+${achievement.xpRecompensa} XP',
                 style: theme.textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
                   color: unlocked ? cs.primary : cs.outline,
                 ),
               ),

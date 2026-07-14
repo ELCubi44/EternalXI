@@ -71,6 +71,9 @@ class ClashGachaRepository {
 
   ClashGachaTicketRepository get ticketRepository => _ticketRepository;
 
+  Future<void> ensureSummonAccessible() =>
+      _storyRepository.ensureSummonUnlocked();
+
   Future<ClashGachaCatalog> fetchCatalog() async {
     _catalogCache ??= await _dataSource.loadCatalog();
     return _catalogCache!;

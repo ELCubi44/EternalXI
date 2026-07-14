@@ -459,7 +459,6 @@ class _XiLeagueHeader extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: 'Lumiare',
                   fontSize: 13,
-                  fontWeight: FontWeight.w800,
                   color: context.xiHeaderTitle,
                   letterSpacing: 2.0,
                 ),
@@ -544,7 +543,6 @@ class _XiSettingsOverlayHeader extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: 'Lumiare',
                   fontSize: 13,
-                  fontWeight: FontWeight.w800,
                   color: context.xiHeaderTitle,
                   letterSpacing: 2,
                 ),
@@ -634,7 +632,6 @@ class _XiErrorState extends StatelessWidget {
               style: const TextStyle(
                 fontFamily: 'Lumiare',
                 fontSize: 13,
-                fontWeight: FontWeight.w800,
                 color: XiColors.warmWhite,
                 letterSpacing: 1.5,
               ),

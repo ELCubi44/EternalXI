@@ -848,8 +848,7 @@ class _ClashDebugSection extends StatelessWidget {
           Text(
             title,
             style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+              ),
           ),
           const SizedBox(height: 8),
           ...children,
@@ -890,8 +889,7 @@ class _ClashDebugRow extends StatelessWidget {
               value,
               textAlign: TextAlign.end,
               style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+                ),
             ),
           ),
         ],

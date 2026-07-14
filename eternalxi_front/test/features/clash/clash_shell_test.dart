@@ -362,8 +362,7 @@ void main() {
       await tester.tap(find.byIcon(Icons.swap_horiz_rounded).first);
       await tester.pumpAndSettle();
 
-      expect(find.text('Entrar a Fantasy'), findsOneWidget);
-      expect(find.text('Entrar a Clash'), findsOneWidget);
+      expect(find.text('Entrar'), findsNWidgets(2));
     });
   });
 }

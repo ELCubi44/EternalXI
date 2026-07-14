@@ -1,25 +1,63 @@
-import 'package:eternal_xi/core/constants/clash_feature_flags.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/app/theme/xi_typography.dart';
+import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
+import 'package:eternal_xi/features/profile/widgets/achievements_tab.dart';
+import 'package:eternal_xi/features/profile/widgets/progress_celebration_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class ModeSelectionScreen extends StatelessWidget {
+class ModeSelectionScreen extends StatefulWidget {
   const ModeSelectionScreen({super.key});
+
+  @override
+  State<ModeSelectionScreen> createState() => _ModeSelectionScreenState();
+}
+
+class _ModeSelectionScreenState extends State<ModeSelectionScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadProgress());
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadProgress() async {
+    final userId = context.read<AuthController>().currentUser?.id;
+    if (userId == null) return;
+    await context.read<AccountProgressController>().loadProgress(userId);
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final user = context.watch<AuthController>().currentUser;
+    final auth = context.watch<AuthController>();
+    final user = auth.currentUser;
     final nickname = user?.nickname.trim();
     final greeting = (nickname != null && nickname.isNotEmpty)
         ? nickname
         : l10n.appTitle;
+    final photoUrl = (user != null && user.hasProfilePhoto)
+        ? ApiConstants.userProfilePhotoUrl(
+            user.id,
+            cacheBuster: user.foto.hashCode,
+          )
+        : null;
 
     return Scaffold(
       backgroundColor: context.xiBackground,
@@ -32,65 +70,102 @@ class ModeSelectionScreen extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 22),
+          child: ProgressCelebrationOverlay(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 28),
-                Text(
-                  l10n.appTitle,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
-                    color: context.xiHeaderTitle,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(22, 12, 16, 0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.appTitle,
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                letterSpacing: 0.6,
+                                color: context.xiHeaderTitle,
+                              ).lumiareNative,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n.modeSelectionSubtitle,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: context.xiTextSecondary,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _ModeProfileButton(
+                        nickname: greeting,
+                        nivel: user?.nivel ?? 1,
+                        photoUrl: photoUrl,
+                        onTap: () => context.push(AppRoutes.profile),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 22),
+                  child: TabBar(
+                    controller: _tabController,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    dividerColor: Colors.transparent,
+                    labelStyle: const TextStyle(
+                      fontFamily: 'Lumiare',
+                      fontSize: 14,
+                    ),
+                    unselectedLabelStyle: const TextStyle(
+                      fontFamily: 'Lumiare',
+                      fontSize: 14,
+                    ),
+                    tabs: [
+                      Tab(text: l10n.modeSelectionModesTab),
+                      Tab(text: l10n.achievementsTab),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  l10n.modeSelectionSubtitle,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: context.xiTextSecondary.withValues(alpha: 0.85),
-                    height: 1.45,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  greeting,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: XiColors.royalBlue,
-                  ),
-                ),
-                const SizedBox(height: 32),
                 Expanded(
-                  child: ListView(
-                    physics: const BouncingScrollPhysics(),
+                  child: TabBarView(
+                    controller: _tabController,
                     children: [
-                      _ModeOptionCard(
-                        icon: Icons.emoji_events_rounded,
-                        iconColor: XiColors.classicGold,
-                        title: l10n.modeFantasyTitle,
-                        description: l10n.modeFantasyDescription,
-                        actionLabel: l10n.modeFantasyEnter,
-                        onTap: () => context.go(AppRoutes.leagues),
+                      RefreshIndicator(
+                        onRefresh: _loadProgress,
+                        child: ListView(
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
+                          ),
+                          padding: const EdgeInsets.fromLTRB(22, 8, 22, 24),
+                          children: [
+                            _ModeOptionCard(
+                              icon: Icons.emoji_events_rounded,
+                              iconColor: XiColors.classicGold,
+                              title: l10n.modeFantasyTitle,
+                              description: l10n.modeFantasyDescription,
+                              actionLabel: l10n.modeEnter,
+                              onTap: () => context.go(AppRoutes.leagues),
+                            ),
+                            const SizedBox(height: 14),
+                            _ModeOptionCard(
+                              icon: Icons.bolt_rounded,
+                              iconColor: XiColors.techCyan,
+                              title: l10n.modeClashTitle,
+                              description: l10n.modeClashDescription,
+                              actionLabel: l10n.modeEnter,
+                              onTap: () => context.go(AppRoutes.clash),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 16),
-                      _ModeOptionCard(
-                        icon: Icons.bolt_rounded,
-                        iconColor: XiColors.techCyan,
-                        title: l10n.modeClashTitle,
-                        description: l10n.modeClashDescription,
-                        actionLabel: ClashFeatureFlags.modeSelectionEnabled
-                            ? l10n.modeClashEnter
-                            : l10n.clashTeamComingSoonBadge,
-                        enabled: ClashFeatureFlags.modeSelectionEnabled,
-                        onTap: ClashFeatureFlags.modeSelectionEnabled
-                            ? () => context.go(AppRoutes.clash)
-                            : null,
+                      RefreshIndicator(
+                        onRefresh: _loadProgress,
+                        child: AchievementsTab(onRetry: _loadProgress),
                       ),
                     ],
                   ),
@@ -99,6 +174,82 @@ class ModeSelectionScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ModeProfileButton extends StatelessWidget {
+  const _ModeProfileButton({
+    required this.nickname,
+    required this.nivel,
+    required this.photoUrl,
+    required this.onTap,
+  });
+
+  final String nickname;
+  final int nivel;
+  final String? photoUrl;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final initial = nickname.trim().isEmpty
+        ? '?'
+        : nickname.trim()[0].toUpperCase();
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: XiColors.royalBlue.withValues(alpha: 0.65),
+                width: 1.5,
+              ),
+            ),
+            clipBehavior: Clip.hardEdge,
+            child: photoUrl != null
+                ? Image.network(photoUrl!, fit: BoxFit.cover)
+                : ColoredBox(
+                    color: XiColors.royalBlue.withValues(alpha: 0.15),
+                    child: Center(
+                      child: Text(
+                        initial,
+                        style: const TextStyle(
+                          fontFamily: 'Lumiare',
+                          color: XiColors.royalBlue,
+                        ),
+                      ),
+                    ),
+                  ),
+          ),
+          Positioned(
+            right: -2,
+            bottom: -2,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+              decoration: BoxDecoration(
+                color: XiColors.royalBlue,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: context.xiBackground, width: 1.2),
+              ),
+              child: Text(
+                '$nivel',
+                style: const TextStyle(
+                  fontFamily: 'Lumiare',
+                  fontSize: 9,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -161,7 +312,6 @@ class _ModeOptionCard extends StatelessWidget {
                       child: Text(
                         title,
                         style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
                           color: context.xiTextPrimary,
                         ),
                       ),

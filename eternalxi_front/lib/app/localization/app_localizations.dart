@@ -100,9 +100,11 @@ class AppLocalizations {
       'loginSubtitle':
           'Accede a tu cuenta, gestiona ligas y plantilla con el mismo estilo en toda la app.',
       'modeSelectionSubtitle': 'Elige cómo quieres jugar hoy.',
+      'modeSelectionModesTab': 'Modos',
       'modeFantasyTitle': 'Fantasy',
       'modeFantasyDescription':
           'Ligas privadas, mercado, alineaciones y recompensas con tus amigos.',
+      'modeEnter': 'Entrar',
       'modeFantasyEnter': 'Entrar a Fantasy',
       'modeClashTitle': 'Clash',
       'modeClashDescription':
@@ -166,6 +168,29 @@ class AppLocalizations {
       'clashHomePrimaryTeamDesc': 'Alineación 7vs7',
       'clashHomePrimarySummonDesc': 'Invocar cartas',
       'clashHomePrimaryLocked': 'Desbloquéalo en Historia.',
+      'clashHomePrimaryChallengesDesc': 'Cadena XI repetible',
+      'clashTrialsModeTitle': 'Cadena XI',
+      'clashTrialsIntro': 'Cuatro torres por línea táctica. En cada momento robas cartas de tu mazo, eliges supertécnica y la dificultad sube en cada repetición.',
+      'clashTrialsAttemptsLeft': 'Intentos hoy: {remaining}/{limit}',
+      'clashTrialsEmpty': 'No hay desafíos disponibles.',
+      'clashTrialsLineHint': 'Mazo de {line}',
+      'clashTrialsNoAttempts': 'No te quedan intentos hoy. Vuelve mañana o compra refuerzos en Tienda.',
+      'clashTrialsFloorNotFound': 'Piso no encontrado.',
+      'clashTrialsPrepareTitle': 'Preparación Cadena XI',
+      'clashTrialsScaledPower': 'Poder rival escalado: {power}',
+      'clashTrialsTechniqueGoal': 'Bonus ST: usa {count} supertécnicas',
+      'clashTrialsRepeatRun': 'repeticiones',
+      'clashTrialsDrawRules': 'Robarás 3 cartas de {line} por momento. Ventaja de estilo y supertécnicas deciden el duelo.',
+      'clashTrialsStartFloor': 'Iniciar piso',
+      'clashTrialsDrawTitle': 'Elige carta — mazo {line}',
+      'clashTrialsStyleAdvantage': 'Ventaja de estilo',
+      'clashTrialsTechniqueProgress': 'Supertécnicas: {current}/{target}',
+      'clashTrialsRewardFirstClear': '¡Primer piso completado!',
+      'clashTrialsRewardRepeat': 'Piso repetido',
+      'clashTrialsRewardTechniqueBonus': 'Bonus por supertécnicas',
+      'clashTrialsHomeCardSubtitle': 'Farmea monedas y libros con las 4 líneas',
+      'clashTeamTrialsHint': 'Entrena cada línea en Cadena XI',
+      'clashSummonTrialsHint': 'Invoca cartas para reforzar tus mazos de Cadena XI',
       'clashHomeFeaturedEventTitle': 'Evento destacado',
       'clashHomeFeaturedEventEnter': 'Entrar',
       'clashHomeFeaturedEventProgress': '{completed}/{total} fases',
@@ -1138,6 +1163,70 @@ class AppLocalizations {
       'chatSeedRivalAuthor': 'Rival_XI',
       'chatSeedRivalMessage': '¿Quién se lleva la jornada?',
       'chatLeagueFallback': 'Liga',
+      'chatChannelGeneral': 'General',
+      'chatChannelPrivate': 'Privados',
+      'chatDmNew': 'Nuevo',
+      'chatDmEmptyTitle': 'Mensajes privados de liga',
+      'chatDmEmptyBody':
+          'Habla en privado con cualquier integrante de la liga. Tus conversaciones solo son visibles entre vosotros dos.',
+      'chatDmPickMember': 'Elegir integrante',
+      'chatDmNoMembers': 'No hay más integrantes en la liga',
+      'chatDmHint': 'Escribe un mensaje privado...',
+      'chatDmConversationEmpty': 'Empieza la conversación con un saludo.',
+      'chatDmSendError': 'No se pudo enviar el mensaje',
+      'friendsTitle': 'Amigos',
+      'friendsProfileSubtitle': 'Busca jugadores y gestiona tus amistades',
+      'friendsTabFriends': 'Amigos',
+      'friendsTabRequests': 'Solicitudes',
+      'friendsSearchHint': 'Buscar por nickname...',
+      'friendsBadge': 'Amigo',
+      'friendsAdd': 'Añadir',
+      'friendsAccept': 'Aceptar',
+      'friendsPending': 'Pendiente',
+      'friendsIncoming': 'Te han solicitado',
+      'friendsOutgoing': 'Enviadas',
+      'friendsEmptyTitle': 'No tienes ningún amigo agregado',
+      'friendsEmptyBody':
+          'Busca jugadores por nickname arriba y envíales una solicitud, o añádelos desde un chat privado de liga.',
+      'friendsRequestsEmpty': 'No tienes solicitudes de amigos',
+      'friendsRequestsEmptyBody':
+          'Cuando alguien te envíe una solicitud, aparecerá aquí para que puedas aceptarla o rechazarla.',
+      'friendsSearchEmpty': 'No hay jugadores con ese nickname',
+      'friendsLoadError': 'No se pudo cargar tus amigos',
+      'friendsRequestSent': 'Solicitud enviada',
+      'friendsRequestError': 'No se pudo enviar la solicitud',
+      'friendsAccepted': '¡Ahora sois amigos!',
+      'friendsRemoveTitle': 'Eliminar amigo',
+      'friendsRemoveBody': '¿Quieres dejar de ser amigo de {nickname}?',
+      'splashTapToEnter': 'Pulsa para entrar',
+      'splashSessionActive': 'Sesión iniciada',
+      'splashDownloadingContent': 'Descargando jugadores y eventos...',
+      'splashSettingsTitle': 'Ajustes',
+      'oauthContinueGoogle': 'Continuar con Google',
+      'oauthContinueApple': 'Continuar con Apple',
+      'oauthDividerLabel': 'o',
+      'oauthLinkSectionTitle': 'Vincular cuenta',
+      'oauthLinkGoogle': 'Vincular Google',
+      'oauthLinkApple': 'Vincular Apple',
+      'oauthLinkedGoogle': 'Google vinculado',
+      'oauthLinkedApple': 'Apple vinculado',
+      'profileBackToTitle': 'Volver al título',
+      'modeAchievementsSubtitle':
+          'Progreso y logros de Fantasy y Clash en tu cuenta.',
+      'oauthSocialTermsNote':
+          'Al iniciar sesión con Google o Apple aceptas los términos de servicio y la política de privacidad.',
+      'legalHubTitle': 'Información legal',
+      'legalHubIntro':
+          'Consulta los documentos legales de Eternal XI. También puedes abrir las versiones web oficiales.',
+      'legalWebSectionTitle': 'Enlaces web',
+      'legalWebSectionNote':
+          'Versiones completas en HTTPS (api.eternalxi.com).',
+      'leagueInviteFriendsTitle': 'Invitar amigos',
+      'leagueInviteFriendsBody':
+          'Envía una notificación a tus amigos para que se unan con el código de la liga.',
+      'leagueInviteFriendsEmpty': 'No tienes amigos para invitar',
+      'leagueInviteFriendAction': 'Invitar',
+      'leagueInviteSent': 'Invitación enviada a {nickname}',
     },
     'en': {
       'appTitle': 'Eternal XI',
@@ -1194,9 +1283,11 @@ class AppLocalizations {
       'loginSubtitle':
           'Access your account, manage leagues and squad with the same style across the app.',
       'modeSelectionSubtitle': 'Choose how you want to play today.',
+      'modeSelectionModesTab': 'Modes',
       'modeFantasyTitle': 'Fantasy',
       'modeFantasyDescription':
           'Private leagues, market, lineups and rewards with your friends.',
+      'modeEnter': 'Enter',
       'modeFantasyEnter': 'Enter Fantasy',
       'modeClashTitle': 'Clash',
       'modeClashDescription':
@@ -1260,6 +1351,29 @@ class AppLocalizations {
       'clashHomePrimaryTeamDesc': '7vs7 lineup',
       'clashHomePrimarySummonDesc': 'Summon cards',
       'clashHomePrimaryLocked': 'Unlock it in Story.',
+      'clashHomePrimaryChallengesDesc': 'Repeatable Chain XI',
+      'clashTrialsModeTitle': 'Chain XI',
+      'clashTrialsIntro': 'Four towers by tactical line. Each moment you draw from your deck, pick super techniques, and difficulty rises on every repeat.',
+      'clashTrialsAttemptsLeft': 'Attempts today: {remaining}/{limit}',
+      'clashTrialsEmpty': 'No challenges available.',
+      'clashTrialsLineHint': '{line} deck',
+      'clashTrialsNoAttempts': 'No attempts left today. Come back tomorrow or buy boosts in Shop.',
+      'clashTrialsFloorNotFound': 'Floor not found.',
+      'clashTrialsPrepareTitle': 'Chain XI prep',
+      'clashTrialsScaledPower': 'Scaled rival power: {power}',
+      'clashTrialsTechniqueGoal': 'ST bonus: use {count} super techniques',
+      'clashTrialsRepeatRun': 'repeats',
+      'clashTrialsDrawRules': 'You draw 3 {line} cards per moment. Style advantage and super techniques decide duels.',
+      'clashTrialsStartFloor': 'Start floor',
+      'clashTrialsDrawTitle': 'Pick a card — {line} deck',
+      'clashTrialsStyleAdvantage': 'Style advantage',
+      'clashTrialsTechniqueProgress': 'Super techniques: {current}/{target}',
+      'clashTrialsRewardFirstClear': 'First floor clear!',
+      'clashTrialsRewardRepeat': 'Floor repeated',
+      'clashTrialsRewardTechniqueBonus': 'Super technique bonus',
+      'clashTrialsHomeCardSubtitle': 'Farm coins and books across 4 lines',
+      'clashTeamTrialsHint': 'Train each line in Chain XI',
+      'clashSummonTrialsHint': 'Summon cards to strengthen your Chain XI decks',
       'clashHomeFeaturedEventTitle': 'Featured event',
       'clashHomeFeaturedEventEnter': 'Enter',
       'clashHomeFeaturedEventProgress': '{completed}/{total} stages',
@@ -2222,6 +2336,70 @@ class AppLocalizations {
       'chatSeedRivalAuthor': 'Rival_XI',
       'chatSeedRivalMessage': 'Who\'s taking this matchday?',
       'chatLeagueFallback': 'League',
+      'chatChannelGeneral': 'General',
+      'chatChannelPrivate': 'Private',
+      'chatDmNew': 'New',
+      'chatDmEmptyTitle': 'League private messages',
+      'chatDmEmptyBody':
+          'Chat privately with any league member. Your conversations are only visible to the two of you.',
+      'chatDmPickMember': 'Choose a member',
+      'chatDmNoMembers': 'There are no other members in the league',
+      'chatDmHint': 'Write a private message...',
+      'chatDmConversationEmpty': 'Start the conversation with a hello.',
+      'chatDmSendError': 'Could not send the message',
+      'friendsTitle': 'Friends',
+      'friendsProfileSubtitle': 'Find players and manage your friendships',
+      'friendsTabFriends': 'Friends',
+      'friendsTabRequests': 'Requests',
+      'friendsSearchHint': 'Search by nickname...',
+      'friendsBadge': 'Friend',
+      'friendsAdd': 'Add',
+      'friendsAccept': 'Accept',
+      'friendsPending': 'Pending',
+      'friendsIncoming': 'Requests for you',
+      'friendsOutgoing': 'Sent',
+      'friendsEmptyTitle': 'You have no friends added yet',
+      'friendsEmptyBody':
+          'Search players by nickname above and send a request, or add them from a league private chat.',
+      'friendsRequestsEmpty': 'You have no friend requests',
+      'friendsRequestsEmptyBody':
+          'When someone sends you a request, it will appear here so you can accept or decline it.',
+      'friendsSearchEmpty': 'No players match that nickname',
+      'friendsLoadError': 'Could not load your friends',
+      'friendsRequestSent': 'Request sent',
+      'friendsRequestError': 'Could not send the request',
+      'friendsAccepted': 'You are now friends!',
+      'friendsRemoveTitle': 'Remove friend',
+      'friendsRemoveBody': 'Do you want to remove {nickname} from your friends?',
+      'splashTapToEnter': 'Tap to enter',
+      'splashSessionActive': 'Session active',
+      'splashDownloadingContent': 'Downloading players and events...',
+      'splashSettingsTitle': 'Settings',
+      'oauthContinueGoogle': 'Continue with Google',
+      'oauthContinueApple': 'Continue with Apple',
+      'oauthDividerLabel': 'or',
+      'oauthLinkSectionTitle': 'Link account',
+      'oauthLinkGoogle': 'Link Google',
+      'oauthLinkApple': 'Link Apple',
+      'oauthLinkedGoogle': 'Google linked',
+      'oauthLinkedApple': 'Apple linked',
+      'profileBackToTitle': 'Back to title',
+      'modeAchievementsSubtitle':
+          'Account progress and achievements from Fantasy and Clash.',
+      'oauthSocialTermsNote':
+          'By signing in with Google or Apple you accept the terms of service and privacy policy.',
+      'legalHubTitle': 'Legal information',
+      'legalHubIntro':
+          'Read Eternal XI legal documents. You can also open the official web versions.',
+      'legalWebSectionTitle': 'Web links',
+      'legalWebSectionNote':
+          'Full versions over HTTPS (api.eternalxi.com).',
+      'leagueInviteFriendsTitle': 'Invite friends',
+      'leagueInviteFriendsBody':
+          'Send a notification to your friends so they can join with the league code.',
+      'leagueInviteFriendsEmpty': 'You have no friends to invite',
+      'leagueInviteFriendAction': 'Invite',
+      'leagueInviteSent': 'Invitation sent to {nickname}',
     },
   };
 
@@ -2273,6 +2451,67 @@ class AppLocalizations {
   String get chatSeedRivalAuthor => _t('chatSeedRivalAuthor');
   String get chatSeedRivalMessage => _t('chatSeedRivalMessage');
   String get chatLeagueFallback => _t('chatLeagueFallback');
+  String get chatChannelGeneral => _t('chatChannelGeneral');
+  String get chatChannelPrivate => _t('chatChannelPrivate');
+  String get chatDmNew => _t('chatDmNew');
+  String get chatDmEmptyTitle => _t('chatDmEmptyTitle');
+  String get chatDmEmptyBody => _t('chatDmEmptyBody');
+  String get chatDmPickMember => _t('chatDmPickMember');
+  String get chatDmNoMembers => _t('chatDmNoMembers');
+  String get chatDmHint => _t('chatDmHint');
+  String get chatDmConversationEmpty => _t('chatDmConversationEmpty');
+  String get chatDmSendError => _t('chatDmSendError');
+  String get friendsTitle => _t('friendsTitle');
+  String get friendsProfileSubtitle => _t('friendsProfileSubtitle');
+  String get friendsTabFriends => _t('friendsTabFriends');
+  String get friendsTabRequests => _t('friendsTabRequests');
+  String get friendsSearchHint => _t('friendsSearchHint');
+  String get friendsBadge => _t('friendsBadge');
+  String get friendsAdd => _t('friendsAdd');
+  String get friendsAccept => _t('friendsAccept');
+  String get friendsPending => _t('friendsPending');
+  String get friendsIncoming => _t('friendsIncoming');
+  String get friendsOutgoing => _t('friendsOutgoing');
+  String get friendsEmptyTitle => _t('friendsEmptyTitle');
+  String get friendsEmptyBody => _t('friendsEmptyBody');
+  String get friendsRequestsEmpty => _t('friendsRequestsEmpty');
+  String get friendsRequestsEmptyBody => _t('friendsRequestsEmptyBody');
+  String get friendsSearchEmpty => _t('friendsSearchEmpty');
+  String get friendsLoadError => _t('friendsLoadError');
+  String get friendsRequestSent => _t('friendsRequestSent');
+  String get friendsRequestError => _t('friendsRequestError');
+  String get friendsAccepted => _t('friendsAccepted');
+  String get friendsRemoveTitle => _t('friendsRemoveTitle');
+
+  String friendsRemoveBody(String nickname) =>
+      _t('friendsRemoveBody').replaceAll('{nickname}', nickname);
+
+  String get splashTapToEnter => _t('splashTapToEnter');
+  String get splashSessionActive => _t('splashSessionActive');
+  String get splashDownloadingContent => _t('splashDownloadingContent');
+  String get splashSettingsTitle => _t('splashSettingsTitle');
+  String get oauthContinueGoogle => _t('oauthContinueGoogle');
+  String get oauthContinueApple => _t('oauthContinueApple');
+  String get oauthDividerLabel => _t('oauthDividerLabel');
+  String get oauthLinkSectionTitle => _t('oauthLinkSectionTitle');
+  String get oauthLinkGoogle => _t('oauthLinkGoogle');
+  String get oauthLinkApple => _t('oauthLinkApple');
+  String get oauthLinkedGoogle => _t('oauthLinkedGoogle');
+  String get oauthLinkedApple => _t('oauthLinkedApple');
+  String get profileBackToTitle => _t('profileBackToTitle');
+  String get modeAchievementsSubtitle => _t('modeAchievementsSubtitle');
+  String get oauthSocialTermsNote => _t('oauthSocialTermsNote');
+  String get legalHubTitle => _t('legalHubTitle');
+  String get legalHubIntro => _t('legalHubIntro');
+  String get legalWebSectionTitle => _t('legalWebSectionTitle');
+  String get legalWebSectionNote => _t('legalWebSectionNote');
+  String get leagueInviteFriendsTitle => _t('leagueInviteFriendsTitle');
+  String get leagueInviteFriendsBody => _t('leagueInviteFriendsBody');
+  String get leagueInviteFriendsEmpty => _t('leagueInviteFriendsEmpty');
+  String get leagueInviteFriendAction => _t('leagueInviteFriendAction');
+
+  String leagueInviteSent(String nickname) =>
+      _t('leagueInviteSent').replaceAll('{nickname}', nickname);
 
   String chatWelcomeMessage(String leagueName) {
     final en = locale.languageCode.toLowerCase() == 'en';
@@ -2301,8 +2540,10 @@ class AppLocalizations {
   String get loginTitle => _t('loginTitle');
   String get loginSubtitle => _t('loginSubtitle');
   String get modeSelectionSubtitle => _t('modeSelectionSubtitle');
+  String get modeSelectionModesTab => _t('modeSelectionModesTab');
   String get modeFantasyTitle => _t('modeFantasyTitle');
   String get modeFantasyDescription => _t('modeFantasyDescription');
+  String get modeEnter => _t('modeEnter');
   String get modeFantasyEnter => _t('modeFantasyEnter');
   String get modeClashTitle => _t('modeClashTitle');
   String get modeClashDescription => _t('modeClashDescription');
@@ -2363,6 +2604,38 @@ class AppLocalizations {
   String get clashHomePrimaryTeamDesc => _t('clashHomePrimaryTeamDesc');
   String get clashHomePrimarySummonDesc => _t('clashHomePrimarySummonDesc');
   String get clashHomePrimaryLocked => _t('clashHomePrimaryLocked');
+  String get clashHomePrimaryChallengesDesc => _t('clashHomePrimaryChallengesDesc');
+  String get clashTrialsModeTitle => _t('clashTrialsModeTitle');
+  String get clashTrialsIntro => _t('clashTrialsIntro');
+  String clashTrialsAttemptsLeft(int remaining, int limit) => _t(
+    'clashTrialsAttemptsLeft',
+  ).replaceAll('{remaining}', '$remaining').replaceAll('{limit}', '$limit');
+  String get clashTrialsEmpty => _t('clashTrialsEmpty');
+  String clashTrialsLineHint(String line) =>
+      _t('clashTrialsLineHint').replaceAll('{line}', line);
+  String get clashTrialsNoAttempts => _t('clashTrialsNoAttempts');
+  String get clashTrialsFloorNotFound => _t('clashTrialsFloorNotFound');
+  String get clashTrialsPrepareTitle => _t('clashTrialsPrepareTitle');
+  String clashTrialsScaledPower(int power) =>
+      _t('clashTrialsScaledPower').replaceAll('{power}', '$power');
+  String clashTrialsTechniqueGoal(int count) =>
+      _t('clashTrialsTechniqueGoal').replaceAll('{count}', '$count');
+  String get clashTrialsRepeatRun => _t('clashTrialsRepeatRun');
+  String clashTrialsDrawRules(String line) =>
+      _t('clashTrialsDrawRules').replaceAll('{line}', line);
+  String get clashTrialsStartFloor => _t('clashTrialsStartFloor');
+  String clashTrialsDrawTitle(String line) =>
+      _t('clashTrialsDrawTitle').replaceAll('{line}', line);
+  String get clashTrialsStyleAdvantage => _t('clashTrialsStyleAdvantage');
+  String clashTrialsTechniqueProgress(int current, int target) => _t(
+    'clashTrialsTechniqueProgress',
+  ).replaceAll('{current}', '$current').replaceAll('{target}', '$target');
+  String get clashTrialsRewardFirstClear => _t('clashTrialsRewardFirstClear');
+  String get clashTrialsRewardRepeat => _t('clashTrialsRewardRepeat');
+  String get clashTrialsRewardTechniqueBonus => _t('clashTrialsRewardTechniqueBonus');
+  String get clashTrialsHomeCardSubtitle => _t('clashTrialsHomeCardSubtitle');
+  String get clashTeamTrialsHint => _t('clashTeamTrialsHint');
+  String get clashSummonTrialsHint => _t('clashSummonTrialsHint');
   String get clashHomeFeaturedEventTitle => _t('clashHomeFeaturedEventTitle');
   String get clashHomeFeaturedEventEnter => _t('clashHomeFeaturedEventEnter');
   String clashHomeFeaturedEventProgress(int completed, int total) => _t(

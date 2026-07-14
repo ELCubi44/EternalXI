@@ -66,7 +66,6 @@ class LeagueActivityTile extends StatelessWidget {
                         event.actorNickname,
                         style: theme.textTheme.labelMedium?.copyWith(
                           color: context.xiTextPrimary,
-                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(width: 6),

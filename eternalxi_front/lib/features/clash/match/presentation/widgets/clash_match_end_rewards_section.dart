@@ -41,8 +41,7 @@ class ClashMatchEndRewardsObtainedSection extends StatelessWidget {
         Text(
           l10n.clashMatchRewardsEarnedTitle,
           style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w800,
-          ),
+            ),
         ),
         const SizedBox(height: 8),
         if (items.isEmpty)
@@ -96,7 +95,6 @@ class ClashMatchEndPendingRewardsSection extends StatelessWidget {
         Text(
           l10n.clashMatchRewardsPendingTitle,
           style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w800,
             color: Colors.orange.shade700,
           ),
         ),
@@ -114,8 +112,7 @@ class ClashMatchEndPendingRewardsSection extends StatelessWidget {
             child: Text(
               '• ${objective.objective.title}',
               style: theme.textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                ),
             ),
           ),
         if (items.isNotEmpty) ...[

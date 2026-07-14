@@ -7,7 +7,8 @@ enum ClashWeeklyMissionType {
   levelUpCard,
   upgradeTechnique,
   evolveCard,
-  unlockSkillNode;
+  unlockSkillNode,
+  playChainTrial;
 
   static ClashWeeklyMissionType? fromJson(Object? value) {
     final raw = value?.toString().trim();
@@ -20,6 +21,7 @@ enum ClashWeeklyMissionType {
       'upgradeTechnique' => ClashWeeklyMissionType.upgradeTechnique,
       'evolveCard' => ClashWeeklyMissionType.evolveCard,
       'unlockSkillNode' => ClashWeeklyMissionType.unlockSkillNode,
+      'playChainTrial' => ClashWeeklyMissionType.playChainTrial,
       _ => null,
     };
   }

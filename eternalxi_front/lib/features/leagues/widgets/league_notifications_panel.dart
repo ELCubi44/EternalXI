@@ -61,7 +61,6 @@ class LeagueNotificationsPanel extends StatelessWidget {
                     child: Text(
                       ll.notificationsTitle,
                       style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
                         color: context.xiTextPrimary,
                       ),
                     ),
@@ -188,7 +187,6 @@ class _NotificationTile extends StatelessWidget {
                     Text(
                       item.titulo,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
                         color: context.xiTextPrimary,
                       ),
                     ),
@@ -206,7 +204,6 @@ class _NotificationTile extends StatelessWidget {
                       Text(
                         LeagueMoneyFormat.money(item.precio!.toDouble()),
                         style: theme.textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
                           color: context.xiTextPrimary,
                         ),
                       ),

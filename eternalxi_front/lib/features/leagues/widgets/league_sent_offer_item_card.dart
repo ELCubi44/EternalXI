@@ -239,7 +239,6 @@ class _LeagueSentOfferItemCardState extends State<LeagueSentOfferItemCard> {
                             child: Text(
                               name,
                               style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w800,
                                 letterSpacing: -0.2,
                               ),
                             ),
@@ -263,7 +262,6 @@ class _LeagueSentOfferItemCardState extends State<LeagueSentOfferItemCard> {
                                     : _offer.nombreEquipo,
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: colorScheme.onSurfaceVariant,
-                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
@@ -285,7 +283,6 @@ class _LeagueSentOfferItemCardState extends State<LeagueSentOfferItemCard> {
                             ll.ownerNamed(ownerName),
                             style: theme.textTheme.labelMedium?.copyWith(
                               color: colorScheme.onSecondaryContainer,
-                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
@@ -397,7 +394,6 @@ class _MiniStat extends StatelessWidget {
           Text(
             value,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w700,
               color: highlight ? colorScheme.onPrimaryContainer : null,
             ),
           ),

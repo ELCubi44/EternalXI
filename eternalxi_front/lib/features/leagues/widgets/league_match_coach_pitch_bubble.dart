@@ -78,7 +78,6 @@ class LeagueMatchCoachPitchBubble extends StatelessWidget {
                   ctx.leagueL10n.coachLabel,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: colorScheme.primary,
-                    fontWeight: FontWeight.w900,
                   ),
                 ),
                 const SizedBox(height: 14),
@@ -94,8 +93,7 @@ class LeagueMatchCoachPitchBubble extends StatelessWidget {
                           Text(
                             fullName,
                             style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
+                              ),
                           ),
                           if (pila.isNotEmpty && pila != fullName) ...[
                             const SizedBox(height: 4),
@@ -164,8 +162,7 @@ class LeagueMatchCoachPitchBubble extends StatelessWidget {
           Text(
             text,
             style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+              ),
           ),
         ],
       ),
@@ -239,7 +236,6 @@ class LeagueMatchCoachPitchBubble extends StatelessWidget {
                 label,
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: Colors.white,
-                  fontWeight: FontWeight.w700,
                   fontSize: 10,
                 ),
                 maxLines: 1,

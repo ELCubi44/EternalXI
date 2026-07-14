@@ -224,7 +224,6 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
               dateStr,
               textAlign: TextAlign.center,
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
@@ -233,7 +232,6 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
               timeStr,
               textAlign: TextAlign.center,
               style: theme.textTheme.displaySmall?.copyWith(
-                fontWeight: FontWeight.w900,
                 height: 1.05,
               ),
             ),
@@ -242,7 +240,6 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
               ll.scheduledKickoffLabel,
               style: theme.textTheme.labelLarge?.copyWith(
                 color: colorScheme.primary,
-                fontWeight: FontWeight.w800,
               ),
             ),
           ],
@@ -272,7 +269,6 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
                     ll.liveBadge,
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: colorScheme.error,
-                      fontWeight: FontWeight.w900,
                       letterSpacing: 0.8,
                     ),
                   ),
@@ -283,7 +279,6 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
             Text(
               '$gl - $gv',
               style: theme.textTheme.displaySmall?.copyWith(
-                fontWeight: FontWeight.w900,
                 height: 1.05,
               ),
             ),
@@ -292,7 +287,6 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
               Text(
                 minLabel,
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -301,7 +295,6 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
               Text(
                 ll.inPlayLabel,
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -316,7 +309,6 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
             Text(
               '$gl - $gv',
               style: theme.textTheme.displaySmall?.copyWith(
-                fontWeight: FontWeight.w900,
                 height: 1.05,
               ),
             ),
@@ -325,7 +317,6 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
               ll.finishedLabel,
               style: theme.textTheme.labelLarge?.copyWith(
                 color: colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w800,
               ),
             ),
           ],
@@ -364,7 +355,6 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
                 ll.matchday(jNum),
                 textAlign: TextAlign.center,
                 style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
                   letterSpacing: 0.6,
                   color: colorScheme.primary,
                 ),
@@ -397,7 +387,6 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
                   child: Text(
                     'vs',
                     style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
                       color: colorScheme.onSurfaceVariant,
                     ),
                   ),
@@ -524,6 +513,12 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
                     detail: payload,
                     summaryEstado: _effectiveSummary.estado,
                   ),
+                  phase: _effectivePhase(),
+                  scoreLocal: _scoreLocal(),
+                  scoreVisitante: _scoreVisitante(),
+                  liveMinuteLabel: _liveMinuteLabel(),
+                  localTeamName: _effectiveSummary.nombreLocal,
+                  awayTeamName: _effectiveSummary.nombreVisitante,
                 )
               else
                 LeagueMatchLineupsTab(
@@ -583,7 +578,6 @@ class _TeamHeaderLarge extends StatelessWidget {
                 n.isEmpty ? ll.genericTeam : n,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
                   height: 1.2,
                 ),
                 maxLines: 3,
@@ -632,7 +626,6 @@ class _DetailError extends StatelessWidget {
             message,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onErrorContainer,
-              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 8),

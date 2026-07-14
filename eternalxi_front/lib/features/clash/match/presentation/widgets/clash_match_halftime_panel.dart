@@ -55,16 +55,14 @@ class _ClashMatchHalftimePanelState extends State<ClashMatchHalftimePanel> {
               l10n.clashMatchHalftimeTitle,
               textAlign: TextAlign.center,
               style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+                ),
             ),
             const SizedBox(height: 6),
             Text(
               l10n.clashMatchScoreLabel(state.score.user, state.score.rival),
               textAlign: TextAlign.center,
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             const SizedBox(height: 6),
             Text(
@@ -72,15 +70,13 @@ class _ClashMatchHalftimePanelState extends State<ClashMatchHalftimePanel> {
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: context.xiTextSecondary,
-                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               l10n.clashMatchHalftimeSquadTitle,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             const SizedBox(height: 8),
             ...state.userSquad.map((player) => _SquadRow(player: player)),
@@ -88,8 +84,7 @@ class _ClashMatchHalftimePanelState extends State<ClashMatchHalftimePanel> {
             Text(
               l10n.clashMatchHalftimeItemsTitle,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             const SizedBox(height: 8),
             ...state.matchInventory.map(
@@ -107,8 +102,7 @@ class _ClashMatchHalftimePanelState extends State<ClashMatchHalftimePanel> {
                   pendingEntry.item.targetCount,
                 ),
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                  ),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -162,8 +156,7 @@ class _ClashMatchHalftimePanelState extends State<ClashMatchHalftimePanel> {
                   child: Text(
                     lastResult.summaryMessage,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                 ),
               ),
@@ -258,7 +251,7 @@ class _SquadRow extends StatelessWidget {
           Expanded(
             child: Text(
               '${player.label} · ${player.position.displayNameEs}',
-              style: const TextStyle(fontWeight: FontWeight.w700),
+              style: const TextStyle(fontWeight: FontWeight.w400),
             ),
           ),
           Text(
@@ -316,15 +309,13 @@ class _ItemTile extends StatelessWidget {
                   child: Text(
                     entry.item.name,
                     style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+                      ),
                   ),
                 ),
                 Text(
                   l10n.clashMatchHalftimeItemQty(entry.quantity),
                   style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+                    ),
                 ),
               ],
             ),

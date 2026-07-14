@@ -53,7 +53,6 @@ class ClashSectionTile extends StatelessWidget {
                     Text(
                       title,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
                         color: context.xiTextPrimary,
                       ),
                     ),
@@ -104,7 +103,6 @@ class ClashScreenScaffold extends StatelessWidget {
         Text(
           title,
           style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w800,
             color: context.xiTextPrimary,
           ),
         ),

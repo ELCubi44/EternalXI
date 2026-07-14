@@ -137,7 +137,6 @@ class _EventsEmptyState extends StatelessWidget {
             textAlign: TextAlign.center,
             style: theme.textTheme.titleMedium?.copyWith(
               color: context.xiTextSecondary,
-              fontWeight: FontWeight.w700,
             ),
           ),
         ],

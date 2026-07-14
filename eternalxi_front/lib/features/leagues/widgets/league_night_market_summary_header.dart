@@ -48,7 +48,6 @@ class _LeagueNightMarketSummaryHeaderState
       child: Text(
         countdown,
         style: theme.textTheme.headlineMedium?.copyWith(
-          fontWeight: FontWeight.w900,
           letterSpacing: 0.8,
         ),
       ),

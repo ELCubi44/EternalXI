@@ -38,7 +38,6 @@ class ClashRewardList extends StatelessWidget {
           Text(
             title!,
             style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
               color: muted ? context.xiTextSecondary : null,
             ),
           ),

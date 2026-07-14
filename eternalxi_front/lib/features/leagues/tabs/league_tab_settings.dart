@@ -9,6 +9,7 @@ import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/controller/leagues_controller.dart';
 import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
+import 'package:eternal_xi/features/leagues/widgets/invite_friends_sheet.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_config_summary_card.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_fichajes_phase_banner.dart';
 import 'package:flutter/foundation.dart';
@@ -128,6 +129,17 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
 
   Future<void> _shareCode(String code) async {
     await SharePlus.instance.share(ShareParams(text: _shareMessage(code)));
+  }
+
+  void _inviteFriends(int idLiga, int idUsuario) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
+        child: InviteFriendsSheet(idLiga: idLiga, idUsuario: idUsuario),
+      ),
+    );
   }
 
   Future<void> _goToMyLeagues() async {
@@ -547,7 +559,6 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontFamily: 'monospace',
                   letterSpacing: 1.2,
-                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 14),
@@ -570,6 +581,14 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
                   ),
                 ],
               ),
+              if (isAdmin && code.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                FilledButton.icon(
+                  onPressed: () => _inviteFriends(shell.leagueId, shell.idUsuario),
+                  icon: const Icon(Icons.person_add_alt_1_rounded),
+                  label: Text(ll.inviteFriendsAction),
+                ),
+              ],
             ],
           ),
         ),
@@ -607,8 +626,7 @@ class _LeagueTabSettingsState extends State<LeagueTabSettings>
                 Text(
                   ll.closeLeague,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                    ),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -741,8 +759,7 @@ class _DelegatePickerSheetState extends State<_DelegatePickerSheet> {
           Text(
             ll.newAdminTitle,
             style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+              ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -850,8 +867,7 @@ class _SectionTitle extends StatelessWidget {
           Text(
             title,
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+              ),
           ),
         ],
       ),
@@ -987,8 +1003,7 @@ class _ParticipantTile extends StatelessWidget {
         title: Text(
           participant.nickname,
           style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+            ),
         ),
         leading: _UserPhotoAvatar(
           imageUrl: participant.resolvedFotoUsuarioUrl(),
@@ -1047,7 +1062,6 @@ class _UserPhotoAvatar extends StatelessWidget {
         child: Text(
           initial,
           style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
             color: colorScheme.onPrimaryContainer,
           ),
         ),

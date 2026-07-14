@@ -161,7 +161,6 @@ class _TransfersBody extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: 'Lumiare',
                           fontSize: 14,
-                          fontWeight: FontWeight.w900,
                           color: context.xiTextPrimary,
                           letterSpacing: 2,
                         ),
@@ -339,7 +338,7 @@ class _SegmentBar extends StatelessWidget {
             style: TextStyle(
               fontFamily: 'Lumiare',
               fontSize: 10,
-              fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+              fontWeight: FontWeight.w400,
               color: selected ? color : context.xiTextSecondary,
               letterSpacing: 0.3,
             ),
@@ -400,7 +399,6 @@ class _ReceivedOfferCard extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'Lumiare',
                     fontSize: 13,
-                    fontWeight: FontWeight.w900,
                     color: context.xiTextPrimary,
                     letterSpacing: 0.5,
                   ),
@@ -411,7 +409,6 @@ class _ReceivedOfferCard extends StatelessWidget {
                 style: const TextStyle(
                   fontFamily: 'Lumiare',
                   fontSize: 18,
-                  fontWeight: FontWeight.w900,
                   color: XiColors.classicGold,
                 ),
               ),
@@ -515,7 +512,6 @@ class _ActionChip extends StatelessWidget {
                 style: const TextStyle(
                   fontFamily: 'Lumiare',
                   fontSize: 11,
-                  fontWeight: FontWeight.w800,
                   color: XiColors.warmWhite,
                   letterSpacing: 1,
                 ),
@@ -548,7 +544,6 @@ class _XiRetryChip extends StatelessWidget {
           style: const TextStyle(
             fontFamily: 'Lumiare',
             fontSize: 12,
-            fontWeight: FontWeight.w800,
             color: XiColors.warmWhite,
           ),
         ),

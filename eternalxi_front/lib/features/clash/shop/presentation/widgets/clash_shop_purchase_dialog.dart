@@ -28,8 +28,7 @@ Future<bool?> showClashShopPurchaseDialog(
             Text(
               product.name,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             const SizedBox(height: 6),
             Text(
@@ -42,7 +41,6 @@ Future<bool?> showClashShopPurchaseDialog(
             Text(
               l10n.clashShopProductCost(product.costCoins),
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
                 color: theme.colorScheme.primary,
               ),
             ),
@@ -59,8 +57,7 @@ Future<bool?> showClashShopPurchaseDialog(
             Text(
               l10n.clashShopConfirmRewards,
               style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             const SizedBox(height: 6),
             ClashRewardList(

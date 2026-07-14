@@ -36,15 +36,13 @@ class ClashEventStageDetailHeader extends StatelessWidget {
           eventTitle,
           style: theme.textTheme.labelLarge?.copyWith(
             color: context.xiTextSecondary,
-            fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(height: 6),
         Text(
           stage.title,
           style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w900,
-          ),
+            ),
         ),
         const SizedBox(height: 12),
         Wrap(

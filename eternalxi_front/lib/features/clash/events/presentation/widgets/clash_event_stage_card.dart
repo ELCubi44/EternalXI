@@ -64,8 +64,7 @@ class ClashEventStageCard extends StatelessWidget {
                   child: Text(
                     '$stageNumber',
                     style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+                      ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -76,8 +75,7 @@ class ClashEventStageCard extends StatelessWidget {
                       Text(
                         stage.title,
                         style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                          ),
                       ),
                       const SizedBox(height: 8),
                       Wrap(

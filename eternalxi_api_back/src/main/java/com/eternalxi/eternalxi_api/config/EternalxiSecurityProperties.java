@@ -10,6 +10,24 @@ public class EternalxiSecurityProperties {
     private int jwtRefreshTtlDays = 30;
     private int authRateLimitPerMinute = 25;
     private String corsAllowedOrigins = "";
+    private String oauthGoogleClientIds = "";
+    private String oauthAppleBundleId = "es.eternalxi.app";
+
+    public String getOauthGoogleClientIds() {
+        return oauthGoogleClientIds;
+    }
+
+    public void setOauthGoogleClientIds(String oauthGoogleClientIds) {
+        this.oauthGoogleClientIds = oauthGoogleClientIds;
+    }
+
+    public String getOauthAppleBundleId() {
+        return oauthAppleBundleId;
+    }
+
+    public void setOauthAppleBundleId(String oauthAppleBundleId) {
+        this.oauthAppleBundleId = oauthAppleBundleId;
+    }
 
     public String getJwtSecret() {
         return jwtSecret;

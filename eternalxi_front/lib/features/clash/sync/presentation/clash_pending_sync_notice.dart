@@ -106,7 +106,6 @@ class ClashPendingSyncNotice extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
                       color: context.xiTextPrimary,
                     ),
                   ),

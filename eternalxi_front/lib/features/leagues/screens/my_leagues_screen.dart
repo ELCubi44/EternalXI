@@ -4,14 +4,13 @@ import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/app/theme/xi_typography.dart';
+import 'package:eternal_xi/shared/widgets/xi_brand_wordmark.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/data/models/league_summary.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/legal/widgets/age_confirmation_dialog.dart';
 import 'package:eternal_xi/features/leagues/controller/leagues_controller.dart';
-import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
-import 'package:eternal_xi/features/profile/widgets/achievements_tab.dart';
-import 'package:eternal_xi/features/profile/widgets/progress_celebration_overlay.dart';
 import 'package:eternal_xi/core/utils/league_asset_urls.dart';
 import 'package:eternal_xi/shared/widgets/league_participants_icon.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +25,6 @@ class MyLeaguesScreen extends StatefulWidget {
 }
 
 class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
-  int _sectionIndex = 0;
-
   @override
   void initState() {
     super.initState();
@@ -35,17 +32,6 @@ class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
       _refresh();
       showAgeConfirmationDialog(context);
     });
-  }
-
-  void _onSectionChanged(int index) {
-    if (_sectionIndex == index) return;
-    setState(() => _sectionIndex = index);
-    if (index == 1) {
-      final id = _resolveUserId();
-      if (id != null && mounted) {
-        context.read<AccountProgressController>().loadProgress(id);
-      }
-    }
   }
 
   int? _resolveUserId() {
@@ -58,10 +44,7 @@ class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
   Future<void> _refresh() async {
     final idUsuario = _resolveUserId();
     if (idUsuario == null) return;
-    await Future.wait([
-      context.read<LeaguesController>().loadMyLeagues(idUsuario),
-      context.read<AccountProgressController>().loadProgress(idUsuario),
-    ]);
+    await context.read<LeaguesController>().loadMyLeagues(idUsuario);
   }
 
   @override
@@ -121,27 +104,25 @@ class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
                           children: [
                             Text(
                               'MIS LIGAS',
-                              style: TextStyle(
-                                fontFamily: 'Lumiare',
+                              style: XiTypography.sectionEyebrow(
                                 color: context.xiTextPrimary,
                                 fontSize: 10,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 3.5,
+                                letterSpacing: 2.2,
                               ),
                             ),
                             const SizedBox(height: 2),
-                            Text(
-                              'ETERNAL XI',
-                              style: TextStyle(
-                                fontFamily: 'Lumiare',
-                                color: context.xiTextPrimary,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 1.5,
-                              ),
+                            XiBrandWordmark(
+                              fontSize: 22,
+                              color: context.xiTextPrimary,
+                              letterSpacing: 0.6,
                             ),
                           ],
                         ),
+                      ),
+                      IconButton(
+                        tooltip: l10n.backToModeSelection,
+                        onPressed: () => context.go(AppRoutes.mode),
+                        icon: const Icon(Icons.swap_horiz_rounded),
                       ),
                       if (userId != null) ...[
                         _IconActionButton(
@@ -182,22 +163,11 @@ class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
               Expanded(
                 child: userId == null
                     ? _NoSessionMessage()
-                    : ProgressCelebrationOverlay(
-                        child: IndexedStack(
-                          index: _sectionIndex,
-                          children: [
-                            RefreshIndicator(
-                              onRefresh: _refresh,
-                              child: _LeaguesBody(
-                                leagues: leagues,
-                                onRetry: _refresh,
-                              ),
-                            ),
-                            RefreshIndicator(
-                              onRefresh: _refresh,
-                              child: AchievementsTab(onRetry: _refresh),
-                            ),
-                          ],
+                    : RefreshIndicator(
+                        onRefresh: _refresh,
+                        child: _LeaguesBody(
+                          leagues: leagues,
+                          onRetry: _refresh,
                         ),
                       ),
               ),
@@ -205,34 +175,6 @@ class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: userId == null
-          ? null
-          : NavigationBar(
-              selectedIndex: _sectionIndex,
-              onDestinationSelected: _onSectionChanged,
-              destinations: [
-                NavigationDestination(
-                  icon: const _NavAssetIcon(
-                    asset: 'assets/app/nav_leagues_trophy.png',
-                    dimmed: true,
-                  ),
-                  selectedIcon: const _NavAssetIcon(
-                    asset: 'assets/app/nav_leagues_trophy.png',
-                  ),
-                  label: l10n.leaguesTab,
-                ),
-                NavigationDestination(
-                  icon: const _NavAssetIcon(
-                    asset: 'assets/app/nav_achievements_crest.png',
-                    dimmed: true,
-                  ),
-                  selectedIcon: const _NavAssetIcon(
-                    asset: 'assets/app/nav_achievements_crest.png',
-                  ),
-                  label: l10n.achievementsTab,
-                ),
-              ],
-            ),
     );
   }
 }
@@ -321,7 +263,6 @@ class _HeaderProfileButton extends StatelessWidget {
                   fontFamily: 'Lumiare',
                   color: XiColors.warmWhite,
                   fontSize: 8,
-                  fontWeight: FontWeight.w900,
                   height: 1,
                 ),
               ),
@@ -349,7 +290,6 @@ class _Initial extends StatelessWidget {
             fontFamily: 'Lumiare',
             color: XiColors.warmWhite,
             fontSize: 14,
-            fontWeight: FontWeight.w700,
           ),
         ),
       ),
@@ -426,7 +366,6 @@ class _NoSessionMessage extends StatelessWidget {
             fontFamily: 'Lumiare',
             color: XiColors.warmWhite,
             fontSize: 16,
-            fontWeight: FontWeight.w600,
           ),
           textAlign: TextAlign.center,
         ),
@@ -495,7 +434,6 @@ class _LeaguesBody extends StatelessWidget {
                     fontFamily: 'Lumiare',
                     color: XiColors.royalBlue,
                     fontSize: 14,
-                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -522,7 +460,6 @@ class _LeaguesBody extends StatelessWidget {
               fontFamily: 'Lumiare',
               color: XiColors.warmWhite,
               fontSize: 16,
-              fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.center,
           ),
@@ -645,7 +582,6 @@ class _LeagueCardState extends State<_LeagueCard>
                           fontFamily: 'Lumiare',
                           color: context.xiTextPrimary,
                           fontSize: 16,
-                          fontWeight: FontWeight.w800,
                           letterSpacing: 0.2,
                         ),
                       ),
@@ -660,7 +596,6 @@ class _LeagueCardState extends State<_LeagueCard>
                               fontFamily: 'Lumiare',
                               color: context.xiTextPrimary,
                               fontSize: 12,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           if (widget.league.soyAdmin) ...[
@@ -684,7 +619,6 @@ class _LeagueCardState extends State<_LeagueCard>
                                   fontFamily: 'Lumiare',
                                   color: context.xiTextPrimary,
                                   fontSize: 9,
-                                  fontWeight: FontWeight.w800,
                                   letterSpacing: 1.5,
                                 ),
                               ),

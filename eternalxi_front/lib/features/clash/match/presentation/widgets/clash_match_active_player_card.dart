@@ -74,7 +74,6 @@ class ClashMatchActivePlayerCard extends StatelessWidget {
                 child: Text(
                   player.label,
                   style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
                     color: accent,
                   ),
                 ),
@@ -88,14 +87,12 @@ class ClashMatchActivePlayerCard extends StatelessWidget {
                       title,
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: context.xiTextSecondary,
-                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     Text(
                       player.label,
                       style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+                        ),
                     ),
                   ],
                 ),
@@ -148,7 +145,6 @@ class ClashMatchActivePlayerCard extends StatelessWidget {
             '${l10n.clashMatchZoneLabel}: ${state.ballZone.labelEs()}',
             style: theme.textTheme.bodySmall?.copyWith(
               color: context.xiTextSecondary,
-              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -199,8 +195,7 @@ class _StatBar extends StatelessWidget {
         Text(
           '$label $current/$max',
           style: theme.textTheme.labelSmall?.copyWith(
-            fontWeight: FontWeight.w800,
-          ),
+            ),
         ),
         const SizedBox(height: 4),
         ClipRRect(

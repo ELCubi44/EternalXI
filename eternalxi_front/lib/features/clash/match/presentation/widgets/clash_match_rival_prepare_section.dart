@@ -86,7 +86,6 @@ class _RivalCard extends StatelessWidget {
             l10n.clashMatchPrepareRival,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
               color: context.xiTextSecondary,
-              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 6),
@@ -94,7 +93,7 @@ class _RivalCard extends StatelessWidget {
             name,
             style: Theme.of(
               context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+            ).textTheme.titleMedium?.copyWith(),
           ),
           if (description != null && description.isNotEmpty) ...[
             const SizedBox(height: 8),
@@ -302,7 +301,7 @@ class _MatchupStatusChip extends StatelessWidget {
               label,
               style: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+              ).textTheme.bodyMedium?.copyWith(),
             ),
           ),
         ],
@@ -337,7 +336,7 @@ class _RivalLineupExpansion extends StatelessWidget {
           l10n.clashMatchPrepareViewRivalLineup,
           style: Theme.of(
             context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          ).textTheme.titleSmall?.copyWith(),
         ),
         children: [
           for (final player in players) _RivalPlayerRow(player: player),
@@ -367,7 +366,7 @@ class _RivalPlayerRow extends StatelessWidget {
             '${player.position.displayNameEs} · ${player.name}',
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+            ).textTheme.bodyMedium?.copyWith(),
           ),
           const SizedBox(height: 2),
           Text(
@@ -416,7 +415,7 @@ class _InfoRow extends StatelessWidget {
             value,
             style: Theme.of(
               context,
-            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+            ).textTheme.titleSmall?.copyWith(),
           ),
         ],
       ),

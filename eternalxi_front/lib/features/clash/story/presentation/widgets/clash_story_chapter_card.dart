@@ -40,8 +40,7 @@ class ClashStoryChapterCard extends StatelessWidget {
           Text(
             title,
             style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+              ),
           ),
           const SizedBox(height: 6),
           Text(
@@ -70,8 +69,7 @@ class ClashStoryChapterCard extends StatelessWidget {
               Text(
                 l10n.clashStoryLevelsProgress(completedLevels, totalLevels),
                 style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+                  ),
               ),
             ],
           ),

@@ -52,9 +52,62 @@ class ClashStoryRepository {
     ticketRepository: _ticketRepository,
   );
 
+  static const eternalXiFormedLevelId = 'prologue-lvl-03';
+
+  static const _eternalXiFormedUnlocks = ClashStoryCompletionUnlocks(
+    clashTeamUnlocked: true,
+    firstLineupUnlocked: true,
+    nextPlayableLevelUnlocked: true,
+  );
+
   ClashStoryProgress loadProgress() {
-    _progressCache ??= _progressStorage.readProgress();
+    _progressCache ??= _normalizeProgress(_progressStorage.readProgress());
     return _progressCache!;
+  }
+
+  /// Invocaciones y equipo Clash disponibles tras formar Eternal XI.
+  bool isSummonUnlocked([ClashStoryProgress? progress]) {
+    final p = progress ?? loadProgress();
+    return p.clashTeamUnlocked ||
+        p.eternalXiCardsGranted ||
+        p.completedLevelIds.contains(eternalXiFormedLevelId);
+  }
+
+  /// Repara flags de desbloqueo si el roster ya existe (sync, reinstall, etc.).
+  Future<bool> ensureSummonUnlocked() async {
+    var progress = loadProgress();
+    if (progress.clashTeamUnlocked) {
+      return true;
+    }
+
+    final formedByProgress = isSummonUnlocked(progress);
+    final formedByCollection =
+        !formedByProgress &&
+        await _collectionRepository.ownsEternalXiStarterNCards();
+
+    if (!formedByProgress && !formedByCollection) {
+      return false;
+    }
+
+    progress = progress.copyWith(
+      unlocks: progress.unlocks.merge(_eternalXiFormedUnlocks),
+      eternalXiCardsGranted: true,
+      completedLevelIds: formedByCollection
+          ? {...progress.completedLevelIds, eternalXiFormedLevelId}
+          : progress.completedLevelIds,
+    );
+    await _saveProgress(progress);
+    return true;
+  }
+
+  ClashStoryProgress _normalizeProgress(ClashStoryProgress progress) {
+    if (!isSummonUnlocked(progress) || progress.clashTeamUnlocked) {
+      return progress;
+    }
+    return progress.copyWith(
+      unlocks: progress.unlocks.merge(_eternalXiFormedUnlocks),
+      eternalXiCardsGranted: true,
+    );
   }
 
   Future<List<ClashStorySaga>> loadSagas() async {

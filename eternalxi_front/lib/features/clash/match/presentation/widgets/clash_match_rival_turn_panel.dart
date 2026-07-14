@@ -66,7 +66,6 @@ class ClashMatchRivalTurnPanel extends StatelessWidget {
               Text(
                 l10n.clashMatchRivalTurnTitle,
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
                   color: Colors.redAccent,
                 ),
               ),
@@ -83,7 +82,6 @@ class ClashMatchRivalTurnPanel extends StatelessWidget {
                   contextHint,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
                     color: Colors.redAccent.shade200,
                   ),
                 ),
@@ -96,8 +94,7 @@ class ClashMatchRivalTurnPanel extends StatelessWidget {
               l10n.clashMatchBallHolder(holder.label),
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             Text(
               '${l10n.clashMatchZoneLabel}: ${state.ballZone.labelEs()}',
@@ -129,8 +126,7 @@ class ClashMatchRivalTurnPanel extends StatelessWidget {
                   lastDecision.summary,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                    ),
                 ),
               ),
             ),

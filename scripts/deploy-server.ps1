@@ -47,9 +47,10 @@ function Invoke-Remote {
         [int]$Port,
         [string]$User,
         [string]$Password,
-        [string]$Command
+        [string]$Command,
+        [string]$HostKey
     )
-    & $Plink -batch -ssh -P $Port -pw $Password "${User}@${HostName}" $Command
+    & $Plink -batch -ssh -P $Port -hostkey $HostKey -pw $Password "${User}@${HostName}" $Command
     if ($LASTEXITCODE -ne 0) {
         throw "Comando remoto falló (exit $LASTEXITCODE): $Command"
     }
@@ -57,6 +58,11 @@ function Invoke-Remote {
 
 $config = Read-DeployEnv -Path $envFile
 Ensure-PuttyTools -Dir $toolsDir
+
+$hostKey = $config['DEPLOY_SSH_HOSTKEY']
+if ([string]::IsNullOrWhiteSpace($hostKey)) {
+    $hostKey = 'SHA256:hY3FHVobNY7HffYE9Dv2vv/wnnaypHVytyvto4YOlVI'
+}
 
 $hostName = $config['DEPLOY_SSH_HOST']
 $port = [int]$config['DEPLOY_SSH_PORT']
@@ -86,18 +92,18 @@ if (-not (Test-Path $localJar)) {
 }
 
 Write-Host "==> 2/4 Subiendo JAR a ${user}@${hostName}:${remotePath} ..."
-& $pscp -batch -P $port -pw $password $localJar "${user}@${hostName}:${remotePath}"
+& $pscp -batch -P $port -hostkey $hostKey -pw $password $localJar "${user}@${hostName}:${remotePath}"
 if ($LASTEXITCODE -ne 0) {
     throw "pscp falló con código $LASTEXITCODE"
 }
 
 Write-Host "==> 3/4 Reiniciando servicio $service ..."
-Invoke-Remote -Plink $plink -HostName $hostName -Port $port -User $user -Password $password `
+Invoke-Remote -Plink $plink -HostName $hostName -Port $port -User $user -Password $password -HostKey $hostKey `
     -Command "systemctl restart $service"
 
 Write-Host '==> 4/4 Comprobando estado del servicio...'
 Start-Sleep -Seconds 3
-Invoke-Remote -Plink $plink -HostName $hostName -Port $port -User $user -Password $password `
+Invoke-Remote -Plink $plink -HostName $hostName -Port $port -User $user -Password $password -HostKey $hostKey `
     -Command "systemctl is-active $service && systemctl status $service --no-pager -n 5"
 
 Write-Host ''

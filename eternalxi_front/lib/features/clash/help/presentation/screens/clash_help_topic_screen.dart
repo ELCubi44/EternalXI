@@ -140,8 +140,7 @@ class _ClashHelpTopicScreenState extends State<ClashHelpTopicScreen> {
                     Text(
                       topic.title,
                       style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+                        ),
                     ),
                     const SizedBox(height: 8),
                     ClashStoryLevelStatusChip(
@@ -168,8 +167,7 @@ class _ClashHelpTopicScreenState extends State<ClashHelpTopicScreen> {
             Text(
               l10n.clashHelpRelatedLinks,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             const SizedBox(height: 10),
             Wrap(
@@ -223,8 +221,7 @@ class _SectionCard extends StatelessWidget {
             Text(
               section.title,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+                ),
             ),
             if (section.body.isNotEmpty) ...[
               const SizedBox(height: 8),
@@ -247,8 +244,7 @@ class _SectionCard extends StatelessWidget {
                       Text(
                         '• ',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                          ),
                       ),
                       Expanded(
                         child: Text(

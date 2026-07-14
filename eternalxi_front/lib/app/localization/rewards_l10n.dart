@@ -160,6 +160,19 @@ class RewardsL10n {
   String packBudget(String min, String max) =>
       _t('Presupuesto: $min — $max', 'Budget: $min — $max');
 
+  String packDisplayName(String packType) {
+    switch (packType.trim().toUpperCase()) {
+      case 'BASIC_PACK':
+        return _t('Sobre básico', 'Basic pack');
+      case 'COMMON_PACK':
+        return _t('Sobre común', 'Common pack');
+      case 'PREMIUM_PACK':
+        return _t('Sobre premium', 'Premium pack');
+      default:
+        return packType;
+    }
+  }
+
   String get noProbabilityData => _t(
         'Sin datos de probabilidades.',
         'No probability data available.',

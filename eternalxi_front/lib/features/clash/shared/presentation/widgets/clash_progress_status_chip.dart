@@ -41,7 +41,6 @@ class ClashProgressStatusChip extends StatelessWidget {
         label,
         style: theme.textTheme.labelSmall?.copyWith(
           color: fg,
-          fontWeight: FontWeight.w700,
         ),
       ),
     );

@@ -180,7 +180,6 @@ class _ClashStoryLevelReaderScreenState
                 scene.speaker!,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.w800,
                 ),
               ),
               const SizedBox(height: 8),

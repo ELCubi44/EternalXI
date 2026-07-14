@@ -9,6 +9,7 @@ import 'package:eternal_xi/data/models/league_chat_message.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
+import 'package:eternal_xi/features/leagues/tabs/league_private_chat_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -48,6 +49,8 @@ class _ChatMessage {
   }
 }
 
+enum _ChatChannel { general, private }
+
 class LeagueTabChat extends StatefulWidget {
   const LeagueTabChat({super.key});
 
@@ -60,6 +63,8 @@ class _LeagueTabChatState extends State<LeagueTabChat>
   @override
   bool get wantKeepAlive => true;
 
+  _ChatChannel _channel = _ChatChannel.general;
+
   final _inputCtrl = TextEditingController();
   final _scrollCtrl = ScrollController();
   final _inputFocus = FocusNode();
@@ -69,11 +74,63 @@ class _LeagueTabChatState extends State<LeagueTabChat>
   bool _sending = false;
   String? _error;
   int? _loadedLeagueId;
+  int _lastRefreshGeneration = -1;
+  bool _loadingLeague = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _syncWithShell());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncWithShell();
+  }
+
+  void _syncWithShell() {
+    final shell = LeagueShellData.maybeOf(context);
+    if (shell == null) {
+      if (mounted && _loading) {
+        setState(() => _loading = false);
+      }
+      return;
+    }
+
+    if (shell.idUsuario <= 0) {
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _error = context.l10n.leagueContextError;
+        });
+      }
+      return;
+    }
+
+    if (_loadedLeagueId != shell.leagueId) {
+      if (!_loadingLeague) {
+        _bootstrapForLeague(shell);
+      }
+      return;
+    }
+
+    if (_lastRefreshGeneration != shell.refreshGeneration) {
+      _lastRefreshGeneration = shell.refreshGeneration;
+      if (!_loading && !_loadingLeague) {
+        _loadRecent(shell, showSpinner: false);
+      }
+    }
+  }
+
+  Future<void> _bootstrapForLeague(LeagueShellData shell) async {
+    _loadingLeague = true;
+    _pollTimer?.cancel();
+    await _loadRecent(shell, showSpinner: true);
+    if (!mounted) return;
+    _loadingLeague = false;
+    _lastRefreshGeneration = shell.refreshGeneration;
+    _startPolling(shell);
   }
 
   @override
@@ -95,16 +152,6 @@ class _LeagueTabChatState extends State<LeagueTabChat>
     _pollTimer = Timer.periodic(const Duration(seconds: 8), (_) {
       _fetchNewMessages(shell, scrollIfNearBottom: true);
     });
-  }
-
-  Future<void> _bootstrap() async {
-    final shell = LeagueShellData.maybeOf(context);
-    if (shell == null) {
-      if (mounted) setState(() => _loading = false);
-      return;
-    }
-    await _loadRecent(shell, showSpinner: true);
-    _startPolling(shell);
   }
 
   Future<void> _loadRecent(LeagueShellData shell, {required bool showSpinner}) async {
@@ -140,12 +187,14 @@ class _LeagueTabChatState extends State<LeagueTabChat>
       setState(() {
         _error = e.message;
         _loading = false;
+        _loadedLeagueId = shell.leagueId;
       });
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _error = e.toString().replaceFirst('Exception: ', '');
         _loading = false;
+        _loadedLeagueId = shell.leagueId;
       });
     }
   }
@@ -154,27 +203,42 @@ class _LeagueTabChatState extends State<LeagueTabChat>
     LeagueShellData shell, {
     required bool scrollIfNearBottom,
   }) async {
-    if (_loading || _loadedLeagueId != shell.leagueId) return;
-    final afterId = _maxMessageId();
-    if (afterId <= 0) return;
+    if (_loading || _loadingLeague || _loadedLeagueId != shell.leagueId) return;
 
     try {
       final api = context.read<LeaguesApiService>();
-      final rows = await api.getLeagueChatMessages(
-        idLiga: shell.leagueId,
-        idUsuario: shell.idUsuario,
-        afterId: afterId,
-        limit: 50,
-      );
+      final afterId = _maxMessageId();
+      final rows = afterId <= 0
+          ? await api.getLeagueChatMessages(
+              idLiga: shell.leagueId,
+              idUsuario: shell.idUsuario,
+              recent: true,
+              limit: 50,
+            )
+          : await api.getLeagueChatMessages(
+              idLiga: shell.leagueId,
+              idUsuario: shell.idUsuario,
+              afterId: afterId,
+              limit: 50,
+            );
       if (!mounted || rows.isEmpty) return;
 
       final shouldScroll = scrollIfNearBottom && _isNearBottom();
       setState(() {
-        final existing = _messages.map((m) => m.id).toSet();
-        for (final row in rows) {
-          if (existing.contains(row.id)) continue;
-          _messages.add(_ChatMessage.fromApi(row, shell.idUsuario));
+        if (afterId <= 0) {
+          _messages
+            ..clear()
+            ..addAll(
+              rows.map((m) => _ChatMessage.fromApi(m, shell.idUsuario)),
+            );
+        } else {
+          final existing = _messages.map((m) => m.id).toSet();
+          for (final row in rows) {
+            if (existing.contains(row.id)) continue;
+            _messages.add(_ChatMessage.fromApi(row, shell.idUsuario));
+          }
         }
+        _error = null;
       });
       if (shouldScroll) {
         _scrollToBottom(animated: true);
@@ -350,13 +414,6 @@ class _LeagueTabChatState extends State<LeagueTabChat>
       );
     }
 
-    if (_loadedLeagueId != shell.leagueId && !_loading) {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await _loadRecent(shell, showSpinner: true);
-        _startPolling(shell);
-      });
-    }
-
     return ColoredBox(
       color: context.xiBackground,
       child: Column(
@@ -401,6 +458,39 @@ class _LeagueTabChatState extends State<LeagueTabChat>
               ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: context.xiCardSurface,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: context.xiBorderSubtle),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _ChatChannelTab(
+                      label: l10n.chatChannelGeneral,
+                      icon: Icons.groups_rounded,
+                      selected: _channel == _ChatChannel.general,
+                      onTap: () => setState(() => _channel = _ChatChannel.general),
+                    ),
+                  ),
+                  Expanded(
+                    child: _ChatChannelTab(
+                      label: l10n.chatChannelPrivate,
+                      icon: Icons.lock_person_rounded,
+                      selected: _channel == _ChatChannel.private,
+                      onTap: () => setState(() => _channel = _ChatChannel.private),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (_channel == _ChatChannel.private)
+            Expanded(child: LeaguePrivateChatPanel(shell: shell))
+          else ...[
           Expanded(
             child: GestureDetector(
               onTap: _dismissKeyboard,
@@ -474,7 +564,57 @@ class _LeagueTabChatState extends State<LeagueTabChat>
             onSend: () => _send(shell),
             onDismissKeyboard: _dismissKeyboard,
           ),
+          ],
         ],
+      ),
+    );
+  }
+}
+
+class _ChatChannelTab extends StatelessWidget {
+  const _ChatChannelTab({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = selected
+        ? XiColors.royalBlue.withValues(alpha: 0.14)
+        : Colors.transparent;
+    final fg = selected ? XiColors.royalBlue : context.xiTextSecondary;
+    return Material(
+      color: bg,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 18, color: fg),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontFamily: 'Lumiare',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  color: fg,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -576,7 +716,6 @@ class _WhatsAppMessageRow extends StatelessWidget {
         style: TextStyle(
           fontFamily: 'Lumiare',
           fontSize: 11,
-          fontWeight: FontWeight.w800,
           color: nickColor,
           letterSpacing: 0.3,
         ),
@@ -665,7 +804,6 @@ class _ChatAvatar extends StatelessWidget {
           style: TextStyle(
             fontFamily: 'Lumiare',
             fontSize: 14,
-            fontWeight: FontWeight.w900,
             color: ring,
           ),
         ),

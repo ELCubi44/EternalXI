@@ -1,5 +1,6 @@
 import 'package:eternal_xi/app/router.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
+import 'package:eternal_xi/app/theme/xi_typography.dart';
 import 'package:eternal_xi/core/notifications/push_notification_handler.dart';
 import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/profile/controller/user_preferences_controller.dart';
@@ -45,7 +46,6 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
   }
 
   static ThemeData get _lightTheme {
-    const lumiare = 'Lumiare';
     const bg = XiColors.ivoryUniform;
     const surface = XiColors.warmWhite;
     const text = XiColors.nightBlue;
@@ -61,10 +61,10 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       onSecondary: XiColors.nightBlue,
       error: XiColors.heroRed,
     );
-    return ThemeData(
+    return XiTypography.sanitizeTheme(ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
-      fontFamily: lumiare,
+      fontFamily: XiTypography.family,
       brightness: Brightness.light,
       scaffoldBackgroundColor: bg,
       cardColor: surface,
@@ -78,10 +78,10 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         surfaceTintColor: Colors.transparent,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
         titleTextStyle: TextStyle(
-          fontFamily: lumiare,
+          fontFamily: XiTypography.family,
           color: text,
           fontSize: 20,
-          fontWeight: FontWeight.w700,
+          fontWeight: XiTypography.weight,
           letterSpacing: 0.5,
         ),
       ),
@@ -97,8 +97,8 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: XiColors.royalBlue, width: 2),
         ),
-        hintStyle: const TextStyle(fontFamily: lumiare, color: text, fontSize: 14),
-        labelStyle: const TextStyle(fontFamily: lumiare, color: text, fontSize: 14),
+        hintStyle: const TextStyle(fontFamily: XiTypography.family, color: text, fontSize: 14),
+        labelStyle: const TextStyle(fontFamily: XiTypography.family, color: text, fontSize: 14),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       filledButtonTheme: FilledButtonThemeData(
@@ -108,20 +108,20 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          textStyle: const TextStyle(fontFamily: lumiare, fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: 0.5),
+          textStyle: const TextStyle(fontFamily: XiTypography.family, fontSize: 15, fontWeight: XiTypography.weight, letterSpacing: 0.5),
         ),
       ),
       snackBarTheme: const SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: XiColors.nightBlue,
-        contentTextStyle: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontSize: 14),
+        contentTextStyle: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontSize: 14),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: surface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        titleTextStyle: const TextStyle(fontFamily: lumiare, color: text, fontSize: 18, fontWeight: FontWeight.w700),
-        contentTextStyle: const TextStyle(fontFamily: lumiare, color: text, fontSize: 14, height: 1.5),
+        titleTextStyle: const TextStyle(fontFamily: XiTypography.family, color: text, fontSize: 18, fontWeight: XiTypography.weight),
+        contentTextStyle: const TextStyle(fontFamily: XiTypography.family, color: text, fontSize: 14, height: 1.5),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
@@ -136,33 +136,32 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       progressIndicatorTheme: const ProgressIndicatorThemeData(color: XiColors.royalBlue),
       dividerTheme: const DividerThemeData(color: Color(0xFFD8CEBC), thickness: 1),
       textTheme: const TextTheme(
-        displayLarge: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w700),
-        displayMedium: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w700),
-        displaySmall: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w700),
-        headlineLarge: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w700),
-        headlineMedium: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w700),
-        headlineSmall: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w600),
-        titleLarge: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w700, fontSize: 20),
-        titleMedium: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w600, fontSize: 16),
-        titleSmall: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w600, fontSize: 14),
-        bodyLarge: TextStyle(fontFamily: lumiare, color: text, fontSize: 16),
-        bodyMedium: TextStyle(fontFamily: lumiare, color: text, fontSize: 14),
-        bodySmall: TextStyle(fontFamily: lumiare, color: text, fontSize: 12),
-        labelLarge: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w700, fontSize: 14),
-        labelMedium: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w600, fontSize: 12),
-        labelSmall: TextStyle(fontFamily: lumiare, color: text, fontWeight: FontWeight.w500, fontSize: 11),
+        displayLarge: TextStyle(fontFamily: XiTypography.family, color: text, fontWeight: XiTypography.weight),
+        displayMedium: TextStyle(fontFamily: XiTypography.family, color: text, fontWeight: XiTypography.weight),
+        displaySmall: TextStyle(fontFamily: XiTypography.family, color: text, fontWeight: XiTypography.weight),
+        headlineLarge: TextStyle(fontFamily: XiTypography.family, color: text, fontWeight: XiTypography.weight),
+        headlineMedium: TextStyle(fontFamily: XiTypography.family, color: text, fontWeight: XiTypography.weight),
+        headlineSmall: TextStyle(fontFamily: XiTypography.family, color: text, fontWeight: XiTypography.weight),
+        titleLarge: TextStyle(fontFamily: XiTypography.family, color: text, fontWeight: XiTypography.weight, fontSize: 20),
+        titleMedium: TextStyle(fontFamily: XiTypography.family, color: text, fontWeight: XiTypography.weight, fontSize: 16),
+        titleSmall: TextStyle(fontFamily: XiTypography.family, color: text, fontWeight: XiTypography.weight, fontSize: 14),
+        bodyLarge: TextStyle(fontFamily: XiTypography.family, color: text, fontSize: 16),
+        bodyMedium: TextStyle(fontFamily: XiTypography.family, color: text, fontSize: 14),
+        bodySmall: TextStyle(fontFamily: XiTypography.family, color: text, fontSize: 12),
+        labelLarge: TextStyle(fontFamily: XiTypography.family, color: text, fontWeight: XiTypography.weight, fontSize: 14),
+        labelMedium: TextStyle(fontFamily: XiTypography.family, color: text, fontWeight: XiTypography.weight, fontSize: 12),
+        labelSmall: TextStyle(fontFamily: XiTypography.family, color: text, fontWeight: XiTypography.weight, fontSize: 11),
       ),
       iconTheme: const IconThemeData(color: text, size: 22),
-    );
+    ));
   }
 
   static ThemeData get _theme {
     const scheme = XiColors.colorScheme;
-    const lumiare = 'Lumiare';
-    return ThemeData(
+    return XiTypography.sanitizeTheme(ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
-      fontFamily: lumiare,
+      fontFamily: XiTypography.family,
       scaffoldBackgroundColor: XiColors.background,
       cardColor: scheme.surfaceContainer,
       dividerColor: XiColors.divider,
@@ -175,10 +174,10 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         surfaceTintColor: Colors.transparent,
         systemOverlayStyle: SystemUiOverlayStyle.light,
         titleTextStyle: const TextStyle(
-          fontFamily: lumiare,
+          fontFamily: XiTypography.family,
           color: XiColors.warmWhite,
           fontSize: 20,
-          fontWeight: FontWeight.w700,
+          fontWeight: XiTypography.weight,
           letterSpacing: 0.5,
         ),
       ),
@@ -188,17 +187,17 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return const TextStyle(
-              fontFamily: lumiare,
+              fontFamily: XiTypography.family,
               fontSize: 11,
-              fontWeight: FontWeight.w700,
+              fontWeight: XiTypography.weight,
               color: XiColors.royalBlue,
               letterSpacing: 0.3,
             );
           }
           return const TextStyle(
-            fontFamily: lumiare,
+            fontFamily: XiTypography.family,
             fontSize: 11,
-            fontWeight: FontWeight.w500,
+            fontWeight: XiTypography.weight,
             color: XiColors.warmWhite,
           );
         }),
@@ -230,12 +229,12 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
           borderSide: const BorderSide(color: XiColors.heroRed, width: 2),
         ),
         hintStyle: const TextStyle(
-          fontFamily: lumiare,
+          fontFamily: XiTypography.family,
           color: XiColors.warmWhite,
           fontSize: 14,
         ),
         labelStyle: const TextStyle(
-          fontFamily: lumiare,
+          fontFamily: XiTypography.family,
           color: XiColors.warmWhite,
           fontSize: 14,
         ),
@@ -249,9 +248,9 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           textStyle: const TextStyle(
-            fontFamily: lumiare,
+            fontFamily: XiTypography.family,
             fontSize: 15,
-            fontWeight: FontWeight.w700,
+            fontWeight: XiTypography.weight,
             letterSpacing: 0.5,
           ),
         ),
@@ -262,9 +261,9 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
           side: const BorderSide(color: XiColors.royalBlue),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           textStyle: const TextStyle(
-            fontFamily: lumiare,
+            fontFamily: XiTypography.family,
             fontSize: 15,
-            fontWeight: FontWeight.w600,
+            fontWeight: XiTypography.weight,
           ),
         ),
       ),
@@ -272,8 +271,8 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         style: TextButton.styleFrom(
           foregroundColor: XiColors.royalBlue,
           textStyle: const TextStyle(
-            fontFamily: lumiare,
-            fontWeight: FontWeight.w600,
+            fontFamily: XiTypography.family,
+            fontWeight: XiTypography.weight,
           ),
         ),
       ),
@@ -281,7 +280,7 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         behavior: SnackBarBehavior.floating,
         backgroundColor: XiColors.surfaceElevated,
         contentTextStyle: TextStyle(
-          fontFamily: lumiare,
+          fontFamily: XiTypography.family,
           color: XiColors.warmWhite,
           fontSize: 14,
         ),
@@ -291,14 +290,14 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         titleTextStyle: const TextStyle(
-          fontFamily: lumiare,
+          fontFamily: XiTypography.family,
           color: XiColors.warmWhite,
           fontSize: 18,
-          fontWeight: FontWeight.w700,
+          fontWeight: XiTypography.weight,
           letterSpacing: 0.3,
         ),
         contentTextStyle: const TextStyle(
-          fontFamily: lumiare,
+          fontFamily: XiTypography.family,
           color: XiColors.warmWhite,
           fontSize: 14,
           height: 1.5,
@@ -317,14 +316,14 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         unselectedLabelColor: XiColors.warmWhite,
         indicatorColor: XiColors.royalBlue,
         labelStyle: TextStyle(
-          fontFamily: lumiare,
+          fontFamily: XiTypography.family,
           fontSize: 13,
-          fontWeight: FontWeight.w700,
+          fontWeight: XiTypography.weight,
         ),
         unselectedLabelStyle: TextStyle(
-          fontFamily: lumiare,
+          fontFamily: XiTypography.family,
           fontSize: 13,
-          fontWeight: FontWeight.w500,
+          fontWeight: XiTypography.weight,
         ),
         dividerColor: XiColors.divider,
       ),
@@ -338,16 +337,16 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         selectedColor: XiColors.royalBlue.withValues(alpha: 0.35),
         checkmarkColor: XiColors.royalBlue,
         labelStyle: const TextStyle(
-          fontFamily: lumiare,
+          fontFamily: XiTypography.family,
           color: XiColors.warmWhite,
           fontSize: 12,
-          fontWeight: FontWeight.w600,
+          fontWeight: XiTypography.weight,
         ),
         secondaryLabelStyle: const TextStyle(
-          fontFamily: lumiare,
+          fontFamily: XiTypography.family,
           color: XiColors.royalBlue,
           fontSize: 12,
-          fontWeight: FontWeight.w600,
+          fontWeight: XiTypography.weight,
         ),
         side: const BorderSide(color: XiColors.divider),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -377,27 +376,27 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
             return XiColors.warmWhite;
           }),
           textStyle: WidgetStateProperty.all(
-            const TextStyle(fontFamily: lumiare, fontSize: 12, fontWeight: FontWeight.w600),
+            const TextStyle(fontFamily: XiTypography.family, fontSize: 12, fontWeight: XiTypography.weight),
           ),
           side: WidgetStateProperty.all(const BorderSide(color: XiColors.divider)),
         ),
       ),
       textTheme: const TextTheme(
-        displayLarge: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700),
-        displayMedium: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700),
-        displaySmall: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700),
-        headlineLarge: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700),
-        headlineMedium: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700),
-        headlineSmall: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w600),
-        titleLarge: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700, fontSize: 20),
-        titleMedium: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w600, fontSize: 16),
-        titleSmall: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w600, fontSize: 14),
-        bodyLarge: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontSize: 16),
-        bodyMedium: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontSize: 14),
-        bodySmall: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontSize: 12),
-        labelLarge: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w700, fontSize: 14),
-        labelMedium: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w600, fontSize: 12),
-        labelSmall: TextStyle(fontFamily: lumiare, color: XiColors.warmWhite, fontWeight: FontWeight.w500, fontSize: 11),
+        displayLarge: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontWeight: XiTypography.weight),
+        displayMedium: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontWeight: XiTypography.weight),
+        displaySmall: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontWeight: XiTypography.weight),
+        headlineLarge: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontWeight: XiTypography.weight),
+        headlineMedium: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontWeight: XiTypography.weight),
+        headlineSmall: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontWeight: XiTypography.weight),
+        titleLarge: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontWeight: XiTypography.weight, fontSize: 20),
+        titleMedium: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontWeight: XiTypography.weight, fontSize: 16),
+        titleSmall: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontWeight: XiTypography.weight, fontSize: 14),
+        bodyLarge: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontSize: 16),
+        bodyMedium: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontSize: 14),
+        bodySmall: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontSize: 12),
+        labelLarge: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontWeight: XiTypography.weight, fontSize: 14),
+        labelMedium: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontWeight: XiTypography.weight, fontSize: 12),
+        labelSmall: TextStyle(fontFamily: XiTypography.family, color: XiColors.warmWhite, fontWeight: XiTypography.weight, fontSize: 11),
       ),
       iconTheme: const IconThemeData(color: XiColors.warmWhite, size: 22),
       primaryIconTheme: const IconThemeData(color: XiColors.warmWhite, size: 22),
@@ -427,7 +426,7 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         color: XiColors.divider,
         thickness: 1,
       ),
-    );
+    ));
   }
 
   @override
@@ -445,6 +444,9 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       theme: _lightTheme,
       darkTheme: _theme,
       routerConfig: appRouter,
+      builder: (context, child) => XiTypographyScope(
+        child: child ?? const SizedBox.shrink(),
+      ),
     );
   }
 }

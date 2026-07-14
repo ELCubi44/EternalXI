@@ -4,6 +4,7 @@ import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/email_change_confirm_response.dart';
 import 'package:eternal_xi/data/models/api_message_model.dart';
 import 'package:eternal_xi/data/models/auth_response_model.dart';
+import 'package:eternal_xi/data/models/oauth_providers_response.dart';
 import 'package:eternal_xi/data/models/register_response_model.dart';
 import 'package:eternal_xi/data/models/user_model.dart';
 
@@ -204,6 +205,78 @@ class AuthApiService {
     try {
       final response = await _apiClient.dio.post(path, data: payload);
       return ApiMessageModel.fromJson(response.data as Map<String, dynamic>);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<AuthResponseModel> loginWithGoogle({
+    required String idToken,
+    bool aceptaTerminos = false,
+    String? nickname,
+  }) async {
+    return _oauthLogin(
+      '${ApiConstants.auth}/oauth/google',
+      idToken: idToken,
+      aceptaTerminos: aceptaTerminos,
+      nickname: nickname,
+    );
+  }
+
+  Future<AuthResponseModel> loginWithApple({
+    required String idToken,
+    bool aceptaTerminos = false,
+    String? nickname,
+  }) async {
+    return _oauthLogin(
+      '${ApiConstants.auth}/oauth/apple',
+      idToken: idToken,
+      aceptaTerminos: aceptaTerminos,
+      nickname: nickname,
+    );
+  }
+
+  Future<ApiMessageModel> linkGoogle({required String idToken}) async {
+    return _postMessage('${ApiConstants.auth}/oauth/link/google', {
+      'idToken': idToken,
+    });
+  }
+
+  Future<ApiMessageModel> linkApple({required String idToken}) async {
+    return _postMessage('${ApiConstants.auth}/oauth/link/apple', {
+      'idToken': idToken,
+    });
+  }
+
+  Future<OAuthProvidersResponse> getOAuthProviders() async {
+    try {
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.auth}/oauth/providers',
+      );
+      return OAuthProvidersResponse.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<AuthResponseModel> _oauthLogin(
+    String path, {
+    required String idToken,
+    required bool aceptaTerminos,
+    String? nickname,
+  }) async {
+    try {
+      final response = await _apiClient.dio.post(
+        path,
+        data: {
+          'idToken': idToken,
+          'aceptaTerminos': aceptaTerminos,
+          if (nickname != null && nickname.isNotEmpty) 'nickname': nickname,
+        },
+      );
+      return AuthResponseModel.fromJson(response.data as Map<String, dynamic>);
     } catch (e) {
       throw ApiException(_apiClient.extractErrorMessage(e));
     }

@@ -176,7 +176,8 @@ public class AccountProgressService {
             ps.setLong(2, idUsuario);
             ps.executeUpdate();
         }
-        grantXp(conn, idUsuario, DAILY_LOGIN_XP, "DAILY_LOGIN", null, null, null);
+        grantXp(conn, idUsuario, DAILY_LOGIN_XP, "DAILY_LOGIN", "DAILY_LOGIN",
+                "Inicio de sesión", "Bonificación diaria");
     }
 
     public void onLeagueClosed(Connection conn, Long idLiga) throws SQLException {
@@ -193,6 +194,8 @@ public class AccountProgressService {
         }
         List<StandingRow> standings = loadFinalStandings(conn, idLiga);
         int n = standings.size();
+        String leagueName = loadLeagueName(conn, idLiga);
+        String leagueTitle = leagueName != null && !leagueName.isBlank() ? leagueName : "Liga";
         for (StandingRow row : standings) {
             if (row.idUsuario() == null) {
                 continue;
@@ -202,7 +205,11 @@ public class AccountProgressService {
             if (position == 1) {
                 leagueXp += 120;
             }
-            grantXp(conn, row.idUsuario(), (int) leagueXp, "LEAGUE_FINISH", null, null, null);
+            String leagueDesc = position == 1
+                    ? "Campeón · Liga finalizada"
+                    : "Puesto " + position + " · Liga finalizada";
+            grantXp(conn, row.idUsuario(), (int) leagueXp, "LEAGUE_FINISH",
+                    "LEAGUE_" + idLiga, leagueTitle, leagueDesc);
 
             if (position == 1) {
                 incrementWinLeagueAchievements(conn, row.idUsuario(), idLiga);
@@ -250,7 +257,10 @@ public class AccountProgressService {
         if (hasXpEventWithCode(conn, idUsuario, marker)) {
             return 0;
         }
-        grantXp(conn, idUsuario, ROUND_PARTICIPATION_XP, "XP", marker, "Jornada completada", null);
+        String leagueName = loadLeagueName(conn, idLiga);
+        String leagueTitle = leagueName != null && !leagueName.isBlank() ? leagueName : "Liga";
+        grantXp(conn, idUsuario, ROUND_PARTICIPATION_XP, "ROUND_FINISH",
+                marker, leagueTitle, "Jornada completada");
         return ROUND_PARTICIPATION_XP;
     }
 
@@ -512,7 +522,27 @@ public class AccountProgressService {
         if ("ACHIEVEMENT".equals(source)) {
             // evento de logro se inserta aparte
         } else {
-            insertXpEvent(conn, idUsuario, xp, null, null, null, null, null, totalAfter, xpInLevel, xpNext);
+            String codigo = achievementCode;
+            String titulo = achievementTitle;
+            String descripcion = achievementDesc;
+            if (titulo == null || titulo.isBlank()) {
+                titulo = switch (source) {
+                    case "DAILY_LOGIN" -> "Inicio de sesión";
+                    case "LEAGUE_FINISH" -> "Liga";
+                    case "ROUND_FINISH" -> "Liga";
+                    default -> "Experiencia";
+                };
+            }
+            if (descripcion == null || descripcion.isBlank()) {
+                descripcion = switch (source) {
+                    case "DAILY_LOGIN" -> "Bonificación diaria";
+                    case "LEAGUE_FINISH" -> "Liga finalizada";
+                    case "ROUND_FINISH" -> "Jornada completada";
+                    default -> null;
+                };
+            }
+            insertXpEvent(conn, idUsuario, xp, null, null, codigo, titulo, descripcion,
+                    totalAfter, xpInLevel, xpNext);
         }
 
         if (levelAfter > levelBefore) {
@@ -631,11 +661,12 @@ public class AccountProgressService {
         Map<String, Instant> unlocked = loadUnlockedAchievements(conn, idUsuario);
         int leagueWins = countLeagueWins(conn, idUsuario);
         int maxPacksInLeague = countMaxPackOpensInAnyLeague(conn, idUsuario);
+        int friendCount = countAcceptedFriends(conn, idUsuario);
         List<UserAchievementResponse> achievements = new ArrayList<>();
         for (AchievementCode def : AchievementCode.values()) {
             Instant at = unlocked.get(def.code());
             Integer target = def.progressTarget();
-            Integer actual = resolveProgressActual(def, target, leagueWins, maxPacksInLeague);
+            Integer actual = resolveProgressActual(def, target, leagueWins, maxPacksInLeague, friendCount);
             achievements.add(UserAchievementResponse.fromDefinition(def, at != null, at, actual, target));
         }
         List<UserProgressEventResponse> pending = loadPendingEvents(conn, idUsuario);
@@ -736,11 +767,45 @@ public class AccountProgressService {
         }
     }
 
+    public void onFriendshipAccepted(Long idUsuario) throws SQLException {
+        if (idUsuario == null) {
+            return;
+        }
+        try (Connection conn = DBConnection.getConnection()) {
+            int friends = countAcceptedFriends(conn, idUsuario);
+            if (friends >= 1) {
+                tryUnlock(conn, idUsuario, AchievementCode.FRIEND_1, null);
+            }
+            if (friends >= 5) {
+                tryUnlock(conn, idUsuario, AchievementCode.FRIEND_5, null);
+            }
+            if (friends >= 15) {
+                tryUnlock(conn, idUsuario, AchievementCode.FRIEND_15, null);
+            }
+        }
+    }
+
+    private int countAcceptedFriends(Connection conn, Long idUsuario) throws SQLException {
+        String sql = """
+                SELECT COUNT(*) FROM usuario_amistades
+                WHERE estado = 'ACEPTADA'
+                  AND (id_usuario_solicitante = ? OR id_usuario_destinatario = ?)
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idUsuario);
+            ps.setLong(2, idUsuario);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        }
+    }
+
     private Integer resolveProgressActual(
             AchievementCode def,
             Integer target,
             int leagueWins,
-            int maxPacksInLeague
+            int maxPacksInLeague,
+            int friendCount
     ) {
         if (target == null) {
             return null;
@@ -750,6 +815,8 @@ public class AccountProgressService {
                     Math.min(leagueWins, target);
             case PACKS_5, PACKS_10, PACKS_15, PACKS_20 ->
                     Math.min(maxPacksInLeague, target);
+            case FRIEND_1, FRIEND_5, FRIEND_15 ->
+                    Math.min(friendCount, target);
             default -> null;
         };
     }
@@ -927,6 +994,19 @@ public class AccountProgressService {
                     return null;
                 }
                 return new ParticipantInfo(idLigaParticipante, rs.getLong("id_usuario"));
+            }
+        }
+    }
+
+    private String loadLeagueName(Connection conn, Long idLiga) throws SQLException {
+        if (idLiga == null) {
+            return null;
+        }
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT nombre FROM ligas WHERE id = ?")) {
+            ps.setLong(1, idLiga);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getString("nombre") : null;
             }
         }
     }

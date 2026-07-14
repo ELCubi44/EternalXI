@@ -4,6 +4,7 @@ import 'package:eternal_xi/data/models/league_match_event.dart';
 import 'package:eternal_xi/data/models/league_match_lineup_models.dart';
 import 'package:eternal_xi/data/models/league_match_live_payload.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
+import 'package:eternal_xi/features/leagues/utils/league_match_event_importance.dart';
 import 'package:eternal_xi/features/leagues/utils/league_match_display_phase.dart';
 import 'package:flutter/foundation.dart';
 
@@ -198,7 +199,10 @@ List<LeagueMatchEvent> resolveLeagueMatchTimelineEvents({
       );
     }
   }
-  final renderable = applyLeagueMatchTimelineDisplayRules(raw);
+  final renderable = applyHalftimeGapTimelineRules(
+    applyLeagueMatchTimelineDisplayRules(raw),
+    phase: phase,
+  );
   if (kDebugMode) {
     debugPrint(
       '[match-timeline][render-list] total=${renderable.length} ids=${renderable.map((e) => e.idEvento).join(",")}',
@@ -209,6 +213,54 @@ List<LeagueMatchEvent> resolveLeagueMatchTimelineEvents({
 
 bool _isLoanPreMatchInfoEvent(LeagueMatchEvent e) {
   return isAnyLoanEvent(e);
+}
+
+/// Durante el descanso en vivo no se muestran jugadas entre marcadores de pausa.
+/// Con partido finalizado, las jugadas del hueco se reordenan antes del descanso.
+List<LeagueMatchEvent> applyHalftimeGapTimelineRules(
+  List<LeagueMatchEvent> events, {
+  required LeagueMatchDisplayPhase phase,
+}) {
+  if (events.isEmpty) {
+    return events;
+  }
+  final sorted = List<LeagueMatchEvent>.from(events)
+    ..sort(compareLeagueMatchEventsChrono);
+
+  int? breakIdx;
+  int? secondHalfIdx;
+  for (var i = 0; i < sorted.length; i++) {
+    if (isHalftimeBreakMarkerEvent(sorted[i])) {
+      breakIdx = i;
+    }
+    if (isSecondHalfStartMarkerEvent(sorted[i])) {
+      secondHalfIdx = i;
+    }
+  }
+
+  if (breakIdx == null) {
+    return sorted;
+  }
+
+  if (secondHalfIdx == null || secondHalfIdx <= breakIdx) {
+    if (phase == LeagueMatchDisplayPhase.live) {
+      return sorted.sublist(0, breakIdx + 1);
+    }
+    return sorted;
+  }
+
+  final head = sorted.sublist(0, breakIdx);
+  final gap = sorted.sublist(breakIdx + 1, secondHalfIdx);
+  final tail = sorted.sublist(secondHalfIdx);
+  return [...head, ...gap, sorted[breakIdx], ...tail];
+}
+
+/// Etiqueta de minuto para UI (′, no ?).
+String formatLeagueMatchMinuteLabel(int minute) {
+  if (minute <= 0) {
+    return "0′";
+  }
+  return '$minute′';
 }
 
 /// Minuto a mostrar en cabecera/listado cuando el partido está en juego.

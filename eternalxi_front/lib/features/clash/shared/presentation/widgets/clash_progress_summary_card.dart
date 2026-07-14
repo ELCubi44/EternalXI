@@ -58,7 +58,6 @@ class ClashProgressSummaryCard extends StatelessWidget {
               secondaryHint!,
               style: theme.textTheme.labelMedium?.copyWith(
                 color: context.xiTextSecondary,
-                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 8),
@@ -67,8 +66,7 @@ class ClashProgressSummaryCard extends StatelessWidget {
             Text(
               line,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             if (line != lines.last) const SizedBox(height: 4),
           ],

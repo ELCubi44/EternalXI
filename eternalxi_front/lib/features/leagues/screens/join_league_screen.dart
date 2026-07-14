@@ -12,7 +12,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class JoinLeagueScreen extends StatefulWidget {
-  const JoinLeagueScreen({super.key});
+  const JoinLeagueScreen({super.key, this.prefilledCode});
+
+  final String? prefilledCode;
 
   @override
   State<JoinLeagueScreen> createState() => _JoinLeagueScreenState();
@@ -23,6 +25,15 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
   final _codeController = TextEditingController();
   bool _submitting = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    final code = widget.prefilledCode?.trim();
+    if (code != null && code.isNotEmpty) {
+      _codeController.text = code;
+    }
+  }
 
   @override
   void dispose() {

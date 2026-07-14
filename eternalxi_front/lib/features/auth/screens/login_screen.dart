@@ -4,9 +4,11 @@ import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/core/utils/validators.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/auth/widgets/auth_shell.dart';
+import 'package:eternal_xi/features/auth/widgets/oauth_social_button.dart';
 import 'package:eternal_xi/shared/widgets/app_loading_overlay.dart';
 import 'package:eternal_xi/shared/widgets/app_primary_button.dart';
 import 'package:eternal_xi/shared/widgets/app_text_field.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -102,7 +104,56 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                   },
                 ),
+                const SizedBox(height: 22),
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: colorScheme.outline)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        l10n.oauthDividerLabel,
+                        style: TextStyle(color: colorScheme.outline),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: colorScheme.outline)),
+                  ],
+                ),
                 const SizedBox(height: 18),
+                OAuthLoginBubbles(
+                  isLoading: auth.isLoading,
+                  showApple:
+                      Theme.of(context).platform == TargetPlatform.iOS ||
+                      defaultTargetPlatform == TargetPlatform.android,
+                  onGoogle: () async {
+                    final ok = await auth.loginWithGoogle();
+                    if (!context.mounted) return;
+                    if (ok) {
+                      context.go(AppRoutes.mode);
+                    } else if (auth.errorMessage != null) {
+                      _showError(auth.errorMessage);
+                    }
+                  },
+                  onApple: () async {
+                    final ok = await auth.loginWithApple();
+                    if (!context.mounted) return;
+                    if (ok) {
+                      context.go(AppRoutes.mode);
+                    } else if (auth.errorMessage != null) {
+                      _showError(auth.errorMessage);
+                    }
+                  },
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  l10n.oauthSocialTermsNote,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12,
+                    height: 1.4,
+                    color: context.xiTextSecondary,
+                  ),
+                ),
+                const SizedBox(height: 8),
                 LayoutBuilder(
                   builder: (context, constraints) {
                     final isCompact = constraints.maxWidth < 380;

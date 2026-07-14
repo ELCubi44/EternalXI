@@ -48,6 +48,10 @@ public class AssetService {
         return getPhotoResource("entrenadores", id);
     }
 
+    public Resource getClashCardsCatalog() {
+        return toReadableResource(ETERNALXI_ROOT.resolve("assets/clash/cards.json"));
+    }
+
     private Resource getPhotoResource(String tableName, Long id) throws SQLException {
         String sql = "SELECT foto FROM " + tableName + " WHERE id = ?";
 
@@ -66,25 +70,33 @@ public class AssetService {
                     return null;
                 }
 
-                Path filePath = resolveAssetPath(tableName, foto);
-                if (filePath == null) {
+                Path resolvedPath = resolveAssetPath(tableName, foto);
+                if (resolvedPath == null) {
                     return null;
                 }
 
-                Resource resource;
-                try {
-                    resource = new UrlResource(filePath.toUri());
-                } catch (Exception e) {
-                    return null;
-                }
-
-                if (!resource.exists() || !resource.isReadable()) {
-                    return null;
-                }
-
-                return resource;
+                return toReadableResource(resolvedPath);
             }
         }
+    }
+
+    private Resource toReadableResource(Path filePath) {
+        if (filePath == null) {
+            return null;
+        }
+
+        Resource resource;
+        try {
+            resource = new UrlResource(filePath.toUri());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (!resource.exists() || !resource.isReadable()) {
+            return null;
+        }
+
+        return resource;
     }
 
     private Path resolveAssetPath(String tableName, String foto) {

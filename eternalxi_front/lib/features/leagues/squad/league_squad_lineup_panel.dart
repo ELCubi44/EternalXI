@@ -906,8 +906,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                   Text(
                     safeTitle,
                     style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                 if (safeSubtitle.isNotEmpty) ...[
                   if (safeTitle.isNotEmpty) const SizedBox(height: 6),
@@ -1084,7 +1083,6 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -1265,8 +1263,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                  ),
               ),
             ),
             if (showPctInline) ...[
@@ -1283,7 +1280,6 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                 child: Text(
                   '$pct%',
                   style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
                     color: starterTitularidadScaleOnBackground(pct),
                   ),
                 ),
@@ -1299,8 +1295,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
             Text(
               _ratingLabelSheet(player),
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+                ),
             ),
           ],
         ),
@@ -1328,7 +1323,6 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                 child: Text(
                   isTitular ? context.leagueL10n.starterLabel : context.leagueL10n.substitute,
                   style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
                     color: isTitular
                         ? colorScheme.onPrimaryContainer
                         : colorScheme.onSecondaryContainer,
@@ -1360,7 +1354,6 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                     Text(
                       context.leagueL10n.injured,
                       style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
                         color: colorScheme.onErrorContainer,
                       ),
                     ),
@@ -1392,7 +1385,6 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                     Text(
                       context.leagueL10n.suspended,
                       style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
                         color: colorScheme.onTertiaryContainer,
                       ),
                     ),
@@ -1446,8 +1438,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
                   child: Text(
                     l10n.captain,
                     style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                 ),
                 SizedBox(
@@ -1624,7 +1615,6 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
           textAlign: TextAlign.center,
           style: theme.textTheme.labelSmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w800,
             letterSpacing: 0.3,
           ),
         ),
@@ -1879,8 +1869,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
         title: Text(
           option.title,
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+            ),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 6),
@@ -1969,7 +1958,6 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
               color: highlighted
                   ? colorScheme.primary
                   : colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w700,
             ),
           ),
         ],
@@ -2361,7 +2349,6 @@ class _CoachPitchBubble extends StatelessWidget {
                     _pilaName,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: Colors.white,
-                      fontWeight: FontWeight.w700,
                       fontSize: 10,
                     ),
                     maxLines: 1,
@@ -2638,7 +2625,6 @@ class _PitchPlayerBubble extends StatelessWidget {
                           'C',
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.onTertiary,
-                            fontWeight: FontWeight.w800,
                             fontSize: 9,
                           ),
                         ),
@@ -2778,7 +2764,6 @@ class _PitchPlayerBubble extends StatelessWidget {
                             color: starterTitularidadScaleOnBackground(
                               player!.probabilidadTitular!,
                             ),
-                            fontWeight: FontWeight.w900,
                             fontSize: 9,
                             height: 1.0,
                           ),
@@ -2806,7 +2791,6 @@ class _PitchPlayerBubble extends StatelessWidget {
                           _ratingLabel(player!),
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.onPrimary,
-                            fontWeight: FontWeight.w800,
                             fontSize: 9,
                             height: 1.0,
                           ),
@@ -2834,7 +2818,6 @@ class _PitchPlayerBubble extends StatelessWidget {
                           _penaltyVisualLabel(penalizedEmpty!),
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: colorScheme.onError,
-                            fontWeight: FontWeight.w900,
                             fontSize: 9,
                             height: 1.0,
                           ),
@@ -2861,7 +2844,6 @@ class _PitchPlayerBubble extends StatelessWidget {
                   penalized ? label : _name(player, label),
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: Colors.white,
-                    fontWeight: FontWeight.w700,
                     fontSize: 10,
                   ),
                   maxLines: 1,

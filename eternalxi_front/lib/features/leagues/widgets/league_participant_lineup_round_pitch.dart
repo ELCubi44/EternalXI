@@ -305,7 +305,6 @@ class _RoundCoachBubble extends StatelessWidget {
                       '${coach.puntosEntrenadorJornada}',
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: theme.colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
@@ -323,7 +322,6 @@ class _RoundCoachBubble extends StatelessWidget {
               _displayName,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: Colors.white,
-                fontWeight: FontWeight.w700,
               ),
             ),
           ),
@@ -471,7 +469,6 @@ class _RoundPenalizedEmptyBubble extends StatelessWidget {
                     _penaltyVisualLabel(emptySlot),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: colorScheme.onError,
-                      fontWeight: FontWeight.w900,
                       fontSize: 9,
                       height: 1.0,
                     ),
@@ -564,7 +561,6 @@ class _RoundPitchPlayerBubble extends StatelessWidget {
                           badgeText,
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.onPrimaryContainer,
-                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
@@ -598,7 +594,6 @@ class _RoundPitchPlayerBubble extends StatelessWidget {
                         child: Text(
                           'C',
                           style: theme.textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.w800,
                             color: theme.colorScheme.onTertiary,
                           ),
                         ),
@@ -617,7 +612,6 @@ class _RoundPitchPlayerBubble extends StatelessWidget {
                   _displayName,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: Colors.white,
-                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),

@@ -44,13 +44,11 @@ class RewardSheetStyle {
   TextStyle titleStyle(TextTheme theme, {double? size}) =>
       (theme.titleMedium ?? const TextStyle()).copyWith(
         color: title,
-        fontWeight: FontWeight.w700,
         fontSize: size,
       );
 
   TextStyle playerNameStyle() => TextStyle(
         color: title,
-        fontWeight: FontWeight.w700,
         fontSize: 13,
         height: 1.15,
       );
@@ -58,7 +56,7 @@ class RewardSheetStyle {
   TextStyle metaStyle() => TextStyle(color: muted, fontSize: 10, height: 1.2);
 
   TextStyle chipTextStyle() =>
-      TextStyle(color: subtitle, fontSize: 9, fontWeight: FontWeight.w700);
+      TextStyle(color: subtitle, fontSize: 9);
 }
 
 ThemeData rewardSheetTheme(BuildContext context) {
@@ -86,7 +84,6 @@ ThemeData rewardSheetTheme(BuildContext context) {
       titleTextStyle: TextStyle(
         color: style.title,
         fontSize: 20,
-        fontWeight: FontWeight.w700,
       ),
       contentTextStyle: TextStyle(color: style.subtitle, height: 1.4),
     ),
@@ -94,7 +91,7 @@ ThemeData rewardSheetTheme(BuildContext context) {
       style: FilledButton.styleFrom(
         backgroundColor: XiColors.classicGold,
         foregroundColor: XiColors.nightBlue,
-        textStyle: const TextStyle(fontWeight: FontWeight.w800),
+        textStyle: const TextStyle(fontWeight: FontWeight.w400),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
@@ -107,11 +104,9 @@ ThemeData rewardSheetTheme(BuildContext context) {
     textTheme: base.textTheme.copyWith(
       titleLarge: base.textTheme.titleLarge?.copyWith(
         color: style.title,
-        fontWeight: FontWeight.w800,
       ),
       titleMedium: base.textTheme.titleMedium?.copyWith(
         color: style.title,
-        fontWeight: FontWeight.w700,
       ),
       bodyMedium: base.textTheme.bodyMedium?.copyWith(color: style.body),
       bodySmall: base.textTheme.bodySmall?.copyWith(color: style.muted),

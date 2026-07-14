@@ -263,7 +263,6 @@ class _LeagueParticipantSquadScreenState
                     style: TextStyle(
                       fontFamily: 'Lumiare',
                       fontSize: 11,
-                      fontWeight: FontWeight.w800,
                       color: lineColor,
                       letterSpacing: 1.5,
                     ),
@@ -284,7 +283,6 @@ class _LeagueParticipantSquadScreenState
                     style: TextStyle(
                       fontFamily: 'Lumiare',
                       fontSize: 11,
-                      fontWeight: FontWeight.w800,
                       color: lineColor,
                     ),
                   ),
@@ -450,8 +448,7 @@ class _LeagueParticipantSquadScreenState
             Text(
               'Este participante todavía no tiene una alineación guardada',
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
@@ -479,8 +476,7 @@ class _LeagueParticipantSquadScreenState
             Text(
               'No se pudo mostrar la alineación.',
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+                ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -499,7 +495,6 @@ class _LeagueParticipantSquadScreenState
         bannerText,
         style: theme.textTheme.bodySmall?.copyWith(
           color: colorScheme.onSurfaceVariant,
-          fontWeight: FontWeight.w600,
         ),
       ),
     );

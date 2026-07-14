@@ -258,8 +258,7 @@ class _LeaguePlayerOfferSheetState extends State<LeaguePlayerOfferSheet> {
           Text(
             widget._isEditing ? ll.updateOffer : ll.makeOffer,
             style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+              ),
           ),
           const SizedBox(height: 16),
           Row(
@@ -284,8 +283,7 @@ class _LeaguePlayerOfferSheetState extends State<LeaguePlayerOfferSheet> {
                     Text(
                       displayName,
                       style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                        ),
                     ),
                     const SizedBox(height: 4),
                     Row(
@@ -466,8 +464,7 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               value,
               style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                ),
             ),
           ),
         ],

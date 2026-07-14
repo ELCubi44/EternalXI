@@ -55,7 +55,6 @@ class LeagueRewardPointsAction extends StatelessWidget {
             unit: context.rewardsL10n.fichasUnit,
           ),
           style: theme.textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w800,
             color: colorScheme.onSecondaryContainer,
           ),
         ),

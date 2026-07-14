@@ -35,6 +35,19 @@ public class SchemaMigrationService {
                     """);
 
             exec(st, """
+                    CREATE TABLE IF NOT EXISTS liga_chat_mensajes (
+                        id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        id_liga      BIGINT        NOT NULL,
+                        id_usuario   BIGINT        NOT NULL,
+                        nickname     VARCHAR(50)   NOT NULL,
+                        texto        VARCHAR(500)  NOT NULL,
+                        creado_en    TIMESTAMP(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+                        INDEX idx_liga_chat_liga_fecha (id_liga, creado_en ASC, id ASC),
+                        INDEX idx_liga_chat_liga_id (id_liga, id ASC)
+                    )
+                    """);
+
+            exec(st, """
                     CREATE TABLE IF NOT EXISTS liga_chat_reportes (
                         id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                         id_liga BIGINT NOT NULL,
@@ -65,6 +78,35 @@ public class SchemaMigrationService {
                     """);
 
             exec(st, """
+                    CREATE TABLE IF NOT EXISTS liga_dm_mensajes (
+                        id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        id_liga         BIGINT        NOT NULL,
+                        id_emisor       BIGINT        NOT NULL,
+                        id_destino      BIGINT        NOT NULL,
+                        nickname_emisor VARCHAR(50)   NOT NULL,
+                        texto           VARCHAR(500)  NOT NULL,
+                        creado_en       TIMESTAMP(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+                        INDEX idx_liga_dm_par_fecha (id_liga, id_emisor, id_destino, creado_en ASC, id ASC),
+                        INDEX idx_liga_dm_par_rev (id_liga, id_destino, id_emisor, creado_en ASC, id ASC),
+                        INDEX idx_liga_dm_liga_id (id_liga, id ASC)
+                    )
+                    """);
+
+            exec(st, """
+                    CREATE TABLE IF NOT EXISTS usuario_amistades (
+                        id                      BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        id_usuario_solicitante  BIGINT        NOT NULL,
+                        id_usuario_destinatario BIGINT        NOT NULL,
+                        estado                  VARCHAR(20)   NOT NULL DEFAULT 'PENDIENTE',
+                        creado_en               TIMESTAMP(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+                        respondida_en           TIMESTAMP(3)  NULL,
+                        UNIQUE KEY uk_amistad_par (id_usuario_solicitante, id_usuario_destinatario),
+                        INDEX idx_amistad_dest_estado (id_usuario_destinatario, estado),
+                        INDEX idx_amistad_sol_estado (id_usuario_solicitante, estado)
+                    )
+                    """);
+
+            exec(st, """
                     CREATE TABLE IF NOT EXISTS clash_claim (
                         id               BIGINT AUTO_INCREMENT PRIMARY KEY,
                         id_usuario       BIGINT        NOT NULL,
@@ -79,6 +121,20 @@ public class SchemaMigrationService {
                         created_at       TIMESTAMP(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
                         processed_at     TIMESTAMP(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
                         UNIQUE KEY uk_clash_claim_usuario_claim (id_usuario, claim_id)
+                    )
+                    """);
+
+            exec(st, """
+                    CREATE TABLE IF NOT EXISTS usuario_oauth (
+                        id                      BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        id_usuario              BIGINT        NOT NULL,
+                        proveedor               VARCHAR(20)   NOT NULL,
+                        proveedor_usuario_id    VARCHAR(255)  NOT NULL,
+                        email                   VARCHAR(190)  NULL,
+                        creado_en               TIMESTAMP(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+                        UNIQUE KEY uk_oauth_proveedor_uid (proveedor, proveedor_usuario_id),
+                        UNIQUE KEY uk_oauth_usuario_proveedor (id_usuario, proveedor),
+                        INDEX idx_oauth_usuario (id_usuario)
                     )
                     """);
 

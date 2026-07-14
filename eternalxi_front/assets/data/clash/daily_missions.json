@@ -57,6 +57,14 @@
           "quantity": 1
         }
       }
+    },
+    {
+      "id": "daily-play-chain",
+      "title": "Juega Cadena XI",
+      "description": "Completa un piso de Desafíos Cadena XI.",
+      "type": "playChainTrial",
+      "target": 1,
+      "reward": { "coins": 250 }
     }
   ]
 }

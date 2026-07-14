@@ -33,8 +33,7 @@ class ClashMatchStatusBanner extends StatelessWidget {
             messages.primary,
             textAlign: TextAlign.center,
             style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+              ),
           ),
           if (messages.secondary != null) ...[
             const SizedBox(height: 4),

@@ -27,8 +27,9 @@ extension XiThemeExtension on BuildContext {
   Color get xiTextPrimary =>
       isXiDark ? XiColors.warmWhite : XiColors.nightBlue;
 
-  Color get xiTextSecondary =>
-      isXiDark ? XiColors.warmWhite : XiColors.nightBlue;
+  Color get xiTextSecondary => isXiDark
+      ? XiColors.warmWhite.withValues(alpha: 0.72)
+      : XiColors.steelGray;
 
   Color get xiHeaderTitle => isXiDark ? XiColors.warmWhite : XiColors.nightBlue;
 

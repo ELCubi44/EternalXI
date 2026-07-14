@@ -78,7 +78,7 @@ class _ClashStoryRewardScreenState extends State<ClashStoryRewardScreen> {
             l10n.clashStoryRewardTitle,
             style: Theme.of(
               context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+            ).textTheme.headlineSmall?.copyWith(),
           ),
           const SizedBox(height: 16),
           _StoryGrantedRewards(
@@ -98,7 +98,6 @@ class _ClashStoryRewardScreenState extends State<ClashStoryRewardScreen> {
               child: Text(
                 l10n.clashStoryTeamFormed,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),

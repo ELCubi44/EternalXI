@@ -77,7 +77,6 @@ class ClashMatchStatusChip extends StatelessWidget {
       label: Text(
         resolved.label,
         style: theme.textTheme.labelLarge?.copyWith(
-          fontWeight: FontWeight.w800,
           color: accent,
         ),
       ),

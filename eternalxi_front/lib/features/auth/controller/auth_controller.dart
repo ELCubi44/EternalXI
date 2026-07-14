@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:eternal_xi/core/auth/oauth_sign_in_service.dart';
 import 'package:eternal_xi/core/storage/secure_storage_service.dart';
+import 'package:eternal_xi/data/models/auth_response_model.dart';
 import 'package:eternal_xi/data/models/email_change_confirm_response.dart';
+import 'package:eternal_xi/data/models/oauth_providers_response.dart';
 import 'package:eternal_xi/data/models/user_model.dart';
 import 'package:eternal_xi/data/services/auth_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
@@ -36,12 +39,16 @@ class AuthController extends ChangeNotifier {
   final AuthApiService _authApiService;
   final SecureStorageService _secureStorageService;
   final UserApiService _userApiService;
+  final OAuthSignInService _oauthSignInService = OAuthSignInService();
 
   StreamSubscription<String>? _pushTokenRefreshSubscription;
 
   UserModel? currentUser;
+  OAuthProvidersResponse? oauthProviders;
+  bool isLoadingOAuthProviders = false;
   bool isLoading = false;
   String? errorMessage;
+  String? successMessage;
 
   void _setLoading(bool value) {
     isLoading = value;
@@ -50,6 +57,35 @@ class AuthController extends ChangeNotifier {
 
   void clearError() {
     errorMessage = null;
+    successMessage = null;
+    notifyListeners();
+  }
+
+  Future<void> loadOAuthProviders() async {
+    if (currentUser == null) {
+      oauthProviders = null;
+      notifyListeners();
+      return;
+    }
+    isLoadingOAuthProviders = true;
+    notifyListeners();
+    try {
+      oauthProviders = await _authApiService.getOAuthProviders();
+    } catch (e) {
+      debugPrint('loadOAuthProviders failed: $e');
+    } finally {
+      isLoadingOAuthProviders = false;
+      notifyListeners();
+    }
+  }
+
+  void markProviderLinked({bool? google, bool? apple}) {
+    final current = oauthProviders ??
+        const OAuthProvidersResponse(google: false, apple: false);
+    oauthProviders = OAuthProvidersResponse(
+      google: google ?? current.google,
+      apple: apple ?? current.apple,
+    );
     notifyListeners();
   }
 
@@ -93,6 +129,7 @@ class AuthController extends ChangeNotifier {
       }
 
       await _syncPushTokenForCurrentUser();
+      await loadOAuthProviders();
       return true;
     } catch (e) {
       errorMessage = e.toString().replaceFirst('Exception: ', '');
@@ -148,6 +185,7 @@ class AuthController extends ChangeNotifier {
       currentUser = result.user;
 
       await _syncPushTokenForCurrentUser();
+      await loadOAuthProviders();
       return true;
     } catch (e) {
       errorMessage = e.toString().replaceFirst('Exception: ', '');
@@ -155,6 +193,122 @@ class AuthController extends ChangeNotifier {
     } finally {
       _setLoading(false);
     }
+  }
+
+  Future<bool> loginWithGoogle({bool aceptaTerminos = true}) async {
+    _setLoading(true);
+    errorMessage = null;
+    try {
+      final idToken = await _oauthSignInService.signInWithGoogle();
+      if (idToken == null) {
+        return false;
+      }
+      final result = await _authApiService.loginWithGoogle(
+        idToken: idToken,
+        aceptaTerminos: aceptaTerminos,
+      );
+      return _persistOAuthSession(result);
+    } catch (e) {
+      errorMessage = e.toString().replaceFirst('Exception: ', '');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> loginWithApple({bool aceptaTerminos = true}) async {
+    _setLoading(true);
+    errorMessage = null;
+    try {
+      final idToken = await _oauthSignInService.signInWithApple();
+      if (idToken == null) {
+        return false;
+      }
+      final result = await _authApiService.loginWithApple(
+        idToken: idToken,
+        aceptaTerminos: aceptaTerminos,
+      );
+      return _persistOAuthSession(result);
+    } catch (e) {
+      errorMessage = e.toString().replaceFirst('Exception: ', '');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> linkGoogleAccount() async {
+    final userId = currentUser?.id;
+    if (userId == null) {
+      return false;
+    }
+    if (oauthProviders?.google == true) {
+      return true;
+    }
+    _setLoading(true);
+    errorMessage = null;
+    successMessage = null;
+    try {
+      final idToken = await _oauthSignInService.signInWithGoogle(
+        forceAccountPicker: true,
+      );
+      if (idToken == null) {
+        return false;
+      }
+      await _authApiService.linkGoogle(idToken: idToken);
+      markProviderLinked(google: true);
+      await loadOAuthProviders();
+      successMessage = 'Google vinculado';
+      return true;
+    } catch (e) {
+      errorMessage = e.toString().replaceFirst('Exception: ', '');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> linkAppleAccount() async {
+    final userId = currentUser?.id;
+    if (userId == null) {
+      return false;
+    }
+    if (oauthProviders?.apple == true) {
+      return true;
+    }
+    _setLoading(true);
+    errorMessage = null;
+    successMessage = null;
+    try {
+      final idToken = await _oauthSignInService.signInWithApple();
+      if (idToken == null) {
+        return false;
+      }
+      await _authApiService.linkApple(idToken: idToken);
+      markProviderLinked(apple: true);
+      await loadOAuthProviders();
+      successMessage = 'Apple vinculado';
+      return true;
+    } catch (e) {
+      errorMessage = e.toString().replaceFirst('Exception: ', '');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> _persistOAuthSession(AuthResponseModel result) async {
+    await _secureStorageService.saveSession(
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+      tokenType: result.tokenType,
+      user: result.user,
+    );
+    currentUser = result.user;
+    await _syncPushTokenForCurrentUser();
+    await loadOAuthProviders();
+    notifyListeners();
+    return true;
   }
 
   Future<void> logout() async {
@@ -165,7 +319,9 @@ class AuthController extends ChangeNotifier {
   Future<void> forceLogout() async {
     await _secureStorageService.clearAuthSession();
     currentUser = null;
+    oauthProviders = null;
     errorMessage = null;
+    successMessage = null;
     notifyListeners();
   }
 

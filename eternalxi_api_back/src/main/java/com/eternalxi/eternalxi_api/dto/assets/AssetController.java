@@ -46,6 +46,16 @@ public class AssetController {
         return photoResponse(assetService.getManagerPhoto(id), "No se ha encontrado la foto del entrenador");
     }
 
+    @GetMapping(value = "/clash/cards.json", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getClashCardsCatalog() {
+        Resource resource = assetService.getClashCardsCatalog();
+        if (resource == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiMessageResponse("No se ha encontrado el catalogo Clash"));
+        }
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(resource);
+    }
+
     private ResponseEntity<?> photoResponse(Resource resource, String notFoundMessage) {
         if (resource == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

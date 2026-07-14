@@ -3,6 +3,8 @@ import 'package:eternal_xi/core/network/api_client.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/league_activity_event.dart';
 import 'package:eternal_xi/data/models/league_chat_message.dart';
+import 'package:eternal_xi/data/models/league_dm_message.dart';
+import 'package:eternal_xi/data/models/league_dm_thread.dart';
 import 'package:eternal_xi/data/models/league_calendar_models.dart';
 import 'package:eternal_xi/data/models/catalog_team_player.dart';
 import 'package:eternal_xi/data/models/catalog_team_squad.dart';
@@ -572,6 +574,24 @@ class LeaguesApiService {
         );
       }
       return result;
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<void> inviteFriendToLeague({
+    required int idLiga,
+    required int idUsuario,
+    required int idAmigo,
+  }) async {
+    try {
+      await _apiClient.dio.post(
+        '${ApiConstants.leagues}/$idLiga/invite-friend',
+        data: <String, dynamic>{
+          'idUsuario': idUsuario,
+          'idAmigo': idAmigo,
+        },
+      );
     } catch (e) {
       throw ApiException(_apiClient.extractErrorMessage(e));
     }
@@ -1250,6 +1270,80 @@ class LeaguesApiService {
           if (motivo != null && motivo.trim().isNotEmpty) 'motivo': motivo.trim(),
         },
       );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  /// GET /leagues/{idLiga}/dm/threads
+  Future<List<LeagueDmThread>> getLeagueDmThreads({
+    required int idLiga,
+    required int idUsuario,
+  }) async {
+    try {
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.leagues}/$idLiga/dm/threads',
+        queryParameters: {'idUsuario': idUsuario},
+      );
+      return LeagueDmThread.listFrom(response.data);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  /// GET /leagues/{idLiga}/dm/{idPeer}
+  Future<List<LeagueDmMessage>> getLeagueDmMessages({
+    required int idLiga,
+    required int idUsuario,
+    required int idPeer,
+    int? afterId,
+    bool recent = false,
+    int limit = 100,
+  }) async {
+    try {
+      final params = <String, dynamic>{
+        'idUsuario': idUsuario,
+        'limit': limit,
+      };
+      if (recent) {
+        params['recent'] = true;
+      } else if (afterId != null) {
+        params['afterId'] = afterId;
+      }
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.leagues}/$idLiga/dm/$idPeer',
+        queryParameters: params,
+      );
+      return LeagueDmMessage.listFrom(response.data);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  /// POST /leagues/{idLiga}/dm/{idPeer}
+  Future<LeagueDmMessage> postLeagueDmMessage({
+    required int idLiga,
+    required int idUsuario,
+    required int idPeer,
+    required String texto,
+  }) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '${ApiConstants.leagues}/$idLiga/dm/$idPeer',
+        data: <String, dynamic>{
+          'idUsuario': idUsuario,
+          'idDestino': idPeer,
+          'texto': texto,
+        },
+      );
+      final data = response.data;
+      if (data is! Map) {
+        throw ApiException('Respuesta de mensaje privado inválida');
+      }
+      final m = data is Map<String, dynamic>
+          ? data
+          : Map<String, dynamic>.from(data);
+      return LeagueDmMessage.fromJson(m);
     } catch (e) {
       throw ApiException(_apiClient.extractErrorMessage(e));
     }

@@ -55,6 +55,20 @@
           "label": "Ticket de invocación inicial"
         }
       ]
+    },
+    {
+      "id": "shop-chain-xi-kit",
+      "name": "Kit Cadena XI",
+      "description": "Dos libros técnicos para potenciar supertécnicas en Desafíos.",
+      "costCoins": 650,
+      "grants": [
+        {
+          "type": "techniqueBook",
+          "id": "basic-technique-book",
+          "quantity": 2,
+          "label": "Libro técnico básico"
+        }
+      ]
     }
   ]
 }

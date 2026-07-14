@@ -303,8 +303,7 @@ class _LeaguePlayerProfileRoundsSectionState
                     child: Text(
                       ll.roundHistoryByMatchdays,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                        ),
                     ),
                   ),
                 ],
@@ -337,7 +336,6 @@ class _LeaguePlayerProfileRoundsSectionState
                       },
                       visualDensity: VisualDensity.compact,
                       labelStyle: theme.textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
                         color: sel
                             ? colorScheme.onSecondaryContainer
                             : colorScheme.onSurface,
@@ -378,8 +376,7 @@ class _LeaguePlayerProfileRoundsSectionState
                             ? ll.matchday(stat.numeroJornada)
                             : '—',
                         style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                          ),
                       ),
                       if (stat.estadoJornada.trim().isNotEmpty) ...[
                         const SizedBox(height: 4),
@@ -387,7 +384,6 @@ class _LeaguePlayerProfileRoundsSectionState
                           _estadoBonito(stat.estadoJornada, ll),
                           style: theme.textTheme.labelMedium?.copyWith(
                             color: colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
@@ -475,7 +471,6 @@ class _StatLine extends StatelessWidget {
             child: Text(
               label,
               style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
@@ -483,7 +478,6 @@ class _StatLine extends StatelessWidget {
           Text(
             value,
             style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w900,
               color: emphasized ? const Color(0xFFFF6D00) : null,
             ),
           ),

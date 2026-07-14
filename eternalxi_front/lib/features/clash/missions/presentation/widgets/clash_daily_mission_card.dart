@@ -65,8 +65,7 @@ class ClashDailyMissionCard extends StatelessWidget {
                 child: Text(
                   mission.title,
                   style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                    ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -93,8 +92,7 @@ class ClashDailyMissionCard extends StatelessWidget {
           Text(
             l10n.clashDailyMissionsProgress(progress.current, mission.target),
             style: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+              ),
           ),
           const SizedBox(height: 12),
           ClashRewardPreviewRow(

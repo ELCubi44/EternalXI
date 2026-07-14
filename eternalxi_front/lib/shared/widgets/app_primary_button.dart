@@ -125,7 +125,6 @@ class _AppPrimaryButtonState extends State<AppPrimaryButton>
                           fontFamily: 'Lumiare',
                           color: XiColors.warmWhite,
                           fontSize: 15,
-                          fontWeight: FontWeight.w800,
                           letterSpacing: 0.6,
                         ),
                       ),

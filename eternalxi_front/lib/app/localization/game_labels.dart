@@ -68,6 +68,8 @@ abstract final class GameLabels {
         return isEn ? 'Cards' : 'Cartas';
       case 'REWARDS':
         return isEn ? 'Rewards' : 'Recompensas';
+      case 'SOCIAL':
+        return isEn ? 'Social' : 'Social';
       default:
         return code;
     }

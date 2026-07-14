@@ -39,6 +39,8 @@ class ClashStoryController extends ChangeNotifier {
 
   bool get clashTeamUnlocked => _progress.clashTeamUnlocked;
 
+  bool get isSummonUnlocked => _storyRepository.isSummonUnlocked(_progress);
+
   Future<void> load() async {
     if (_state == ClashStoryLoadState.loading) {
       return;
@@ -48,6 +50,7 @@ class ClashStoryController extends ChangeNotifier {
     notifyListeners();
 
     try {
+      await _storyRepository.ensureSummonUnlocked();
       _progress = _storyRepository.loadProgress();
       _sagas = await _storyRepository.loadSagas();
       if (_sagas.isNotEmpty) {

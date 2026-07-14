@@ -88,6 +88,14 @@
       "type": "unlockSkillNode",
       "target": 3,
       "reward": { "coins": 3000 }
+    },
+    {
+      "id": "weekly-play-chain",
+      "title": "Completa 5 pisos Cadena XI",
+      "description": "Gana 5 pisos en Desafíos Cadena XI esta semana.",
+      "type": "playChainTrial",
+      "target": 5,
+      "reward": { "gems": 3 }
     }
   ]
 }

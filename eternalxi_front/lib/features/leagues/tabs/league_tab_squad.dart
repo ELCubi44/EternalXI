@@ -781,7 +781,6 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                     style: TextStyle(
                       fontFamily: 'Lumiare',
                       fontSize: 11,
-                      fontWeight: FontWeight.w800,
                       color: lineColor,
                       letterSpacing: 1.5,
                     ),
@@ -799,7 +798,6 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                     style: TextStyle(
                       fontFamily: 'Lumiare',
                       fontSize: 11,
-                      fontWeight: FontWeight.w800,
                       color: lineColor,
                     ),
                   ),
@@ -889,7 +887,6 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                   style: TextStyle(
                     fontFamily: 'Lumiare',
                     fontSize: 14,
-                    fontWeight: FontWeight.w900,
                     color: context.xiTextPrimary,
                     letterSpacing: 2,
                   ),
@@ -901,7 +898,6 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
                     style: TextStyle(
                       fontFamily: 'Lumiare',
                       fontSize: 22,
-                      fontWeight: FontWeight.w700,
                       color: context.xiTextPrimary,
                       letterSpacing: 0.5,
                       height: 1.1,
@@ -1150,7 +1146,6 @@ class _LineupFetchError extends StatelessWidget {
             style: const TextStyle(
               fontFamily: 'Lumiare',
               fontSize: 15,
-              fontWeight: FontWeight.w800,
               color: XiColors.warmWhite,
             ),
             textAlign: TextAlign.center,
@@ -1222,7 +1217,6 @@ class _SquadEmpty extends StatelessWidget {
             style: const TextStyle(
               fontFamily: 'Lumiare',
               fontSize: 16,
-              fontWeight: FontWeight.w800,
               color: XiColors.warmWhite,
             ),
             textAlign: TextAlign.center,
@@ -1301,7 +1295,7 @@ class _XiSquadTabSelector extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: 'Lumiare',
                   fontSize: 12,
-                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                  fontWeight: FontWeight.w400,
                   color: isSelected ? color : context.xiTextPrimary,
                 ),
               ),
@@ -1343,7 +1337,6 @@ class _XiActionButton extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'Lumiare',
                 fontSize: 13,
-                fontWeight: FontWeight.w800,
                 color: color,
               ),
             ),
@@ -1400,7 +1393,6 @@ class _SquadActionChip extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: 'Lumiare',
                   fontSize: 11,
-                  fontWeight: FontWeight.w700,
                   color: effectiveColor,
                 ),
               ),

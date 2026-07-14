@@ -50,8 +50,7 @@ class ClashInventoryItemTile extends StatelessWidget {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
+                            ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -70,7 +69,6 @@ class ClashInventoryItemTile extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.w800,
                               color: accent,
                             ),
                           ),
@@ -104,7 +102,6 @@ class ClashInventoryItemTile extends StatelessWidget {
                           _usageLabel(l10n, item.usageHint),
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -177,7 +174,6 @@ class _CategoryBadge extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w700,
           color: color,
         ),
       ),

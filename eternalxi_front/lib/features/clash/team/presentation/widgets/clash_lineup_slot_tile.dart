@@ -77,7 +77,6 @@ class ClashLineupSlotTile extends StatelessWidget {
                             Text(
                               l10n.clashLineupChooseSlot,
                               style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w800,
                                 color: accent,
                               ),
                             ),
@@ -89,7 +88,6 @@ class ClashLineupSlotTile extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w800,
                             color: context.xiTextPrimary,
                           ),
                         ),
@@ -146,7 +144,6 @@ class _PositionBadge extends StatelessWidget {
         _shortLabel(position),
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w900,
           color: accent,
         ),
       ),
@@ -182,7 +179,6 @@ class _MiniChip extends StatelessWidget {
       child: Text(
         text,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w700,
           color: color,
         ),
       ),

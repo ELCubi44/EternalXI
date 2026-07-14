@@ -212,7 +212,7 @@ class _InfoTile extends StatelessWidget {
             value,
             style: Theme.of(
               context,
-            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+            ).textTheme.titleSmall?.copyWith(),
           ),
         ],
       ),

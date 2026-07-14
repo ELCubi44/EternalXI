@@ -203,14 +203,12 @@ class _LineupTeamField extends StatelessWidget {
                         label,
                         style: theme.textTheme.labelMedium?.copyWith(
                           color: colorScheme.primary,
-                          fontWeight: FontWeight.w900,
                         ),
                       ),
                       Text(
                         teamName.trim().isEmpty ? ll.genericTeam : teamName.trim(),
                         style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                          ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -218,7 +216,6 @@ class _LineupTeamField extends StatelessWidget {
                         formationLabel,
                         style: theme.textTheme.labelLarge?.copyWith(
                           color: colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w700,
                           letterSpacing: 0.4,
                         ),
                       ),
@@ -286,8 +283,7 @@ class _LineupTeamField extends StatelessWidget {
               Text(
                 ll.substitutesLabel,
                 style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+                  ),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -394,8 +390,7 @@ class _BenchChip extends StatelessWidget {
           Text(
             name.isEmpty ? ll.genericPlayer : name,
             style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+              ),
           ),
         ],
       ),
@@ -451,7 +446,6 @@ class _FieldPlayerBubble extends StatelessWidget {
             short.isEmpty ? ll.genericPlayer : short,
             style: theme.textTheme.labelSmall?.copyWith(
               color: Colors.white,
-              fontWeight: FontWeight.w700,
               fontSize: 10,
             ),
             maxLines: 1,

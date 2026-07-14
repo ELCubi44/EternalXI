@@ -39,8 +39,7 @@ class ClashMatchHistoryPanel extends StatelessWidget {
           Text(
             l10n.clashMatchEventLogTitle,
             style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+              ),
           ),
           const SizedBox(height: 8),
           ConstrainedBox(

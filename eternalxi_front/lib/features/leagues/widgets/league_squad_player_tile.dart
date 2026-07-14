@@ -91,8 +91,7 @@ class LeagueSquadPlayerTile extends StatelessWidget {
                   child: Text(
                     displayName,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+                      ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -167,7 +166,6 @@ class LeagueSquadPlayerTile extends StatelessWidget {
                   child: Text(
                     pointsLabel,
                     style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
                       color: pointsOrange,
                       height: 1.0,
                     ),
@@ -194,7 +192,6 @@ class LeagueSquadPlayerTile extends StatelessWidget {
                         child: Text(
                           teamName.isEmpty ? '—' : teamName,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
                             color: colorScheme.onSurface,
                           ),
                           maxLines: 2,
@@ -305,7 +302,7 @@ class _StatPill extends StatelessWidget {
             child: Text(
               text,
               style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: emphasize ? FontWeight.w800 : FontWeight.w600,
+                fontWeight: FontWeight.w400,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

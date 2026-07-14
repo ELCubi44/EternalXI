@@ -70,7 +70,6 @@ class _ClashStoryMapScreenState extends State<ClashStoryMapScreen> {
               child: Text(
                 l10n.clashHomeStory,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
                   color: context.xiTextPrimary,
                 ),
               ),
@@ -83,7 +82,7 @@ class _ClashStoryMapScreenState extends State<ClashStoryMapScreen> {
             saga.title,
             style: Theme.of(
               context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+            ).textTheme.titleMedium?.copyWith(),
           ),
           const SizedBox(height: 4),
           Text(

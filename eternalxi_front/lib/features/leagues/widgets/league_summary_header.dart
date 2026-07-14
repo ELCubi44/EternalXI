@@ -123,7 +123,6 @@ class LeagueSummaryHeader extends StatelessWidget {
               style: theme.textTheme.titleMedium?.copyWith(
                 fontFamily: 'monospace',
                 letterSpacing: 0.8,
-                fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 16),
@@ -211,8 +210,7 @@ class _MetricTile extends StatelessWidget {
             Text(
               value,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+                ),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

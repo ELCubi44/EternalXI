@@ -239,7 +239,7 @@ class _TeamStandingsHeader extends StatelessWidget {
         textAlign: alignLeft ? TextAlign.left : TextAlign.right,
         style: theme.textTheme.labelSmall?.copyWith(
           color: colorScheme.onSurfaceVariant,
-          fontWeight: bold ? FontWeight.w800 : FontWeight.w700,
+          fontWeight: FontWeight.w400,
         ),
       ),
     );
@@ -313,8 +313,7 @@ class _TeamStandingsRow extends StatelessWidget {
                     row.nombreEquipo.trim().isEmpty ? '—' : row.nombreEquipo.trim(),
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                 ),
               ],
@@ -347,7 +346,7 @@ class _TeamStandingsRow extends StatelessWidget {
         text,
         textAlign: TextAlign.right,
         style: theme.textTheme.bodySmall?.copyWith(
-          fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
+          fontWeight: FontWeight.w400,
         ),
       ),
     );

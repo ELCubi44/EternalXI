@@ -20,6 +20,9 @@ class AccountProgressController extends ChangeNotifier {
   bool isFromCache = false;
   bool isPlayingCelebration = false;
 
+  bool get hasPendingCelebration =>
+      progress != null && progress!.eventosPendientes.isNotEmpty;
+
   void _setLoading(bool value) {
     isLoading = value;
     notifyListeners();

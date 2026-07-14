@@ -53,8 +53,7 @@ class ClashHelpTopicCard extends StatelessWidget {
                       Text(
                         topic.title,
                         style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                          ),
                       ),
                       const SizedBox(height: 6),
                       ClashStoryLevelStatusChip(

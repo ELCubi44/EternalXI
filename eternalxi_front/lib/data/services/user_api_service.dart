@@ -7,6 +7,8 @@ import 'package:eternal_xi/data/models/user_notification_item.dart';
 import 'package:eternal_xi/data/models/user_preferences_response.dart';
 import 'package:eternal_xi/data/models/user_resources_response.dart';
 import 'package:eternal_xi/data/models/user_model.dart';
+import 'package:eternal_xi/data/models/friendship.dart';
+import 'package:eternal_xi/data/models/user_search_result.dart';
 
 class UserApiService {
   UserApiService(this._apiClient);
@@ -198,6 +200,101 @@ class UserApiService {
           'plataforma': plataforma,
           'deviceId': deviceId,
         },
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<List<Friendship>> listFriendships({required int idUsuario}) async {
+    try {
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.users}/$idUsuario/friends',
+      );
+      return Friendship.listFrom(response.data);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<List<UserSearchResult>> searchUsers({
+    required int idUsuario,
+    required String query,
+  }) async {
+    try {
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.users}/$idUsuario/friends/search',
+        queryParameters: {'q': query.trim()},
+      );
+      return UserSearchResult.listFrom(response.data);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<Friendship> sendFriendRequest({
+    required int idUsuario,
+    required int idAmigo,
+  }) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '${ApiConstants.users}/$idUsuario/friends',
+        data: {'idAmigo': idAmigo},
+      );
+      final data = response.data;
+      if (data is! Map) {
+        throw ApiException('Respuesta de amistad inválida');
+      }
+      final m = data is Map<String, dynamic>
+          ? data
+          : Map<String, dynamic>.from(data);
+      return Friendship.fromJson(m);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<Friendship> acceptFriendRequest({
+    required int idUsuario,
+    required int idAmistad,
+  }) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '${ApiConstants.users}/$idUsuario/friends/$idAmistad/accept',
+      );
+      final data = response.data;
+      if (data is! Map) {
+        throw ApiException('Respuesta de amistad inválida');
+      }
+      final m = data is Map<String, dynamic>
+          ? data
+          : Map<String, dynamic>.from(data);
+      return Friendship.fromJson(m);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<void> rejectFriendRequest({
+    required int idUsuario,
+    required int idAmistad,
+  }) async {
+    try {
+      await _apiClient.dio.delete(
+        '${ApiConstants.users}/$idUsuario/friends/requests/$idAmistad',
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<void> removeFriend({
+    required int idUsuario,
+    required int idAmigo,
+  }) async {
+    try {
+      await _apiClient.dio.delete(
+        '${ApiConstants.users}/$idUsuario/friends/$idAmigo',
       );
     } catch (e) {
       throw ApiException(_apiClient.extractErrorMessage(e));

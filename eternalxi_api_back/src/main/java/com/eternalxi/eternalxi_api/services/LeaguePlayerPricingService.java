@@ -42,17 +42,18 @@ public class LeaguePlayerPricingService {
      */
     public double estimateRatingFromMarketValue(long marketValue, String position) {
         String pos = position == null ? "MED" : position;
+        double cap = LeagueDynamicValuePolicy.maxFantasyRatingCap(pos);
         long v = Math.max(ABSOLUTE_MIN_MARKET_VALUE, marketValue);
-        long valueAt99 = calculateValueFromDynamicRating(99.0, pos);
-        if (v >= valueAt99) {
-            return 99.0;
+        long valueAtCap = calculateValueFromDynamicRating(cap, pos);
+        if (v >= valueAtCap) {
+            return cap;
         }
         long valueAt60 = calculateValueFromDynamicRating(60.0, pos);
         if (v <= valueAt60) {
             return 60.0;
         }
         double lo = 60.0;
-        double hi = 99.0;
+        double hi = cap;
         for (int i = 0; i < 42; i++) {
             double mid = (lo + hi) / 2.0;
             long pv = calculateValueFromDynamicRating(mid, pos);
@@ -63,7 +64,7 @@ public class LeaguePlayerPricingService {
             }
         }
         double mid = (lo + hi) / 2.0;
-        return Math.round(mid * 100.0) / 100.0;
+        return Math.min(cap, Math.round(mid * 100.0) / 100.0);
     }
 
     public long getFloorValueForRating(double rating) {
@@ -131,10 +132,10 @@ public class LeaguePlayerPricingService {
         }
 
         return switch (position.trim().toUpperCase()) {
-            case "DEL" -> 1.08;
-            case "MED" -> 1.03;
+            case "DEL" -> 1.02;
+            case "MED" -> 1.02;
             case "DEF" -> 1.00;
-            case "POR" -> 0.95;
+            case "POR" -> 0.96;
             default -> 1.0;
         };
     }

@@ -5,5 +5,6 @@ public enum AchievementCategory {
     PERFORMANCE,
     MARKET,
     CARDS,
-    REWARDS
+    REWARDS,
+    SOCIAL
 }

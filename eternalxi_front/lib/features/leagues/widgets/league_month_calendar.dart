@@ -63,7 +63,6 @@ class LeagueMonthCalendar extends StatelessWidget {
               _monthTitle(first),
               textAlign: TextAlign.center,
               style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w800,
                 letterSpacing: 0.2,
               ),
             ),
@@ -73,7 +72,6 @@ class LeagueMonthCalendar extends StatelessWidget {
               textAlign: TextAlign.center,
               style: theme.textTheme.labelMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 16),
@@ -86,7 +84,6 @@ class LeagueMonthCalendar extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: colorScheme.primary,
-                        fontWeight: FontWeight.w800,
                         letterSpacing: 0.4,
                       ),
                     ),
@@ -218,7 +215,6 @@ class _DayCell extends StatelessWidget {
               Text(
                 '$day',
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
                   color: fg,
                 ),
               ),

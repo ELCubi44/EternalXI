@@ -140,8 +140,7 @@ class _LeagueMarketTeamDetailScreenState
                             Text(
                               summary.nombreEquipo,
                               style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w800,
-                              ),
+                                ),
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -159,8 +158,7 @@ class _LeagueMarketTeamDetailScreenState
                   Text(
                     'Compra directa',
                     style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                   const SizedBox(height: 10),
                   if (_players.isEmpty)

@@ -56,8 +56,7 @@ class ClashStoryLevelNode extends StatelessWidget {
                       child: Text(
                         '${level.order}',
                         style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                          ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -68,8 +67,7 @@ class ClashStoryLevelNode extends StatelessWidget {
                           Text(
                             level.title,
                             style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
+                              ),
                           ),
                           Text(
                             clashStoryLevelStatusLabel(status, l10n),
@@ -77,7 +75,6 @@ class ClashStoryLevelNode extends StatelessWidget {
                               color: isCompleted
                                   ? Colors.green
                                   : context.xiTextSecondary,
-                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],

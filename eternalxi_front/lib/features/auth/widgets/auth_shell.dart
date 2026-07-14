@@ -1,5 +1,7 @@
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/app/theme/xi_typography.dart';
+import 'package:eternal_xi/shared/widgets/xi_brand_wordmark.dart';
 import 'package:flutter/material.dart';
 
 class AuthShell extends StatelessWidget {
@@ -118,29 +120,22 @@ class AuthShell extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  child: const Center(
+                                  child: Center(
                                     child: Text(
                                       'XI',
-                                      style: TextStyle(
-                                        fontFamily: 'Lumiare',
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w900,
+                                      style: XiTypography.brandWordmark(
                                         color: XiColors.classicGold,
-                                        letterSpacing: 1.5,
+                                        fontSize: 12,
+                                        letterSpacing: 0.4,
                                       ),
                                     ),
                                   ),
                                 ),
                                 const SizedBox(width: 10),
-                                Text(
-                                  'ETERNAL XI',
-                                  style: TextStyle(
-                                    fontFamily: 'Lumiare',
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w800,
-                                    color: XiColors.classicGold,
-                                    letterSpacing: 3,
-                                  ),
+                                XiBrandWordmark(
+                                  fontSize: 13,
+                                  color: XiColors.classicGold,
+                                  letterSpacing: 1.4,
                                 ),
                               ],
                             ),
@@ -167,7 +162,6 @@ class AuthShell extends StatelessWidget {
                               style: TextStyle(
                                 fontFamily: 'Lumiare',
                                 fontSize: 26,
-                                fontWeight: FontWeight.w900,
                                 color: context.xiTextPrimary,
                                 height: 1.1,
                                 letterSpacing: 0.5,
@@ -181,7 +175,6 @@ class AuthShell extends StatelessWidget {
                                 fontSize: 13,
                                 color: context.xiTextPrimary,
                                 height: 1.4,
-                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
@@ -255,7 +248,6 @@ class AccountFormShell extends StatelessWidget {
               title,
               style: TextStyle(
                 fontFamily: 'Lumiare',
-                fontWeight: FontWeight.w800,
                 color: context.xiTextPrimary,
               ),
             ),
@@ -274,7 +266,6 @@ class AccountFormShell extends StatelessWidget {
                         fontSize: 13,
                         color: context.xiTextPrimary,
                         height: 1.45,
-                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -313,7 +304,6 @@ class AccountFormShell extends StatelessWidget {
                               style: TextStyle(
                                 fontFamily: 'Lumiare',
                                 fontSize: 11,
-                                fontWeight: FontWeight.w800,
                                 color: context.xiAccentText,
                                 letterSpacing: 0.8,
                               ),
@@ -338,7 +328,6 @@ class AccountFormShell extends StatelessWidget {
                               style: TextStyle(
                                 fontFamily: 'Lumiare',
                                 fontSize: 14,
-                                fontWeight: FontWeight.w700,
                                 color: context.xiTextPrimary,
                               ),
                             ),

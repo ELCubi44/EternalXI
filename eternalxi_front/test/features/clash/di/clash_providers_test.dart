@@ -4,6 +4,7 @@ import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_mater
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_technique_book_inventory_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
+import 'package:eternal_xi/features/clash/challenges/data/clash_trials_storage.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_storage.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_daily_storage.dart';
 import 'package:eternal_xi/features/clash/gacha/data/clash_gacha_history_storage.dart';
@@ -52,6 +53,7 @@ ClashProviderDependencies testClashProviderDependencies() {
     newsReadBackend: InMemoryClashNewsReadBackend(),
     giftsBackend: InMemoryClashGiftsBackend(),
     characterEventsBackend: InMemoryClashCharacterEventsBackend(),
+    trialsBackend: InMemoryClashTrialsBackend(),
     gachaTicketInventoryBackend: InMemoryClashGachaTicketInventoryBackend(),
     gachaTicketRepository: gachaTicketRepository,
     rewardHistoryBackend: InMemoryClashRewardHistoryBackend(),

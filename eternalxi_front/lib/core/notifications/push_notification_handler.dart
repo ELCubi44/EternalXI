@@ -35,6 +35,21 @@ class PushNotificationHandler {
   }
 
   void _navigateFromMessage(GoRouter router, Map<String, dynamic> data) {
+    final type = data['type']?.toString() ?? '';
+    if (type == 'FRIEND_REQUEST' || data['actionRoute'] == 'friends') {
+      router.push(AppRoutes.profileFriends);
+      return;
+    }
+    if (type == 'LEAGUE_INVITE' || data['actionRoute'] == 'join_league') {
+      final code = data['codigoInvitacion']?.toString();
+      if (code != null && code.isNotEmpty) {
+        router.push('${AppRoutes.leaguesJoin}?code=$code');
+      } else {
+        router.push(AppRoutes.leaguesJoin);
+      }
+      return;
+    }
+
     final idLigaRaw = data['idLiga']?.toString();
     final idLiga = int.tryParse(idLigaRaw ?? '');
     if (idLiga == null || idLiga <= 0) {

@@ -24,8 +24,7 @@ class ClashRewardFeedbackBody extends StatelessWidget {
         Text(
           message.title,
           style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w900,
-          ),
+            ),
         ),
         if (message.subtitle != null) ...[
           const SizedBox(height: 8),
@@ -35,9 +34,7 @@ class ClashRewardFeedbackBody extends StatelessWidget {
               color: message.kind == ClashRewardFeedbackKind.success
                   ? context.xiTextSecondary
                   : warningColor,
-              fontWeight: message.kind == ClashRewardFeedbackKind.success
-                  ? FontWeight.w500
-                  : FontWeight.w700,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ],

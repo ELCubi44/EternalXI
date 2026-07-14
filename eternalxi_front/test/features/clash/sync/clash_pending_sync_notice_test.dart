@@ -440,6 +440,7 @@ void main() {
               newsReadBackend: baseDeps.newsReadBackend,
               giftsBackend: baseDeps.giftsBackend,
               characterEventsBackend: baseDeps.characterEventsBackend,
+              trialsBackend: baseDeps.trialsBackend,
               gachaTicketInventoryBackend: baseDeps.gachaTicketInventoryBackend,
               gachaTicketRepository: baseDeps.gachaTicketRepository,
               rewardHistoryBackend: baseDeps.rewardHistoryBackend,

@@ -61,7 +61,6 @@ class LeagueMarketHistoryBubble extends StatelessWidget {
                       child: Text(
                         title,
                         style: theme.textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
                           color: accent,
                         ),
                       ),
@@ -71,7 +70,6 @@ class LeagueMarketHistoryBubble extends StatelessWidget {
                       ll.marketHistoryTimestamp(entry.creadoEn),
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],

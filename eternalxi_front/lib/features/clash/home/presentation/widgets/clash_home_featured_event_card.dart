@@ -68,8 +68,7 @@ class _ClashHomeFeaturedEventCardState
                     Text(
                       l10n.clashHomeFeaturedEventTitle,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                        ),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -114,7 +113,6 @@ class _ClashHomeFeaturedEventCardState
               Text(
                 l10n.clashHomeFeaturedEventTitle,
                 style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
                   color: theme.colorScheme.primary,
                 ),
               ),
@@ -124,8 +122,7 @@ class _ClashHomeFeaturedEventCardState
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+                  ),
               ),
               const SizedBox(height: 4),
               Text(
@@ -141,7 +138,6 @@ class _ClashHomeFeaturedEventCardState
               Text(
                 progressLabel,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w700,
                   color: context.xiTextPrimary,
                 ),
               ),

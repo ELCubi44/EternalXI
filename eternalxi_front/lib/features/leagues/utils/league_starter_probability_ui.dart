@@ -91,7 +91,6 @@ class LeaguePlayProbabilityBadge extends StatelessWidget {
         style: TextStyle(
           fontFamily: 'Lumiare',
           fontSize: 11,
-          fontWeight: FontWeight.w900,
           color: starterTitularidadScaleOnBackground(percent),
           height: 1.0,
         ),
@@ -155,7 +154,6 @@ class LeagueMarketPlayerCornerStats extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: 'Lumiare',
                   fontSize: 11,
-                  fontWeight: FontWeight.w800,
                   color: cs.primary,
                   height: 1.0,
                 ),

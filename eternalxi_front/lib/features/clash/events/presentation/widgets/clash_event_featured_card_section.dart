@@ -40,7 +40,6 @@ class ClashEventFeaturedCardSection extends StatelessWidget {
             l10n.clashEventsFeaturedCardTitle,
             style: theme.textTheme.labelLarge?.copyWith(
               color: context.xiTextSecondary,
-              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 8),
@@ -65,8 +64,7 @@ class ClashEventFeaturedCardSection extends StatelessWidget {
                     Text(
                       displayName,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+                        ),
                     ),
                     if (rarityLabel != null) ...[
                       const SizedBox(height: 2),
@@ -74,7 +72,6 @@ class ClashEventFeaturedCardSection extends StatelessWidget {
                         rarityLabel!,
                         style: theme.textTheme.labelMedium?.copyWith(
                           color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],

@@ -322,8 +322,7 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
                                           name,
                                           style: theme.textTheme.titleMedium
                                               ?.copyWith(
-                                                fontWeight: FontWeight.w700,
-                                              ),
+                                                ),
                                         ),
                                 ),
                                 if (selected)
@@ -352,8 +351,7 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
                       title: Text(
                         l10n.advancedConfig,
                         style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                          ),
                       ),
                       subtitle: Text(
                         ll.createLeagueParticipantsSummary(

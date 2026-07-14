@@ -57,7 +57,6 @@ class _CardDetailContent extends StatelessWidget {
                     rl10n.cardDisplayName(card),
                     style: theme.textTheme.headlineSmall?.copyWith(
                       color: style.title,
-                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
@@ -77,7 +76,6 @@ class _CardDetailContent extends StatelessWidget {
                   effectLabel,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: style.subtitle,
-                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -116,7 +114,6 @@ class _CardDetailContent extends StatelessWidget {
                           rl10n.cardEffect,
                           style: theme.textTheme.labelLarge?.copyWith(
                             color: style.subtitle,
-                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],
@@ -200,7 +197,6 @@ class _CardDetailContent extends StatelessWidget {
                     rl10n.cardUsedLabel,
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: style.faint,
-                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -307,7 +303,6 @@ class _InfoRow extends StatelessWidget {
             value,
             style: theme.textTheme.bodySmall?.copyWith(
               color: style.body,
-              fontWeight: FontWeight.w600,
             ),
           ),
         ),

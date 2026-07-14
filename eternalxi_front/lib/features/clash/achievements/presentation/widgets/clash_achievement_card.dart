@@ -85,8 +85,7 @@ class ClashAchievementCard extends StatelessWidget {
                     Text(
                       achievement.title,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                        ),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -118,8 +117,7 @@ class ClashAchievementCard extends StatelessWidget {
               achievement.target,
             ),
             style: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+              ),
           ),
           const SizedBox(height: 12),
           ClashRewardPreviewRow(

@@ -64,8 +64,7 @@ class _ClashEventsHomeCardState extends State<ClashEventsHomeCard> {
                   Text(
                     l10n.clashEventsHomeTitle,
                     style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                   const SizedBox(height: 4),
                   Text(

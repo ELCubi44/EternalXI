@@ -32,8 +32,7 @@ class LeagueConfigSummaryCard extends StatelessWidget {
             Text(
               ll.leagueConfigSummaryTitle,
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                ),
             ),
             const SizedBox(height: 12),
             for (var i = 0; i < rows.length; i++) ...[
@@ -77,8 +76,7 @@ class _SummaryRow extends StatelessWidget {
           child: Text(
             row.value,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+              ),
             textAlign: TextAlign.end,
           ),
         ),

@@ -187,7 +187,7 @@
         "type": "match",
         "energyCost": 8,
         "recommendedPower": 120,
-        "rivalTeamId": "rival-training-squad",
+        "rivalTeamId": "rival-furia-menuda",
         "cardXpReward": 80,
         "rewards": {
           "gems": 1,

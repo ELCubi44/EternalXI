@@ -40,8 +40,7 @@ class ClashTeamSummaryHeader extends StatelessWidget {
                 child: Text(
                   l10n.clashTeamSummaryTitle,
                   style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                    ),
                 ),
               ),
             ],
@@ -64,15 +63,13 @@ class ClashTeamSummaryHeader extends StatelessWidget {
               l10n.clashTeamActiveLineup,
               style: theme.textTheme.labelMedium?.copyWith(
                 color: context.xiTextSecondary,
-                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               active.name,
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             const SizedBox(height: 8),
             Row(
@@ -90,7 +87,6 @@ class ClashTeamSummaryHeader extends StatelessWidget {
                 Text(
                   '${l10n.clashLineupTotalPower}: ${controller.totalPower(active)}',
                   style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
                     color: theme.colorScheme.primary,
                   ),
                 ),
@@ -147,7 +143,6 @@ class _StatusChip extends StatelessWidget {
         label: Text(
           label,
           style: theme.textTheme.labelMedium?.copyWith(
-            fontWeight: FontWeight.w700,
             color: color,
           ),
         ),

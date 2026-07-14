@@ -28,15 +28,13 @@ class ClashEventsListHeader extends StatelessWidget {
           Text(
             l10n.clashEventsTitle,
             style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+              ),
           ),
           const SizedBox(height: 6),
           Text(
             l10n.clashEventsAvailableCount(availableCount),
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+              ),
           ),
           const SizedBox(height: 8),
           Text(

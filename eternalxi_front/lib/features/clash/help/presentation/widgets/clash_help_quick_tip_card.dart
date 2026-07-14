@@ -36,8 +36,7 @@ class ClashHelpQuickTipCard extends StatelessWidget {
               Text(
                 l10n.clashHelpQuickTipTitle,
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                  ),
               ),
             ],
           ),

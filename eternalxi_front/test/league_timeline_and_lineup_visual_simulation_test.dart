@@ -3,6 +3,8 @@ import 'package:eternal_xi/data/models/league_participant_lineup_history.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
 import 'package:eternal_xi/features/leagues/utils/league_match_visible_state.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_match_timeline_tab.dart';
+import 'package:eternal_xi/shared/widgets/player_injury_icon.dart';
+import 'package:eternal_xi/shared/widgets/red_card_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -205,7 +207,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: LeagueMatchTimelineTab(roster: roster, events: [event]),
+            body: LeagueMatchTimelineTab(
+              roster: roster,
+              events: [event],
+            ),
           ),
         ),
       );
@@ -234,7 +239,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: LeagueMatchTimelineTab(roster: roster, events: [event]),
+            body: LeagueMatchTimelineTab(
+              roster: roster,
+              events: [event],
+            ),
           ),
         ),
       );
@@ -264,7 +272,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: LeagueMatchTimelineTab(roster: roster, events: [event]),
+            body: LeagueMatchTimelineTab(
+              roster: roster,
+              events: [event],
+            ),
           ),
         ),
       );
@@ -299,7 +310,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: LeagueMatchTimelineTab(roster: roster, events: [event]),
+            body: LeagueMatchTimelineTab(
+              roster: roster,
+              events: [event],
+            ),
           ),
         ),
       );
@@ -328,13 +342,16 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: LeagueMatchTimelineTab(roster: roster, events: [event]),
+            body: LeagueMatchTimelineTab(
+              roster: roster,
+              events: [event],
+            ),
           ),
         ),
       );
       await tester.pump();
 
-      expect(find.byIcon(Icons.sports_handball_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.star_rounded), findsOneWidget);
       final textFinder = find.textContaining('Asistencia');
       expect(textFinder, findsOneWidget);
       final textWidget = tester.widget<Text>(textFinder);
@@ -386,8 +403,8 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.byIcon(Icons.style_rounded), findsOneWidget);
-      expect(find.byIcon(Icons.report_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.star_rounded), findsOneWidget);
+      expect(find.byType(RedCardIcon), findsOneWidget);
     });
 
     testWidgets('LESION con icono médico', (tester) async {
@@ -407,13 +424,16 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: LeagueMatchTimelineTab(roster: roster, events: [event]),
+            body: LeagueMatchTimelineTab(
+              roster: roster,
+              events: [event],
+            ),
           ),
         ),
       );
       await tester.pump();
 
-      expect(find.byIcon(Icons.medical_services), findsOneWidget);
+      expect(find.byType(PlayerInjuryIcon), findsOneWidget);
     });
   });
 }

@@ -57,8 +57,7 @@ class ClashShopProductCard extends StatelessWidget {
                     Text(
                       product.name,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                        ),
                     ),
                     const SizedBox(height: 4),
                     _CategoryBadge(
@@ -89,7 +88,6 @@ class ClashShopProductCard extends StatelessWidget {
               Text(
                 l10n.clashShopProductCost(product.costCoins),
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
                   color: theme.colorScheme.primary,
                 ),
               ),
@@ -99,8 +97,7 @@ class ClashShopProductCard extends StatelessWidget {
           Text(
             l10n.clashShopIncludes,
             style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+              ),
           ),
           const SizedBox(height: 6),
           ClashRewardList(
@@ -160,7 +157,6 @@ class _CategoryBadge extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w700,
           color: color,
         ),
       ),

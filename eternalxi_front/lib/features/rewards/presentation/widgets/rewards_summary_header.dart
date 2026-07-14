@@ -28,7 +28,6 @@ class RewardsSummaryHeader extends StatelessWidget {
             leagueName,
             style: theme.textTheme.titleSmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 10),
@@ -87,8 +86,7 @@ class _ChipStat extends StatelessWidget {
                 Text(
                   value,
                   style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                    ),
                 ),
               ],
             ),

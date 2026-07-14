@@ -45,15 +45,15 @@ public class LeagueSimulationService {
      * jugadores propios disponibles a este número ({@link #buildPreparedLineupWithLoans}).
      */
     private static final int MATCH_MIN_CONVOCATORIA_PLAYERS = MATCH_STARTERS + 3;
-    /** Descenso diario de cansancio (cron medianoche): 2 en ligas solo fin de semana, 4 si hay entresemana. */
-    private static final int DAILY_MIDNIGHT_FATIGUE_DECAY_WEEKEND_ONLY = 2;
-    private static final int DAILY_MIDNIGHT_FATIGUE_DECAY_MIDWEEK_LEAGUE = 4;
+    /** Descenso diario de cansancio (cron medianoche): ligas largas recuperan un poco más. */
+    private static final int DAILY_MIDNIGHT_FATIGUE_DECAY_WEEKEND_ONLY = 3;
+    private static final int DAILY_MIDNIGHT_FATIGUE_DECAY_MIDWEEK_LEAGUE = 5;
     private static final double ATTACK_SEQUENCE_CHANCE = 0.23;
     /** Recuperaciones fuera de jugadas de ataque (no afecta goles/asistencias). */
     private static final double RECOVERY_EVENT_CHANCE = 0.27;
     /** Microduelos dentro de jugadas ofensivas para generar más regates/recuperaciones sin disparar el marcador. */
     private static final double ATTACK_DUEL_EVENT_CHANCE = 0.42;
-    private static final double MISSED_SHOT_SAVE_EVENT_CHANCE = 0.90;
+    private static final double MISSED_SHOT_SAVE_EVENT_CHANCE = 0.85;
     private static final double HOME_ATTACK_ADVANTAGE = 4.0;
     private static final double QUALITY_IMPACT_MULTIPLIER = 1.30;
     private static final String PLAYER_ORIGIN_LEAGUE = "LIGA_JUGADOR";
@@ -568,7 +568,7 @@ private void deleteByMatch(Connection conn, String tableName, Long idPartido) th
                                FROM jugadores_puntos_jornada jp
                                WHERE jp.id_liga_jugador = lj.id
                                ORDER BY jp.id_jornada DESC
-                               LIMIT 3
+                               LIMIT 5
                            ) t
                        ), 0) AS media_ultimos_3,
                        COALESCE((
@@ -2690,20 +2690,27 @@ private ScoreRow loadFinalScoreFromTeamRows(Connection conn, Long idPartido) thr
 }
 
 /** Por encima del par, cada punto extra influye más que el anterior (no es lineal en puntos). */
-private static final double FANTASY_PERF_RATIO_EXPONENT_ABOVE_PAR = 1.30;
+private static final double FANTASY_PERF_RATIO_EXPONENT_ABOVE_PAR = 1.22;
 /** Por debajo del par, ligera penalización algo más suave que exponencial fuerte. */
 private static final double FANTASY_PERF_RATIO_EXPONENT_BELOW_PAR = 1.06;
 private static final double FANTASY_PERF_INDEX_CAP = 20.0;
+/** Peso de la media de temporada al mezclar con forma reciente (ligas con muchas jornadas). */
+private static final double FANTASY_SEASON_BLEND_WEIGHT = 0.28;
 
 /**
- * Índice de rendimiento solo por fantasy: media de los últimos hasta 3 partidos del jugador en la liga
- * ({@link ProgressionSnapshot#recentAverage()}, AVG sobre las últimas jornadas con registro) frente al
- * par de puntos esperado por su precio actual ({@link LeagueDynamicValuePolicy#fantasyParMeanPointsFromMarket}). Escala ~10 = neutro.
- * Si la media iguala el par, ratio=1 → índice 10; por encima del par el índice sube en curva convexa respecto a los puntos.
+ * Índice de rendimiento por fantasy: media reciente (hasta {@link LeagueDynamicValuePolicy#RECENT_FORM_MATCH_LIMIT}
+ * partidos) mezclada con media de temporada, comparada con el par ajustado por posición y precio.
+ * La fatiga reduce el índice. Escala ~10 = neutro.
  */
 private double computeBasePerformanceIndex(ProgressionSnapshot snapshot) {
     double avgPts = snapshot.recentAverage();
-    double par = LeagueDynamicValuePolicy.fantasyParMeanPointsFromMarket(snapshot.currentValue());
+    if (snapshot.seasonAverage() > 0.5) {
+        avgPts = (1.0 - FANTASY_SEASON_BLEND_WEIGHT) * snapshot.recentAverage()
+                + FANTASY_SEASON_BLEND_WEIGHT * snapshot.seasonAverage();
+    }
+    double par = LeagueDynamicValuePolicy.fantasyParMeanPointsFromMarket(
+            snapshot.currentValue(),
+            snapshot.position());
     if (par < 0.5) {
         par = 5.0;
     }
@@ -2714,6 +2721,7 @@ private double computeBasePerformanceIndex(ProgressionSnapshot snapshot) {
     } else {
         index = 10.0 * Math.pow(ratio, FANTASY_PERF_RATIO_EXPONENT_BELOW_PAR);
     }
+    index *= LeagueDynamicValuePolicy.fatiguePerformanceModifier(snapshot.cansancio());
     return clamp(index, 0.0, FANTASY_PERF_INDEX_CAP);
 }
 
@@ -2770,21 +2778,21 @@ private boolean applyDynamicRatingCoreWithPerformanceIndex(
     double expectedIndex = 10.0;
     double sensitivity = LeagueDynamicValuePolicy.sensitivityByMarketProfile(
             snapshot.currentValue(),
-            snapshot.currentRating()
-    );
+            snapshot.currentRating(),
+            snapshot.position());
     double maxUp = LeagueDynamicValuePolicy.maxPositiveDeltaRatingByOvr(
             snapshot.currentRating(),
-            snapshot.currentValue()
-    );
+            snapshot.currentValue(),
+            snapshot.position());
 
     double deltaRating =
             clamp((performanceIndex - expectedIndex) * sensitivity, -0.40, maxUp);
     deltaRating = LeagueDynamicValuePolicy.boostPositiveDeltaRating(
             deltaRating,
             maxUp,
-            snapshot.currentValue()
-    );
-    double fantasyRating = round2(clamp(snapshot.currentRating() + deltaRating, 60.0, 99.0));
+            snapshot.currentValue());
+    double ratingCap = LeagueDynamicValuePolicy.maxFantasyRatingCap(snapshot.position());
+    double fantasyRating = round2(clamp(snapshot.currentRating() + deltaRating, 60.0, ratingCap));
 
     long theoreticalValue = pricingService.calculateValueFromDynamicRating(fantasyRating, snapshot.position());
     long targetValue = Math.round(
@@ -2795,8 +2803,10 @@ private boolean applyDynamicRatingCoreWithPerformanceIndex(
     long newValue = LeagueDynamicValuePolicy.moveTowards(
             persistedPreviousValue,
             targetValue,
-            LeagueDynamicValuePolicy.movementLimitPercentage(persistedPreviousValue, valueRising)
-    );
+            LeagueDynamicValuePolicy.movementLimitPercentage(
+                    persistedPreviousValue,
+                    valueRising,
+                    snapshot.position()));
 
     boolean skipProtectiveGuards = skipValueProtectiveGuards(snapshot, latestPoints, latestMinutes);
 
@@ -2835,20 +2845,6 @@ private boolean applyDynamicRatingCoreWithPerformanceIndex(
             && latestMinutes >= 60
             && latestPoints == 2) {
         long minAllowedValue = Math.round(persistedPreviousValue * 0.9975);
-        if (newValue < minAllowedValue) {
-            newValue = minAllowedValue;
-        }
-    }
-
-    if (!skipProtectiveGuards && latestPoints >= 10 && latestMinutes >= 60) {
-        if (newValue < persistedPreviousValue) {
-            newValue = persistedPreviousValue;
-        }
-    }
-    if (!skipProtectiveGuards && latestPoints >= 7 && latestMinutes >= 60 && newValue < persistedPreviousValue) {
-        long maxDropByPercent = Math.round(persistedPreviousValue * 0.0025);
-        long maxDrop = Math.min(maxDropByPercent, 150_000L);
-        long minAllowedValue = persistedPreviousValue - maxDrop;
         if (newValue < minAllowedValue) {
             newValue = minAllowedValue;
         }
@@ -2968,7 +2964,7 @@ private void updateDynamicRatingsAndValuesForMatch(Connection conn, Long idParti
                                FROM jugadores_puntos_jornada jp
                                WHERE jp.id_liga_jugador = ap.id_liga_jugador
                                ORDER BY jp.id_jornada DESC
-                               LIMIT 3
+                               LIMIT 5
                            ) t
                        ), 0) AS media_ultimos_3,
                        COALESCE((
@@ -4506,6 +4502,8 @@ private int positionGroup(String position) {
                     long valor = rs.getLong(2);
                     String posicion = rs.getString(3);
                     double vr = pricingService.estimateRatingFromMarketValue(valor, posicion);
+                    double cap = LeagueDynamicValuePolicy.maxFantasyRatingCap(posicion);
+                    vr = Math.min(vr, cap);
                     upd.setDouble(1, Math.round(vr * 100.0) / 100.0);
                     upd.setLong(2, id);
                     upd.addBatch();
@@ -4904,6 +4902,7 @@ private int calculateFantasyPoints(PlayerMatchAccumulator acc, int newspaperNote
                COALESCE(lj.valoracion_actual, j.valoracion) AS valoracion_actual,
                lj.valor,
                j.posicion,
+               COALESCE(lj.cansancio, 0) AS cansancio,
                COALESCE((
                    SELECT AVG(t.puntos)
                    FROM (
@@ -4911,7 +4910,9 @@ private int calculateFantasyPoints(PlayerMatchAccumulator acc, int newspaperNote
                        FROM jugadores_puntos_jornada jp
                        WHERE jp.id_liga_jugador = lj.id
                        ORDER BY jp.id_jornada DESC
-                       LIMIT 3
+                       LIMIT """
+            + LeagueDynamicValuePolicy.RECENT_FORM_MATCH_LIMIT
+            + """
                    ) t
                ), 0) AS media_ultimos_3,
                COALESCE((
@@ -4926,7 +4927,7 @@ private int calculateFantasyPoints(PlayerMatchAccumulator acc, int newspaperNote
                        FROM jugadores_puntos_jornada jp
                        WHERE jp.id_liga_jugador = lj.id
                        ORDER BY jp.id_jornada DESC
-                       LIMIT 3
+                       LIMIT 5
                    ) t
                ), 3) AS media_nota_ultimos_3,
                COALESCE((
@@ -4973,7 +4974,8 @@ private int calculateFantasyPoints(PlayerMatchAccumulator acc, int newspaperNote
                     rs.getDouble("media_nota_temporada"),
                     rs.getInt("puntos_ultimo_partido"),
                     rs.getInt("minutos_ultimo_partido"),
-                    rs.getString("estado_liga"));
+                    rs.getString("estado_liga"),
+                    rs.getInt("cansancio"));
         }
     }
 }
@@ -4991,12 +4993,13 @@ private int calculateFantasyPoints(PlayerMatchAccumulator acc, int newspaperNote
         newValue = Math.max(LeaguePlayerPricingService.ABSOLUTE_MIN_MARKET_VALUE, newValue);
 
         double newRating = pricingService.estimateRatingFromMarketValue(newValue, position);
-        newRating = round2(clamp(newRating, 60.0, 99.0));
+        double ratingCap = LeagueDynamicValuePolicy.maxFantasyRatingCap(position);
+        newRating = round2(clamp(newRating, 60.0, ratingCap));
 
         long tierFloor = pricingService.getFloorValueForRating(newRating);
         if (newValue < tierFloor) {
             newValue = tierFloor;
-            newRating = round2(clamp(pricingService.estimateRatingFromMarketValue(newValue, position), 60.0, 99.0));
+            newRating = round2(clamp(pricingService.estimateRatingFromMarketValue(newValue, position), 60.0, ratingCap));
         }
 
         if (latestPoints >= 7) {
@@ -5486,7 +5489,8 @@ private record ProgressionSnapshot(
         double seasonNoteAverage,
         int latestPoints,
         int latestMinutes,
-        String estadoLiga
+        String estadoLiga,
+        int cansancio
 ) {}
     private static class RuntimeTeamState {
         private final Long idLigaEquipo;

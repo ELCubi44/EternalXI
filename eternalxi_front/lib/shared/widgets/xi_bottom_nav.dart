@@ -174,7 +174,6 @@ class _XiBottomNavState extends State<XiBottomNav>
                                       style: TextStyle(
                                         fontFamily: 'Lumiare',
                                         fontSize: 8,
-                                        fontWeight: FontWeight.w700,
                                         color: selectedColor,
                                         letterSpacing: 0.4,
                                         height: 1.2,

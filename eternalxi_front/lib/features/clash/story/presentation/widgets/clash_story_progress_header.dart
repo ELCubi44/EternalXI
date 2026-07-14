@@ -36,15 +36,13 @@ class ClashStoryProgressHeader extends StatelessWidget {
             l10n.clashStoryProgressTitle,
             style: theme.textTheme.labelLarge?.copyWith(
               color: context.xiTextSecondary,
-              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 6),
           Text(
             l10n.clashStoryLevelsProgress(completedLevels, totalLevels),
             style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+              ),
           ),
           const SizedBox(height: 10),
           ClipRRect(
@@ -63,15 +61,13 @@ class ClashStoryProgressHeader extends StatelessWidget {
             l10n.clashStoryCurrentChapter,
             style: theme.textTheme.labelMedium?.copyWith(
               color: context.xiTextSecondary,
-              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 2),
           Text(
             chapterTitle,
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+              ),
           ),
         ],
       ),

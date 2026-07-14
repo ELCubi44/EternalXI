@@ -34,8 +34,7 @@ class ClashMatchEndObjectivesSection extends StatelessWidget {
         Text(
           l10n.clashMatchObjectivesTitle,
           style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w800,
-          ),
+            ),
         ),
         const SizedBox(height: 8),
         ...objectiveResults.map(
@@ -103,8 +102,7 @@ class _ObjectiveEndRow extends StatelessWidget {
                 Text(
                   result.objective.title,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                    ),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -113,7 +111,6 @@ class _ObjectiveEndRow extends StatelessWidget {
                       : l10n.clashMatchObjectiveIncomplete,
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: color,
-                    fontWeight: FontWeight.w800,
                   ),
                 ),
                 if (rewardText.isNotEmpty) ...[
@@ -122,7 +119,6 @@ class _ObjectiveEndRow extends StatelessWidget {
                     rewardText,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],

@@ -90,8 +90,7 @@ class LeagueCoachSummaryCard extends StatelessWidget {
                               child: Text(
                                 _displayName(coachNonNull),
                                 style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                ),
+                                  ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -104,7 +103,6 @@ class LeagueCoachSummaryCard extends StatelessWidget {
                             _subtitleName(coachNonNull),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
-                              fontWeight: FontWeight.w600,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -147,8 +145,7 @@ class LeagueCoachSummaryCard extends StatelessWidget {
                                 child: Text(
                                   'Usar entrenador',
                                   style: theme.textTheme.labelLarge?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                                    ),
                                 ),
                               ),
                               if (coachToggleLoading)
@@ -230,15 +227,13 @@ class _EmptyCoachBody extends StatelessWidget {
               Text(
                 'Sin entrenador asignado',
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+                  ),
               ),
               const SizedBox(height: 6),
               Text(
                 'Formación base 4-3-3',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -352,7 +347,6 @@ class _StatusChip extends StatelessWidget {
       child: Text(
         active ? 'Activo' : 'Inactivo',
         style: theme.textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w800,
           color: fg,
           letterSpacing: 0.2,
         ),
@@ -395,7 +389,6 @@ class _FormationChip extends StatelessWidget {
           Text(
             label,
             style: theme.textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.w800,
               color: colorScheme.onSurface,
             ),
           ),

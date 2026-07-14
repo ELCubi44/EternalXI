@@ -30,6 +30,10 @@ import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_mate
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
+import 'package:eternal_xi/features/clash/challenges/data/clash_trials_local_datasource.dart';
+import 'package:eternal_xi/features/clash/challenges/data/clash_trials_repository.dart';
+import 'package:eternal_xi/features/clash/challenges/data/clash_trials_storage.dart';
+import 'package:eternal_xi/features/clash/challenges/presentation/controllers/clash_chain_trial_controller.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_local_datasource.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_repository.dart';
 import 'package:eternal_xi/features/clash/events/data/clash_character_events_storage.dart';
@@ -48,6 +52,7 @@ import 'package:eternal_xi/features/clash/help/data/clash_help_repository.dart';
 import 'package:eternal_xi/features/clash/help/data/clash_help_topics_local_datasource.dart';
 import 'package:eternal_xi/features/clash/inventory/data/clash_inventory_repository.dart';
 import 'package:eternal_xi/features/clash/match/presentation/controllers/clash_match_controller.dart';
+import 'package:eternal_xi/features/clash/decisive_moments/presentation/controllers/clash_decisive_moments_controller.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_mission_event_sink.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_local_datasource.dart';
 import 'package:eternal_xi/features/clash/missions/data/clash_daily_missions_repository.dart';
@@ -104,6 +109,7 @@ class ClashProviderDependencies {
     required this.newsReadBackend,
     required this.giftsBackend,
     required this.characterEventsBackend,
+    required this.trialsBackend,
     required this.gachaTicketInventoryBackend,
     required this.gachaTicketRepository,
     required this.rewardHistoryBackend,
@@ -131,6 +137,7 @@ class ClashProviderDependencies {
   final ClashNewsReadStorageBackend newsReadBackend;
   final ClashGiftsStorageBackend giftsBackend;
   final ClashCharacterEventsStorageBackend characterEventsBackend;
+  final ClashTrialsStorageBackend trialsBackend;
   final ClashGachaTicketInventoryStorageBackend gachaTicketInventoryBackend;
   final ClashGachaTicketRepository gachaTicketRepository;
   final ClashRewardHistoryStorageBackend rewardHistoryBackend;
@@ -206,6 +213,7 @@ Future<ClashProviderDependencies> prepareClashProviders() async {
   final giftsBackend = await SharedPreferencesClashGiftsBackend.create();
   final characterEventsBackend =
       await SharedPreferencesClashCharacterEventsBackend.create();
+  final trialsBackend = await SharedPreferencesClashTrialsBackend.create();
   final gachaTicketInventoryBackend =
       await SharedPreferencesClashGachaTicketInventoryBackend.create();
   final gachaTicketRepository = ClashGachaTicketRepository(
@@ -234,6 +242,7 @@ Future<ClashProviderDependencies> prepareClashProviders() async {
     newsReadBackend: newsReadBackend,
     giftsBackend: giftsBackend,
     characterEventsBackend: characterEventsBackend,
+    trialsBackend: trialsBackend,
     gachaTicketInventoryBackend: gachaTicketInventoryBackend,
     gachaTicketRepository: gachaTicketRepository,
     rewardHistoryBackend: rewardHistoryBackend,
@@ -310,6 +319,7 @@ List<SingleChildWidget> buildClashProviders(ClashProviderDependencies deps) {
     Provider<ClashCharacterEventsStorageBackend>.value(
       value: deps.characterEventsBackend,
     ),
+    Provider<ClashTrialsStorageBackend>.value(value: deps.trialsBackend),
     Provider<ClashDailyMissionEventSink>(
       create: (_) => ClashDailyMissionEventSink(),
     ),
@@ -445,6 +455,14 @@ List<SingleChildWidget> buildClashProviders(ClashProviderDependencies deps) {
         collectionRepository: context.read<ClashPlayerCollectionRepository>(),
       ),
     ),
+    Provider<ClashTrialsRepository>(
+      create: (context) => ClashTrialsRepository(
+        dataSource: ClashTrialsLocalDataSource(),
+        storage: context.read<ClashTrialsStorageBackend>(),
+        rewardGranter: context.read<ClashLocalRewardGranter>(),
+        collectionRepository: context.read<ClashPlayerCollectionRepository>(),
+      ),
+    ),
     Provider<ClashHelpRepository>(
       create: (_) =>
           ClashHelpRepository(dataSource: ClashHelpTopicsLocalDataSource()),
@@ -492,6 +510,12 @@ List<SingleChildWidget> buildClashProviders(ClashProviderDependencies deps) {
     Provider<ClashRivalsRepository>(create: (_) => ClashRivalsRepository()),
     ChangeNotifierProvider<ClashMatchController>(
       create: (_) => ClashMatchController(),
+    ),
+    ChangeNotifierProvider<ClashDecisiveMomentsController>(
+      create: (_) => ClashDecisiveMomentsController(),
+    ),
+    ChangeNotifierProvider<ClashChainTrialController>(
+      create: (_) => ClashChainTrialController(),
     ),
     ..._buildClashSyncProviders(deps),
   ];

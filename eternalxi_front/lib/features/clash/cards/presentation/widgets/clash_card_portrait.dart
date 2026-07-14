@@ -1,4 +1,5 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/core/utils/league_asset_urls.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
@@ -11,6 +12,7 @@ class ClashCardPortrait extends StatelessWidget {
   const ClashCardPortrait({
     required this.name,
     required this.imagePath,
+    this.playerId,
     this.height,
     this.borderRadius = 14,
     this.rarity,
@@ -20,6 +22,7 @@ class ClashCardPortrait extends StatelessWidget {
 
   final String name;
   final String imagePath;
+  final int? playerId;
   final double? height;
   final double borderRadius;
   final ClashRarity? rarity;
@@ -50,9 +53,23 @@ class ClashCardPortrait extends StatelessWidget {
     return XiColors.royalBlue;
   }
 
+  String? get _networkUrl {
+    final id = playerId;
+    if (id != null && id > 0) {
+      return LeagueAssetUrls.resolvePlayerPhotoUrl(idJugador: id);
+    }
+    final raw = imagePath.trim();
+    if (raw.isNotEmpty && !isPlaceholder(raw)) {
+      return LeagueAssetUrls.sanitizeNetworkImageUrl(raw);
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final usePlaceholder = isPlaceholder(imagePath);
+    final networkUrl = _networkUrl ?? '';
+    final useNetwork = networkUrl.isNotEmpty;
+    final usePlaceholder = !useNetwork && isPlaceholder(imagePath);
     final accent = _accentColor;
 
     return ClipRRect(
@@ -77,7 +94,18 @@ class ClashCardPortrait extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (!usePlaceholder)
+            if (useNetwork)
+              Image.network(
+                networkUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    _PlaceholderContent(
+                      initials: _initials,
+                      position: position,
+                      accent: accent,
+                    ),
+              )
+            else if (!usePlaceholder)
               Image.asset(
                 imagePath,
                 fit: BoxFit.cover,

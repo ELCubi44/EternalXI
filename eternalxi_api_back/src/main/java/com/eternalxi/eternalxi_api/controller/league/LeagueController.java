@@ -4,10 +4,14 @@ import com.eternalxi.eternalxi_api.security.AuthenticatedUser;
 import com.eternalxi.eternalxi_api.dto.auth.ApiMessageResponse;
 import com.eternalxi.eternalxi_api.dto.league.CreateLeagueRequest;
 import com.eternalxi.eternalxi_api.dto.league.CreateLeagueResponse;
+import com.eternalxi.eternalxi_api.dto.league.InviteFriendToLeagueRequest;
 import com.eternalxi.eternalxi_api.dto.league.JoinLeagueRequest;
 import com.eternalxi.eternalxi_api.dto.league.KickParticipantRequest;
 import com.eternalxi.eternalxi_api.dto.league.LeagueChatMessageResponse;
+import com.eternalxi.eternalxi_api.dto.league.LeagueDmMessageResponse;
+import com.eternalxi.eternalxi_api.dto.league.LeagueDmThreadResponse;
 import com.eternalxi.eternalxi_api.dto.league.PostLeagueChatMessageRequest;
+import com.eternalxi.eternalxi_api.dto.league.PostLeagueDmMessageRequest;
 import com.eternalxi.eternalxi_api.dto.league.ReportChatMessageRequest;
 import com.eternalxi.eternalxi_api.dto.league.LeagueDetailResponse;
 import com.eternalxi.eternalxi_api.dto.league.LeagueParticipantResponse;
@@ -22,6 +26,7 @@ import com.eternalxi.eternalxi_api.dto.league.TransferLeagueAdminRequest;
 import com.eternalxi.eternalxi_api.dto.league.SaveLeagueLineupRequest;
 import com.eternalxi.eternalxi_api.services.LeagueActivityService;
 import com.eternalxi.eternalxi_api.services.LeagueChatService;
+import com.eternalxi.eternalxi_api.services.LeagueDmService;
 import com.eternalxi.eternalxi_api.services.LeagueLineupService;
 import com.eternalxi.eternalxi_api.services.LeagueService;
 import com.eternalxi.eternalxi_api.services.LeagueStarterProbabilityService;
@@ -43,6 +48,7 @@ public class LeagueController {
     private final LeagueStarterProbabilityService leagueStarterProbabilityService;
     private final LeagueActivityService leagueActivityService;
     private final LeagueChatService leagueChatService;
+    private final LeagueDmService leagueDmService;
     private final UserSafetyService userSafetyService;
 
     public LeagueController(
@@ -51,6 +57,7 @@ public class LeagueController {
             LeagueStarterProbabilityService leagueStarterProbabilityService,
             LeagueActivityService leagueActivityService,
             LeagueChatService leagueChatService,
+            LeagueDmService leagueDmService,
             UserSafetyService userSafetyService
     ) {
         this.leagueService = leagueService;
@@ -58,6 +65,7 @@ public class LeagueController {
         this.leagueStarterProbabilityService = leagueStarterProbabilityService;
         this.leagueActivityService = leagueActivityService;
         this.leagueChatService = leagueChatService;
+        this.leagueDmService = leagueDmService;
         this.userSafetyService = userSafetyService;
     }
 
@@ -70,6 +78,22 @@ public class LeagueController {
     @PostMapping("/join")
     public ResponseEntity<?> joinLeague(@RequestBody JoinLeagueRequest request) throws SQLException {
         return ResponseEntity.ok(leagueService.joinLeague(request));
+    }
+
+    @PostMapping("/{idLiga}/invite-friend")
+    public ResponseEntity<?> inviteFriendToLeague(
+            @PathVariable Long idLiga,
+            @RequestBody InviteFriendToLeagueRequest request
+    ) throws SQLException {
+        if (request == null || request.idUsuario() == null) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse("Falta el usuario"));
+        }
+        if (request.idAmigo() == null) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse("Falta el amigo a invitar"));
+        }
+        AuthenticatedUser.assertSameUser(request.idUsuario());
+        leagueService.inviteFriendToLeague(idLiga, request.idUsuario(), request.idAmigo());
+        return ResponseEntity.ok(new ApiMessageResponse("Invitación enviada"));
     }
 
     @GetMapping("/my")
@@ -237,6 +261,48 @@ public class LeagueController {
         LeagueChatMessageResponse message = leagueChatService.postMessage(
                 idLiga,
                 request.idUsuario(),
+                request.texto()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(message);
+    }
+
+    @GetMapping("/{idLiga}/dm/threads")
+    public ResponseEntity<List<LeagueDmThreadResponse>> getDmThreads(
+            @PathVariable Long idLiga,
+            @RequestParam Long idUsuario
+    ) throws SQLException {
+        return ResponseEntity.ok(leagueDmService.listThreads(idLiga, idUsuario));
+    }
+
+    @GetMapping("/{idLiga}/dm/{idPeer}")
+    public ResponseEntity<List<LeagueDmMessageResponse>> getDmMessages(
+            @PathVariable Long idLiga,
+            @PathVariable Long idPeer,
+            @RequestParam Long idUsuario,
+            @RequestParam(required = false) Long afterId,
+            @RequestParam(defaultValue = "100") int limit,
+            @RequestParam(defaultValue = "false") boolean recent
+    ) throws SQLException {
+        List<LeagueDmMessageResponse> messages = leagueDmService.listMessages(
+                idLiga, idUsuario, idPeer, afterId, limit, recent
+        );
+        return ResponseEntity.ok(messages);
+    }
+
+    @PostMapping("/{idLiga}/dm/{idPeer}")
+    public ResponseEntity<LeagueDmMessageResponse> postDmMessage(
+            @PathVariable Long idLiga,
+            @PathVariable Long idPeer,
+            @RequestBody PostLeagueDmMessageRequest request
+    ) throws SQLException {
+        if (request.idUsuario() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        AuthenticatedUser.assertSameUser(request.idUsuario());
+        LeagueDmMessageResponse message = leagueDmService.postMessage(
+                idLiga,
+                request.idUsuario(),
+                idPeer,
                 request.texto()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(message);

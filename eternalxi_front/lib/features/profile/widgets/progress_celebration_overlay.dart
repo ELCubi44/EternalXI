@@ -1,15 +1,19 @@
 import 'dart:async';
-import 'dart:math' as math;
 
+import 'package:eternal_xi/app/localization/achievement_l10n.dart';
+import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
+import 'package:eternal_xi/data/models/user_progress_response.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
-import 'package:eternal_xi/features/profile/widgets/account_level_display.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 
-/// Reproduce la cola de eventos de progreso pendientes al entrar en Mis ligas.
+const _betweenEvents = Duration(milliseconds: 400);
+const _floatDuration = Duration(milliseconds: 2400);
+const _levelUpHold = Duration(milliseconds: 900);
+
+/// Reproduce XP pendiente al entrar al juego (p. ej. pantalla de modos).
 class ProgressCelebrationOverlay extends StatefulWidget {
   const ProgressCelebrationOverlay({super.key, required this.child});
 
@@ -20,53 +24,43 @@ class ProgressCelebrationOverlay extends StatefulWidget {
       _ProgressCelebrationOverlayState();
 }
 
-class _ProgressCelebrationOverlayState
-    extends State<ProgressCelebrationOverlay> with TickerProviderStateMixin {
-  bool _started = false;
+class _ProgressCelebrationOverlayState extends State<ProgressCelebrationOverlay>
+    with TickerProviderStateMixin {
+  bool _queueRunning = false;
+  bool _showOverlay = false;
   int _displayXpEnNivel = 0;
   int _displayXpParaSiguiente = 100;
   int _displayNivel = 1;
   String _displayRango = 'Novato';
-  double _progressFrom = 0;
-  bool _showOverlay = false;
-  String? _bannerTitle;
-  String? _bannerSubtitle;
-  bool _isLevelUp = false;
-
-  late final AnimationController _burstCtrl;
-  late final AnimationController _pulseCtrl;
+  double _barProgress = 0;
+  int? _levelUpFlashLevel;
+  final List<_FloatingXpLabel> _floatingLabels = [];
 
   @override
-  void initState() {
-    super.initState();
-    _burstCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-    _pulseCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _burstCtrl.dispose();
-    _pulseCtrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_started) {
-      _started = true;
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => _maybePlayQueue());
+  Widget build(BuildContext context) {
+    final progressCtrl = context.watch<AccountProgressController>();
+    if (progressCtrl.hasPendingCelebration &&
+        !progressCtrl.isPlayingCelebration &&
+        !_queueRunning) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !_queueRunning) {
+          unawaited(_maybePlayQueue());
+        }
+      });
     }
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        widget.child,
+        if (_showOverlay) _buildOverlay(context),
+      ],
+    );
   }
 
   Future<void> _maybePlayQueue() async {
+    if (_queueRunning || !mounted) return;
+
     final userId = context.read<AuthController>().currentUser?.id;
     if (userId == null) return;
 
@@ -74,6 +68,7 @@ class _ProgressCelebrationOverlayState
     final progress = progressCtrl.progress;
     if (progress == null || progress.eventosPendientes.isEmpty) return;
 
+    _queueRunning = true;
     progressCtrl.setCelebrating(true);
 
     var runningXp = progress.xpEnNivel;
@@ -87,9 +82,7 @@ class _ProgressCelebrationOverlayState
         runningLevel = event.nivelAnterior ?? runningLevel;
         runningRank = _rankForLevel(runningLevel);
       }
-      final gain = event.tipo == 'ACHIEVEMENT'
-          ? (event.xpLogro ?? 0)
-          : (event.tipo == 'XP' ? (event.cantidadXp ?? 0) : 0);
+      final gain = _xpGainForEvent(event);
       if (gain > 0) {
         runningXp = (runningXp - gain).clamp(0, runningMax);
       }
@@ -97,59 +90,81 @@ class _ProgressCelebrationOverlayState
 
     setState(() {
       _showOverlay = true;
+      _floatingLabels.clear();
+      _levelUpFlashLevel = null;
       _displayNivel = runningLevel;
       _displayRango = runningRank;
       _displayXpEnNivel = runningXp;
       _displayXpParaSiguiente = runningMax;
-      _progressFrom = runningMax <= 0 ? 0 : runningXp / runningMax;
+      _barProgress = runningMax <= 0 ? 0 : runningXp / runningMax;
     });
 
+    final locale = context.l10n.locale.languageCode;
     final seenIds = <int>[];
-    var prevRatio = _progressFrom;
+    var prevRatio = _barProgress;
 
     for (final event in progress.eventosPendientes) {
       if (!mounted) break;
 
+      final chip = _labelForEvent(event, locale);
+      _spawnFloatingLabel(chip.title, chip.subtitle, chip.xp);
+
+      final fromXp = _displayXpEnNivel;
+
       if (event.tipo == 'ACHIEVEMENT') {
-        _triggerBanner(
-          title: '¡LOGRO DESBLOQUEADO!',
-          subtitle: event.tituloLogro ?? 'Logro desbloqueado',
-          isLevelUp: false,
-        );
         runningXp = event.xpEnNivelDespues;
         runningMax = event.xpParaSiguienteDespues;
-        await _animateBar(prevRatio, runningXp, runningMax, runningLevel, runningRank);
-        prevRatio = runningMax <= 0 ? 0 : runningXp / runningMax;
-        await Future<void>.delayed(const Duration(milliseconds: 700));
+        final nextRatio = runningMax <= 0 ? 0.0 : runningXp / runningMax;
+        await _animateBarTickByTick(
+          fromRatio: prevRatio,
+          toRatio: nextRatio,
+          fromXp: fromXp,
+          toXp: runningXp,
+          maxXp: runningMax,
+          level: runningLevel,
+          rank: runningRank,
+        );
+        prevRatio = nextRatio;
       } else if (event.tipo == 'XP') {
-        final xp = event.cantidadXp ?? 0;
-        _triggerBanner(
-          title: '+$xp XP',
-          subtitle: 'Experiencia obtenida',
-          isLevelUp: false,
-        );
         runningXp = event.xpEnNivelDespues;
         runningMax = event.xpParaSiguienteDespues;
-        await _animateBar(prevRatio, runningXp, runningMax, runningLevel, runningRank);
-        prevRatio = runningMax <= 0 ? 0 : runningXp / runningMax;
-        await Future<void>.delayed(const Duration(milliseconds: 500));
+        final nextRatio = runningMax <= 0 ? 0.0 : runningXp / runningMax;
+        await _animateBarTickByTick(
+          fromRatio: prevRatio,
+          toRatio: nextRatio,
+          fromXp: fromXp,
+          toXp: runningXp,
+          maxXp: runningMax,
+          level: runningLevel,
+          rank: runningRank,
+        );
+        prevRatio = nextRatio;
       } else if (event.tipo == 'LEVEL_UP') {
         runningLevel = event.nivelNuevo ?? runningLevel;
         runningRank = _rankForLevel(runningLevel);
         runningXp = event.xpEnNivelDespues;
         runningMax = event.xpParaSiguienteDespues;
-        _triggerBanner(
-          title: '¡SUBISTE DE NIVEL!',
-          subtitle: 'NIVEL $runningLevel · ${runningRank.toUpperCase()}',
-          isLevelUp: true,
+        setState(() => _levelUpFlashLevel = runningLevel);
+        final nextRatio = runningMax <= 0 ? 0.0 : runningXp / runningMax;
+        await _animateBarTickByTick(
+          fromRatio: 0,
+          toRatio: nextRatio,
+          fromXp: 0,
+          toXp: runningXp,
+          maxXp: runningMax,
+          level: runningLevel,
+          rank: runningRank,
         );
-        await _animateBar(0, runningXp, runningMax, runningLevel, runningRank);
-        prevRatio = runningMax <= 0 ? 0 : runningXp / runningMax;
-        await Future<void>.delayed(const Duration(milliseconds: 1000));
+        prevRatio = nextRatio;
+        await Future<void>.delayed(_levelUpHold);
+        if (mounted) setState(() => _levelUpFlashLevel = null);
       }
 
       seenIds.add(event.id);
+      await Future<void>.delayed(_betweenEvents);
     }
+
+    await Future<void>.delayed(const Duration(milliseconds: 600));
 
     if (seenIds.isNotEmpty) {
       await progressCtrl.markEventsSeen(userId, seenIds);
@@ -165,45 +180,127 @@ class _ProgressCelebrationOverlayState
       progressCtrl.setCelebrating(false);
       setState(() {
         _showOverlay = false;
-        _bannerTitle = null;
-        _bannerSubtitle = null;
-        _isLevelUp = false;
+        _floatingLabels.clear();
+        _levelUpFlashLevel = null;
       });
     }
+    _queueRunning = false;
   }
 
-  void _triggerBanner({
-    required String title,
-    required String subtitle,
-    required bool isLevelUp,
-  }) {
+  void _spawnFloatingLabel(String title, String subtitle, int xp) {
     if (!mounted) return;
-    _burstCtrl.reset();
-    setState(() {
-      _bannerTitle = title;
-      _bannerSubtitle = subtitle;
-      _isLevelUp = isLevelUp;
+    final controller = AnimationController(vsync: this, duration: _floatDuration);
+    final label = _FloatingXpLabel(
+      title: title,
+      subtitle: subtitle,
+      xp: xp,
+      controller: controller,
+    );
+    setState(() => _floatingLabels.add(label));
+    controller.forward().whenComplete(() {
+      if (!mounted) return;
+      setState(() => _floatingLabels.remove(label));
+      controller.dispose();
     });
-    _burstCtrl.forward();
   }
 
-  Future<void> _animateBar(
-    double fromRatio,
-    int xp,
-    int maxXp,
-    int level,
-    String rank,
-  ) async {
+  Future<void> _animateBarTickByTick({
+    required double fromRatio,
+    required double toRatio,
+    required int fromXp,
+    required int toXp,
+    required int maxXp,
+    required int level,
+    required String rank,
+  }) async {
     if (!mounted) return;
     final safeMax = maxXp <= 0 ? 1 : maxXp;
+    final xpDelta = toXp - fromXp;
+    final ratioDelta = (toRatio - fromRatio).abs();
+    final steps = xpDelta > 0
+        ? xpDelta
+        : (ratioDelta > 0.001 ? 30 : 1);
+    final stepDelay = Duration(
+      milliseconds: (2000 / steps).clamp(50, 120).round(),
+    );
+
+    for (var step = 1; step <= steps; step++) {
+      if (!mounted) return;
+      final t = step / steps;
+      final currentXp = xpDelta > 0 ? fromXp + step : toXp;
+      setState(() {
+        _barProgress = (fromRatio + (toRatio - fromRatio) * t).clamp(0.0, 1.0);
+        _displayXpEnNivel = currentXp;
+        _displayXpParaSiguiente = safeMax;
+        _displayNivel = level;
+        _displayRango = rank;
+      });
+      await Future<void>.delayed(stepDelay);
+    }
+
+    if (!mounted) return;
     setState(() {
-      _progressFrom = fromRatio.clamp(0.0, 1.0);
-      _displayXpEnNivel = xp;
+      _barProgress = toRatio.clamp(0.0, 1.0);
+      _displayXpEnNivel = toXp;
       _displayXpParaSiguiente = safeMax;
       _displayNivel = level;
       _displayRango = rank;
     });
-    await Future<void>.delayed(const Duration(milliseconds: 950));
+  }
+
+  int _xpGainForEvent(UserProgressEvent event) {
+    if (event.tipo == 'ACHIEVEMENT') return event.xpLogro ?? 0;
+    if (event.tipo == 'XP') return event.cantidadXp ?? 0;
+    return 0;
+  }
+
+  _EventLabel _labelForEvent(UserProgressEvent event, String locale) {
+    if (event.tipo == 'ACHIEVEMENT') {
+      final translated = AchievementL10n.byCode(
+        event.codigoLogro ?? '',
+        localeCode: locale,
+      );
+      return _EventLabel(
+        title: translated?.title ?? event.tituloLogro ?? 'Logro',
+        subtitle: translated?.description ??
+            event.descripcionLogro ??
+            'Logro desbloqueado',
+        xp: event.xpLogro ?? 0,
+      );
+    }
+    if (event.tipo == 'LEVEL_UP') {
+      return _EventLabel(
+        title: '¡Nivel ${event.nivelNuevo}!',
+        subtitle: _rankForLevel(event.nivelNuevo ?? _displayNivel),
+        xp: 0,
+      );
+    }
+    final xp = event.cantidadXp ?? 0;
+    final title = _nonEmpty(event.tituloLogro) ?? _fallbackXpTitle(event);
+    final subtitle =
+        _nonEmpty(event.descripcionLogro) ?? _fallbackXpSubtitle(event);
+    return _EventLabel(title: title, subtitle: subtitle, xp: xp);
+  }
+
+  String? _nonEmpty(String? value) {
+    if (value == null || value.trim().isEmpty) return null;
+    return value.trim();
+  }
+
+  String _fallbackXpTitle(UserProgressEvent event) {
+    final code = event.codigoLogro ?? '';
+    if (code.startsWith('ROUND_')) return 'Liga';
+    if (code.startsWith('LEAGUE_')) return 'Liga';
+    if (code == 'DAILY_LOGIN') return 'Inicio de sesión';
+    return 'Experiencia';
+  }
+
+  String _fallbackXpSubtitle(UserProgressEvent event) {
+    final code = event.codigoLogro ?? '';
+    if (code.startsWith('ROUND_')) return 'Jornada completada';
+    if (code.startsWith('LEAGUE_')) return 'Liga finalizada';
+    if (code == 'DAILY_LOGIN') return 'Bonificación diaria';
+    return 'XP ganada';
   }
 
   String _rankForLevel(int level) {
@@ -216,433 +313,195 @@ class _ProgressCelebrationOverlayState
     return 'Novato';
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        widget.child,
-        if (_showOverlay) _buildOverlay(),
-      ],
-    );
-  }
-
-  Widget _buildOverlay() {
-    if (_isLevelUp && _bannerTitle != null) {
-      return _LevelUpOverlay(
-        level: _displayNivel,
-        rank: _displayRango,
-        burstCtrl: _burstCtrl,
-        pulseCtrl: _pulseCtrl,
-        xpDisplay: AccountLevelDisplay(
-          nivel: _displayNivel,
-          rango: _displayRango,
-          xpEnNivel: _displayXpEnNivel,
-          xpParaSiguiente: _displayXpParaSiguiente,
-          animateProgress: true,
-          displayXpEnNivel: _displayXpEnNivel,
-          displayXpParaSiguiente: _displayXpParaSiguiente,
-          progressFrom: _progressFrom,
-        ),
-      );
-    }
+  Widget _buildOverlay(BuildContext context) {
+    final maxXp = _displayXpParaSiguiente <= 0 ? 1 : _displayXpParaSiguiente;
 
     return Positioned.fill(
-      child: Material(
-        color: Colors.black.withValues(alpha: 0.70),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 28),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (_bannerTitle != null) ...[
-                  _FloatInWidget(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            XiColors.surfaceElevated,
-                            XiColors.surfaceCard,
-                          ],
-                        ),
-                        border: Border.all(
-                          color: XiColors.royalBlue.withValues(alpha: 0.35),
-                          width: 1.5,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: XiColors.royalBlue.withValues(alpha: 0.25),
-                            blurRadius: 24,
-                            spreadRadius: -2,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            _bannerTitle!,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontFamily: 'Lumiare',
-                              color: XiColors.warmWhite,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          if (_bannerSubtitle != null) ...[
-                            const SizedBox(height: 6),
-                            Text(
-                              _bannerSubtitle!,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontFamily: 'Lumiare',
-                                color: XiColors.techCyan,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-                AccountLevelDisplay(
-                  nivel: _displayNivel,
-                  rango: _displayRango,
-                  xpEnNivel: _displayXpEnNivel,
-                  xpParaSiguiente: _displayXpParaSiguiente,
-                  animateProgress: true,
-                  displayXpEnNivel: _displayXpEnNivel,
-                  displayXpParaSiguiente: _displayXpParaSiguiente,
-                  progressFrom: _progressFrom,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ── Overlay de subida de nivel ────────────────────────────────────────────────
-
-class _LevelUpOverlay extends StatelessWidget {
-  const _LevelUpOverlay({
-    required this.level,
-    required this.rank,
-    required this.burstCtrl,
-    required this.pulseCtrl,
-    required this.xpDisplay,
-  });
-
-  final int level;
-  final String rank;
-  final AnimationController burstCtrl;
-  final AnimationController pulseCtrl;
-  final Widget xpDisplay;
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned.fill(
-      child: Material(
-        color: Colors.transparent,
-        child: Stack(
-          children: [
-            // Fondo: explosión de color
-            Positioned.fill(
-              child: AnimatedBuilder(
-                animation: burstCtrl,
-                builder: (context, _) => CustomPaint(
-                  painter: _BurstPainter(progress: burstCtrl.value),
-                ),
-              ),
-            ),
-
-            // Partículas de celebración
-            Positioned.fill(
-              child: AnimatedBuilder(
-                animation: burstCtrl,
-                builder: (context, _) => CustomPaint(
-                  painter: _LevelUpParticles(
-                    progress: burstCtrl.value,
-                    seed: level,
-                  ),
-                ),
-              ),
-            ),
-
-            // Contenido centrado
-            SafeArea(
+      child: IgnorePointer(
+        child: ColoredBox(
+          color: Colors.black.withValues(alpha: 0.62),
+          child: SafeArea(
+            child: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28),
+                padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // "SUBISTE DE NIVEL"
-                    TweenAnimationBuilder<double>(
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      duration: const Duration(milliseconds: 400),
-                      builder: (context, v, child) =>
-                          Opacity(opacity: v, child: child),
-                      child: const Text(
+                    if (_levelUpFlashLevel != null) ...[
+                      const Text(
                         '¡SUBISTE DE NIVEL!',
                         style: TextStyle(
                           fontFamily: 'Lumiare',
                           color: XiColors.classicGold,
                           fontSize: 13,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 4.0,
+                          letterSpacing: 3,
                         ),
                       ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    AnimatedBuilder(
-                      animation: pulseCtrl,
-                      builder: (context, _) {
-                        final glow = 0.3 + pulseCtrl.value * 0.5;
-                        return Text(
-                          '$level',
-                          style: TextStyle(
-                            fontFamily: 'Lumiare',
-                            color: XiColors.warmWhite,
-                            fontSize: 120,
-                            fontWeight: FontWeight.w900,
-                            height: 1.0,
-                            shadows: [
-                              Shadow(
-                                color: XiColors.classicGold.withValues(
-                                  alpha: glow,
-                                ),
-                                blurRadius: 60,
-                              ),
-                              Shadow(
-                                color: XiColors.energyOrange.withValues(
-                                  alpha: glow * 0.65,
-                                ),
-                                blurRadius: 36,
-                              ),
-                            ],
-                          ),
-                        )
-                            .animate()
-                            .fadeIn(duration: 350.ms)
-                            .scale(
-                              begin: const Offset(0.35, 0.35),
-                              end: const Offset(1, 1),
-                              duration: 750.ms,
-                              curve: Curves.easeOutBack,
-                            )
-                            .shake(hz: 2.5, duration: 500.ms, delay: 400.ms);
-                      },
-                    ),
-
-                    // Línea decorativa
-                    Container(
-                      width: 80,
-                      height: 2,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.transparent,
-                            XiColors.classicGold,
-                            Colors.transparent,
+                      const SizedBox(height: 8),
+                      Text(
+                        '${_levelUpFlashLevel!}',
+                        style: TextStyle(
+                          fontFamily: 'Lumiare',
+                          color: XiColors.warmWhite,
+                          fontSize: 72,
+                          height: 1,
+                          shadows: [
+                            Shadow(
+                              color: XiColors.classicGold.withValues(alpha: 0.45),
+                              blurRadius: 24,
+                            ),
                           ],
                         ),
                       ),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    // Rango
-                    Text(
-                      rank.toUpperCase(),
-                      style: const TextStyle(
-                        fontFamily: 'Lumiare',
-                        color: XiColors.techLightGray,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 3.0,
+                      const SizedBox(height: 28),
+                    ],
+                    SizedBox(
+                      height: 150,
+                      width: double.infinity,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          for (final label in _floatingLabels)
+                            _FloatingXpLabelWidget(label: label),
+                        ],
                       ),
                     ),
-
-                    const SizedBox(height: 36),
-
-                    // Barra de XP
-                    xpDisplay,
+                    Text(
+                      _displayRango,
+                      style: const TextStyle(
+                        fontFamily: 'Lumiare',
+                        color: XiColors.warmWhite,
+                        fontSize: 16,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Nivel $_displayNivel',
+                      style: TextStyle(
+                        fontFamily: 'Lumiare',
+                        color: XiColors.techCyan.withValues(alpha: 0.95),
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      '$_displayXpEnNivel / $maxXp',
+                      style: const TextStyle(
+                        fontFamily: 'Lumiare',
+                        color: XiColors.warmWhite,
+                        fontSize: 22,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(999),
+                      child: LinearProgressIndicator(
+                        value: _barProgress.clamp(0.0, 1.0),
+                        minHeight: 14,
+                        backgroundColor: XiColors.royalBlue.withValues(alpha: 0.35),
+                        color: XiColors.techCyan,
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-// ── Widget de float-in ────────────────────────────────────────────────────────
+class _EventLabel {
+  const _EventLabel({
+    required this.title,
+    required this.subtitle,
+    required this.xp,
+  });
 
-class _FloatInWidget extends StatefulWidget {
-  const _FloatInWidget({required this.child});
-
-  final Widget child;
-
-  @override
-  State<_FloatInWidget> createState() => _FloatInWidgetState();
+  final String title;
+  final String subtitle;
+  final int xp;
 }
 
-class _FloatInWidgetState extends State<_FloatInWidget>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-  late final Animation<Offset> _slide;
-  late final Animation<double> _fade;
+class _FloatingXpLabel {
+  _FloatingXpLabel({
+    required this.title,
+    required this.subtitle,
+    required this.xp,
+    required this.controller,
+  });
 
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 450),
-    );
-    _slide = Tween<Offset>(
-      begin: const Offset(0, -0.25),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
-    _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeIn);
-    _ctrl.forward();
-  }
+  final String title;
+  final String subtitle;
+  final int xp;
+  final AnimationController controller;
+}
 
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
+class _FloatingXpLabelWidget extends StatelessWidget {
+  const _FloatingXpLabelWidget({required this.label});
+
+  final _FloatingXpLabel label;
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fade,
-      child: SlideTransition(position: _slide, child: widget.child),
-    );
-  }
-}
-
-// ── Painters ──────────────────────────────────────────────────────────────────
-
-class _BurstPainter extends CustomPainter {
-  const _BurstPainter({required this.progress});
-
-  final double progress;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cx = size.width / 2;
-    final cy = size.height / 2;
-
-    // Fondo oscuro semitransparente
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      Paint()
-        ..color = Colors.black.withValues(alpha: 0.82),
-    );
-
-    // Explosión radial dorada
-    final maxR = size.width * 1.2;
-    final r = maxR * math.min(1.0, progress * 1.5);
-    final alpha = (1.0 - progress * 0.7).clamp(0.0, 1.0);
-    canvas.drawCircle(
-      Offset(cx, cy),
-      r,
-      Paint()
-        ..shader = RadialGradient(
-          center: Alignment.center,
-          radius: 0.85,
-          colors: [
-            XiColors.classicGold.withValues(alpha: 0.18 * alpha),
-            XiColors.royalBlue.withValues(alpha: 0.12 * alpha),
-            Colors.transparent,
-          ],
-        ).createShader(
-          Rect.fromCircle(center: Offset(cx, cy), radius: r),
-        ),
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant _BurstPainter old) =>
-      old.progress != progress;
-}
-
-class _LevelUpParticles extends CustomPainter {
-  const _LevelUpParticles({required this.progress, required this.seed});
-
-  final double progress;
-  final int seed;
-
-  static const _colors = [
-    XiColors.classicGold,
-    XiColors.techCyan,
-    XiColors.royalBlue,
-    XiColors.emeraldGreen,
-    XiColors.energyOrange,
-    XiColors.warmWhite,
-  ];
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (progress <= 0 || progress >= 1) return;
-    final rnd = math.Random(seed);
-    final cx = size.width / 2;
-    final cy = size.height * 0.42;
-
-    for (var i = 0; i < 50; i++) {
-      final angle = rnd.nextDouble() * math.pi * 2;
-      final speed = (0.3 + rnd.nextDouble() * 0.7) * size.height * 0.55;
-      final x = cx + math.cos(angle) * speed * progress;
-      final y = cy + math.sin(angle) * speed * progress +
-          0.5 * 800 * progress * progress; // gravedad
-      final alpha = (1.0 - progress * 1.3).clamp(0.0, 1.0);
-      final r = 2.5 + rnd.nextDouble() * 4.0;
-      final color = _colors[i % _colors.length];
-
-      if (i % 3 == 0) {
-        // Cuadrado rotado
-        canvas.save();
-        canvas.translate(x, y);
-        canvas.rotate(progress * math.pi * 4 + i);
-        canvas.drawRect(
-          Rect.fromCenter(
-            center: Offset.zero,
-            width: r * 1.8,
-            height: r * 0.9,
+    return AnimatedBuilder(
+      animation: label.controller,
+      builder: (context, child) {
+        final t = Curves.easeOutCubic.transform(label.controller.value);
+        final rise = -110.0 * t;
+        final scale = 1.0 - (t * 0.4);
+        final opacity = (1.0 - t).clamp(0.0, 1.0);
+        return Transform.translate(
+          offset: Offset(0, rise),
+          child: Transform.scale(
+            scale: scale,
+            child: Opacity(opacity: opacity, child: child),
           ),
-          Paint()..color = color.withValues(alpha: alpha),
         );
-        canvas.restore();
-      } else {
-        canvas.drawCircle(
-          Offset(x, y),
-          r,
-          Paint()..color = color.withValues(alpha: alpha),
-        );
-      }
-    }
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (label.xp > 0)
+            Text(
+              '+${label.xp} XP',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'Lumiare',
+                color: XiColors.classicGold,
+                fontSize: 16,
+              ),
+            ),
+          if (label.xp > 0) const SizedBox(height: 4),
+          Text(
+            label.title,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontFamily: 'Lumiare',
+              color: XiColors.warmWhite,
+              fontSize: 15,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label.subtitle,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontFamily: 'Lumiare',
+              color: XiColors.techCyan.withValues(alpha: 0.9),
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
   }
-
-  @override
-  bool shouldRepaint(covariant _LevelUpParticles old) =>
-      old.progress != progress;
 }

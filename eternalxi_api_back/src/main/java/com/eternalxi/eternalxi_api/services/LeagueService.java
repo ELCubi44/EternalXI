@@ -80,6 +80,10 @@ public class LeagueService {
     private LeagueActivityService leagueActivityService;
     @Autowired
     private AccountProgressService accountProgressService;
+    @Autowired
+    private FriendshipService friendshipService;
+    @Autowired
+    private LeagueInviteNotificationService leagueInviteNotificationService;
 
     public LeagueService(
             LeaguePlayerPricingService pricingService,
@@ -277,6 +281,61 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
                 throw new SQLException("Error uniéndose a la liga: " + e.getMessage(), e);
             } finally {
                 conn.setAutoCommit(true);
+            }
+        }
+    }
+
+    public void inviteFriendToLeague(Long idLiga, Long idAdmin, Long idAmigo) throws SQLException {
+        if (idLiga == null || idAdmin == null || idAmigo == null) {
+            throw new IllegalArgumentException("Faltan datos obligatorios");
+        }
+        if (idAdmin.equals(idAmigo)) {
+            throw new IllegalArgumentException("No puedes invitarte a ti mismo");
+        }
+
+        try (Connection conn = DBConnection.getConnection()) {
+            LeagueData league = findLeagueById(conn, idLiga);
+            if (league == null) {
+                throw new IllegalArgumentException("Liga no encontrada");
+            }
+            if (league.closedAt() != null) {
+                throw new IllegalArgumentException("La liga está cerrada");
+            }
+            if (!Objects.equals(league.idAdministrador(), idAdmin)) {
+                throw new IllegalArgumentException("Solo el administrador puede invitar amigos");
+            }
+            if (!friendshipService.areFriends(idAdmin, idAmigo)) {
+                throw new IllegalArgumentException("Solo puedes invitar a tus amigos");
+            }
+            if (isParticipant(conn, league.id(), idAmigo)) {
+                throw new IllegalArgumentException("Ese jugador ya está en la liga");
+            }
+            if (countParticipants(conn, league.id()) >= league.maxParticipantes()) {
+                throw new IllegalArgumentException("La liga ya está completa");
+            }
+
+            String adminNick = loadUserNickname(conn, idAdmin);
+            leagueInviteNotificationService.notifyLeagueInvite(
+                    idAmigo,
+                    idAdmin,
+                    adminNick,
+                    league.id(),
+                    league.nombre(),
+                    league.codigoInvitacion()
+            );
+        }
+    }
+
+    private String loadUserNickname(Connection conn, Long id) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT nickname FROM usuarios WHERE id = ? LIMIT 1")) {
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return "Administrador";
+                }
+                String nick = rs.getString("nickname");
+                return nick == null || nick.isBlank() ? "Administrador" : nick.trim();
             }
         }
     }
@@ -2073,6 +2132,33 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
                     return null;
                 }
 
+                return new LeagueData(
+                        rs.getLong("id"),
+                        rs.getString("nombre"),
+                        rs.getLong("id_temporada"),
+                        rs.getLong("id_administrador"),
+                        rs.getString("codigo_invitacion"),
+                        rs.getDate("cerrada_en"),
+                        rs.getInt("max_participantes")
+                );
+            }
+        }
+    }
+
+    private LeagueData findLeagueById(Connection conn, Long idLiga) throws SQLException {
+        String sql = """
+                SELECT id, nombre, id_temporada, id_administrador, codigo_invitacion, cerrada_en,
+                       max_participantes
+                FROM ligas
+                WHERE id = ?
+                """;
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idLiga);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
                 return new LeagueData(
                         rs.getLong("id"),
                         rs.getString("nombre"),

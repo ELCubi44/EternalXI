@@ -41,7 +41,11 @@ public enum AchievementCode {
     PUSH_WIN_100("Puja milimétrica", "Gana subasta por ≤100€ de margen", 100, AchievementCategory.MARKET),
 
     FIRST_LEAGUE("Primer paso", "Completa tu primera liga válida", 50, AchievementCategory.LEAGUE),
-    COACH_ROULETTE("Míster con suerte", "Consigue entrenador en la ruleta", 40, AchievementCategory.REWARDS);
+    COACH_ROULETTE("Míster con suerte", "Consigue entrenador en la ruleta", 40, AchievementCategory.REWARDS),
+
+    FRIEND_1("Primer colega", "Consigue tu primer amigo en Eternal XI", 35, AchievementCategory.SOCIAL),
+    FRIEND_5("Mano extendida", "Ten 5 amigos en la plataforma", 80, AchievementCategory.SOCIAL),
+    FRIEND_15("Capitán social", "Ten 15 amigos en la plataforma", 150, AchievementCategory.SOCIAL);
 
     private final String title;
     private final String description;
@@ -187,6 +191,15 @@ public enum AchievementCode {
                     En la tienda de recompensas de una liga, usa la ruleta de entrenador \
                     y obtén un míster. Gastas puntos de recompensa y solo cuenta la primera \
                     ruleta exitosa (no repetible).""";
+            case FRIEND_1 -> """
+                    Acepta tu primera solicitud de amistad o consigue que otro jugador acepte \
+                    la tuya. Cuenta amistades confirmadas a nivel de cuenta.""";
+            case FRIEND_5 -> """
+                    Acumula 5 amigos aceptados en tu perfil. Puedes encontrarlos desde la \
+                    pantalla de amigos o aceptar solicitudes en la pestaña de solicitudes.""";
+            case FRIEND_15 -> """
+                    Llega a 15 amigos confirmados en Eternal XI. Un logro social para managers \
+                    que disfrutan compitiendo con su gente.""";
         };
     }
 
@@ -202,6 +215,9 @@ public enum AchievementCode {
             case PACKS_10 -> 10;
             case PACKS_15 -> 15;
             case PACKS_20 -> 20;
+            case FRIEND_1 -> 1;
+            case FRIEND_5 -> 5;
+            case FRIEND_15 -> 15;
             default -> null;
         };
     }

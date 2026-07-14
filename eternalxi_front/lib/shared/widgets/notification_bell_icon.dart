@@ -63,7 +63,6 @@ class NotificationBellIcon extends StatelessWidget {
                     fontFamily: 'Lumiare',
                     fontSize: 8.5,
                     color: XiColors.warmWhite,
-                    fontWeight: FontWeight.w800,
                     height: 1.15,
                   ),
                 ),

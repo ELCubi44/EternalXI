@@ -116,6 +116,16 @@ class LeagueL10n {
   String get matchEnd => _en ? 'Full time' : 'Final del partido';
   String get matchStart => _en ? 'Kick-off' : 'Inicio del partido';
   String get genericEvent => _en ? 'Event' : 'Evento';
+  String get timelineHighlights => _en ? 'Key moments' : 'Momentos clave';
+  String get timelineFilterSummary => _en ? 'Summary' : 'Resumen';
+  String get timelineFilterAll => _en ? 'Full timeline' : 'Todo';
+  String get timelineLiveUpdating =>
+      _en ? 'Match updating live…' : 'Partido actualizándose en vivo…';
+  String timelineMinorPlays(int count, int fromMin, int toMin) => _en
+      ? '$count in-between plays (min $fromMin′–$toMin′)'
+      : '$count jugadas intermedias (min $fromMin′–$toMin′)';
+  String timelineAssistBy(String name) =>
+      _en ? 'Assist: $name' : 'Asistencia: $name';
   String get noPriceChange => _en ? 'No change' : 'Sin cambio';
   String get todayChip => _en ? 'Today' : 'Hoy';
   String get matchPhaseScheduled => _en ? 'Scheduled' : 'Programado';
@@ -283,6 +293,8 @@ class LeagueL10n {
   String get configuration => _en ? 'Settings' : 'Configuración';
   String get invitationCodeTitle =>
       _en ? 'Invitation code' : 'Código de invitación';
+  String get inviteFriendsAction =>
+      _en ? 'Invite friends' : 'Invitar amigos';
   String get participants => _en ? 'Participants' : 'Participantes';
   String get administration => _en ? 'Administration' : 'Administración';
   String get delegateAdmin =>

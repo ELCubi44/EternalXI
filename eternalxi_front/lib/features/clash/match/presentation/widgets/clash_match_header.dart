@@ -42,8 +42,7 @@ class ClashMatchHeader extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+              ),
           ),
           if (rivalName != null && rivalName!.isNotEmpty) ...[
             const SizedBox(height: 4),
@@ -52,7 +51,6 @@ class ClashMatchHeader extends StatelessWidget {
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: context.xiTextSecondary,
-                fontWeight: FontWeight.w700,
               ),
             ),
           ],
@@ -65,7 +63,6 @@ class ClashMatchHeader extends StatelessWidget {
               Text(
                 '$userScore',
                 style: theme.textTheme.displaySmall?.copyWith(
-                  fontWeight: FontWeight.w900,
                   color: theme.colorScheme.primary,
                 ),
               ),
@@ -82,7 +79,6 @@ class ClashMatchHeader extends StatelessWidget {
               Text(
                 '$rivalScore',
                 style: theme.textTheme.displaySmall?.copyWith(
-                  fontWeight: FontWeight.w900,
                   color: Colors.redAccent,
                 ),
               ),
@@ -94,7 +90,6 @@ class ClashMatchHeader extends StatelessWidget {
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(
               color: context.xiTextSecondary,
-              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 10),
@@ -109,8 +104,7 @@ class ClashMatchHeader extends StatelessWidget {
                   label: Text(
                     rivalChipLabel!,
                     style: theme.textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                   visualDensity: VisualDensity.compact,
                   padding: const EdgeInsets.symmetric(horizontal: 4),

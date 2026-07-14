@@ -153,15 +153,29 @@ class ClashPlayerCollectionRepository {
   }
 
   Future<List<String>> grantEternalXiStarterNCards() async {
+    final starterIds = await _eternalXiStarterNCardIds();
+    return grantMissingCardIds(starterIds);
+  }
+
+  /// `true` si el jugador ya tiene al menos una carta N del roster Eternal XI.
+  Future<bool> ownsEternalXiStarterNCards() async {
+    final starterIds = await _eternalXiStarterNCardIds();
+    if (starterIds.isEmpty) {
+      return false;
+    }
+    final owned = loadOwnedCardIds();
+    return starterIds.any(owned.contains);
+  }
+
+  Future<List<String>> _eternalXiStarterNCardIds() async {
     final catalog = await _cardsRepository.fetchAllCards();
-    final starterIds = catalog
+    return catalog
         .where(
           (entry) =>
               entry.team == 'Eternal XI' && entry.card.rarity == ClashRarity.n,
         )
         .map((entry) => entry.id)
         .toList(growable: false);
-    return grantMissingCardIds(starterIds);
   }
 
   /// Concede una copia duplicada de una carta ya poseída (tests/recompensas).

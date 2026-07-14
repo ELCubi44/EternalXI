@@ -1,376 +1,217 @@
 {
   "rivals": [
     {
-      "id": "rival-training-squad",
-      "name": "Equipo de entrenamiento",
-      "description": "Rival básico para pachangas y pruebas.",
-      "difficulty": 1,
-      "recommendedPower": 80,
+      "id": "rival-academia-tianlong",
+      "name": "Academia Tianlong",
+      "description": "Disciplina oriental y remates desde lejos.",
+      "difficulty": 5,
+      "recommendedPower": 1538,
       "lineup7v7": [
         {
-          "id": "rival-training-gk",
-          "playerId": 92001,
-          "name": "Portero Prueba",
+          "id": "rival-academia-tianlong-n-gk-001",
+          "playerId": 643,
+          "name": "Shen Yulun",
           "position": "goalkeeper",
-          "style": "valiente",
+          "style": "preciso",
           "rarity": "n",
-          "level": 4,
+          "level": 5,
           "stats": {
-            "save": 22,
-            "defense": 14,
-            "pass": 10,
-            "dribble": 6,
-            "shot": 4,
-            "techniquePoints": 8,
-            "stamina": 95
+            "save": 37,
+            "defense": 20,
+            "pass": 15,
+            "dribble": 8,
+            "shot": 5,
+            "techniquePoints": 20,
+            "stamina": 104
           },
           "superTechniques": [
             {
-              "id": "rival-training-gk-st1",
-              "name": "Parada básica",
-              "description": "Parada sencilla de entrenamiento.",
+              "id": "academia-tianlong-n-gk-001-st1",
+              "name": "Sello del Dragón Verde",
+              "description": "Sello del Dragón Verde",
               "type": "save",
               "style": "valiente",
-              "basePower": 30,
-              "ptCost": 8,
+              "basePower": 70,
+              "ptCost": 12,
               "level": "normal"
             }
           ]
         },
         {
-          "id": "rival-training-cb",
-          "playerId": 92002,
-          "name": "Central Prueba",
+          "id": "rival-academia-tianlong-n-cb-005",
+          "playerId": 649,
+          "name": "Xu Haoran",
           "position": "centreBack",
-          "style": "potente",
+          "style": "preciso",
           "rarity": "n",
-          "level": 4,
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 34,
+            "pass": 17,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 20,
+            "stamina": 106
+          },
+          "superTechniques": [
+            {
+              "id": "academia-tianlong-n-cb-005-st1",
+              "name": "Senda del Centinela",
+              "description": "Senda del Centinela",
+              "type": "defense",
+              "style": "preciso",
+              "basePower": 55,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-academia-tianlong-n-fb-004",
+          "playerId": 648,
+          "name": "Wei Junmo",
+          "position": "fullBack",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 35,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "academia-tianlong-n-fb-004-st1",
+              "name": "Zarpazo de León de Piedra",
+              "description": "Zarpazo de León de Piedra",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-academia-tianlong-n-dm-006",
+          "playerId": 651,
+          "name": "Bai Xuanling",
+          "position": "defensiveMidfielder",
+          "style": "valiente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 23,
+            "pass": 31,
+            "dribble": 25,
+            "shot": 19,
+            "techniquePoints": 25,
+            "stamina": 111
+          },
+          "superTechniques": [
+            {
+              "id": "academia-tianlong-n-dm-006-st1",
+              "name": "Mandato del Dragón Dormido",
+              "description": "Mandato del Dragón Dormido",
+              "type": "defense",
+              "style": "valiente",
+              "basePower": 90,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-academia-tianlong-n-am-017",
+          "playerId": 656,
+          "name": "Qiao Meilin",
+          "position": "attackingMidfielder",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
           "stats": {
             "save": 4,
             "defense": 20,
-            "pass": 12,
-            "dribble": 8,
-            "shot": 6,
-            "techniquePoints": 8,
-            "stamina": 96
+            "pass": 27,
+            "dribble": 22,
+            "shot": 17,
+            "techniquePoints": 22,
+            "stamina": 108
           },
           "superTechniques": [
             {
-              "id": "rival-training-cb-st1",
-              "name": "Entrada firme",
-              "description": "Corte defensivo básico.",
-              "type": "defense",
-              "style": "potente",
-              "basePower": 28,
-              "ptCost": 8,
+              "id": "academia-tianlong-n-am-017-st1",
+              "name": "Trampa de Biombo",
+              "description": "Trampa de Biombo",
+              "type": "dribble",
+              "style": "picaro",
+              "basePower": 60,
+              "ptCost": 10,
               "level": "normal"
             }
           ]
         },
         {
-          "id": "rival-training-fb",
-          "playerId": 92003,
-          "name": "Lateral Prueba",
-          "position": "fullBack",
-          "style": "agil",
-          "rarity": "n",
-          "level": 4,
-          "stats": {
-            "save": 4,
-            "defense": 18,
-            "pass": 14,
-            "dribble": 10,
-            "shot": 6,
-            "techniquePoints": 8,
-            "stamina": 97
-          }
-        },
-        {
-          "id": "rival-training-dm",
-          "playerId": 92004,
-          "name": "MCD Prueba",
-          "position": "defensiveMidfielder",
+          "id": "rival-academia-tianlong-n-wg-010",
+          "playerId": 661,
+          "name": "Lu Tianbao",
+          "position": "winger",
           "style": "preciso",
           "rarity": "n",
-          "level": 4,
+          "level": 5,
+          "stats": {
+            "save": 3,
+            "defense": 15,
+            "pass": 17,
+            "dribble": 25,
+            "shot": 31,
+            "techniquePoints": 22,
+            "stamina": 110
+          },
+          "superTechniques": [
+            {
+              "id": "academia-tianlong-n-wg-010-st1",
+              "name": "Aguja del Fénix",
+              "description": "Aguja del Fénix",
+              "type": "shot",
+              "style": "preciso",
+              "basePower": 55,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-academia-tianlong-n-st-009",
+          "playerId": 660,
+          "name": "Long Haoyan",
+          "position": "striker",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
           "stats": {
             "save": 4,
             "defense": 16,
-            "pass": 16,
-            "dribble": 10,
-            "shot": 8,
-            "techniquePoints": 8,
-            "stamina": 98
-          }
-        },
-        {
-          "id": "rival-training-am",
-          "playerId": 92005,
-          "name": "MCO Prueba",
-          "position": "attackingMidfielder",
-          "style": "picaro",
-          "rarity": "n",
-          "level": 4,
-          "stats": {
-            "save": 4,
-            "defense": 12,
-            "pass": 16,
-            "dribble": 14,
-            "shot": 10,
-            "techniquePoints": 8,
-            "stamina": 98
-          }
-        },
-        {
-          "id": "rival-training-wg",
-          "playerId": 92006,
-          "name": "Extremo Prueba",
-          "position": "winger",
-          "style": "agil",
-          "rarity": "n",
-          "level": 4,
-          "stats": {
-            "save": 4,
-            "defense": 10,
-            "pass": 12,
-            "dribble": 16,
-            "shot": 12,
-            "techniquePoints": 8,
-            "stamina": 99
-          },
-          "superTechniques": [
-            {
-              "id": "rival-training-wg-st1",
-              "name": "Regate veloz",
-              "description": "Regate sencillo por la banda.",
-              "type": "dribble",
-              "style": "agil",
-              "basePower": 26,
-              "ptCost": 8,
-              "level": "normal"
-            }
-          ]
-        },
-        {
-          "id": "rival-training-st",
-          "playerId": 92007,
-          "name": "Delantero Prueba",
-          "position": "striker",
-          "style": "potente",
-          "rarity": "n",
-          "level": 4,
-          "stats": {
-            "save": 4,
-            "defense": 8,
-            "pass": 10,
-            "dribble": 12,
-            "shot": 18,
-            "techniquePoints": 8,
-            "stamina": 99
-          },
-          "superTechniques": [
-            {
-              "id": "rival-training-st-st1",
-              "name": "Remate básico",
-              "description": "Tiro sencillo de entrenamiento.",
-              "type": "shot",
-              "style": "potente",
-              "basePower": 32,
-              "ptCost": 8,
-              "level": "normal"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "rival-arin-training",
-      "name": "Grupo de Arin",
-      "description": "Un grupo más exigente para entrenamientos de evento.",
-      "difficulty": 2,
-      "recommendedPower": 110,
-      "lineup7v7": [
-        {
-          "id": "rival-arin-gk",
-          "playerId": 92101,
-          "name": "Kael Portero",
-          "position": "goalkeeper",
-          "style": "preciso",
-          "rarity": "r",
-          "level": 8,
-          "stats": {
-            "save": 28,
-            "defense": 18,
-            "pass": 12,
-            "dribble": 8,
-            "shot": 6,
-            "techniquePoints": 10,
-            "stamina": 100
-          },
-          "superTechniques": [
-            {
-              "id": "rival-arin-gk-st1",
-              "name": "Muro de Arin",
-              "description": "Parada firme del grupo de entrenamiento.",
-              "type": "save",
-              "style": "preciso",
-              "basePower": 38,
-              "ptCost": 10,
-              "level": "normal"
-            }
-          ]
-        },
-        {
-          "id": "rival-arin-cb",
-          "playerId": 92102,
-          "name": "Bruno Central",
-          "position": "centreBack",
-          "style": "potente",
-          "rarity": "r",
-          "level": 8,
-          "stats": {
-            "save": 6,
-            "defense": 26,
-            "pass": 14,
-            "dribble": 10,
-            "shot": 8,
-            "techniquePoints": 10,
-            "stamina": 100
-          },
-          "superTechniques": [
-            {
-              "id": "rival-arin-cb-st1",
-              "name": "Muro defensivo",
-              "description": "Entrada contundente del grupo.",
-              "type": "defense",
-              "style": "potente",
-              "basePower": 36,
-              "ptCost": 10,
-              "level": "normal"
-            }
-          ]
-        },
-        {
-          "id": "rival-arin-fb",
-          "playerId": 92103,
-          "name": "Lino Lateral",
-          "position": "fullBack",
-          "style": "agil",
-          "rarity": "r",
-          "level": 8,
-          "stats": {
-            "save": 6,
-            "defense": 22,
-            "pass": 16,
-            "dribble": 14,
-            "shot": 8,
-            "techniquePoints": 10,
-            "stamina": 101
-          }
-        },
-        {
-          "id": "rival-arin-dm",
-          "playerId": 92104,
-          "name": "Nico Medio",
-          "position": "defensiveMidfielder",
-          "style": "valiente",
-          "rarity": "r",
-          "level": 9,
-          "stats": {
-            "save": 6,
-            "defense": 20,
             "pass": 18,
-            "dribble": 12,
-            "shot": 10,
-            "techniquePoints": 10,
-            "stamina": 101
-          }
-        },
-        {
-          "id": "rival-arin-am",
-          "playerId": 92105,
-          "name": "Sora Creativo",
-          "position": "attackingMidfielder",
-          "style": "picaro",
-          "rarity": "sr",
-          "level": 9,
-          "stats": {
-            "save": 6,
-            "defense": 14,
-            "pass": 20,
-            "dribble": 18,
-            "shot": 14,
-            "techniquePoints": 12,
-            "stamina": 102
+            "dribble": 27,
+            "shot": 34,
+            "techniquePoints": 23,
+            "stamina": 112
           },
           "superTechniques": [
             {
-              "id": "rival-arin-am-st1",
-              "name": "Pase filtrado",
-              "description": "Asistencia rápida del mediocampo.",
-              "type": "dribble",
-              "style": "picaro",
-              "basePower": 34,
-              "ptCost": 10,
-              "level": "normal"
-            }
-          ]
-        },
-        {
-          "id": "rival-arin-wg",
-          "playerId": 92106,
-          "name": "Vega Extremo",
-          "position": "winger",
-          "style": "agil",
-          "rarity": "sr",
-          "level": 9,
-          "stats": {
-            "save": 6,
-            "defense": 12,
-            "pass": 14,
-            "dribble": 22,
-            "shot": 16,
-            "techniquePoints": 12,
-            "stamina": 102
-          },
-          "superTechniques": [
-            {
-              "id": "rival-arin-wg-st1",
-              "name": "Carrera punzante",
-              "description": "Desborde veloz por la banda.",
-              "type": "dribble",
-              "style": "agil",
-              "basePower": 36,
-              "ptCost": 10,
-              "level": "normal"
-            }
-          ]
-        },
-        {
-          "id": "rival-arin-st",
-          "playerId": 92107,
-          "name": "Arin Delantero",
-          "position": "striker",
-          "style": "potente",
-          "rarity": "sr",
-          "level": 10,
-          "stats": {
-            "save": 6,
-            "defense": 10,
-            "pass": 12,
-            "dribble": 14,
-            "shot": 24,
-            "techniquePoints": 12,
-            "stamina": 103
-          },
-          "superTechniques": [
-            {
-              "id": "rival-arin-st-st1",
-              "name": "Golpe de Arin",
-              "description": "Remate potente del líder del grupo.",
+              "id": "academia-tianlong-n-st-009-st1",
+              "name": "Cañón del Dragón Carmesí",
+              "description": "Cañón del Dragón Carmesí",
               "type": "shot",
               "style": "potente",
-              "basePower": 42,
+              "basePower": 75,
               "ptCost": 12,
               "level": "normal"
             }
@@ -379,169 +220,3064 @@
       ]
     },
     {
-      "id": "rival-mika-speed",
-      "name": "Equipo Relámpago de Mika",
-      "description": "Un rival rápido que castiga los errores en el centro del campo.",
-      "difficulty": 2,
-      "recommendedPower": 120,
+      "id": "rival-academia-zenith",
+      "name": "Academia Zenith",
+      "description": "Control total del balon en el centro del campo.",
+      "difficulty": 5,
+      "recommendedPower": 1542,
       "lineup7v7": [
         {
-          "id": "rival-mika-gk",
-          "playerId": 92201,
-          "name": "Rin Portero",
+          "id": "rival-academia-zenith-n-gk-001",
+          "playerId": 472,
+          "name": "Bastien Moreau",
           "position": "goalkeeper",
-          "style": "preciso",
-          "rarity": "r",
-          "level": 8,
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
           "stats": {
-            "save": 30,
-            "defense": 18,
-            "pass": 14,
-            "dribble": 10,
-            "shot": 6,
-            "techniquePoints": 10,
-            "stamina": 100
-          }
-        },
-        {
-          "id": "rival-mika-cb",
-          "playerId": 92202,
-          "name": "Taro Central",
-          "position": "centreBack",
-          "style": "preciso",
-          "rarity": "r",
-          "level": 8,
-          "stats": {
-            "save": 6,
-            "defense": 24,
-            "pass": 16,
-            "dribble": 12,
-            "shot": 8,
-            "techniquePoints": 10,
-            "stamina": 100
+            "save": 36,
+            "defense": 20,
+            "pass": 15,
+            "dribble": 8,
+            "shot": 5,
+            "techniquePoints": 20,
+            "stamina": 104
           },
           "superTechniques": [
             {
-              "id": "rival-mika-cb-st1",
-              "name": "Corte Limpio",
-              "description": "Entrada precisa que corta el avance rival.",
-              "type": "defense",
-              "style": "preciso",
-              "basePower": 38,
+              "id": "academia-zenith-n-gk-001-st1",
+              "name": "Puños de Bastilla",
+              "description": "Puños de Bastilla",
+              "type": "save",
+              "style": "potente",
+              "basePower": 65,
               "ptCost": 10,
               "level": "normal"
             }
           ]
         },
         {
-          "id": "rival-mika-fb",
-          "playerId": 92203,
-          "name": "Kai Lateral",
-          "position": "fullBack",
-          "style": "agil",
-          "rarity": "r",
-          "level": 9,
+          "id": "rival-academia-zenith-n-cb-004",
+          "playerId": 477,
+          "name": "Cédric Laurent",
+          "position": "centreBack",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
           "stats": {
             "save": 6,
-            "defense": 20,
-            "pass": 18,
-            "dribble": 18,
-            "shot": 8,
-            "techniquePoints": 10,
-            "stamina": 101
-          }
+            "defense": 38,
+            "pass": 19,
+            "dribble": 14,
+            "shot": 11,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "academia-zenith-n-cb-004-st1",
+              "name": "Fortaleza de Carcasona",
+              "description": "Fortaleza de Carcasona",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 90,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
         },
         {
-          "id": "rival-mika-dm",
-          "playerId": 92204,
-          "name": "Len Medio",
+          "id": "rival-academia-zenith-n-fb-003",
+          "playerId": 478,
+          "name": "Malik Garnier",
+          "position": "fullBack",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 35,
+            "pass": 17,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 20,
+            "stamina": 106
+          },
+          "superTechniques": [
+            {
+              "id": "academia-zenith-n-fb-003-st1",
+              "name": "Muralla de Aquitania",
+              "description": "Muralla de Aquitania",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 75,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-academia-zenith-n-dm-007",
+          "playerId": 483,
+          "name": "Lucien Mercier",
           "position": "defensiveMidfielder",
           "style": "preciso",
-          "rarity": "r",
-          "level": 9,
+          "rarity": "n",
+          "level": 5,
           "stats": {
-            "save": 6,
-            "defense": 18,
-            "pass": 22,
-            "dribble": 14,
-            "shot": 10,
-            "techniquePoints": 10,
-            "stamina": 101
-          }
-        },
-        {
-          "id": "rival-mika-am",
-          "playerId": 92205,
-          "name": "Mika Creativa",
-          "position": "attackingMidfielder",
-          "style": "agil",
-          "rarity": "sr",
-          "level": 9,
-          "stats": {
-            "save": 6,
-            "defense": 12,
-            "pass": 24,
-            "dribble": 22,
-            "shot": 16,
-            "techniquePoints": 12,
-            "stamina": 102
-          }
-        },
-        {
-          "id": "rival-mika-wg",
-          "playerId": 92206,
-          "name": "Zoe Extremo",
-          "position": "winger",
-          "style": "agil",
-          "rarity": "sr",
-          "level": 10,
-          "stats": {
-            "save": 6,
-            "defense": 10,
-            "pass": 18,
-            "dribble": 26,
-            "shot": 20,
-            "techniquePoints": 12,
-            "stamina": 102
+            "save": 4,
+            "defense": 22,
+            "pass": 29,
+            "dribble": 24,
+            "shot": 18,
+            "techniquePoints": 24,
+            "stamina": 110
           },
           "superTechniques": [
             {
-              "id": "rival-mika-wg-st1",
-              "name": "Sprint Relámpago",
-              "description": "Desborde veloz que deja atrás al defensor.",
+              "id": "academia-zenith-n-dm-007-st1",
+              "name": "Laberinto del Sena",
+              "description": "Laberinto del Sena",
               "type": "dribble",
-              "style": "agil",
-              "basePower": 40,
+              "style": "picaro",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-academia-zenith-n-am-012",
+          "playerId": 481,
+          "name": "Sergio Alarcón",
+          "position": "attackingMidfielder",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 20,
+            "pass": 27,
+            "dribble": 22,
+            "shot": 17,
+            "techniquePoints": 22,
+            "stamina": 108
+          },
+          "superTechniques": [
+            {
+              "id": "academia-zenith-n-am-012-st1",
+              "name": "Candado de Burdeos",
+              "description": "Candado de Burdeos",
+              "type": "defense",
+              "style": "preciso",
+              "basePower": 65,
               "ptCost": 10,
               "level": "normal"
             }
           ]
         },
         {
-          "id": "rival-mika-st",
-          "playerId": 92207,
-          "name": "Nao Delantero",
-          "position": "striker",
-          "style": "agil",
-          "rarity": "sr",
-          "level": 10,
+          "id": "rival-academia-zenith-n-wg-009",
+          "playerId": 490,
+          "name": "Maxime Diouf",
+          "position": "winger",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
           "stats": {
-            "save": 6,
-            "defense": 10,
-            "pass": 14,
-            "dribble": 18,
-            "shot": 28,
-            "techniquePoints": 12,
-            "stamina": 103
+            "save": 4,
+            "defense": 15,
+            "pass": 17,
+            "dribble": 25,
+            "shot": 32,
+            "techniquePoints": 22,
+            "stamina": 110
           },
           "superTechniques": [
             {
-              "id": "rival-mika-st-st1",
-              "name": "Disparo Chispa",
-              "description": "Tiro rápido que sorprende al portero.",
+              "id": "academia-zenith-n-wg-009-st1",
+              "name": "Granizo de Nantes",
+              "description": "Granizo de Nantes",
               "type": "shot",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-academia-zenith-n-st-008",
+          "playerId": 489,
+          "name": "Ibrahima Sarr",
+          "position": "striker",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 16,
+            "pass": 18,
+            "dribble": 26,
+            "shot": 34,
+            "techniquePoints": 23,
+            "stamina": 111
+          },
+          "superTechniques": [
+            {
+              "id": "academia-zenith-n-st-008-st1",
+              "name": "Trueno de Tolón",
+              "description": "Trueno de Tolón",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 75,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rival-asfalto-sur",
+      "name": "Asfalto Sur",
+      "description": "Fisico y garra en cada duelo del centro.",
+      "difficulty": 5,
+      "recommendedPower": 1514,
+      "lineup7v7": [
+        {
+          "id": "rival-asfalto-sur-n-gk-006",
+          "playerId": 491,
+          "name": "Damián Rosario",
+          "position": "goalkeeper",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 38,
+            "defense": 20,
+            "pass": 15,
+            "dribble": 8,
+            "shot": 5,
+            "techniquePoints": 20,
+            "stamina": 104
+          },
+          "superTechniques": [
+            {
+              "id": "asfalto-sur-n-gk-006-st1",
+              "name": "Granizo de Nantes",
+              "description": "Granizo de Nantes",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-asfalto-sur-n-cb-007",
+          "playerId": 495,
+          "name": "Yassin El Amrani",
+          "position": "centreBack",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 34,
+            "pass": 17,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 20,
+            "stamina": 106
+          },
+          "superTechniques": [
+            {
+              "id": "asfalto-sur-n-cb-007-st1",
+              "name": "Granizo de Nantes",
+              "description": "Granizo de Nantes",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-asfalto-sur-n-fb-001",
+          "playerId": 496,
+          "name": "Sorin Ionescu",
+          "position": "fullBack",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 34,
+            "pass": 17,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 20,
+            "stamina": 106
+          },
+          "superTechniques": [
+            {
+              "id": "asfalto-sur-n-fb-001-st1",
+              "name": "Granizo de Nantes",
+              "description": "Granizo de Nantes",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-asfalto-sur-n-dm-002",
+          "playerId": 501,
+          "name": "Nadir Bennis",
+          "position": "defensiveMidfielder",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 21,
+            "pass": 28,
+            "dribble": 23,
+            "shot": 18,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "asfalto-sur-n-dm-002-st1",
+              "name": "Granizo de Nantes",
+              "description": "Granizo de Nantes",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-asfalto-sur-n-am-009",
+          "playerId": 502,
+          "name": "Riku Kisaragi",
+          "position": "attackingMidfielder",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 21,
+            "pass": 28,
+            "dribble": 23,
+            "shot": 18,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "asfalto-sur-n-am-009-st1",
+              "name": "Granizo de Nantes",
+              "description": "Granizo de Nantes",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-asfalto-sur-n-wg-019",
+          "playerId": 506,
+          "name": "Marcos Beltrán",
+          "position": "winger",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 3,
+            "defense": 12,
+            "pass": 14,
+            "dribble": 20,
+            "shot": 26,
+            "techniquePoints": 18,
+            "stamina": 105
+          },
+          "superTechniques": [
+            {
+              "id": "asfalto-sur-n-wg-019-st1",
+              "name": "Granizo de Nantes",
+              "description": "Granizo de Nantes",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-asfalto-sur-n-st-004",
+          "playerId": 505,
+          "name": "Álvaro Cortés",
+          "position": "striker",
+          "style": "valiente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 17,
+            "pass": 19,
+            "dribble": 29,
+            "shot": 36,
+            "techniquePoints": 25,
+            "stamina": 114
+          },
+          "superTechniques": [
+            {
+              "id": "asfalto-sur-n-st-004-st1",
+              "name": "Granizo de Nantes",
+              "description": "Granizo de Nantes",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rival-bastion-adler",
+      "name": "Bastion Adler",
+      "description": "Muralla alemana. Defensa impenetrable.",
+      "difficulty": 5,
+      "recommendedPower": 1596,
+      "lineup7v7": [
+        {
+          "id": "rival-bastion-adler-n-gk-001",
+          "playerId": 624,
+          "name": "Magnus Stahlberg",
+          "position": "goalkeeper",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 41,
+            "defense": 23,
+            "pass": 17,
+            "dribble": 9,
+            "shot": 6,
+            "techniquePoints": 23,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "bastion-adler-n-gk-001-st1",
+              "name": "Reflejo del Torreón",
+              "description": "Reflejo del Torreón",
+              "type": "save",
+              "style": "preciso",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-bastion-adler-n-cb-003",
+          "playerId": 627,
+          "name": "Lukas Weißmann",
+          "position": "centreBack",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 36,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 11,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "bastion-adler-n-cb-003-st1",
+              "name": "Tijera de Bastidor",
+              "description": "Tijera de Bastidor",
+              "type": "defense",
+              "style": "preciso",
+              "basePower": 60,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-bastion-adler-n-fb-002",
+          "playerId": 626,
+          "name": "Oskar Falkenrath",
+          "position": "fullBack",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 6,
+            "defense": 37,
+            "pass": 19,
+            "dribble": 14,
+            "shot": 11,
+            "techniquePoints": 22,
+            "stamina": 108
+          },
+          "superTechniques": [
+            {
+              "id": "bastion-adler-n-fb-002-st1",
+              "name": "Ala de Contrafuerte",
+              "description": "Ala de Contrafuerte",
+              "type": "defense",
+              "style": "valiente",
+              "basePower": 75,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-bastion-adler-n-dm-006",
+          "playerId": 632,
+          "name": "Konrad Glasner",
+          "position": "defensiveMidfielder",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 21,
+            "pass": 29,
+            "dribble": 23,
+            "shot": 18,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "bastion-adler-n-dm-006-st1",
+              "name": "Compás de Hierro",
+              "description": "Compás de Hierro",
+              "type": "defense",
+              "style": "preciso",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-bastion-adler-n-am-010",
+          "playerId": 635,
+          "name": "Levin Klein",
+          "position": "attackingMidfielder",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 23,
+            "pass": 31,
+            "dribble": 25,
+            "shot": 19,
+            "techniquePoints": 25,
+            "stamina": 111
+          },
+          "superTechniques": [
+            {
+              "id": "bastion-adler-n-am-010-st1",
+              "name": "Túnel de Relojería",
+              "description": "Túnel de Relojería",
+              "type": "dribble",
+              "style": "picaro",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-bastion-adler-n-wg-019",
+          "playerId": 642,
+          "name": "Jonas Himmelreich",
+          "position": "winger",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 15,
+            "pass": 17,
+            "dribble": 25,
+            "shot": 33,
+            "techniquePoints": 22,
+            "stamina": 110
+          },
+          "superTechniques": [
+            {
+              "id": "bastion-adler-n-wg-019-st1",
+              "name": "Flecha de Alabarda",
+              "description": "Flecha de Alabarda",
+              "type": "shot",
+              "style": "preciso",
+              "basePower": 60,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-bastion-adler-n-st-009",
+          "playerId": 641,
+          "name": "Ralf Königswald",
+          "position": "striker",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 18,
+            "pass": 20,
+            "dribble": 30,
+            "shot": 38,
+            "techniquePoints": 26,
+            "stamina": 115
+          },
+          "superTechniques": [
+            {
+              "id": "bastion-adler-n-st-009-st1",
+              "name": "Corona del Kaiser",
+              "description": "Corona del Kaiser",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 100,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rival-colegio-runaria",
+      "name": "Colegio Runaria",
+      "description": "Formacion academica con pases de precision.",
+      "difficulty": 5,
+      "recommendedPower": 1563,
+      "lineup7v7": [
+        {
+          "id": "rival-colegio-runaria-n-gk-001",
+          "playerId": 662,
+          "name": "Silas Thornfield",
+          "position": "goalkeeper",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 38,
+            "defense": 21,
+            "pass": 16,
+            "dribble": 8,
+            "shot": 5,
+            "techniquePoints": 21,
+            "stamina": 105
+          },
+          "superTechniques": [
+            {
+              "id": "colegio-runaria-n-gk-001-st1",
+              "name": "Cúpula del Meridiano",
+              "description": "Cúpula del Meridiano",
+              "type": "save",
+              "style": "preciso",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-colegio-runaria-n-cb-005",
+          "playerId": 668,
+          "name": "Lyndon Frosthollow",
+          "position": "centreBack",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 35,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "colegio-runaria-n-cb-005-st1",
+              "name": "Telar de Cristal",
+              "description": "Telar de Cristal",
+              "type": "defense",
+              "style": "preciso",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-colegio-runaria-n-fb-004",
+          "playerId": 667,
+          "name": "Rafe Emberton",
+          "position": "fullBack",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 6,
+            "defense": 38,
+            "pass": 19,
+            "dribble": 14,
+            "shot": 11,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "colegio-runaria-n-fb-004-st1",
+              "name": "Fortaleza de York",
+              "description": "Fortaleza de York",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 90,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-colegio-runaria-n-dm-008",
+          "playerId": 673,
+          "name": "Jamie Hearthorne",
+          "position": "defensiveMidfielder",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 21,
+            "pass": 28,
+            "dribble": 23,
+            "shot": 18,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "colegio-runaria-n-dm-008-st1",
+              "name": "Cometa de Cheshire",
+              "description": "Cometa de Cheshire",
+              "type": "dribble",
+              "style": "picaro",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-colegio-runaria-n-am-010",
+          "playerId": 674,
+          "name": "Felix Whitmoor",
+          "position": "attackingMidfielder",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 20,
+            "pass": 27,
+            "dribble": 22,
+            "shot": 17,
+            "techniquePoints": 22,
+            "stamina": 108
+          },
+          "superTechniques": [
+            {
+              "id": "colegio-runaria-n-am-010-st1",
+              "name": "Tinta de Medianoche",
+              "description": "Tinta de Medianoche",
+              "type": "dribble",
+              "style": "preciso",
+              "basePower": 60,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-colegio-runaria-n-st-009",
+          "playerId": 679,
+          "name": "Brooks Ironmere",
+          "position": "winger",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 17,
+            "pass": 19,
+            "dribble": 28,
+            "shot": 35,
+            "techniquePoints": 24,
+            "stamina": 113
+          },
+          "superTechniques": [
+            {
+              "id": "colegio-runaria-n-st-009-st1",
+              "name": "Martillo de Abadía",
+              "description": "Martillo de Abadía",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-colegio-runaria-n-st-007",
+          "playerId": 676,
+          "name": "Archie Redwick",
+          "position": "striker",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 16,
+            "pass": 18,
+            "dribble": 27,
+            "shot": 34,
+            "techniquePoints": 23,
+            "stamina": 112
+          },
+          "superTechniques": [
+            {
+              "id": "colegio-runaria-n-st-007-st1",
+              "name": "Carrera de Cometa Real",
+              "description": "Carrera de Cometa Real",
+              "type": "dribble",
               "style": "agil",
-              "basePower": 44,
+              "basePower": 75,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rival-dunas-movedizas",
+      "name": "Dunas Movedizas",
+      "description": "El desierto los endurecio. Ataque implacable.",
+      "difficulty": 5,
+      "recommendedPower": 1549,
+      "lineup7v7": [
+        {
+          "id": "rival-dunas-movedizas-n-gk-001",
+          "playerId": 681,
+          "name": "Akil Zaher El-Sayed",
+          "position": "goalkeeper",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 38,
+            "defense": 20,
+            "pass": 15,
+            "dribble": 8,
+            "shot": 5,
+            "techniquePoints": 20,
+            "stamina": 104
+          },
+          "superTechniques": [
+            {
+              "id": "dunas-movedizas-n-gk-001-st1",
+              "name": "Trono del Guardián",
+              "description": "Trono del Guardián",
+              "type": "save",
+              "style": "valiente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-dunas-movedizas-n-cb-005",
+          "playerId": 687,
+          "name": "Faris Naguib Hassan",
+          "position": "centreBack",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 35,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "dunas-movedizas-n-cb-005-st1",
+              "name": "Estela Inmóvil",
+              "description": "Estela Inmóvil",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-dunas-movedizas-n-fb-002",
+          "playerId": 683,
+          "name": "Samir Fathi Omran",
+          "position": "fullBack",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 36,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 11,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "dunas-movedizas-n-fb-002-st1",
+              "name": "Zancada de Siroco",
+              "description": "Zancada de Siroco",
+              "type": "defense",
+              "style": "agil",
+              "basePower": 45,
+              "ptCost": 9,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-dunas-movedizas-n-dm-006",
+          "playerId": 689,
+          "name": "Malik Sobhi Ghanem",
+          "position": "defensiveMidfielder",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 21,
+            "pass": 29,
+            "dribble": 23,
+            "shot": 18,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "dunas-movedizas-n-dm-006-st1",
+              "name": "Juicio de Basalto",
+              "description": "Juicio de Basalto",
+              "type": "defense",
+              "style": "valiente",
+              "basePower": 75,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-dunas-movedizas-n-am-010",
+          "playerId": 692,
+          "name": "Rayan Nabil Darwish",
+          "position": "attackingMidfielder",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 22,
+            "pass": 30,
+            "dribble": 24,
+            "shot": 19,
+            "techniquePoints": 24,
+            "stamina": 110
+          },
+          "superTechniques": [
+            {
+              "id": "dunas-movedizas-n-am-010-st1",
+              "name": "Danza del Loto",
+              "description": "Danza del Loto",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 60,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-dunas-movedizas-n-wg-016",
+          "playerId": 699,
+          "name": "Hani Galal Fikri",
+          "position": "winger",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 3,
+            "defense": 14,
+            "pass": 16,
+            "dribble": 24,
+            "shot": 30,
+            "techniquePoints": 21,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "dunas-movedizas-n-wg-016-st1",
+              "name": "Giro de Juncos",
+              "description": "Giro de Juncos",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 30,
+              "ptCost": 8,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-dunas-movedizas-n-st-009",
+          "playerId": 698,
+          "name": "Anwar Safwat Masri",
+          "position": "striker",
+          "style": "valiente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 17,
+            "pass": 19,
+            "dribble": 28,
+            "shot": 36,
+            "techniquePoints": 25,
+            "stamina": 113
+          },
+          "superTechniques": [
+            {
+              "id": "dunas-movedizas-n-st-009-st1",
+              "name": "Espejo de Mirra",
+              "description": "Espejo de Mirra",
+              "type": "dribble",
+              "style": "picaro",
+              "basePower": 50,
+              "ptCost": 9,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rival-faro-del-alba",
+      "name": "Faro del Alba",
+      "description": "Presion alta y transiciones rapidas.",
+      "difficulty": 5,
+      "recommendedPower": 1521,
+      "lineup7v7": [
+        {
+          "id": "rival-faro-del-alba-n-gk-001",
+          "playerId": 700,
+          "name": "Sergio Alcázar",
+          "position": "goalkeeper",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 41,
+            "defense": 22,
+            "pass": 17,
+            "dribble": 9,
+            "shot": 6,
+            "techniquePoints": 22,
+            "stamina": 106
+          },
+          "superTechniques": [
+            {
+              "id": "faro-del-alba-n-gk-001-st1",
+              "name": "Faro en Silencio",
+              "description": "Faro en Silencio",
+              "type": "save",
+              "style": "preciso",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-faro-del-alba-n-cb-005",
+          "playerId": 706,
+          "name": "Dinis Capa",
+          "position": "centreBack",
+          "style": "valiente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 35,
+            "pass": 17,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 20,
+            "stamina": 106
+          },
+          "superTechniques": [
+            {
+              "id": "faro-del-alba-n-cb-005-st1",
+              "name": "Muralla del Faro Negro",
+              "description": "Muralla del Faro Negro",
+              "type": "defense",
+              "style": "valiente",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-faro-del-alba-n-fb-002",
+          "playerId": 702,
+          "name": "Rui Garfo",
+          "position": "fullBack",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 34,
+            "pass": 17,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 20,
+            "stamina": 106
+          },
+          "superTechniques": [
+            {
+              "id": "faro-del-alba-n-fb-002-st1",
+              "name": "Anzuelo del Acantilado",
+              "description": "Anzuelo del Acantilado",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 60,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-faro-del-alba-n-dm-006",
+          "playerId": 708,
+          "name": "Bento Apito",
+          "position": "defensiveMidfielder",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 20,
+            "pass": 27,
+            "dribble": 22,
+            "shot": 17,
+            "techniquePoints": 22,
+            "stamina": 108
+          },
+          "superTechniques": [
+            {
+              "id": "faro-del-alba-n-dm-006-st1",
+              "name": "Silbato de Pleamar",
+              "description": "Silbato de Pleamar",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 60,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-faro-del-alba-n-am-010",
+          "playerId": 711,
+          "name": "Alejandro Brisamar",
+          "position": "attackingMidfielder",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 22,
+            "pass": 30,
+            "dribble": 24,
+            "shot": 19,
+            "techniquePoints": 24,
+            "stamina": 110
+          },
+          "superTechniques": [
+            {
+              "id": "faro-del-alba-n-am-010-st1",
+              "name": "Brisa de Horizonte",
+              "description": "Brisa de Horizonte",
+              "type": "dribble",
+              "style": "preciso",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-faro-del-alba-n-wg-016",
+          "playerId": 716,
+          "name": "Fábio Vigia",
+          "position": "winger",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 3,
+            "defense": 12,
+            "pass": 14,
+            "dribble": 20,
+            "shot": 26,
+            "techniquePoints": 18,
+            "stamina": 105
+          },
+          "superTechniques": [
+            {
+              "id": "faro-del-alba-n-wg-016-st1",
+              "name": "Sprint del Vigía",
+              "description": "Sprint del Vigía",
+              "type": "dribble",
+              "style": "picaro",
+              "basePower": 40,
+              "ptCost": 9,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-faro-del-alba-n-st-017",
+          "playerId": 718,
+          "name": "Ícaro Salgueiro",
+          "position": "striker",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 16,
+            "pass": 18,
+            "dribble": 27,
+            "shot": 35,
+            "techniquePoints": 24,
+            "stamina": 112
+          },
+          "superTechniques": [
+            {
+              "id": "faro-del-alba-n-st-017-st1",
+              "name": "Faro del Último Oleaje",
+              "description": "Faro del Último Oleaje",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rival-favela-estrela",
+      "name": "Favela Estrela",
+      "description": "La calle exige goles. Sus delanteros no perdonan.",
+      "difficulty": 5,
+      "recommendedPower": 1556,
+      "lineup7v7": [
+        {
+          "id": "rival-favela-estrela-n-gk-001",
+          "playerId": 719,
+          "name": "Caio Nascimento Barros",
+          "position": "goalkeeper",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 38,
+            "defense": 20,
+            "pass": 15,
+            "dribble": 8,
+            "shot": 5,
+            "techniquePoints": 20,
+            "stamina": 104
+          },
+          "superTechniques": [
+            {
+              "id": "favela-estrela-n-gk-001-st1",
+              "name": "Atajada de Maracaná",
+              "description": "Atajada de Maracaná",
+              "type": "save",
+              "style": "preciso",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-favela-estrela-n-cb-003",
+          "playerId": 722,
+          "name": "Bento Azevedo Silva",
+          "position": "centreBack",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 36,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 11,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "favela-estrela-n-cb-003-st1",
+              "name": "Barrida de Ipanema",
+              "description": "Barrida de Ipanema",
+              "type": "defense",
+              "style": "agil",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-favela-estrela-n-fb-004",
+          "playerId": 724,
+          "name": "Rafael Tavares Rocha",
+          "position": "fullBack",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 36,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 11,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "favela-estrela-n-fb-004-st1",
+              "name": "Columna de Rocinha",
+              "description": "Columna de Rocinha",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 75,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-favela-estrela-n-dm-006",
+          "playerId": 727,
+          "name": "Breno Queiroz Alves",
+          "position": "defensiveMidfielder",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 21,
+            "pass": 28,
+            "dribble": 23,
+            "shot": 18,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "favela-estrela-n-dm-006-st1",
+              "name": "Llave de Recife",
+              "description": "Llave de Recife",
+              "type": "defense",
+              "style": "preciso",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-favela-estrela-n-am-010",
+          "playerId": 730,
+          "name": "Cauã Ribeiro Luz",
+          "position": "attackingMidfielder",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 22,
+            "pass": 29,
+            "dribble": 24,
+            "shot": 18,
+            "techniquePoints": 24,
+            "stamina": 110
+          },
+          "superTechniques": [
+            {
+              "id": "favela-estrela-n-am-010-st1",
+              "name": "Carnaval de Tres Toques",
+              "description": "Carnaval de Tres Toques",
+              "type": "dribble",
+              "style": "picaro",
+              "basePower": 75,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-favela-estrela-n-st-009",
+          "playerId": 736,
+          "name": "Gael Barbosa Freire",
+          "position": "winger",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 16,
+            "pass": 18,
+            "dribble": 27,
+            "shot": 35,
+            "techniquePoints": 24,
+            "stamina": 112
+          },
+          "superTechniques": [
+            {
+              "id": "favela-estrela-n-st-009-st1",
+              "name": "Bomba Carioca",
+              "description": "Bomba Carioca",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-favela-estrela-n-st-007",
+          "playerId": 733,
+          "name": "Davi Santana Cruz",
+          "position": "striker",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 16,
+            "pass": 18,
+            "dribble": 26,
+            "shot": 33,
+            "techniquePoints": 23,
+            "stamina": 111
+          },
+          "superTechniques": [
+            {
+              "id": "favela-estrela-n-st-007-st1",
+              "name": "Rayo de Copacabana",
+              "description": "Rayo de Copacabana",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rival-furia-menuda",
+      "name": "Furia Menuda",
+      "description": "Pequenos pero letales. Velocidad pura en ataque.",
+      "difficulty": 5,
+      "recommendedPower": 1549,
+      "lineup7v7": [
+        {
+          "id": "rival-furia-menuda-n-gk-001",
+          "playerId": 453,
+          "name": "Daichi Enomoto",
+          "position": "goalkeeper",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 41,
+            "defense": 23,
+            "pass": 17,
+            "dribble": 9,
+            "shot": 6,
+            "techniquePoints": 23,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "furia-menuda-n-gk-001-st1",
+              "name": "Campana Temeraria",
+              "description": "Campana Temeraria",
+              "type": "save",
+              "style": "valiente",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-furia-menuda-n-cb-002",
+          "playerId": 456,
+          "name": "Souta Hoshikawa",
+          "position": "centreBack",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 35,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "furia-menuda-n-cb-002-st1",
+              "name": "Bisagra Firme",
+              "description": "Bisagra Firme",
+              "type": "defense",
+              "style": "preciso",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-furia-menuda-n-fb-011",
+          "playerId": 459,
+          "name": "Yuto Nakahara",
+          "position": "fullBack",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 35,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "furia-menuda-n-fb-011-st1",
+              "name": "Escudo Saltarín",
+              "description": "Escudo Saltarín",
+              "type": "defense",
+              "style": "valiente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-furia-menuda-n-dm-006",
+          "playerId": 461,
+          "name": "Raito Kirishima",
+          "position": "defensiveMidfielder",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 21,
+            "pass": 28,
+            "dribble": 23,
+            "shot": 18,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "furia-menuda-n-dm-006-st1",
+              "name": "Chispa de Guardia",
+              "description": "Chispa de Guardia",
+              "type": "defense",
+              "style": "valiente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-furia-menuda-n-am-008",
+          "playerId": 464,
+          "name": "Akito Shinose",
+          "position": "attackingMidfielder",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 20,
+            "pass": 27,
+            "dribble": 22,
+            "shot": 17,
+            "techniquePoints": 22,
+            "stamina": 108
+          },
+          "superTechniques": [
+            {
+              "id": "furia-menuda-n-am-008-st1",
+              "name": "Eslalon Carmesí",
+              "description": "Eslalon Carmesí",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-furia-menuda-n-wg-017",
+          "playerId": 469,
+          "name": "Ryusei Hino",
+          "position": "winger",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 15,
+            "pass": 17,
+            "dribble": 25,
+            "shot": 32,
+            "techniquePoints": 22,
+            "stamina": 110
+          },
+          "superTechniques": [
+            {
+              "id": "furia-menuda-n-wg-017-st1",
+              "name": "Vuelta del Yo-Yó",
+              "description": "Vuelta del Yo-Yó",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 55,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-furia-menuda-n-st-005",
+          "playerId": 467,
+          "name": "Naoya Kazehara",
+          "position": "striker",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 16,
+            "pass": 18,
+            "dribble": 27,
+            "shot": 34,
+            "techniquePoints": 23,
+            "stamina": 112
+          },
+          "superTechniques": [
+            {
+              "id": "furia-menuda-n-st-005-st1",
+              "name": "Doble Guiño",
+              "description": "Doble Guiño",
+              "type": "dribble",
+              "style": "picaro",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rival-instinto-real",
+      "name": "Instinto Real",
+      "description": "Juegan sin miedo. Cada contra es una sentencia.",
+      "difficulty": 5,
+      "recommendedPower": 1546,
+      "lineup7v7": [
+        {
+          "id": "rival-instinto-real-n-gk-001",
+          "playerId": 529,
+          "name": "Dingo McCallum",
+          "position": "goalkeeper",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 37,
+            "defense": 20,
+            "pass": 15,
+            "dribble": 8,
+            "shot": 5,
+            "techniquePoints": 20,
+            "stamina": 104
+          },
+          "superTechniques": [
+            {
+              "id": "instinto-real-n-gk-001-st1",
+              "name": "Mandíbula del Dingo",
+              "description": "Mandíbula del Dingo",
+              "type": "save",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-instinto-real-n-cb-013",
+          "playerId": 532,
+          "name": "Raven Corbett",
+          "position": "centreBack",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 34,
+            "pass": 17,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 20,
+            "stamina": 106
+          },
+          "superTechniques": [
+            {
+              "id": "instinto-real-n-cb-013-st1",
+              "name": "Vuelo Rasante",
+              "description": "Vuelo Rasante",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-instinto-real-n-fb-006",
+          "playerId": 535,
+          "name": "Taipan Voss",
+          "position": "fullBack",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 36,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 11,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "instinto-real-n-fb-006-st1",
+              "name": "Enrosque del Taipán",
+              "description": "Enrosque del Taipán",
+              "type": "defense",
+              "style": "preciso",
+              "basePower": 75,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-instinto-real-n-dm-008",
+          "playerId": 537,
+          "name": "Ramsay Merrow",
+          "position": "defensiveMidfielder",
+          "style": "valiente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 21,
+            "pass": 29,
+            "dribble": 23,
+            "shot": 18,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "instinto-real-n-dm-008-st1",
+              "name": "Ariete Merino",
+              "description": "Ariete Merino",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-instinto-real-n-am-010",
+          "playerId": 540,
+          "name": "Peacock Marlowe",
+          "position": "attackingMidfielder",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 21,
+            "pass": 28,
+            "dribble": 23,
+            "shot": 18,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "instinto-real-n-am-010-st1",
+              "name": "Abanico del Pavo Real",
+              "description": "Abanico del Pavo Real",
+              "type": "dribble",
+              "style": "preciso",
+              "basePower": 75,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-instinto-real-n-st-009",
+          "playerId": 543,
+          "name": "Marmo Keane",
+          "position": "winger",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 17,
+            "pass": 19,
+            "dribble": 28,
+            "shot": 36,
+            "techniquePoints": 25,
+            "stamina": 113
+          },
+          "superTechniques": [
+            {
+              "id": "instinto-real-n-st-009-st1",
+              "name": "Coco Explosivo",
+              "description": "Coco Explosivo",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-instinto-real-n-st-007",
+          "playerId": 545,
+          "name": "Bilby Kerr",
+          "position": "striker",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 15,
+            "pass": 17,
+            "dribble": 25,
+            "shot": 33,
+            "techniquePoints": 22,
+            "stamina": 110
+          },
+          "superTechniques": [
+            {
+              "id": "instinto-real-n-st-007-st1",
+              "name": "Brinco del Bilby",
+              "description": "Brinco del Bilby",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rival-legado-unido",
+      "name": "Legado Unido",
+      "description": "Mediocampo solido que domina el ritmo.",
+      "difficulty": 5,
+      "recommendedPower": 1594,
+      "lineup7v7": [
+        {
+          "id": "rival-legado-unido-n-gk-001",
+          "playerId": 548,
+          "name": "Carter Hawke",
+          "position": "goalkeeper",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 38,
+            "defense": 20,
+            "pass": 15,
+            "dribble": 8,
+            "shot": 5,
+            "techniquePoints": 20,
+            "stamina": 104
+          },
+          "superTechniques": [
+            {
+              "id": "legado-unido-n-gk-001-st1",
+              "name": "Mirada del Águila",
+              "description": "Mirada del Águila",
+              "type": "save",
+              "style": "preciso",
+              "basePower": 60,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-legado-unido-n-cb-003",
+          "playerId": 554,
+          "name": "Ixchel Ocelotl Vega",
+          "position": "centreBack",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 36,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 11,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "legado-unido-n-cb-003-st1",
+              "name": "Acecho de Santa Fe",
+              "description": "Acecho de Santa Fe",
+              "type": "defense",
+              "style": "preciso",
+              "basePower": 60,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-legado-unido-n-fb-002",
+          "playerId": 553,
+          "name": "Hank Bison Carter",
+          "position": "fullBack",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 36,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 11,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "legado-unido-n-fb-002-st1",
+              "name": "Embestida de Buffalo",
+              "description": "Embestida de Buffalo",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 60,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-legado-unido-n-dm-004",
+          "playerId": 556,
+          "name": "Jalen Crowe Maddox",
+          "position": "defensiveMidfielder",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 23,
+            "pass": 31,
+            "dribble": 25,
+            "shot": 19,
+            "techniquePoints": 25,
+            "stamina": 111
+          },
+          "superTechniques": [
+            {
+              "id": "legado-unido-n-dm-004-st1",
+              "name": "Vuelo de Baltimore",
+              "description": "Vuelo de Baltimore",
+              "type": "defense",
+              "style": "picaro",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-legado-unido-n-am-007",
+          "playerId": 559,
+          "name": "Iker Lobo Arrieta",
+          "position": "attackingMidfielder",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 24,
+            "pass": 32,
+            "dribble": 26,
+            "shot": 20,
+            "techniquePoints": 26,
+            "stamina": 112
+          },
+          "superTechniques": [
+            {
+              "id": "legado-unido-n-am-007-st1",
+              "name": "Rastro de Alaska",
+              "description": "Rastro de Alaska",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 90,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-legado-unido-n-st-005",
+          "playerId": 565,
+          "name": "Logan Cardinal Brooks",
+          "position": "winger",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 17,
+            "pass": 19,
+            "dribble": 28,
+            "shot": 35,
+            "techniquePoints": 24,
+            "stamina": 113
+          },
+          "superTechniques": [
+            {
+              "id": "legado-unido-n-st-005-st1",
+              "name": "Vuelo de St. Louis",
+              "description": "Vuelo de St. Louis",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-legado-unido-n-st-006",
+          "playerId": 562,
+          "name": "Caleb Lionhart Brooks",
+          "position": "striker",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 17,
+            "pass": 19,
+            "dribble": 28,
+            "shot": 35,
+            "techniquePoints": 24,
+            "stamina": 113
+          },
+          "superTechniques": [
+            {
+              "id": "legado-unido-n-st-006-st1",
+              "name": "Rugido de Hollywood",
+              "description": "Rugido de Hollywood",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rival-ojo-vigilante",
+      "name": "Ojo Vigilante",
+      "description": "Vigilan cada linea de pase sin descanso.",
+      "difficulty": 5,
+      "recommendedPower": 1552,
+      "lineup7v7": [
+        {
+          "id": "rival-ojo-vigilante-n-gk-012",
+          "playerId": 510,
+          "name": "Irina Vaduva",
+          "position": "goalkeeper",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 39,
+            "defense": 21,
+            "pass": 16,
+            "dribble": 9,
+            "shot": 5,
+            "techniquePoints": 21,
+            "stamina": 105
+          },
+          "superTechniques": [
+            {
+              "id": "ojo-vigilante-n-gk-012-st1",
+              "name": "Corona de Espinas",
+              "description": "Corona de Espinas",
+              "type": "save",
+              "style": "valiente",
+              "basePower": 75,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-ojo-vigilante-n-cb-004",
+          "playerId": 513,
+          "name": "Radu Dobre",
+          "position": "centreBack",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 36,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 11,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "ojo-vigilante-n-cb-004-st1",
+              "name": "Abrazo del Pabellón",
+              "description": "Abrazo del Pabellón",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-ojo-vigilante-n-fb-003",
+          "playerId": 512,
+          "name": "Sorin Dobre",
+          "position": "fullBack",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 36,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 11,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "ojo-vigilante-n-fb-003-st1",
+              "name": "Abrazo del Pabellón",
+              "description": "Abrazo del Pabellón",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-ojo-vigilante-n-dm-007",
+          "playerId": 518,
+          "name": "Bogdan Stoica",
+          "position": "defensiveMidfielder",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 20,
+            "pass": 27,
+            "dribble": 22,
+            "shot": 17,
+            "techniquePoints": 22,
+            "stamina": 108
+          },
+          "superTechniques": [
+            {
+              "id": "ojo-vigilante-n-dm-007-st1",
+              "name": "Yunque del Sótano",
+              "description": "Yunque del Sótano",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-ojo-vigilante-n-am-009",
+          "playerId": 521,
+          "name": "Nelu Bratianu",
+          "position": "attackingMidfielder",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 21,
+            "pass": 28,
+            "dribble": 23,
+            "shot": 18,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "ojo-vigilante-n-am-009-st1",
+              "name": "Guiño Carmesí",
+              "description": "Guiño Carmesí",
+              "type": "shot",
+              "style": "picaro",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-ojo-vigilante-n-st-006",
+          "playerId": 526,
+          "name": "Tiberiu Lupu",
+          "position": "winger",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 16,
+            "pass": 18,
+            "dribble": 27,
+            "shot": 34,
+            "techniquePoints": 23,
+            "stamina": 112
+          },
+          "superTechniques": [
+            {
+              "id": "ojo-vigilante-n-st-006-st1",
+              "name": "Mueca del Campanario",
+              "description": "Mueca del Campanario",
+              "type": "shot",
+              "style": "picaro",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-ojo-vigilante-n-st-008",
+          "playerId": 523,
+          "name": "Dragoș Velicu",
+          "position": "striker",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 16,
+            "pass": 18,
+            "dribble": 27,
+            "shot": 34,
+            "techniquePoints": 23,
+            "stamina": 112
+          },
+          "superTechniques": [
+            {
+              "id": "ojo-vigilante-n-st-008-st1",
+              "name": "Mordida del Eclipse",
+              "description": "Mordida del Eclipse",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rival-panteon-caido",
+      "name": "Panteon Caido",
+      "description": "Defensas legendarios resucitan en cada piso.",
+      "difficulty": 5,
+      "recommendedPower": 1561,
+      "lineup7v7": [
+        {
+          "id": "rival-panteon-caido-n-gk-001",
+          "playerId": 567,
+          "name": "Leandros Argyros",
+          "position": "goalkeeper",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 38,
+            "defense": 20,
+            "pass": 15,
+            "dribble": 8,
+            "shot": 5,
+            "techniquePoints": 20,
+            "stamina": 104
+          },
+          "superTechniques": [
+            {
+              "id": "panteon-caido-n-gk-001-st1",
+              "name": "Cúpula del Olimpo",
+              "description": "Cúpula del Olimpo",
+              "type": "save",
+              "style": "preciso",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-panteon-caido-n-cb-005",
+          "playerId": 572,
+          "name": "Petros Voulgaris",
+          "position": "centreBack",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 35,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "panteon-caido-n-cb-005-st1",
+              "name": "Yunque Torcido",
+              "description": "Yunque Torcido",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-panteon-caido-n-fb-006",
+          "playerId": 573,
+          "name": "Damianos Pyrrakis",
+          "position": "fullBack",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 6,
+            "defense": 38,
+            "pass": 19,
+            "dribble": 14,
+            "shot": 11,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "panteon-caido-n-fb-006-st1",
+              "name": "Foso de Furia",
+              "description": "Foso de Furia",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 75,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-panteon-caido-n-dm-007",
+          "playerId": 575,
+          "name": "Nereas Galanis",
+          "position": "defensiveMidfielder",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 21,
+            "pass": 28,
+            "dribble": 23,
+            "shot": 18,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "panteon-caido-n-dm-007-st1",
+              "name": "Red de Tridente",
+              "description": "Red de Tridente",
+              "type": "defense",
+              "style": "preciso",
+              "basePower": 60,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-panteon-caido-n-am-009",
+          "playerId": 578,
+          "name": "Phoibos Iliadis",
+          "position": "attackingMidfielder",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 20,
+            "pass": 27,
+            "dribble": 22,
+            "shot": 17,
+            "techniquePoints": 22,
+            "stamina": 108
+          },
+          "superTechniques": [
+            {
+              "id": "panteon-caido-n-am-009-st1",
+              "name": "Disco Solarito",
+              "description": "Disco Solarito",
+              "type": "shot",
+              "style": "preciso",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-panteon-caido-n-st-008",
+          "playerId": 584,
+          "name": "Dorian Mavridis",
+          "position": "winger",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 17,
+            "pass": 19,
+            "dribble": 28,
+            "shot": 35,
+            "techniquePoints": 24,
+            "stamina": 113
+          },
+          "superTechniques": [
+            {
+              "id": "panteon-caido-n-st-008-st1",
+              "name": "Disparo del Cerbero",
+              "description": "Disparo del Cerbero",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 75,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-panteon-caido-n-st-010",
+          "playerId": 581,
+          "name": "Ilias Dikaros",
+          "position": "striker",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 16,
+            "pass": 18,
+            "dribble": 27,
+            "shot": 35,
+            "techniquePoints": 24,
+            "stamina": 112
+          },
+          "superTechniques": [
+            {
+              "id": "panteon-caido-n-st-010-st1",
+              "name": "Rastro de Arco Iris",
+              "description": "Rastro de Arco Iris",
+              "type": "dribble",
+              "style": "picaro",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rival-pico-artico",
+      "name": "Pico Artico",
+      "description": "Frialdad bajo cero en cada entrada.",
+      "difficulty": 5,
+      "recommendedPower": 1554,
+      "lineup7v7": [
+        {
+          "id": "rival-pico-artico-n-gk-001",
+          "playerId": 586,
+          "name": "Sindre Håkonsen",
+          "position": "goalkeeper",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 40,
+            "defense": 21,
+            "pass": 16,
+            "dribble": 9,
+            "shot": 5,
+            "techniquePoints": 21,
+            "stamina": 105
+          },
+          "superTechniques": [
+            {
+              "id": "pico-artico-n-gk-001-st1",
+              "name": "Sonrisa del Ventisquero",
+              "description": "Sonrisa del Ventisquero",
+              "type": "save",
+              "style": "picaro",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-pico-artico-n-cb-005",
+          "playerId": 592,
+          "name": "Emil Skarvik",
+          "position": "centreBack",
+          "style": "valiente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 35,
+            "pass": 18,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 21,
+            "stamina": 107
+          },
+          "superTechniques": [
+            {
+              "id": "pico-artico-n-cb-005-st1",
+              "name": "Refugio del Norte",
+              "description": "Refugio del Norte",
+              "type": "defense",
+              "style": "valiente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-pico-artico-n-fb-004",
+          "playerId": 591,
+          "name": "Bjørn Falkenberg",
+          "position": "fullBack",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 6,
+            "defense": 39,
+            "pass": 19,
+            "dribble": 15,
+            "shot": 12,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "pico-artico-n-fb-004-st1",
+              "name": "Mandato del Glaciar",
+              "description": "Mandato del Glaciar",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 90,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-pico-artico-n-dm-006",
+          "playerId": 594,
+          "name": "Nils Hovland",
+          "position": "defensiveMidfielder",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 20,
+            "pass": 27,
+            "dribble": 22,
+            "shot": 17,
+            "techniquePoints": 22,
+            "stamina": 108
+          },
+          "superTechniques": [
+            {
+              "id": "pico-artico-n-dm-006-st1",
+              "name": "Hebra Boreal",
+              "description": "Hebra Boreal",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-pico-artico-n-am-010",
+          "playerId": 597,
+          "name": "Viktor Myrstad",
+          "position": "attackingMidfielder",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 21,
+            "pass": 29,
+            "dribble": 23,
+            "shot": 18,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "pico-artico-n-am-010-st1",
+              "name": "Firma Polar",
+              "description": "Firma Polar",
+              "type": "shot",
+              "style": "preciso",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-pico-artico-n-wg-018",
+          "playerId": 604,
+          "name": "Torvald Næss",
+          "position": "winger",
+          "style": "valiente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 15,
+            "pass": 17,
+            "dribble": 25,
+            "shot": 33,
+            "techniquePoints": 22,
+            "stamina": 110
+          },
+          "superTechniques": [
+            {
+              "id": "pico-artico-n-wg-018-st1",
+              "name": "Quilla de Bergen",
+              "description": "Quilla de Bergen",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-pico-artico-n-st-009",
+          "playerId": 603,
+          "name": "Stian Løkken",
+          "position": "striker",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 16,
+            "pass": 18,
+            "dribble": 26,
+            "shot": 34,
+            "techniquePoints": 23,
+            "stamina": 111
+          },
+          "superTechniques": [
+            {
+              "id": "pico-artico-n-st-009-st1",
+              "name": "Rugido del Permafrost",
+              "description": "Rugido del Permafrost",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 75,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rival-sistema-cero",
+      "name": "Sistema Cero",
+      "description": "Maquina defensiva. Cero espacios.",
+      "difficulty": 5,
+      "recommendedPower": 1547,
+      "lineup7v7": [
+        {
+          "id": "rival-sistema-cero-n-gk-001",
+          "playerId": 605,
+          "name": "Junseo Baek",
+          "position": "goalkeeper",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 38,
+            "defense": 20,
+            "pass": 15,
+            "dribble": 8,
+            "shot": 5,
+            "techniquePoints": 20,
+            "stamina": 104
+          },
+          "superTechniques": [
+            {
+              "id": "sistema-cero-n-gk-001-st1",
+              "name": "Núcleo Antiviral",
+              "description": "Núcleo Antiviral",
+              "type": "save",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-sistema-cero-n-cb-004",
+          "playerId": 611,
+          "name": "Seojin Ryu",
+          "position": "centreBack",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 33,
+            "pass": 17,
+            "dribble": 12,
+            "shot": 10,
+            "techniquePoints": 20,
+            "stamina": 106
+          },
+          "superTechniques": [
+            {
+              "id": "sistema-cero-n-cb-004-st1",
+              "name": "Raíz Bloqueada",
+              "description": "Raíz Bloqueada",
+              "type": "defense",
+              "style": "potente",
+              "basePower": 60,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-sistema-cero-n-fb-002",
+          "playerId": 607,
+          "name": "Minjae Seo",
+          "position": "fullBack",
+          "style": "preciso",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 5,
+            "defense": 35,
+            "pass": 17,
+            "dribble": 13,
+            "shot": 10,
+            "techniquePoints": 20,
+            "stamina": 106
+          },
+          "superTechniques": [
+            {
+              "id": "sistema-cero-n-fb-002-st1",
+              "name": "Latencia Cero",
+              "description": "Latencia Cero",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 65,
+              "ptCost": 10,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-sistema-cero-n-dm-005",
+          "playerId": 613,
+          "name": "Gyumin Cho",
+          "position": "defensiveMidfielder",
+          "style": "picaro",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 21,
+            "pass": 28,
+            "dribble": 23,
+            "shot": 18,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "sistema-cero-n-dm-005-st1",
+              "name": "Protocolo Centinela",
+              "description": "Protocolo Centinela",
+              "type": "defense",
+              "style": "valiente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-sistema-cero-n-am-009",
+          "playerId": 616,
+          "name": "Jihoon Lee",
+          "position": "attackingMidfielder",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 21,
+            "pass": 28,
+            "dribble": 23,
+            "shot": 18,
+            "techniquePoints": 23,
+            "stamina": 109
+          },
+          "superTechniques": [
+            {
+              "id": "sistema-cero-n-am-009-st1",
+              "name": "Acelerón Azul",
+              "description": "Acelerón Azul",
+              "type": "shot",
+              "style": "potente",
+              "basePower": 70,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-sistema-cero-n-st-008",
+          "playerId": 622,
+          "name": "Minseok Koo",
+          "position": "winger",
+          "style": "potente",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 17,
+            "pass": 19,
+            "dribble": 28,
+            "shot": 36,
+            "techniquePoints": 25,
+            "stamina": 113
+          },
+          "superTechniques": [
+            {
+              "id": "sistema-cero-n-st-008-st1",
+              "name": "Compilador Final",
+              "description": "Compilador Final",
+              "type": "shot",
+              "style": "preciso",
+              "basePower": 80,
+              "ptCost": 12,
+              "level": "normal"
+            }
+          ]
+        },
+        {
+          "id": "rival-sistema-cero-n-st-010",
+          "playerId": 619,
+          "name": "Harin Moon",
+          "position": "striker",
+          "style": "agil",
+          "rarity": "n",
+          "level": 5,
+          "stats": {
+            "save": 4,
+            "defense": 16,
+            "pass": 18,
+            "dribble": 27,
+            "shot": 34,
+            "techniquePoints": 23,
+            "stamina": 112
+          },
+          "superTechniques": [
+            {
+              "id": "sistema-cero-n-st-010-st1",
+              "name": "Turbo de Fibra",
+              "description": "Turbo de Fibra",
+              "type": "dribble",
+              "style": "agil",
+              "basePower": 75,
               "ptCost": 12,
               "level": "normal"
             }

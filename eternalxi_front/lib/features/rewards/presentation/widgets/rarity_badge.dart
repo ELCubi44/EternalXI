@@ -26,7 +26,6 @@ class RarityBadge extends StatelessWidget {
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
           color: s.badgeForeground,
-          fontWeight: FontWeight.w800,
           letterSpacing: 0.3,
           fontSize: fontSize,
         ),

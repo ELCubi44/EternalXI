@@ -1,13 +1,11 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
-import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-/// Mensajes de bloqueo progresivo ligados al prólogo de historia.
+/// Mensajes de bloqueo progresivo (modo Cadena XI ya no depende del proxlogo).
 class ClashStoryGate {
-  static bool isTeamUnlocked(BuildContext context) {
-    return context.read<ClashStoryController>().clashTeamUnlocked;
-  }
+  static bool isTeamUnlocked(BuildContext context) => true;
+
+  static bool isSummonUnlocked(BuildContext context) => true;
 
   static void showTeamLockedSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(

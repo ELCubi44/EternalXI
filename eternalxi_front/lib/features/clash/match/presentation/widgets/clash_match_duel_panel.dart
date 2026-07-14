@@ -113,8 +113,7 @@ class _DefenderSelectionCard extends StatelessWidget {
             l10n.clashMatchDefendSelectDefenderTitle,
             textAlign: TextAlign.center,
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+              ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -144,8 +143,7 @@ class _DefenderSelectionCard extends StatelessWidget {
                           child: Text(
                             player.label,
                             style: theme.textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.w900,
-                            ),
+                              ),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -156,8 +154,7 @@ class _DefenderSelectionCard extends StatelessWidget {
                               Text(
                                 '${player.label} · ${player.position.displayNameEs}',
                                 style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                ),
+                                  ),
                               ),
                               Text(
                                 l10n.clashMatchDefendCandidateMeta(
@@ -241,8 +238,7 @@ class _ManualDefenseCard extends StatelessWidget {
                 : l10n.clashMatchDefendAdvanceTitle,
             textAlign: TextAlign.center,
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+              ),
           ),
           if (isShot) ...[
             const SizedBox(height: 4),
@@ -250,7 +246,6 @@ class _ManualDefenseCard extends StatelessWidget {
               l10n.clashMatchDefendChooseSave,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w700,
                 color: context.xiTextSecondary,
               ),
             ),
@@ -260,7 +255,6 @@ class _ManualDefenseCard extends StatelessWidget {
             rivalAttack,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w700,
               color: Colors.redAccent,
             ),
           ),
@@ -285,7 +279,6 @@ class _ManualDefenseCard extends StatelessWidget {
                 child: Text(
                   context.l10n.clashMatchDuelVsLabel,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
                     color: context.xiTextSecondary,
                   ),
                 ),
@@ -307,7 +300,6 @@ class _ManualDefenseCard extends StatelessWidget {
             _styleLabel(context, duel.attackerStyleResult),
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w700,
               color: context.xiTextSecondary,
             ),
           ),
@@ -326,8 +318,7 @@ class _ManualDefenseCard extends StatelessWidget {
             Text(
               l10n.clashMatchDuelSuperTechniques,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             const SizedBox(height: 8),
             ...techniques.map(
@@ -418,8 +409,7 @@ class _PendingDuelCard extends StatelessWidget {
             isShot ? l10n.clashMatchShotDuelTitle : l10n.clashMatchDuelTitle,
             textAlign: TextAlign.center,
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+              ),
           ),
           const SizedBox(height: 12),
           Row(
@@ -443,7 +433,6 @@ class _PendingDuelCard extends StatelessWidget {
                 child: Text(
                   context.l10n.clashMatchDuelVsLabel,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
                     color: context.xiTextSecondary,
                   ),
                 ),
@@ -464,7 +453,6 @@ class _PendingDuelCard extends StatelessWidget {
             _styleLabel(context, duel.attackerStyleResult),
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w700,
               color: context.xiTextSecondary,
             ),
           ),
@@ -485,8 +473,7 @@ class _PendingDuelCard extends StatelessWidget {
             Text(
               l10n.clashMatchDuelSuperTechniques,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             const SizedBox(height: 8),
             ...techniques.map(
@@ -543,8 +530,7 @@ class _TechniqueButton extends StatelessWidget {
             Text(
               technique.name,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -562,15 +548,13 @@ class _TechniqueButton extends StatelessWidget {
             Text(
               l10n.clashMatchDuelCurrentPt(currentPt),
               style: theme.textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+                ),
             ),
             if (!canAfford)
               Text(
                 l10n.clashMatchDuelInsufficientPt,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.error,
-                  fontWeight: FontWeight.w700,
                 ),
               ),
           ],
@@ -618,8 +602,7 @@ class _DuelResultCard extends StatelessWidget {
             isShot ? l10n.clashMatchShotDuelTitle : l10n.clashMatchDuelTitle,
             textAlign: TextAlign.center,
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+              ),
           ),
           if (headline != null) ...[
             const SizedBox(height: 8),
@@ -627,7 +610,6 @@ class _DuelResultCard extends StatelessWidget {
               headline,
               textAlign: TextAlign.center,
               style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w900,
                 color: resolution.isGoal ? Colors.green : Colors.blueAccent,
               ),
             ),
@@ -637,8 +619,7 @@ class _DuelResultCard extends StatelessWidget {
             resolution.eventText,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+              ),
           ),
           if (resolution.attackerTechniqueName != null ||
               resolution.defenderTechniqueName != null) ...[
@@ -726,7 +707,6 @@ class _ParticipantCard extends StatelessWidget {
           child: Text(
             participant.label,
             style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w900,
               color: accent,
             ),
           ),
@@ -736,8 +716,7 @@ class _ParticipantCard extends StatelessWidget {
           participant.label,
           textAlign: TextAlign.center,
           style: theme.textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w800,
-          ),
+            ),
         ),
         Text(
           participant.position.displayNameEs,
@@ -756,8 +735,7 @@ class _ParticipantCard extends StatelessWidget {
           '$statLabel: ${participant.effectiveStat}',
           textAlign: TextAlign.center,
           style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+            ),
         ),
         if (currentPt != null) ...[
           const SizedBox(height: 2),
@@ -765,8 +743,7 @@ class _ParticipantCard extends StatelessWidget {
             l10n.clashMatchDuelCurrentPt(currentPt!),
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+              ),
           ),
         ],
       ],

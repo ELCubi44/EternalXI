@@ -340,7 +340,7 @@ class _CompactActionButton extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+                style: const TextStyle(fontSize: 14),
               ),
       ),
     );
@@ -479,7 +479,6 @@ class _SellPlayerCard extends StatelessWidget {
                         style: TextStyle(
                           color: style.success,
                           fontSize: 11,
-                          fontWeight: FontWeight.w700,
                           height: 1.2,
                         ),
                       ),
@@ -623,7 +622,6 @@ class _ClauseParticipantSquad extends StatelessWidget {
             rl10n.availablePlayers,
             style: theme.textTheme.labelLarge?.copyWith(
               color: style.accentLabel,
-              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 6),
@@ -636,7 +634,6 @@ class _ClauseParticipantSquad extends StatelessWidget {
             rl10n.blockedPlayers,
             style: theme.textTheme.labelLarge?.copyWith(
               color: style.muted,
-              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 6),
@@ -726,7 +723,6 @@ class _ClausePlayerCard extends StatelessWidget {
                         style: TextStyle(
                           color: style.warning,
                           fontSize: 11,
-                          fontWeight: FontWeight.w700,
                           height: 1.2,
                         ),
                       ),
@@ -794,7 +790,6 @@ class _ClauseBlockedCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: style.faint,
-                            fontWeight: FontWeight.w600,
                             fontSize: 12,
                             height: 1.15,
                           ),
@@ -1145,7 +1140,6 @@ class _ValueBoostPlayerCard extends StatelessWidget {
                         style: TextStyle(
                           color: style.success,
                           fontSize: 10,
-                          fontWeight: FontWeight.w700,
                           height: 1.2,
                         ),
                       ),

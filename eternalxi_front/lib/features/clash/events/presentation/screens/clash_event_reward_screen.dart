@@ -85,8 +85,7 @@ class _ClashEventRewardScreenState extends State<ClashEventRewardScreen> {
           Text(
             feedbackTitle,
             style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+              ),
           ),
           const SizedBox(height: 16),
           _EventGrantedRewards(
@@ -99,8 +98,7 @@ class _ClashEventRewardScreenState extends State<ClashEventRewardScreen> {
             Text(
               l10n.clashMatchCardXpTitle,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             const SizedBox(height: 8),
             for (final xp in completion.cardXpResults)

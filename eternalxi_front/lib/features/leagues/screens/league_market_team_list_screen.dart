@@ -136,8 +136,7 @@ class _LeagueMarketTeamListScreenState
                   Text(
                     ll.noPlayersInLeague,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                      ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
@@ -229,8 +228,7 @@ class _TeamListTile extends StatelessWidget {
                     Text(
                       summary.nombreEquipo,
                       style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                        ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -252,15 +250,13 @@ class _TeamListTile extends StatelessWidget {
                     'Media',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     mediaLabel,
                     style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+                      ),
                   ),
                 ],
               ),

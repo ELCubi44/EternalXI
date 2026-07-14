@@ -5,7 +5,8 @@ enum ClashDailyMissionType {
   summon,
   shopPurchase,
   useExpMaterial,
-  upgradeTechnique;
+  upgradeTechnique,
+  playChainTrial;
 
   static ClashDailyMissionType? fromJson(Object? value) {
     final raw = value?.toString().trim();
@@ -16,6 +17,7 @@ enum ClashDailyMissionType {
       'shopPurchase' => ClashDailyMissionType.shopPurchase,
       'useExpMaterial' => ClashDailyMissionType.useExpMaterial,
       'upgradeTechnique' => ClashDailyMissionType.upgradeTechnique,
+      'playChainTrial' => ClashDailyMissionType.playChainTrial,
       _ => null,
     };
   }

@@ -61,8 +61,7 @@ class ClashStoryLevelCard extends StatelessWidget {
                   child: Text(
                     '${level.order}',
                     style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+                      ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -73,8 +72,7 @@ class ClashStoryLevelCard extends StatelessWidget {
                       Text(
                         level.title,
                         style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                          ),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -175,8 +173,7 @@ class _ObjectivesPreview extends StatelessWidget {
         Text(
           l10n.clashMatchObjectivesTitle,
           style: theme.textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w800,
-          ),
+            ),
         ),
         const SizedBox(height: 6),
         for (final objective in objectives)
@@ -195,8 +192,7 @@ class _ObjectivesPreview extends StatelessWidget {
                   child: Text(
                     objective.title,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                      ),
                   ),
                 ),
               ],

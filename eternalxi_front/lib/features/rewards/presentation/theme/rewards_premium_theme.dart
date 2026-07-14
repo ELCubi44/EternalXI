@@ -56,11 +56,9 @@ class RewardsPremiumTheme {
         checkmarkColor: accent,
         labelStyle: const TextStyle(
           color: Colors.white70,
-          fontWeight: FontWeight.w600,
         ),
         secondaryLabelStyle: const TextStyle(
           color: Colors.white,
-          fontWeight: FontWeight.w600,
         ),
         side: BorderSide.none,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -71,7 +69,6 @@ class RewardsPremiumTheme {
         titleTextStyle: const TextStyle(
           color: Colors.white,
           fontSize: 20,
-          fontWeight: FontWeight.w700,
         ),
         contentTextStyle: const TextStyle(color: Colors.white70, height: 1.4),
       ),
@@ -92,15 +89,15 @@ class RewardsPremiumTheme {
         bodyLarge: TextStyle(color: Colors.white),
         bodyMedium: TextStyle(color: Colors.white70),
         bodySmall: TextStyle(color: Colors.white54),
-        titleMedium: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-        titleSmall: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        titleMedium: TextStyle(color: Colors.white),
+        titleSmall: TextStyle(color: Colors.white),
         labelLarge: TextStyle(color: Colors.white70),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: accent,
           foregroundColor: const Color(0xFF1A237E),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700),
+          textStyle: const TextStyle(fontWeight: FontWeight.w400),
         ),
       ),
       textButtonTheme: TextButtonThemeData(

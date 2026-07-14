@@ -67,8 +67,7 @@ class ClashNewsCard extends StatelessWidget {
                       child: Text(
                         item.title,
                         style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                          ),
                       ),
                     ),
                     if (!entry.isRead)
@@ -86,7 +85,6 @@ class ClashNewsCard extends StatelessWidget {
                           l10n.clashNewsBadgeNew,
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.onPrimary,
-                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
@@ -103,7 +101,6 @@ class ClashNewsCard extends StatelessWidget {
                       dateLabel,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: context.xiTextSecondary,
-                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -161,7 +158,6 @@ class _TypeChip extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w700,
           color: color,
         ),
       ),

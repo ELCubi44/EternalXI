@@ -51,8 +51,7 @@ class ClashInventoryCategorySection extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+                  ),
               ),
             ),
           ],
@@ -81,7 +80,6 @@ class ClashInventoryCategorySection extends StatelessWidget {
               l10n.clashInventoryZeroQuantityHeader,
               style: theme.textTheme.labelMedium?.copyWith(
                 color: context.xiTextSecondary,
-                fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 8),

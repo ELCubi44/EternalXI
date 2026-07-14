@@ -55,7 +55,6 @@ class RewardCardTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleSmall?.copyWith(
                         color: Colors.white,
-                        fontWeight: FontWeight.w800,
                         fontSize: 13,
                         height: 1.2,
                       ),
@@ -77,7 +76,6 @@ class RewardCardTile extends StatelessWidget {
                     effectShort,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: Colors.white70,
-                      fontWeight: FontWeight.w700,
                       fontSize: 10,
                     ),
                   ),
@@ -119,7 +117,6 @@ class RewardCardTile extends StatelessWidget {
                             ? const Color(0xFF81C784)
                             : Colors.white38,
                         fontSize: 10,
-                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -132,7 +129,6 @@ class RewardCardTile extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           textStyle: const TextStyle(
                             fontSize: 11,
-                            fontWeight: FontWeight.w700,
                           ),
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,

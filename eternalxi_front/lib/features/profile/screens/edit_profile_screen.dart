@@ -1,12 +1,12 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
+import 'package:eternal_xi/app/theme/app_colors.dart';
+import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/app/theme/xi_typography.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
-import 'package:eternal_xi/data/models/user_preferences_response.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
-import 'package:eternal_xi/features/legal/screens/legal_document_screen.dart';
 import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
 import 'package:eternal_xi/features/profile/controller/profile_controller.dart';
-import 'package:eternal_xi/features/profile/controller/user_preferences_controller.dart';
 import 'package:eternal_xi/features/profile/widgets/account_level_display.dart';
 import 'package:eternal_xi/shared/widgets/app_loading_overlay.dart';
 import 'package:flutter/material.dart';
@@ -36,72 +36,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _loadProfile() async {
     final auth = context.read<AuthController>();
     final profileController = context.read<ProfileController>();
-    final preferencesController = context.read<UserPreferencesController>();
     final userId = auth.currentUser?.id;
     if (userId == null) {
       return;
     }
     await profileController.loadProfile(userId);
     await context.read<AccountProgressController>().loadProgress(userId);
-    await preferencesController.loadAll();
     if (!mounted) {
       return;
     }
     setState(() {
       _photoVersion = DateTime.now().millisecondsSinceEpoch;
     });
-  }
-
-  Future<void> _saveTheme(UserThemePreference themeMode) async {
-    final l10n = context.l10n;
-    final controller = context.read<UserPreferencesController>();
-    final ok = await controller.updateTheme(themeMode);
-    if (!mounted) {
-      return;
-    }
-    final messenger = ScaffoldMessenger.of(context);
-    if (ok) {
-      messenger.showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text(l10n.preferencesUpdated),
-        ),
-      );
-    } else {
-      messenger.showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.error,
-          content: Text(controller.errorMessage ?? l10n.preferencesSaveError),
-        ),
-      );
-    }
-  }
-
-  Future<void> _saveLanguage(UserLanguagePreference languageCode) async {
-    final l10n = context.l10n;
-    final controller = context.read<UserPreferencesController>();
-    final ok = await controller.updateLanguage(languageCode);
-    if (!mounted) {
-      return;
-    }
-    final messenger = ScaffoldMessenger.of(context);
-    if (ok) {
-      messenger.showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text(l10n.preferencesUpdated),
-        ),
-      );
-    } else {
-      messenger.showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.error,
-          content: Text(controller.errorMessage ?? l10n.preferencesSaveError),
-        ),
-      );
-    }
   }
 
   Future<void> _showPhotoSourcePicker(int userId) async {
@@ -255,7 +201,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final profile = context.watch<ProfileController>();
     final progressCtrl = context.watch<AccountProgressController>();
     final progress = progressCtrl.progress;
-    final preferencesController = context.watch<UserPreferencesController>();
     final auth = context.watch<AuthController>();
     final user = profile.user ?? auth.currentUser;
     final userId = auth.currentUser?.id;
@@ -264,273 +209,155 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return AppLoadingOverlay(
       isLoading: profile.isLoading,
       child: Scaffold(
-        appBar: AppBar(title: Text(l10n.profile)),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 8),
-              Center(
-                child: _ProfileAvatar(
-                  userId: userId,
-                  hasPhoto: user?.hasProfilePhoto ?? false,
-                  photoVersion: _photoVersion,
-                  initial: initial,
-                  colorScheme: colorScheme,
-                  theme: theme,
-                  onEditTap: userId == null
-                      ? null
-                      : () => _showPhotoSourcePicker(userId),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                user?.nickname ?? 'Jugador',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 22),
-              Card(
-                elevation: 0,
-                color: colorScheme.surfaceContainerHighest.withValues(
-                  alpha: 0.55,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        l10n.accountData,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      AccountLevelDisplay(
-                        compact: true,
-                        nivel: progress?.nivel ?? user?.nivel ?? 1,
-                        rango: progress?.rango ?? 'Novato',
-                        xpEnNivel: progress?.xpEnNivel ?? 0,
-                        xpParaSiguiente: progress?.xpParaSiguienteNivel ?? 100,
-                      ),
-                      const SizedBox(height: 16),
-                      _ReadOnlyInfoTile(
-                        label: l10n.email,
-                        value: user?.correo ?? '—',
-                        icon: Icons.alternate_email_rounded,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton.icon(
-                          onPressed: userId == null
-                              ? null
-                              : () => context.push(AppRoutes.changeEmailRequest),
-                          icon: const Icon(Icons.edit_outlined, size: 18),
-                          label: Text(l10n.changeEmail),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      _ReadOnlyInfoTile(
-                        label: l10n.nickname,
-                        value: user?.nickname ?? '—',
-                        icon: Icons.person_rounded,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton.icon(
-                          onPressed: userId == null
-                              ? null
-                              : () => context.push(AppRoutes.changeNicknameRequest),
-                          icon: const Icon(Icons.edit_outlined, size: 18),
-                          label: Text(l10n.changeNickname),
-                        ),
-                      ),
-                    ],
+        backgroundColor: context.xiBackground,
+        body: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              backgroundColor: context.xiBackground,
+              foregroundColor: context.xiTextPrimary,
+              title: Text(l10n.profile),
+              expandedHeight: 236,
+              flexibleSpace: FlexibleSpaceBar(
+                background: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: context.xiHeaderGradient,
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                elevation: 0,
-                color: colorScheme.surfaceContainerHighest.withValues(
-                  alpha: 0.55,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        l10n.preferencesTitle,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        l10n.themeModeLabel,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      SegmentedButton<UserThemePreference>(
-                        segments: [
-                          ButtonSegment(
-                            value: UserThemePreference.light,
-                            label: Text(l10n.lightOption),
-                          ),
-                          ButtonSegment(
-                            value: UserThemePreference.dark,
-                            label: Text(l10n.darkOption),
-                          ),
-                        ],
-                        selected: {preferencesController.uiThemeSelection},
-                        emptySelectionAllowed: false,
-                        onSelectionChanged: preferencesController.isSaving
-                            ? null
-                            : (selection) {
-                                final value = selection.first;
-                                if (value !=
-                                    preferencesController
-                                        .storedThemePreference) {
-                                  _saveTheme(value);
-                                }
-                              },
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        l10n.languageLabel,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      SegmentedButton<UserLanguagePreference>(
-                        segments: [
-                          ButtonSegment(
-                            value: UserLanguagePreference.es,
-                            label: Text(l10n.spanishOption),
-                          ),
-                          ButtonSegment(
-                            value: UserLanguagePreference.en,
-                            label: Text(l10n.englishOption),
-                          ),
-                        ],
-                        selected: {preferencesController.uiLanguageSelection},
-                        emptySelectionAllowed: false,
-                        onSelectionChanged: preferencesController.isSaving
-                            ? null
-                            : (selection) {
-                                final value = selection.first;
-                                if (value !=
-                                    preferencesController
-                                        .storedLanguagePreference) {
-                                  _saveLanguage(value);
-                                }
-                              },
-                      ),
-                      if (preferencesController.isSaving) ...[
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: colorScheme.primary,
-                              ),
+                  child: SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 28),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          AccountLevelAvatarRing(
+                            nivel: progress?.nivel ?? user?.nivel ?? 1,
+                            xpEnNivel: progress?.xpEnNivel ?? 0,
+                            xpParaSiguiente:
+                                progress?.xpParaSiguienteNivel ?? 100,
+                            ringStroke: 3,
+                            ringGap: 2.5,
+                            child: _ProfileAvatar(
+                              userId: userId,
+                              hasPhoto: user?.hasProfilePhoto ?? false,
+                              photoVersion: _photoVersion,
+                              initial: initial,
+                              colorScheme: colorScheme,
+                              theme: theme,
+                              onEditTap: userId == null
+                                  ? null
+                                  : () => _showPhotoSourcePicker(userId),
+                              size: 84,
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              l10n.savingPreferences,
-                              style: theme.textTheme.bodySmall,
+                          ),
+                          const SizedBox(height: 10),
+                          XiText(
+                            user?.nickname ?? 'Jugador',
+                            style: XiTypography.lumiare(
+                              fontSize: 22,
+                              letterSpacing: 0.4,
+                              color: context.xiTextPrimary,
                             ),
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  l10n.legalSectionTitle,
-                  style: theme.textTheme.titleSmall,
-                ),
-              ),
-              const SizedBox(height: 8),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(l10n.legalTermsLink),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) =>
-                        const LegalDocumentScreen(type: LegalDocumentType.terms),
-                  ),
-                ),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(l10n.legalCommunityLink),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const LegalDocumentScreen(
-                      type: LegalDocumentType.communityGuidelines,
+                          ),
+                          const SizedBox(height: 4),
+                          XiText(
+                            '${progress?.rango ?? 'Novato'} · ${progress?.xpEnNivel ?? 0}/${progress?.xpParaSiguienteNivel ?? 100} XP',
+                            style: XiTypography.lumiare(
+                              fontSize: 13,
+                              color: context.xiTextSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(l10n.legalPrivacyLink),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const LegalDocumentScreen(
-                      type: LegalDocumentType.privacySummary,
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _ProfileActionCard(
+                          icon: Icons.people_alt_rounded,
+                          label: l10n.friendsTitle,
+                          onTap: () => context.push(AppRoutes.profileFriends),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _ProfileActionCard(
+                          icon: Icons.home_rounded,
+                          label: l10n.profileBackToTitle,
+                          onTap: () => context.go(AppRoutes.splash),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    l10n.accountData,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: context.xiTextPrimary,
                     ),
                   ),
-                ),
+                  const SizedBox(height: 10),
+                  _ReadOnlyInfoTile(
+                    label: l10n.email,
+                    value: user?.correo ?? '—',
+                    icon: Icons.alternate_email_rounded,
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      onPressed: userId == null
+                          ? null
+                          : () => context.push(AppRoutes.changeEmailRequest),
+                      icon: const Icon(Icons.edit_outlined, size: 18),
+                      label: Text(l10n.changeEmail),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _ReadOnlyInfoTile(
+                    label: l10n.nickname,
+                    value: user?.nickname ?? '—',
+                    icon: Icons.person_rounded,
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      onPressed: userId == null
+                          ? null
+                          : () => context.push(AppRoutes.changeNicknameRequest),
+                      icon: const Icon(Icons.edit_outlined, size: 18),
+                      label: Text(l10n.changeNickname),
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      await auth.logout();
+                      if (context.mounted) {
+                        context.go(AppRoutes.splash);
+                      }
+                    },
+                    icon: const Icon(Icons.logout_rounded),
+                    label: Text(l10n.logout),
+                  ),
+                ]),
               ),
-              const SizedBox(height: 16),
-              OutlinedButton.icon(
-                onPressed: () async {
-                  await auth.logout();
-                  if (context.mounted) {
-                    context.go(AppRoutes.login);
-                  }
-                },
-                icon: const Icon(Icons.logout_rounded),
-                label: Text(l10n.logout),
-              ),
-              const SizedBox(height: 8),
-              TextButton(
-                onPressed: userId == null
-                    ? null
-                    : () => _confirmDelete(context, userId),
-                child: Text(
-                  l10n.deleteAccount,
-                  style: TextStyle(color: colorScheme.error),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -543,44 +370,52 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
     return n.substring(0, 1).toUpperCase();
   }
+}
 
-  Future<void> _confirmDelete(BuildContext context, int id) async {
-    final accepted = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(context.l10n.deleteAccountConfirmTitle),
-        content: Text(context.l10n.deleteAccountConfirmBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(context.l10n.cancel),
+class _ProfileActionCard extends StatelessWidget {
+  const _ProfileActionCard({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: context.xiCardSurface,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: context.xiDivider),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: Text(context.l10n.deleteAccountRequestEmail),
+          child: Column(
+            children: [
+              Icon(icon, color: XiColors.royalBlue, size: 24),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: 'Lumiare',
+                  fontSize: 11,
+                  color: context.xiTextPrimary,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
-    );
-    if (accepted != true || !context.mounted) {
-      return;
-    }
-    final auth = context.read<AuthController>();
-    final message = await auth.requestAccountDeletion();
-    if (!context.mounted) {
-      return;
-    }
-    if (message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-      context.push(AppRoutes.deleteAccountConfirm);
-      return;
-    }
-    final error = auth.errorMessage;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(error ?? context.l10n.accountDeletionRequestFailed)),
     );
   }
 }
@@ -623,15 +458,13 @@ class _ReadOnlyInfoTile extends StatelessWidget {
                     label,
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     cleanValue,
                     style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                 ],
               ),
@@ -652,6 +485,7 @@ class _ProfileAvatar extends StatelessWidget {
     required this.colorScheme,
     required this.theme,
     required this.onEditTap,
+    this.size = 88,
   });
 
   final int? userId;
@@ -661,8 +495,7 @@ class _ProfileAvatar extends StatelessWidget {
   final ColorScheme colorScheme;
   final ThemeData theme;
   final VoidCallback? onEditTap;
-
-  static const double _size = 88;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
@@ -671,8 +504,8 @@ class _ProfileAvatar extends StatelessWidget {
         : null;
 
     return SizedBox(
-      width: _size + 8,
-      height: _size + 8,
+      width: size + 8,
+      height: size + 8,
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.center,
@@ -690,8 +523,8 @@ class _ProfileAvatar extends StatelessWidget {
             ),
             child: ClipOval(
               child: SizedBox(
-                width: _size,
-                height: _size,
+                width: size,
+                height: size,
                 child: imageUrl != null
                     ? Image.network(
                         imageUrl,
@@ -790,7 +623,6 @@ class _AvatarPlaceholder extends StatelessWidget {
                 initial,
                 style: theme.textTheme.headlineMedium?.copyWith(
                   color: colorScheme.onPrimaryContainer,
-                  fontWeight: FontWeight.w700,
                 ),
               ),
       ),

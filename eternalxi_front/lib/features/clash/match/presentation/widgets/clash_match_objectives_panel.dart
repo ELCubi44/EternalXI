@@ -47,8 +47,7 @@ class ClashMatchObjectivesPanel extends StatelessWidget {
           Text(
             l10n.clashMatchObjectivesTitle,
             style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+              ),
           ),
           const SizedBox(height: 8),
           ...objectives.map(
@@ -85,7 +84,6 @@ class _EmptyPanel extends StatelessWidget {
         textAlign: TextAlign.center,
         style: theme.textTheme.bodySmall?.copyWith(
           color: context.xiTextSecondary,
-          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -123,8 +121,7 @@ class _ObjectiveLiveRow extends StatelessWidget {
                 Text(
                   objective.title,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                    ),
                 ),
                 if (objective.description.isNotEmpty) ...[
                   const SizedBox(height: 2),
@@ -143,7 +140,6 @@ class _ObjectiveLiveRow extends StatelessWidget {
                     rewardText,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],
@@ -152,7 +148,6 @@ class _ObjectiveLiveRow extends StatelessWidget {
                   statusLabel,
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: statusColor,
-                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ],

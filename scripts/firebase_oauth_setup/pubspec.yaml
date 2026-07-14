@@ -1,0 +1,8 @@
+name: firebase_oauth_setup
+description: Configura Google Sign-In en Firebase con service account
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  googleapis_auth: ^2.0.0
+  http: ^1.6.0

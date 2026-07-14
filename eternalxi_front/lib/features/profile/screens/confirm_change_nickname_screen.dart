@@ -60,7 +60,6 @@ class _ConfirmChangeNicknameScreenState
                     style: TextStyle(
                       fontFamily: 'Lumiare',
                       fontSize: 11,
-                      fontWeight: FontWeight.w800,
                       color: context.xiAccentText,
                       letterSpacing: 0.8,
                     ),
@@ -82,7 +81,6 @@ class _ConfirmChangeNicknameScreenState
                       style: TextStyle(
                         fontFamily: 'Lumiare',
                         fontSize: 14,
-                        fontWeight: FontWeight.w700,
                         color: context.xiTextPrimary,
                       ),
                     ),

@@ -82,7 +82,6 @@ class _LeagueMarketPlayerBuyCardState
           ll.buyPlayer,
           style: const TextStyle(
             fontFamily: 'Lumiare',
-            fontWeight: FontWeight.w800,
             color: XiColors.warmWhite,
           ),
         ),
@@ -241,7 +240,6 @@ class _LeagueMarketPlayerBuyCardState
                           style: TextStyle(
                             fontFamily: 'Lumiare',
                             fontSize: 14,
-                            fontWeight: FontWeight.w800,
                             color: context.xiTextPrimary,
                           ),
                           maxLines: 1,
@@ -266,7 +264,6 @@ class _LeagueMarketPlayerBuyCardState
                                 style: const TextStyle(
                                   fontFamily: 'Lumiare',
                                   fontSize: 14,
-                                  fontWeight: FontWeight.w800,
                                   color: XiColors.classicGold,
                                 ),
                               ),
@@ -331,7 +328,6 @@ class _StatusPill extends StatelessWidget {
         style: TextStyle(
           fontFamily: 'Lumiare',
           fontSize: 10,
-          fontWeight: FontWeight.w700,
           color: fg,
         ),
         maxLines: 1,

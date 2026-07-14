@@ -76,8 +76,7 @@ class ClashWeeklyMissionCard extends StatelessWidget {
                 child: Text(
                   mission.title,
                   style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                    ),
                 ),
               ),
               ClashProgressStatusChip(label: statusLabel, status: status),
@@ -104,8 +103,7 @@ class ClashWeeklyMissionCard extends StatelessWidget {
           Text(
             l10n.clashWeeklyMissionsProgress(progress.current, mission.target),
             style: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+              ),
           ),
           const SizedBox(height: 12),
           ClashRewardPreviewRow(

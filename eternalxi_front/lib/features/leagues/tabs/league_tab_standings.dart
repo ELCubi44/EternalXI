@@ -245,8 +245,7 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
                   Text(
                     l10n.standings,
                     style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                      ),
                   ),
                   if (_playedRounds.isNotEmpty) ...[
                     const SizedBox(height: 12),
@@ -463,8 +462,7 @@ class _StandingsEmpty extends StatelessWidget {
           Text(
             ll.noStandingsYet,
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+              ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),

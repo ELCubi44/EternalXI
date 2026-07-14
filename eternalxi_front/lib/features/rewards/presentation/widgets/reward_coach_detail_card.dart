@@ -61,7 +61,6 @@ class RewardCoachDetailCard extends StatelessWidget {
                       coach.displayName,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: textColor,
-                        fontWeight: FontWeight.w800,
                       ),
                     ),
                     if (teamName.isNotEmpty) ...[
@@ -76,7 +75,6 @@ class RewardCoachDetailCard extends StatelessWidget {
                               teamName,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: textColor,
-                                fontWeight: FontWeight.w600,
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -115,7 +113,6 @@ class RewardCoachDetailCard extends StatelessWidget {
                     rl10n.coachBonusExplanation(coach),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: textColor,
-                      fontWeight: FontWeight.w600,
                       height: 1.35,
                     ),
                   ),
@@ -177,7 +174,6 @@ class _InitialsAvatar extends StatelessWidget {
         initials,
         style: TextStyle(
           color: Colors.white,
-          fontWeight: FontWeight.w800,
           fontSize: size * 0.32,
         ),
       ),
@@ -264,7 +260,6 @@ Future<void> showCoachRouletteInfoSheet(
               rl10n.coachRouletteTitle,
               style: theme.textTheme.titleLarge?.copyWith(
                 color: Colors.white,
-                fontWeight: FontWeight.w800,
               ),
             ),
             const SizedBox(height: 16),
@@ -334,7 +329,6 @@ Future<void> showCoachWonSheet({
               rl10n.coachWonTitle,
               style: theme.textTheme.titleLarge?.copyWith(
                 color: Colors.white,
-                fontWeight: FontWeight.w800,
               ),
             ),
             const SizedBox(height: 16),
@@ -386,7 +380,6 @@ class _InfoBlock extends StatelessWidget {
             title,
             style: theme.textTheme.titleSmall?.copyWith(
               color: Colors.white,
-              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 6),

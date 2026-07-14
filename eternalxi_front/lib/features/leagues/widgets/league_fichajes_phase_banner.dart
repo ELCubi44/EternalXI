@@ -42,7 +42,6 @@ class LeagueFichajesPhaseBanner extends StatelessWidget {
                     Text(
                       'Fase de fichajes',
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
                         color: colorScheme.onTertiaryContainer,
                       ),
                     ),

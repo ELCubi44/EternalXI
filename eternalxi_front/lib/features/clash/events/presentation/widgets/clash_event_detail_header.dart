@@ -32,14 +32,12 @@ class ClashEventDetailHeader extends StatelessWidget {
         Text(
           event.title,
           style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w900,
-          ),
+            ),
         ),
         const SizedBox(height: 6),
         Text(
           event.characterName,
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w800,
             color: theme.colorScheme.primary,
           ),
         ),
@@ -55,8 +53,7 @@ class ClashEventDetailHeader extends StatelessWidget {
         Text(
           l10n.clashEventsProgress(completedStages, total),
           style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w800,
-          ),
+            ),
         ),
         const SizedBox(height: 8),
         ClipRRect(

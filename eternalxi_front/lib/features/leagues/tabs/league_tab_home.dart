@@ -654,6 +654,7 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
           rows: _homeFeed.goleadores,
           valueLabel: ll.statGoals,
           valueColor: XiColors.energyOrange,
+          storageKey: 'home-scorers',
           onTapPlayer: _openTopPlayerDetail,
         ),
       ),
@@ -665,6 +666,7 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
           rows: _homeFeed.asistidores,
           valueLabel: ll.assistsShort,
           valueColor: XiColors.royalBlue,
+          storageKey: 'home-assists',
           onTapPlayer: _openTopPlayerDetail,
         ),
       ),
@@ -676,6 +678,7 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
           rows: _homeFeed.porteriasCero,
           valueLabel: ll.cleanSheetsShort,
           valueColor: XiColors.emeraldGreen,
+          storageKey: 'home-clean-sheets',
           onTapPlayer: _openTopPlayerDetail,
         ),
       ),
@@ -724,7 +727,6 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
                         fontFamily: 'Lumiare',
                         fontSize: 12,
                         color: XiColors.heroRed,
-                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -772,7 +774,6 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
                       style: TextStyle(
                         fontFamily: 'Lumiare',
                         fontSize: 12,
-                        fontWeight: FontWeight.w800,
                         color: context.xiTextPrimary,
                         letterSpacing: 2,
                       ),
@@ -855,6 +856,7 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
                               onRetry: () => _loadSchedule(force: true),
                               resolveAvailabilityText: _availabilityText,
                               emptyText: ll.noInjuredCurrently,
+                              storageKey: 'home-injured',
                               onTapPlayer: _openUnavailablePlayerDetail,
                             ),
                           ),
@@ -873,6 +875,7 @@ class _LeagueTabHomeState extends State<LeagueTabHome>
                               onRetry: () => _loadSchedule(force: true),
                               resolveAvailabilityText: _availabilityText,
                               emptyText: ll.noSuspendedCurrently,
+                              storageKey: 'home-suspended',
                               onTapPlayer: _openUnavailablePlayerDetail,
                             ),
                           ),
@@ -1010,7 +1013,6 @@ class _LeagueHomeCompactCard extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: 'Lumiare',
                         fontSize: dense ? 11 : 12,
-                        fontWeight: FontWeight.w800,
                         color: accentColor,
                         letterSpacing: 1.5,
                       ),
@@ -1036,7 +1038,6 @@ class _LeagueHomeCompactCard extends StatelessWidget {
                           style: TextStyle(
                             fontFamily: 'Lumiare',
                             fontSize: 9,
-                            fontWeight: FontWeight.w800,
                             color: accentColor,
                             letterSpacing: 1,
                           ),
@@ -1097,7 +1098,6 @@ class _CompactTeamStandingsTable extends StatelessWidget {
               fontFamily: 'Lumiare',
               fontSize: 11,
               color: XiColors.heroRed,
-              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 8),
@@ -1109,7 +1109,6 @@ class _CompactTeamStandingsTable extends StatelessWidget {
                 fontFamily: 'Lumiare',
                 fontSize: 11,
                 color: context.xiAccentText,
-                fontWeight: FontWeight.w800,
                 letterSpacing: 0.8,
               ),
             ),
@@ -1124,7 +1123,9 @@ class _CompactTeamStandingsTable extends StatelessWidget {
 
     final preview = rows.take(_kHomeSummaryRowCount).toList(growable: false);
 
-    return _scrollableSummaryRows([
+    return _scrollableSummaryRows(
+      storageKey: 'home-standings',
+      children: [
       for (var i = 0; i < preview.length; i++) ...[
         if (i > 0) const SizedBox(height: 4),
         _CompactSummaryRow(
@@ -1165,12 +1166,14 @@ class _CompactTopPlayersTable extends StatelessWidget {
     required this.rows,
     required this.valueLabel,
     required this.onTapPlayer,
+    required this.storageKey,
     this.valueColor = XiColors.royalBlue,
   });
 
   final List<LeagueHomeTopPlayer> rows;
   final String valueLabel;
   final void Function(LeagueHomeTopPlayer row) onTapPlayer;
+  final String storageKey;
   final Color valueColor;
 
   @override
@@ -1179,7 +1182,9 @@ class _CompactTopPlayersTable extends StatelessWidget {
       return _CompactEmptyState(text: context.leagueL10n.noStatsYet);
     }
     final top = rows.take(_kHomeSummaryRowCount).toList(growable: false);
-    return _scrollableSummaryRows([
+    return _scrollableSummaryRows(
+      storageKey: storageKey,
+      children: [
       for (var i = 0; i < top.length; i++) ...[
         if (i > 0) const SizedBox(height: 4),
         _CompactSummaryRow(
@@ -1211,6 +1216,7 @@ class _CompactUnavailableListTable extends StatelessWidget {
     required this.resolveAvailabilityText,
     required this.emptyText,
     required this.onTapPlayer,
+    required this.storageKey,
   });
 
   final List<LeagueUnavailablePlayer> rows;
@@ -1220,6 +1226,7 @@ class _CompactUnavailableListTable extends StatelessWidget {
   final String Function(LeagueUnavailablePlayer row) resolveAvailabilityText;
   final String emptyText;
   final void Function(LeagueUnavailablePlayer row) onTapPlayer;
+  final String storageKey;
 
   @override
   Widget build(BuildContext context) {
@@ -1245,7 +1252,6 @@ class _CompactUnavailableListTable extends StatelessWidget {
               fontFamily: 'Lumiare',
               fontSize: 11,
               color: XiColors.heroRed,
-              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 8),
@@ -1257,7 +1263,6 @@ class _CompactUnavailableListTable extends StatelessWidget {
                 fontFamily: 'Lumiare',
                 fontSize: 11,
                 color: context.xiAccentText,
-                fontWeight: FontWeight.w800,
                 letterSpacing: 0.8,
               ),
             ),
@@ -1269,7 +1274,9 @@ class _CompactUnavailableListTable extends StatelessWidget {
     if (top.isEmpty) {
       return _CompactEmptyState(text: emptyText);
     }
-    return _scrollableSummaryRows([
+    return _scrollableSummaryRows(
+      storageKey: storageKey,
+      children: [
       for (var i = 0; i < top.length; i++) ...[
         if (i > 0) const SizedBox(height: 4),
         _CompactSummaryRow(
@@ -1302,8 +1309,12 @@ class _CompactUnavailableListTable extends StatelessWidget {
   }
 }
 
-Widget _scrollableSummaryRows(List<Widget> children) {
+Widget _scrollableSummaryRows({
+  required String storageKey,
+  required List<Widget> children,
+}) {
   return SingleChildScrollView(
+    key: PageStorageKey<String>(storageKey),
     physics: const BouncingScrollPhysics(),
     child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -1360,7 +1371,6 @@ class _CompactSummaryRow extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'Lumiare',
                     fontSize: 13,
-                    fontWeight: FontWeight.w700,
                     color: context.xiTextPrimary,
                   ),
                 ),
@@ -1385,7 +1395,7 @@ class _CompactSummaryRow extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'Lumiare',
                 fontSize: trailingBold ? 16 : 12,
-                fontWeight: trailingBold ? FontWeight.w900 : FontWeight.w600,
+                fontWeight: FontWeight.w400,
                 color: trailingColor ?? context.xiTextPrimary,
                 shadows: trailingBold && trailingColor != null
                     ? [
@@ -1539,7 +1549,6 @@ class _RankChip extends StatelessWidget {
         style: TextStyle(
           fontFamily: 'Lumiare',
           fontSize: 12,
-          fontWeight: FontWeight.w900,
           color: fg,
         ),
       ),
@@ -1562,7 +1571,6 @@ class _CompactEmptyState extends StatelessWidget {
           fontFamily: 'Lumiare',
           fontSize: 12,
           color: context.xiTextPrimary,
-          fontWeight: FontWeight.w500,
         ),
       ),
     );

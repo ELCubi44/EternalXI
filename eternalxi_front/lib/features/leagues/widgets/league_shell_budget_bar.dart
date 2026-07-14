@@ -66,7 +66,6 @@ class LeagueShellBudgetBar extends StatelessWidget {
                     style: TextStyle(
                       fontFamily: 'Lumiare',
                       fontSize: 9,
-                      fontWeight: FontWeight.w700,
                       color: context.xiTextSecondary,
                       letterSpacing: 1.5,
                     ),
@@ -76,7 +75,6 @@ class LeagueShellBudgetBar extends StatelessWidget {
                     style: const TextStyle(
                       fontFamily: 'Lumiare',
                       fontSize: 17,
-                      fontWeight: FontWeight.w900,
                       color: XiColors.classicGold,
                       height: 1.1,
                       shadows: [

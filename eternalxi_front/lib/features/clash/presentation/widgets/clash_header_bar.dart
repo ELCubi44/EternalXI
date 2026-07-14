@@ -42,7 +42,6 @@ class ClashHeaderBar extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
                           color: context.xiTextPrimary,
                         ),
                       ),
@@ -120,7 +119,6 @@ class _ResourceChip extends StatelessWidget {
           Text(
             '$label $value',
             style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
               color: context.xiTextPrimary,
             ),
           ),

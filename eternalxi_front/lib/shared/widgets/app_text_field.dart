@@ -42,7 +42,6 @@ class AppTextField extends StatelessWidget {
       style: TextStyle(
         fontFamily: 'Lumiare',
         fontSize: 15,
-        fontWeight: FontWeight.w600,
         color: context.xiTextPrimary,
       ),
       cursorColor: XiColors.royalBlue,
@@ -56,13 +55,11 @@ class AppTextField extends StatelessWidget {
           fontFamily: 'Lumiare',
           fontSize: 13,
           color: context.xiTextPrimary.withValues(alpha: 0.72),
-          fontWeight: FontWeight.w600,
         ),
         floatingLabelStyle: const TextStyle(
           fontFamily: 'Lumiare',
           fontSize: 11,
           color: XiColors.royalBlue,
-          fontWeight: FontWeight.w700,
           letterSpacing: 0.5,
         ),
         hintStyle: TextStyle(
@@ -74,7 +71,6 @@ class AppTextField extends StatelessWidget {
           fontFamily: 'Lumiare',
           fontSize: 11,
           color: XiColors.heroRed,
-          fontWeight: FontWeight.w600,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),

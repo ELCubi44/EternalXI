@@ -6,6 +6,7 @@ import 'package:eternal_xi/core/storage/secure_storage_service.dart';
 import 'package:eternal_xi/data/models/user_model.dart';
 import 'package:eternal_xi/data/services/auth_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
+import 'package:eternal_xi/data/services/user_progress_api_service.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
@@ -20,6 +21,7 @@ import 'package:eternal_xi/features/clash/presentation/clash_navigation_controll
 import 'package:eternal_xi/features/clash/presentation/clash_shell_screen.dart';
 import 'package:eternal_xi/features/clash/presentation/clash_tab_host.dart';
 import 'package:eternal_xi/features/mode/screens/mode_selection_screen.dart';
+import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -57,15 +59,32 @@ AuthController _authWithUser(UserModel? user) {
   return auth;
 }
 
+Widget _withProgress(Widget child, AuthController auth) {
+  final apiClient = ApiClient();
+  return MultiProvider(
+    providers: [
+      ChangeNotifierProvider<AuthController>.value(value: auth),
+      ChangeNotifierProvider<AccountProgressController>(
+        create: (_) => AccountProgressController(
+          progressApiService: UserProgressApiService(apiClient),
+          secureStorageService: SecureStorageService(),
+        ),
+      ),
+    ],
+    child: child,
+  );
+}
+
 Widget _localizedApp({required Widget home, AuthController? auth}) {
-  return ChangeNotifierProvider<AuthController>.value(
-    value: auth ?? _authWithUser(null),
-    child: MaterialApp(
+  final resolvedAuth = auth ?? _authWithUser(null);
+  return _withProgress(
+    MaterialApp(
       locale: const Locale('es'),
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       home: home,
     ),
+    resolvedAuth,
   );
 }
 
@@ -111,14 +130,14 @@ GoRouter _phase1TestRouter(AuthController auth) {
 }
 
 Widget _routerApp(GoRouter router, AuthController auth) {
-  return ChangeNotifierProvider<AuthController>.value(
-    value: auth,
-    child: MaterialApp.router(
+  return _withProgress(
+    MaterialApp.router(
       locale: const Locale('es'),
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       routerConfig: router,
     ),
+    auth,
   );
 }
 
@@ -145,10 +164,8 @@ void main() {
 
       expect(find.text('Fantasy'), findsOneWidget);
       expect(find.text('Clash'), findsOneWidget);
-      expect(find.text('Entrar a Fantasy'), findsOneWidget);
-      expect(find.text('Próximamente'), findsWidgets);
-      expect(find.text('Entrar a Clash'), findsNothing);
-      expect(find.text('Tester'), findsOneWidget);
+      expect(find.text('Entrar'), findsNWidgets(2));
+      expect(find.text('3'), findsOneWidget);
     });
 
     testWidgets('Fantasy navega a /leagues', (tester) async {
@@ -165,15 +182,13 @@ void main() {
       await tester.pumpWidget(_routerApp(router, auth));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Entrar a Fantasy'));
+      await tester.tap(find.text('Entrar').first);
       await tester.pumpAndSettle();
 
       expect(find.text('Leagues Test Page'), findsOneWidget);
     });
 
-    testWidgets('Clash permanece bloqueado en selección de modo', (
-      tester,
-    ) async {
+    testWidgets('Clash navega a /clash', (tester) async {
       final auth = _authWithUser(
         const UserModel(
           id: 1,
@@ -187,9 +202,11 @@ void main() {
       await tester.pumpWidget(_routerApp(router, auth));
       await tester.pumpAndSettle();
 
-      expect(find.text('Entrar a Clash'), findsNothing);
-      expect(find.text('Eternal XI Clash'), findsNothing);
-      expect(find.text('Clash'), findsOneWidget);
+      await tester.tap(find.text('Entrar').last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Eternal XI Clash'), findsOneWidget);
+      expect(find.text('Inicio'), findsOneWidget);
     });
   });
 

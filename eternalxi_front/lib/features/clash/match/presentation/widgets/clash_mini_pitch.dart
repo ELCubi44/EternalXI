@@ -556,9 +556,7 @@ class _PlayerDot extends StatelessWidget {
           style: TextStyle(
             color: Colors.white,
             fontSize: 8,
-            fontWeight: isBallHolder || isDuelAttacker || isDuelDefender
-                ? FontWeight.w900
-                : FontWeight.w700,
+            fontWeight: FontWeight.w400,
           ),
         ),
       ],

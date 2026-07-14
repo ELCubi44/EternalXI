@@ -25,8 +25,7 @@ class ClashMatchEndCardProgressSection extends StatelessWidget {
         Text(
           l10n.clashMatchCardProgressTitle,
           style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w800,
-          ),
+            ),
         ),
         if (results.length > 1 && totalXp > 0) ...[
           const SizedBox(height: 4),
@@ -34,7 +33,6 @@ class ClashMatchEndCardProgressSection extends StatelessWidget {
             l10n.clashMatchLineupXpTotal(totalXp),
             style: theme.textTheme.bodySmall?.copyWith(
               color: context.xiTextSecondary,
-              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -92,14 +90,12 @@ class _CardProgressRow extends StatelessWidget {
                 child: Text(
                   result.cardName,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                    ),
                 ),
               ),
               Text(
                 l10n.clashMatchCardXpGained(result.xpGained),
                 style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
                   color: theme.colorScheme.primary,
                 ),
               ),
@@ -112,7 +108,7 @@ class _CardProgressRow extends StatelessWidget {
               color: result.didLevelUp
                   ? Colors.amber.shade800
                   : context.xiTextSecondary,
-              fontWeight: result.didLevelUp ? FontWeight.w700 : FontWeight.w500,
+              fontWeight: FontWeight.w400,
             ),
           ),
           if (progress != null) ...[

@@ -74,7 +74,6 @@ class ClashMatchEventTile extends StatelessWidget {
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
                 height: 1.3,
               ),
             ),

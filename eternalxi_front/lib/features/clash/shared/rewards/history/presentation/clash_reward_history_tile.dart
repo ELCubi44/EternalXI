@@ -47,8 +47,7 @@ class ClashRewardHistoryTile extends StatelessWidget {
                     Text(
                       entry.title,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                        ),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -74,7 +73,6 @@ class ClashRewardHistoryTile extends StatelessWidget {
               statusLabel,
               style: theme.textTheme.labelMedium?.copyWith(
                 color: statusColor,
-                fontWeight: FontWeight.w700,
               ),
             ),
           ],

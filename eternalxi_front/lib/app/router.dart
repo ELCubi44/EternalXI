@@ -22,6 +22,11 @@ import 'package:eternal_xi/features/clash/inventory/presentation/screens/clash_i
 import 'package:eternal_xi/features/clash/achievements/presentation/screens/clash_achievements_screen.dart';
 import 'package:eternal_xi/features/clash/news/presentation/screens/clash_news_screen.dart';
 import 'package:eternal_xi/features/clash/gifts/presentation/screens/clash_gifts_screen.dart';
+import 'package:eternal_xi/features/clash/challenges/presentation/controllers/clash_chain_trial_controller.dart';
+import 'package:eternal_xi/features/clash/challenges/presentation/screens/clash_chain_match_screen.dart';
+import 'package:eternal_xi/features/clash/challenges/presentation/screens/clash_trial_detail_screen.dart';
+import 'package:eternal_xi/features/clash/challenges/presentation/screens/clash_trial_prepare_screen.dart';
+import 'package:eternal_xi/features/clash/challenges/presentation/screens/clash_trials_screen.dart';
 import 'package:eternal_xi/features/clash/events/presentation/screens/clash_events_screen.dart';
 import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_detail_screen.dart';
 import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_story_stage_screen.dart';
@@ -29,6 +34,8 @@ import 'package:eternal_xi/features/clash/events/presentation/screens/clash_even
 import 'package:eternal_xi/features/clash/events/presentation/screens/clash_event_match_screen.dart';
 import 'package:eternal_xi/features/clash/missions/presentation/screens/clash_weekly_missions_screen.dart';
 import 'package:eternal_xi/features/clash/missions/presentation/screens/clash_daily_missions_screen.dart';
+import 'package:eternal_xi/features/clash/decisive_moments/presentation/controllers/clash_decisive_moments_controller.dart';
+import 'package:eternal_xi/features/clash/decisive_moments/presentation/screens/clash_decisive_moments_screen.dart';
 import 'package:eternal_xi/features/clash/match/presentation/screens/clash_match_prepare_screen.dart';
 import 'package:eternal_xi/features/clash/match/presentation/screens/clash_match_screen.dart';
 import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_level_reader_screen.dart';
@@ -43,6 +50,9 @@ import 'package:eternal_xi/features/profile/screens/confirm_change_email_screen.
 import 'package:eternal_xi/features/profile/screens/confirm_account_deletion_screen.dart';
 import 'package:eternal_xi/features/profile/screens/confirm_change_nickname_screen.dart';
 import 'package:eternal_xi/features/profile/screens/edit_profile_screen.dart';
+import 'package:eternal_xi/features/profile/screens/friends_screen.dart';
+import 'package:eternal_xi/features/legal/screens/legal_document_screen.dart';
+import 'package:eternal_xi/features/legal/screens/legal_hub_screen.dart';
 import 'package:eternal_xi/features/profile/screens/request_change_email_screen.dart';
 import 'package:eternal_xi/features/profile/screens/request_change_nickname_screen.dart';
 import 'package:eternal_xi/features/rewards/presentation/screens/rewards_hub_screen.dart';
@@ -60,6 +70,23 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.login,
       builder: (context, state) =>
           LoginScreen(prefilledCorreo: state.uri.queryParameters['correo']),
+    ),
+    GoRoute(
+      path: AppRoutes.legalHub,
+      builder: (context, state) => const LegalHubScreen(),
+      routes: [
+        GoRoute(
+          path: ':docType',
+          builder: (context, state) {
+            final typeName = state.pathParameters['docType'] ?? 'terms';
+            final type = LegalDocumentType.values.firstWhere(
+              (t) => t.name == typeName,
+              orElse: () => LegalDocumentType.terms,
+            );
+            return LegalDocumentScreen(type: type);
+          },
+        ),
+      ],
     ),
     GoRoute(
       path: AppRoutes.verifyEmailRequest,
@@ -136,6 +163,12 @@ final GoRouter appRouter = GoRouter(
               ),
             ),
             GoRoute(
+              path: 'decisive/:levelId',
+              builder: (context, state) => ClashDecisiveMomentsScreen(
+                levelId: state.pathParameters['levelId'] ?? '',
+              ),
+            ),
+            GoRoute(
               path: 'team/7v7',
               builder: (context, state) => const ClashLineup7v7Screen(),
             ),
@@ -162,6 +195,34 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: 'gifts',
               builder: (context, state) => const ClashGiftsScreen(),
+            ),
+            GoRoute(
+              path: 'trials',
+              builder: (context, state) => const ClashTrialsScreen(),
+              routes: [
+                GoRoute(
+                  path: ':trialId',
+                  builder: (context, state) => ClashTrialDetailScreen(
+                    trialId: state.pathParameters['trialId'] ?? '',
+                  ),
+                  routes: [
+                    GoRoute(
+                      path: 'floor/:floorId/prepare',
+                      builder: (context, state) => ClashTrialPrepareScreen(
+                        trialId: state.pathParameters['trialId'] ?? '',
+                        floorId: state.pathParameters['floorId'] ?? '',
+                      ),
+                    ),
+                    GoRoute(
+                      path: 'floor/:floorId/match',
+                      builder: (context, state) => ClashChainMatchScreen(
+                        trialId: state.pathParameters['trialId'] ?? '',
+                        floorId: state.pathParameters['floorId'] ?? '',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
             GoRoute(
               path: 'events',
@@ -251,7 +312,9 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: 'join',
-          builder: (context, state) => const JoinLeagueScreen(),
+          builder: (context, state) => JoinLeagueScreen(
+            prefilledCode: state.uri.queryParameters['code'],
+          ),
         ),
         GoRoute(
           path: ':leagueId',
@@ -305,6 +368,10 @@ final GoRouter appRouter = GoRouter(
               ),
             ),
           ],
+        ),
+        GoRoute(
+          path: 'friends',
+          builder: (context, state) => const FriendsScreen(),
         ),
       ],
     ),

@@ -21,6 +21,7 @@ class AppRoutes {
   static const clashNews = '/clash/news';
   static const clashGifts = '/clash/gifts';
   static const clashEvents = '/clash/events';
+  static const clashTrials = '/clash/trials';
   static const clashStory = '/clash/story';
   static const clashHelp = '/clash/help';
 
@@ -37,6 +38,14 @@ class AppRoutes {
   static String clashEventStageMatch(String eventId, String stageId) =>
       '/clash/events/$eventId/stage/$stageId/match';
 
+  static String clashTrialDetail(String trialId) => '/clash/trials/$trialId';
+
+  static String clashTrialFloorPrepare(String trialId, String floorId) =>
+      '/clash/trials/$trialId/floor/$floorId/prepare';
+
+  static String clashTrialFloorMatch(String trialId, String floorId) =>
+      '/clash/trials/$trialId/floor/$floorId/match';
+
   static String clashStoryLevel(String levelId) =>
       '/clash/story/level/$levelId';
 
@@ -45,9 +54,15 @@ class AppRoutes {
 
   static String clashMatch(String levelId) => '/clash/match/$levelId';
 
+  static String clashDecisiveMoments(String levelId) =>
+      '/clash/decisive/$levelId';
+
   static String clashCardDetail(String cardId) => '/clash/cards/$cardId';
 
   static const profile = '/profile';
+  static const profileFriends = '/profile/friends';
+  static const legalHub = '/legal';
+  static String legalDocument(String type) => '/legal/$type';
   static const changeEmailRequest = '/profile/change-email';
   static const changeEmailConfirm = '/profile/change-email/confirm';
   static const changeNicknameRequest = '/profile/change-nickname';

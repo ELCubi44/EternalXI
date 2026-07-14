@@ -2,6 +2,8 @@ import 'package:eternal_xi/app/icons/xi_icons.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/app/theme/xi_typography.dart';
+import 'package:eternal_xi/shared/widgets/xi_brand_wordmark.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:flutter/material.dart';
@@ -87,7 +89,6 @@ class HomeScreen extends StatelessWidget {
                           fontFamily: 'Lumiare',
                           color: XiColors.classicGold,
                           fontSize: 11,
-                          fontWeight: FontWeight.w700,
                           letterSpacing: 4.0,
                         ),
                       ),
@@ -98,7 +99,6 @@ class HomeScreen extends StatelessWidget {
                           fontFamily: 'Lumiare',
                           color: context.xiTextPrimary,
                           fontSize: 30,
-                          fontWeight: FontWeight.w900,
                           letterSpacing: 1.2,
                           height: 1.05,
                         ),
@@ -131,7 +131,6 @@ class HomeScreen extends StatelessWidget {
                       fontFamily: 'Lumiare',
                       color: XiColors.steelGray,
                       fontSize: 10,
-                      fontWeight: FontWeight.w800,
                       letterSpacing: 3.5,
                     ),
                   ),
@@ -204,7 +203,6 @@ class HomeScreen extends StatelessWidget {
                               fontFamily: 'Lumiare',
                               color: context.xiTextPrimary,
                               fontSize: 12,
-                              fontWeight: FontWeight.w600,
                               letterSpacing: 0.2,
                             ),
                           ),
@@ -254,27 +252,19 @@ class _BrandMark extends StatelessWidget {
           child: const Center(
             child: Text(
               'XI',
-              style: TextStyle(
-                fontFamily: 'Lumiare',
+              style: XiTypography.brandWordmark(
                 color: XiColors.warmWhite,
                 fontSize: 11,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 0.5,
-                height: 1,
+                letterSpacing: 0.2,
               ),
             ),
           ),
         ),
         const SizedBox(width: 10),
-        Text(
-          'ETERNAL XI',
-          style: TextStyle(
-            fontFamily: 'Lumiare',
-            color: context.xiTextPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2.0,
-          ),
+        XiBrandWordmark(
+          fontSize: 18,
+          color: context.xiTextPrimary,
+          letterSpacing: 0.8,
         ),
       ],
     );
@@ -352,7 +342,6 @@ class _ProfileButton extends StatelessWidget {
                   fontFamily: 'Lumiare',
                   color: XiColors.warmWhite,
                   fontSize: 9,
-                  fontWeight: FontWeight.w900,
                   height: 1,
                 ),
               ),
@@ -380,7 +369,6 @@ class _AvatarInitial extends StatelessWidget {
             fontFamily: 'Lumiare',
             color: XiColors.warmWhite,
             fontSize: 18,
-            fontWeight: FontWeight.w700,
           ),
         ),
       ),
@@ -572,7 +560,6 @@ class _GameModeCardState extends State<_GameModeCard>
                                   fontFamily: 'Lumiare',
                                   color: XiColors.steelGray,
                                   fontSize: 9,
-                                  fontWeight: FontWeight.w800,
                                   letterSpacing: 2.2,
                                 ),
                               ),
@@ -586,7 +573,6 @@ class _GameModeCardState extends State<_GameModeCard>
                                   ? context.xiTextPrimary.withValues(alpha: 0.55)
                                   : context.xiTextPrimary,
                               fontSize: 22,
-                              fontWeight: FontWeight.w900,
                               letterSpacing: 0.5,
                               height: 1.1,
                             ),
@@ -600,7 +586,6 @@ class _GameModeCardState extends State<_GameModeCard>
                                   ? context.xiTextPrimary.withValues(alpha: 0.45)
                                   : context.xiTextPrimary,
                               fontSize: 12,
-                              fontWeight: FontWeight.w500,
                               letterSpacing: 0.2,
                             ),
                           ),

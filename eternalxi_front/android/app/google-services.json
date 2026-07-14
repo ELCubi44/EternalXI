@@ -12,7 +12,20 @@
           "package_name": "es.eternalxi.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "580436038307-t4qnqnce4j07u79a8fftv32jte8k8nrv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "es.eternalxi.app",
+            "certificate_hash": "e7fb77465d8077c765c5b5a80ec09b41fbed0c22"
+          }
+        },
+        {
+          "client_id": "580436038307-59m5rleoo5sob33ms2bu3jgncotp0tm1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAyBg4V35NO_XQ3wtXjldGRIDybih-JbV4"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "580436038307-59m5rleoo5sob33ms2bu3jgncotp0tm1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "580436038307-qfk2fi460m3p8v782v88p48elteub5pf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.eternalXi"
+              }
+            }
+          ]
         }
       }
     }

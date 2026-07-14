@@ -57,6 +57,9 @@ abstract final class AchievementL10n {
     'PUSH_WIN_100': AchievementL10nEntry(title: 'Puja milimétrica', description: 'Gana subasta por <=100€ de margen', information: 'Gana una subasta con margen de 100€ o menos.'),
     'FIRST_LEAGUE': AchievementL10nEntry(title: 'Primer paso', description: 'Completa tu primera liga válida', information: 'Cierra una liga válida, no hace falta ganarla.'),
     'COACH_ROULETTE': AchievementL10nEntry(title: 'Míster con suerte', description: 'Consigue entrenador en la ruleta', information: 'Obtén un entrenador en la ruleta de recompensas.'),
+    'FRIEND_1': AchievementL10nEntry(title: 'Primer colega', description: 'Consigue tu primer amigo', information: 'Acepta o confirma tu primera amistad en Eternal XI.'),
+    'FRIEND_5': AchievementL10nEntry(title: 'Mano extendida', description: 'Ten 5 amigos', information: 'Acumula 5 amistades confirmadas en tu cuenta.'),
+    'FRIEND_15': AchievementL10nEntry(title: 'Capitán social', description: 'Ten 15 amigos', information: 'Llega a 15 amigos confirmados en la plataforma.'),
   };
 
   static const Map<String, AchievementL10nEntry> _en = {
@@ -93,5 +96,8 @@ abstract final class AchievementL10n {
     'PUSH_WIN_100': AchievementL10nEntry(title: 'Photo Finish Bid', description: 'Win auction by <=100€ margin', information: 'Win an auction by 100€ margin or less.'),
     'FIRST_LEAGUE': AchievementL10nEntry(title: 'First Step', description: 'Complete your first valid league', information: 'Finish one valid league, winning is not required.'),
     'COACH_ROULETTE': AchievementL10nEntry(title: 'Lucky Coach', description: 'Get a coach from roulette', information: 'Obtain a coach through reward roulette.'),
+    'FRIEND_1': AchievementL10nEntry(title: 'First Mate', description: 'Get your first friend', information: 'Accept or confirm your first friendship on Eternal XI.'),
+    'FRIEND_5': AchievementL10nEntry(title: 'Open Hand', description: 'Have 5 friends', information: 'Accumulate 5 confirmed friendships on your account.'),
+    'FRIEND_15': AchievementL10nEntry(title: 'Social Captain', description: 'Have 15 friends', information: 'Reach 15 confirmed friends on the platform.'),
   };
 }

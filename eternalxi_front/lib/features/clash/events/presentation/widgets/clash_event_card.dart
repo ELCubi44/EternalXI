@@ -55,15 +55,13 @@ class ClashEventCard extends StatelessWidget {
                       Text(
                         event.title,
                         style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                          ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         event.characterName,
                         style: theme.textTheme.labelLarge?.copyWith(
                           color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
@@ -90,8 +88,7 @@ class ClashEventCard extends StatelessWidget {
             Text(
               l10n.clashEventsProgress(completed, total),
               style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             const SizedBox(height: 8),
             ClipRRect(

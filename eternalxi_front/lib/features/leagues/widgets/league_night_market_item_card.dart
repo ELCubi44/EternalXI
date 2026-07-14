@@ -211,7 +211,6 @@ class LeagueNightMarketItemCard extends StatelessWidget {
                                 child: Text(
                                   name,
                                   style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w800,
                                     letterSpacing: -0.2,
                                   ),
                                 ),
@@ -237,7 +236,6 @@ class LeagueNightMarketItemCard extends StatelessWidget {
                                         : item.nombreEquipo,
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       color: colorScheme.onSurfaceVariant,
-                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ),
@@ -402,8 +400,7 @@ class _FeatureChip extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.labelSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                ),
             ),
           ),
         ],
@@ -447,8 +444,7 @@ class _MiniStat extends StatelessWidget {
           Text(
             value,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+              ),
           ),
         ],
       ),

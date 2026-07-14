@@ -128,8 +128,7 @@ class _ClashEventDetailScreenState extends State<ClashEventDetailScreen> {
                 Text(
                   l10n.clashEventsStagesTitle,
                   style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                    ),
                 ),
                 const SizedBox(height: 10),
                 ..._controller.stageProgress.asMap().entries.map(

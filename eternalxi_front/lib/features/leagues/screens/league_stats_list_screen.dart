@@ -80,8 +80,7 @@ class LeagueStatsListScreen extends StatelessWidget {
                       title: Text(
                         item.title,
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                          ),
                       ),
                       subtitle:
                           item.subtitle == null || item.subtitle!.trim().isEmpty
@@ -98,8 +97,7 @@ class LeagueStatsListScreen extends StatelessWidget {
                           : Text(
                               item.trailing!,
                               style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w800,
-                              ),
+                                ),
                             ),
                     ),
                   );

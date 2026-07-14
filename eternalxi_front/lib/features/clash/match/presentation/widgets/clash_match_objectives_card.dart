@@ -33,8 +33,7 @@ class ClashMatchObjectivesCard extends StatelessWidget {
           Text(
             l10n.clashMatchObjectivesTitle,
             style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+              ),
           ),
           const SizedBox(height: 8),
           ...objectives.map((objective) {
@@ -46,8 +45,7 @@ class ClashMatchObjectivesCard extends StatelessWidget {
                   Text(
                     objective.title,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -65,7 +63,6 @@ class ClashMatchObjectivesCard extends StatelessWidget {
                       ),
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],

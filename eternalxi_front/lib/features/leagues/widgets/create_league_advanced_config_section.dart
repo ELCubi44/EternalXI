@@ -49,8 +49,7 @@ class CreateLeagueAdvancedConfigSection extends StatelessWidget {
         Text(
           l10n.advancedConfig,
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+            ),
         ),
         const SizedBox(height: 4),
         Text(
@@ -160,8 +159,7 @@ class CreateLeagueAdvancedConfigSection extends StatelessWidget {
               child: Text(
                 '$recompensaBaseJornada',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+                  ),
                 textAlign: TextAlign.end,
               ),
             ),
@@ -179,7 +177,6 @@ class CreateLeagueAdvancedConfigSection extends StatelessWidget {
           ),
           style: theme.textTheme.bodySmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: 12),
@@ -224,8 +221,7 @@ class _FieldLabel extends StatelessWidget {
         Text(
           title,
           style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+            ),
         ),
         if (subtitle != null) ...[
           const SizedBox(height: 2),

@@ -120,7 +120,6 @@ class _ClashLineup7v7ScreenState extends State<ClashLineup7v7Screen> {
               child: Text(
                 l10n.clashTeamLineup7,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
                   color: context.xiTextPrimary,
                 ),
               ),
@@ -219,8 +218,7 @@ class _LineupSummaryHeader extends StatelessWidget {
                 child: Text(
                   lineupName,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+                    ),
                 ),
               ),
               if (isActive)
@@ -245,7 +243,6 @@ class _LineupSummaryHeader extends StatelessWidget {
               Text(
                 '${l10n.clashLineupTotalPower}: $totalPower',
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
                   color: theme.colorScheme.primary,
                 ),
               ),
@@ -256,7 +253,6 @@ class _LineupSummaryHeader extends StatelessWidget {
             statusLabel,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: statusColor,
-              fontWeight: FontWeight.w700,
             ),
           ),
         ],
@@ -288,7 +284,7 @@ class _MissingPositionsCard extends StatelessWidget {
             l10n.clashLineupMissingTitle,
             style: Theme.of(
               context,
-            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
+            ).textTheme.labelLarge?.copyWith(),
           ),
           const SizedBox(height: 6),
           Wrap(

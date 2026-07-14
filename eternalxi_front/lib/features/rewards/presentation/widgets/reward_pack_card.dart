@@ -86,10 +86,9 @@ class RewardPackCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    pack.nombre,
+                    rl10n.packDisplayName(pack.packType),
                     style: theme.textTheme.titleLarge?.copyWith(
                       color: Colors.white,
-                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
@@ -102,7 +101,6 @@ class RewardPackCard extends StatelessWidget {
                   ),
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: const Color(0xFFFFE082),
-                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ],
@@ -123,7 +121,6 @@ class RewardPackCard extends StatelessWidget {
                 rl10n.insufficientPoints,
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: const Color(0xFFFFAB91),
-                  fontWeight: FontWeight.w700,
                 ),
               ),
             const SizedBox(height: 8),
@@ -220,7 +217,6 @@ void _showPackProbabilities(BuildContext context, RewardPackModel pack) {
               rl10n.packProbabilitiesTitle,
               style: theme.textTheme.titleLarge?.copyWith(
                 color: Colors.white,
-                fontWeight: FontWeight.w800,
               ),
             ),
             const SizedBox(height: 16),
@@ -235,10 +231,9 @@ void _showPackProbabilities(BuildContext context, RewardPackModel pack) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    pack.nombre,
+                    rl10n.packDisplayName(pack.packType),
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: Colors.white,
-                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -251,7 +246,6 @@ void _showPackProbabilities(BuildContext context, RewardPackModel pack) {
                     ),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: const Color(0xFFFFE082),
-                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -328,7 +322,6 @@ class _ProbRow extends StatelessWidget {
               entry.label,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Colors.white.withValues(alpha: 0.9),
-                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -354,7 +347,6 @@ class _ProbRow extends StatelessWidget {
                 color: s.badgeForeground == Colors.black
                     ? s.badgeBackground
                     : s.badgeForeground,
-                fontWeight: FontWeight.w800,
               ),
             ),
           ),

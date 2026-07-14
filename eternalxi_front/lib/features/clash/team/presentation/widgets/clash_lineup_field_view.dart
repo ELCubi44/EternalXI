@@ -116,7 +116,6 @@ class _ZoneSection extends StatelessWidget {
           child: Text(
             title,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w800,
               color: accent.withValues(alpha: 0.9),
             ),
           ),

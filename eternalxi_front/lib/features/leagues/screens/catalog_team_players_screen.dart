@@ -164,8 +164,7 @@ class _CatalogTeamPlayersScreenState extends State<CatalogTeamPlayersScreen> {
               Text(
                 'Plantilla',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+                  ),
               ),
               const SizedBox(height: 10),
               if (_squad!.jugadores.isEmpty)
@@ -347,8 +346,7 @@ class _CatalogTeamHeaderBar extends StatelessWidget {
                 Text(
                   nombre,
                   style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+                    ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -391,8 +389,7 @@ class _CatalogCoachCard extends StatelessWidget {
               child: Text(
                 coach.displayNombreCompleto(),
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+                  ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -498,8 +495,7 @@ class _CatalogNoCoachCard extends StatelessWidget {
               child: Text(
                 'Sin entrenador asignado',
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+                  ),
               ),
             ),
           ],
@@ -547,7 +543,6 @@ class _CatalogPlayerRow extends StatelessWidget {
             child: Text(
               player.dorsal > 0 ? '${player.dorsal}' : '—',
               style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w900,
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
@@ -564,8 +559,7 @@ class _CatalogPlayerRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                    ),
                 ),
                 if (showValorMercado)
                   Padding(
@@ -576,7 +570,6 @@ class _CatalogPlayerRow extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
@@ -593,7 +586,6 @@ class _CatalogPlayerRow extends StatelessWidget {
             child: Text(
               _rating(player.valoracion),
               style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w900,
                 color: colorScheme.onPrimaryContainer,
               ),
             ),
@@ -636,7 +628,6 @@ class _CatalogPositionHeader extends StatelessWidget {
         GameLabels.positionLabel(label, l10n: l10n),
         style: theme.textTheme.labelLarge?.copyWith(
           color: colorScheme.primary,
-          fontWeight: FontWeight.w900,
           letterSpacing: 0.6,
         ),
       ),

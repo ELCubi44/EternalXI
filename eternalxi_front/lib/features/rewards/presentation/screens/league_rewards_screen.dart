@@ -134,7 +134,6 @@ class _LeagueRewardsScreenState extends State<LeagueRewardsScreen>
                       rl10n.shopSubtitle,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w500,
                           ),
                     ),
                   ),
@@ -505,7 +504,6 @@ class _FilterChip extends StatelessWidget {
         selectedColor: cs.surfaceContainerHighest,
         labelStyle: TextStyle(
           color: selected ? cs.onSurface : cs.onSurfaceVariant,
-          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -564,7 +562,6 @@ class _ActivityTabState extends State<_ActivityTab> {
                       color: _filter == key
                           ? cs.onSurface
                           : cs.onSurfaceVariant,
-                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),

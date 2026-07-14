@@ -92,7 +92,7 @@ class _ClashShopBody extends StatelessWidget {
           l10n.clashTabShop,
           style: Theme.of(
             context,
-          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+          ).textTheme.headlineSmall?.copyWith(),
         ),
         const SizedBox(height: 8),
         Container(
@@ -169,8 +169,7 @@ class _SectionHeader extends StatelessWidget {
         Text(
           label,
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w800,
-          ),
+            ),
         ),
       ],
     );
@@ -206,8 +205,7 @@ class _WalletCard extends StatelessWidget {
                 child: Text(
                   l10n.clashShopWalletCoins(coins),
                   style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                    ),
                 ),
               ),
             ],
@@ -222,7 +220,6 @@ class _WalletCard extends StatelessWidget {
                   l10n.clashGachaWalletGems(gems),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: context.xiTextSecondary,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

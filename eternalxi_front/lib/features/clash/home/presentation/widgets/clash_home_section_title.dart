@@ -16,7 +16,6 @@ class ClashHomeSectionTitle extends StatelessWidget {
       child: Text(
         label,
         style: theme.textTheme.titleSmall?.copyWith(
-          fontWeight: FontWeight.w800,
           color: context.xiTextSecondary,
           letterSpacing: 0.2,
         ),

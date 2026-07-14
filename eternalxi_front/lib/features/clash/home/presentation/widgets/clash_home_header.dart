@@ -39,7 +39,6 @@ class ClashHomeHeader extends StatelessWidget {
           Text(
             l10n.clashHomeHubTitle,
             style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w900,
               color: context.xiTextPrimary,
             ),
           ),
@@ -134,7 +133,6 @@ class _ResourceChip extends StatelessWidget {
           Text(
             '$label $value',
             style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
               color: context.xiTextPrimary,
             ),
           ),

@@ -27,7 +27,7 @@ Future<void> showClashMatchPassSheet(BuildContext context) {
                 l10n.clashMatchPassSheetTitle,
                 style: Theme.of(
                   context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                ).textTheme.titleMedium?.copyWith(),
               ),
               const SizedBox(height: 12),
               if (options.isEmpty)
@@ -92,8 +92,7 @@ class _PassOptionTile extends StatelessWidget {
                 child: Text(
                   option.targetName,
                   style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+                    ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -104,15 +103,13 @@ class _PassOptionTile extends StatelessWidget {
                     Text(
                       option.targetName,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                        ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       option.targetPosition.displayNameEs,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                        ),
                     ),
                     Text(
                       option.approximateZone.labelEs(),
@@ -131,7 +128,6 @@ class _PassOptionTile extends StatelessWidget {
                         color: risk >= 50
                             ? Colors.orange
                             : context.xiTextSecondary,
-                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
@@ -152,8 +148,7 @@ class _PassOptionTile extends StatelessWidget {
                     child: Text(
                       l10n.clashMatchPassPercent(option.successPercent),
                       style: theme.textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+                        ),
                     ),
                   ),
                   const SizedBox(height: 6),

@@ -38,15 +38,13 @@ class ClashStoryLevelDetailHeader extends StatelessWidget {
         Text(
           title,
           style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w900,
-          ),
+            ),
         ),
         const SizedBox(height: 6),
         Text(
           chapterTitle,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: context.xiTextSecondary,
-            fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: 12),

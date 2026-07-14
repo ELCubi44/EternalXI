@@ -134,7 +134,6 @@ class _LeagueStandingRowCardState extends State<LeagueStandingRowCard>
                           style: TextStyle(
                             fontFamily: 'Lumiare',
                             fontSize: 14,
-                            fontWeight: FontWeight.w800,
                             color: medal.nameColor,
                             letterSpacing: 0.2,
                           ),
@@ -147,7 +146,6 @@ class _LeagueStandingRowCardState extends State<LeagueStandingRowCard>
                           style: TextStyle(
                             fontFamily: 'Lumiare',
                             fontSize: 11,
-                            fontWeight: FontWeight.w600,
                             color: context.xiTextPrimary,
                           ),
                         ),
@@ -160,7 +158,6 @@ class _LeagueStandingRowCardState extends State<LeagueStandingRowCard>
                             style: const TextStyle(
                               fontFamily: 'Lumiare',
                               fontSize: 10,
-                              fontWeight: FontWeight.w700,
                               color: XiColors.classicGold,
                             ),
                           ),
@@ -174,7 +171,6 @@ class _LeagueStandingRowCardState extends State<LeagueStandingRowCard>
                     style: TextStyle(
                       fontFamily: 'Lumiare',
                       fontSize: showRoundBreakdown && !showFantasyPts ? 12 : 28,
-                      fontWeight: FontWeight.w900,
                       color: showRoundBreakdown && !showFantasyPts
                           ? context.xiTextPrimary
                           : medal.ptsColor,
@@ -326,7 +322,6 @@ class _PosBadge extends StatelessWidget {
         style: TextStyle(
           fontFamily: 'Lumiare',
           fontSize: 13,
-          fontWeight: FontWeight.w900,
           color: medal.badgeFg,
           height: 1.0,
         ),
@@ -386,7 +381,6 @@ class _AvatarFallback extends StatelessWidget {
           style: const TextStyle(
             fontFamily: 'Lumiare',
             fontSize: 16,
-            fontWeight: FontWeight.w800,
             color: XiColors.warmWhite,
           ),
         ),

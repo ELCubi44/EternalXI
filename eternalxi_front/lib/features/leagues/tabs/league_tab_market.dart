@@ -539,7 +539,7 @@ class _XiTabSelector extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: 'Lumiare',
                           fontSize: 11,
-                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                          fontWeight: FontWeight.w400,
                           color: isSelected ? tab.color : context.xiTextSecondary,
                           letterSpacing: 0.3,
                         ),
@@ -649,7 +649,6 @@ class _TeamExpandCardState extends State<_TeamExpandCard>
                             style: TextStyle(
                               fontFamily: 'Lumiare',
                               fontSize: 14,
-                              fontWeight: FontWeight.w800,
                               color: context.xiTextPrimary,
                             ),
                           ),
@@ -660,7 +659,6 @@ class _TeamExpandCardState extends State<_TeamExpandCard>
                               fontFamily: 'Lumiare',
                               fontSize: 10,
                               color: XiColors.royalBlue.withValues(alpha: 0.8),
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
@@ -776,7 +774,6 @@ class _XiRetryButton extends StatelessWidget {
               style: const TextStyle(
                 fontFamily: 'Lumiare',
                 fontSize: 13,
-                fontWeight: FontWeight.w800,
                 color: XiColors.warmWhite,
               ),
             ),

@@ -32,7 +32,6 @@ class ClashMatchPowerHint extends StatelessWidget {
             child: Text(
               l10n.clashMatchAdvanceChance(percent),
               style: theme.textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w700,
                 color: context.xiTextSecondary,
               ),
             ),
@@ -40,7 +39,6 @@ class ClashMatchPowerHint extends StatelessWidget {
           Text(
             '$percent%',
             style: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w900,
               color: theme.colorScheme.primary,
             ),
           ),

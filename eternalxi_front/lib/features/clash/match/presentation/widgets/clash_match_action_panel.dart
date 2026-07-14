@@ -63,8 +63,7 @@ class ClashMatchActionPanel extends StatelessWidget {
             l10n.clashMatchActionPanelTitle,
             textAlign: TextAlign.center,
             style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+              ),
           ),
           const SizedBox(height: 12),
           Row(
@@ -141,7 +140,7 @@ class _DisabledHint extends StatelessWidget {
       textAlign: TextAlign.center,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
         color: context.xiTextSecondary,
-        fontWeight: prominent ? FontWeight.w700 : FontWeight.w600,
+        fontWeight: FontWeight.w400,
       ),
     );
   }

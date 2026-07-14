@@ -30,7 +30,6 @@ class ClashMatchEndHeader extends StatelessWidget {
           userWon ? l10n.clashMatchVictory : l10n.clashMatchDefeat,
           textAlign: TextAlign.center,
           style: theme.textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.w900,
             color: accent,
           ),
         ),
@@ -39,8 +38,7 @@ class ClashMatchEndHeader extends StatelessWidget {
           l10n.clashMatchEndScoreYouRival(state.score.user, state.score.rival),
           textAlign: TextAlign.center,
           style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w800,
-          ),
+            ),
         ),
         const SizedBox(height: 6),
         Text(
@@ -48,7 +46,6 @@ class ClashMatchEndHeader extends StatelessWidget {
           textAlign: TextAlign.center,
           style: theme.textTheme.bodySmall?.copyWith(
             color: context.xiTextSecondary,
-            fontWeight: FontWeight.w600,
           ),
         ),
         if (subtitle != null) ...[
@@ -58,7 +55,6 @@ class ClashMatchEndHeader extends StatelessWidget {
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: context.xiTextSecondary,
-              fontWeight: FontWeight.w700,
             ),
           ),
         ],

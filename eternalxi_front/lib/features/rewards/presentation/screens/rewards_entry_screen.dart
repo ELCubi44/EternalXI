@@ -52,7 +52,6 @@ class _RewardsEntryScreenState extends State<RewardsEntryScreen> {
                 l10n.shopSubtitle,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
@@ -76,8 +75,7 @@ class _RewardsEntryScreenState extends State<RewardsEntryScreen> {
                   Text(
                     l10n.yourLeagues,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+                      ),
                   ),
                   const SizedBox(height: 12),
                   if (leagues.isLoading && leagues.myLeagues.isEmpty)
@@ -164,8 +162,7 @@ class _HeroIntro extends StatelessWidget {
             Text(
               l10n.selectLeagueTitle,
               style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -231,8 +228,7 @@ class _LeaguePickCard extends StatelessWidget {
                       Text(
                         league.nombre,
                         style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                          ),
                       ),
                       const SizedBox(height: 4),
                       Text(

@@ -67,7 +67,6 @@ class ClashHomeCompactCard extends StatelessWidget {
                           '$badgeCount',
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.onPrimary,
-                            fontWeight: FontWeight.w800,
                             fontSize: 10,
                           ),
                         ),
@@ -86,8 +85,7 @@ class ClashHomeCompactCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                        ),
                     ),
                     if (subtitle != null) ...[
                       const SizedBox(height: 3),

@@ -91,7 +91,6 @@ class LeagueMatchEventRow extends StatelessWidget {
                 overflow: TextOverflow.visible,
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w700,
                   height: 1.35,
                 ),
               ),
@@ -133,7 +132,6 @@ class LeagueMatchEventRow extends StatelessWidget {
               softWrap: true,
               style: theme.textTheme.bodyMedium?.copyWith(
                 height: 1.32,
-                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -162,7 +160,6 @@ class LeagueMatchEventRow extends StatelessWidget {
                 softWrap: true,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   height: 1.32,
-                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -219,7 +216,6 @@ class LeagueMatchEventRow extends StatelessWidget {
                       softWrap: true,
                       style: theme.textTheme.labelLarge?.copyWith(
                         color: colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w700,
                         height: 1.35,
                       ),
                     ),
@@ -259,7 +255,6 @@ class LeagueMatchEventRow extends StatelessWidget {
             softWrap: true,
             style: theme.textTheme.bodyMedium?.copyWith(
               height: 1.32,
-              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -323,7 +318,6 @@ class LeagueMatchEventRow extends StatelessWidget {
         softWrap: true,
         style: theme.textTheme.bodyMedium?.copyWith(
           height: 1.32,
-          fontWeight: FontWeight.w600,
         ),
       ),
     );

@@ -50,21 +50,21 @@ flowchart TD
 
 ### Entradas (`ProgressionSnapshot`)
 
-- `valor` actual, `valoracion_actual` (OVR carta en liga).
-- `posicion` (POR/DEF/MED/DEL).
-- **Media fantasy últimos 3 partidos** (`AVG` últimas filas `jugadores_puntos_jornada`).
-- **Último partido**: `puntos_ultimo_partido`, `minutos_ultimo_partido` (para guardrails y penalización nocturna).
+- `valor` actual, `valoracion_actual` (OVR carta en liga), `posicion`, `cansancio`.
+- **Media fantasy últimos 5 partidos** (`AVG` últimas filas `jugadores_puntos_jornada`).
+- **Media de temporada** mezclada al 28% con la forma reciente (ligas largas).
+- **Último partido**: `puntos_ultimo_partido`, `minutos_ultimo_partido` (guardrails).
 - `estado_liga` (DISPONIBLE / LESIONADO / SANCIONADO / …).
 
 ### Paso A — Índice de rendimiento (`performanceIndex`)
 
-Por defecto (post-partido):
-
 ```
-par = fantasyParMeanPointsFromMarket(valor)   // ~3.4–10.2 pts según millones €
-ratio = media_ultimos_3 / par
-si ratio >= 1: index = 10 * ratio^1.30
+avgPts = 0.72 * media_ultimos_5 + 0.28 * media_temporada  (si hay temporada)
+par = fantasyParMeanPointsFromMarket(valor, posición)   // DEL≈MED; DEF/POR ajustados
+ratio = avgPts / par
+si ratio >= 1: index = 10 * ratio^1.22
 si ratio < 1:  index = 10 * ratio^1.06
+index *= fatiguePerformanceModifier(cansancio)   // hasta ~-14% con fatiga 100
 index = clamp(index, 0, 20)
 ```
 
@@ -195,7 +195,44 @@ En BD: **`valor` nuevo = `valor` leído al inicio del tick** (antes de `UPDATE`)
 
 ---
 
-## SQL y ejemplos reales
+## Rebalanceo v3 (jul 2026 — ligas nuevas)
+
+Cambios aplicados tras auditoría completa de balance:
+
+| Parámetro | v2 | v3 | Motivo |
+|-----------|----|----|--------|
+| Par DEL | ×0.96 | **×0.98** | DEL barato subía valor demasiado rápido vs MED |
+| Par DEF | ×1.10 | **×1.06** | DEF con portería a cero farmeaba valor (par bajo vs fantasy) |
+| Par POR | ×1.80 | ×1.80 | Sin cambio (fix porteros a 99) |
+| Techo OVR POR/DEF | 95 / 97 | 95 / 97 | Sin cambio |
+| `estimateRatingFromMarketValue` | bisecta hasta 99 | **respeta `maxFantasyRatingCap`** | POR ya no muestra 99 en UI por precio alto |
+| `syncValoracionActualFromValor` | sin cap | **clamp por posición** | Job nocturno alineado con valor dinámico |
+| Ventana forma (titularidad/sim) | 3 partidos | **5** (`RECENT_FORM_MATCH_LIMIT`) | Coherente con valor dinámico |
+| `MISSED_SHOT_SAVE_EVENT_CHANCE` | 0.90 | **0.85** | Menos paradas simuladas → menos inflación POR |
+
+### Multiplicadores par por posición (v3)
+
+- DEL **0.98**, MED **1.00**, DEF **1.06**, POR **1.80**
+- Sensibilidad: POR **×0.62**, DEF **×0.88**, resto **×1.0**
+- Precio inicial: DEL/MED **×1.02**, DEF **×1.00**, POR **×0.96**
+
+### Meta esperado por posición (fantasy, 90 min)
+
+| Posición | Escenario típico | Pts aprox. |
+|----------|------------------|------------|
+| POR | 5–6 paradas + CS | 10–12 |
+| DEF | CS + recuperaciones | 12–15 |
+| MED | 1 gol | 12 |
+| DEL | 1–2 goles | 12–15 |
+
+Los **puntos fantasy no se tocan** (usuario confirmó que funcionan). El balance se ajusta en simulación (eventos) y en par/sensibilidad de valor dinámico.
+
+### Pendiente de validación empírica
+
+- Monte Carlo: media puntos/jornada por posición tras N partidos
+- Mercado nocturno: selección aleatoria sin cuota por posición
+- Fatiga: dos curvas distintas (selección ~16 pts vs mercado ~14%)
+
 
 - Diagnóstico ampliado: `src/main/resources/sql/audit_valor_dinamico_diagnostico.sql`
 - Ejemplos A–F rápidos: `docs/informe-valor-mercado-ejemplos.sql` (ajustar `@id_liga`)

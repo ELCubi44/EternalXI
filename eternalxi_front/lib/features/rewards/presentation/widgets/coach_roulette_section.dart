@@ -77,7 +77,6 @@ class CoachRouletteSection extends StatelessWidget {
                     used ? rl10n.yourCoach : rl10n.coachRouletteTitle,
                     style: theme.textTheme.titleLarge?.copyWith(
                       color: context.xiTextPrimary,
-                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
@@ -97,7 +96,6 @@ class CoachRouletteSection extends StatelessWidget {
                       color: dark
                           ? const Color(0xFFFFE082)
                           : XiColors.energyOrange,
-                      fontWeight: FontWeight.w800,
                     ),
                   ),
               ],
@@ -125,7 +123,6 @@ class CoachRouletteSection extends StatelessWidget {
                   rl10n.insufficientPoints,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: const Color(0xFFFFAB91),
-                    fontWeight: FontWeight.w700,
                   ),
                 ),
               if (!canAfford) const SizedBox(height: 8),
@@ -166,7 +163,6 @@ class CoachRouletteSection extends StatelessWidget {
                           rl10n.spin,
                           style: TextStyle(
                             fontFamily: 'Lumiare',
-                            fontWeight: FontWeight.w800,
                             color: context.xiTextPrimary,
                           ),
                         ),

@@ -119,8 +119,7 @@ class _ParticipantLineupRoundDetailScreenState
                   Text(
                     ll.couldNotLoadRound,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                   const SizedBox(height: 8),
                   Text(_error!, style: theme.textTheme.bodyMedium),
@@ -166,8 +165,7 @@ class _DetailBody extends StatelessWidget {
         Text(
           nick,
           style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+            ),
         ),
         const SizedBox(height: 4),
         Wrap(
@@ -215,7 +213,7 @@ class _DetailBody extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           ll.startersLabel,
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          style: theme.textTheme.titleMedium?.copyWith(),
         ),
         const SizedBox(height: 8),
         for (final p in data.titulares) ...[
@@ -228,7 +226,7 @@ class _DetailBody extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           ll.reservesLabel,
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          style: theme.textTheme.titleMedium?.copyWith(),
         ),
         const SizedBox(height: 8),
         if (data.reservas.isEmpty)
@@ -310,7 +308,6 @@ class _OptionalPointsBreakdownCard extends StatelessWidget {
       Text(
         ll.serverBreakdownReference,
         style: theme.textTheme.labelLarge?.copyWith(
-          fontWeight: FontWeight.w800,
           color: colorScheme.onSurfaceVariant,
         ),
       ),
@@ -409,8 +406,7 @@ class _LineupRoundPlayerStatsCard extends StatelessWidget {
                         ? player.nombreMostrado
                         : player.nombre,
                     style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                      ),
                   ),
                 ),
                 if (listBadge.isNotEmpty)
@@ -424,7 +420,6 @@ class _LineupRoundPlayerStatsCard extends StatelessWidget {
                       listBadge,
                       style: theme.textTheme.labelLarge?.copyWith(
                         color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
@@ -505,11 +500,11 @@ class _StatChip extends StatelessWidget {
           children: [
             TextSpan(
               text: '$label: ',
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: const TextStyle(fontWeight: FontWeight.w400),
             ),
             TextSpan(
               text: value,
-              style: const TextStyle(fontWeight: FontWeight.w800),
+              style: const TextStyle(fontWeight: FontWeight.w400),
             ),
           ],
         ),
@@ -543,7 +538,6 @@ class _MetaChip extends StatelessWidget {
             label,
             style: theme.textTheme.labelLarge?.copyWith(
               color: colorScheme.onSurface,
-              fontWeight: FontWeight.w700,
             ),
           ),
         ],

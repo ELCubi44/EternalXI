@@ -204,6 +204,15 @@ class _ClashMatchPrepareScreenState extends State<ClashMatchPrepareScreen> {
           ] else ...[
             FilledButton(
               onPressed: validation.canStart
+                  ? () => context.push(
+                      AppRoutes.clashDecisiveMoments(widget.levelId),
+                    )
+                  : null,
+              child: const Text('Momentos decisivos'),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton(
+              onPressed: validation.canStart
                   ? () => context.push(AppRoutes.clashMatch(widget.levelId))
                   : null,
               child: Text(l10n.clashStoryStartMatch),
@@ -251,7 +260,7 @@ class _InfoTile extends StatelessWidget {
             value,
             style: Theme.of(
               context,
-            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+            ).textTheme.titleSmall?.copyWith(),
           ),
         ],
       ),

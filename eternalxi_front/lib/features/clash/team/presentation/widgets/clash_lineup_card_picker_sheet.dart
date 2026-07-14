@@ -139,8 +139,7 @@ class _ClashLineupCardPickerSheetState
               Text(
                 l10n.clashLineupPickCard(widget.slot.displayNameEs),
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+                  ),
               ),
               const SizedBox(height: 10),
               TextField(
@@ -333,8 +332,7 @@ class _PickerCardTile extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                          ),
                       ),
                       const SizedBox(height: 4),
                       Wrap(
@@ -363,7 +361,6 @@ class _PickerCardTile extends StatelessWidget {
                           blockLabel!,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.error,
-                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],
@@ -398,7 +395,6 @@ class _Tag extends StatelessWidget {
       child: Text(
         text,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w700,
           color: color,
         ),
       ),

@@ -104,6 +104,11 @@ class ClashMissionProgressEventHub {
     );
   }
 
+  Future<void> recordPlayChainTrial({int amount = 1}) async {
+    await _daily.record(ClashDailyMissionType.playChainTrial, amount: amount);
+    await _weekly.record(ClashWeeklyMissionType.playChainTrial, amount: amount);
+  }
+
   Future<void> syncCollectCards(int uniqueOwnedCount) async {
     if (uniqueOwnedCount <= 0) {
       return;

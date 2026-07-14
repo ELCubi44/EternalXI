@@ -177,15 +177,13 @@ class _SummaryCard extends StatelessWidget {
           Text(
             l10n.clashInventorySummaryTitle,
             style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+              ),
           ),
           const SizedBox(height: 8),
           Text(
             l10n.clashInventoryTotalItems(summary.totalQuantity),
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+              ),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -246,7 +244,6 @@ class _SummaryChip extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w700,
           color: color,
         ),
       ),

@@ -987,7 +987,6 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                                 name,
                                 maxLines: 1,
                                 style: theme.textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.w900,
                                   height: 1.05,
                                   letterSpacing: -0.2,
                                 ),
@@ -1020,7 +1019,6 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                                 child: Text(
                                   '$probTitular%',
                                   style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w900,
                                     color: starterTitularidadScaleOnBackground(
                                       probTitular,
                                     ),
@@ -1046,7 +1044,6 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                                 Text(
                                   isSuspended ? ll.suspended : ll.injured,
                                   style: theme.textTheme.labelLarge?.copyWith(
-                                    fontWeight: FontWeight.w800,
                                     color: isSuspended
                                         ? colorScheme.tertiary
                                         : colorScheme.error,
@@ -1060,7 +1057,6 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                                 unavailableLine,
                                 style: theme.textTheme.labelMedium?.copyWith(
                                   color: colorScheme.onSurfaceVariant,
-                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
@@ -1087,7 +1083,6 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                                             : ll.protectedGeneric,
                                     style: theme.textTheme.labelMedium?.copyWith(
                                       color: const Color(0xFF64B5F6),
-                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ],
@@ -1109,7 +1104,6 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                             overflow: TextOverflow.fade,
                             softWrap: false,
                             style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w900,
                               color: const Color(0xFFFF6D00),
                               height: 1,
                             ),
@@ -1166,7 +1160,6 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: colorScheme.onSecondaryContainer,
-                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
@@ -1180,8 +1173,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
             child: Text(
               ll.leagueDataTitle,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+                ),
             ),
           ),
           Padding(
@@ -1368,7 +1360,6 @@ class _PlayerPointsTrendBadge extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w700,
               color: colorScheme.onSurfaceVariant,
             ),
           ),
@@ -1398,7 +1389,6 @@ class _PlayerPointsTrendBadge extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
@@ -1413,7 +1403,6 @@ class _PlayerPointsTrendBadge extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w900,
                 color: const Color(0xFFFF6D00),
                 height: 1,
               ),
@@ -1458,8 +1447,7 @@ class _PlayerOffersManagementSheetState
               child: Text(
                 ll.receivedOffersTitle,
                 style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+                  ),
               ),
             ),
             TextButton(
@@ -1505,8 +1493,7 @@ class _PlayerOffersManagementSheetState
                           child: Text(
                             _buyerNickname(offer, ll),
                             style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
+                              ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -1515,8 +1502,7 @@ class _PlayerOffersManagementSheetState
                         Text(
                           LeagueMoneyFormat.euros(offer.cantidad.toDouble()),
                           style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w900,
-                          ),
+                            ),
                         ),
                       ],
                     ),
@@ -1635,7 +1621,6 @@ class _OfferAvatarFallback extends StatelessWidget {
       child: Text(
         first.toUpperCase(),
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          fontWeight: FontWeight.w800,
           color: colorScheme.onPrimaryContainer,
         ),
       ),
@@ -1695,7 +1680,6 @@ class _StatCell extends StatelessWidget {
                 label,
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w700,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -1707,8 +1691,7 @@ class _StatCell extends StatelessWidget {
                 value,
                 textAlign: TextAlign.right,
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                  ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
