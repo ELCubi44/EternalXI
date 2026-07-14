@@ -22,6 +22,10 @@ eternalxi.security.cors-allowed-origins=https://api.eternalxi.com
 # VPS actual:
 eternalxi.app.public-api-base-url=http://217.154.184.202:8080
 
+# OAuth (Google/Apple). Ejecuta scripts/firebase_oauth_setup para regenerar IDs.
+eternalxi.security.oauth-google-client-ids=580436038307-59m5rleoo5sob33ms2bu3jgncotp0tm1.apps.googleusercontent.com,580436038307-t4qnqnce4j07u79a8fftv32jte8k8nrv.apps.googleusercontent.com,580436038307-3vb3tmhq81ngcf9r4032926t65k4djq1.apps.googleusercontent.com
+eternalxi.security.oauth-apple-bundle-id=es.eternalxi.app
+
 eternalxi.db.url=${ETERNALXI_DB_URL:jdbc:mysql://localhost:3306/EternalXI}
 eternalxi.db.username=${ETERNALXI_DB_USER}
 eternalxi.db.password=${ETERNALXI_DB_PASSWORD}

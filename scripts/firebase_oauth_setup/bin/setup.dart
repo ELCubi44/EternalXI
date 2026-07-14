@@ -9,6 +9,7 @@ const _projectNumber = '580436038307';
 const _androidAppId = '1:580436038307:android:c8492d256ba5493656a516';
 const _packageName = 'es.eternalxi.app';
 const _releaseSha1 = 'E7:FB:77:46:5D:80:77:C7:65:C5:B5:A8:0E:C0:9B:41:FB:ED:0C:22';
+const _debugSha1 = 'D7:A3:77:52:70:98:A2:CC:FD:73:29:18:2E:DE:89:72:00:54:A4:CD';
 
 Future<void> main(List<String> args) async {
   final repoRoot = _repoRoot();
@@ -32,7 +33,8 @@ Future<void> main(List<String> args) async {
   ]);
 
   try {
-    await _ensureSha1Registered(client);
+    await _ensureSha1Registered(client, _releaseSha1, label: 'release');
+    await _ensureSha1Registered(client, _debugSha1, label: 'debug');
     await _ensureGoogleSignInEnabled(client);
     await _waitForOAuthClients(client);
 
@@ -45,7 +47,7 @@ Future<void> main(List<String> args) async {
     stdout.writeln('OAuth clients en config: ${oauthClients.length}');
 
     String? webClientId;
-    String? androidClientId;
+    final androidClientIds = <String>[];
     for (final c in oauthClients) {
       if (c is! Map) continue;
       final type = c['client_type']?.toString() ?? '';
@@ -55,7 +57,7 @@ Future<void> main(List<String> args) async {
         webClientId = id;
         stdout.writeln('Web client: $id');
       } else if (type == '1') {
-        androidClientId = id;
+        androidClientIds.add(id);
         stdout.writeln('Android client: $id');
       }
     }
@@ -69,12 +71,11 @@ Future<void> main(List<String> args) async {
     }
 
     await _writeAppConfig(repoRoot, webClientId, config);
-    stdout.writeln(
-      'Backend oauthGoogleClientIds: ${[
-        webClientId,
-        if (androidClientId != null && androidClientId.isNotEmpty) androidClientId,
-      ].join(',')}',
-    );
+    final backendIds = <String>[
+      if (webClientId != null && webClientId.isNotEmpty) webClientId,
+      ...androidClientIds,
+    ];
+    stdout.writeln('Backend oauthGoogleClientIds: ${backendIds.join(',')}');
     stdout.writeln('OK');
   } finally {
     client.close();
@@ -89,7 +90,11 @@ Directory _repoRoot() {
   return cwd;
 }
 
-Future<void> _ensureSha1Registered(http.Client client) async {
+Future<void> _ensureSha1Registered(
+  http.Client client,
+  String sha1, {
+  required String label,
+}) async {
   final listUrl =
       'https://firebase.googleapis.com/v1beta1/projects/$_projectId/androidApps/$_androidAppId/sha';
   final listRes = await client.get(Uri.parse(listUrl));
@@ -97,8 +102,8 @@ Future<void> _ensureSha1Registered(http.Client client) async {
     final json = jsonDecode(listRes.body) as Map<String, dynamic>;
     final hashes = (json['shaHashes'] as List?) ?? [];
     for (final h in hashes) {
-      if (h is Map && h['shaHash']?.toString() == _releaseSha1) {
-        stdout.writeln('SHA-1 release ya registrado');
+      if (h is Map && h['shaHash']?.toString() == sha1) {
+        stdout.writeln('SHA-1 $label ya registrado');
         return;
       }
     }
@@ -110,16 +115,16 @@ Future<void> _ensureSha1Registered(http.Client client) async {
     Uri.parse(createUrl),
     headers: {'Content-Type': 'application/json'},
     body: jsonEncode({
-      'shaHash': _releaseSha1,
+      'shaHash': sha1,
       'certType': 'SHA_1',
     }),
   );
   if (createRes.statusCode >= 200 && createRes.statusCode < 300) {
-    stdout.writeln('SHA-1 release registrado en Firebase');
+    stdout.writeln('SHA-1 $label registrado en Firebase');
     return;
   }
   stdout.writeln(
-    'Aviso SHA-1 (${createRes.statusCode}): ${createRes.body}',
+    'Aviso SHA-1 $label (${createRes.statusCode}): ${createRes.body}',
   );
 }
 

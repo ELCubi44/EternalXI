@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "580436038307-3vb3tmhq81ngcf9r4032926t65k4djq1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "es.eternalxi.app",
+            "certificate_hash": "d7a377527098a2ccfd7329182ede89720054a4cd"
+          }
+        },
+        {
           "client_id": "580436038307-t4qnqnce4j07u79a8fftv32jte8k8nrv.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
