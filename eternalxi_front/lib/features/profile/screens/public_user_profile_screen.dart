@@ -195,49 +195,57 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
 
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(20, 12, 12, 28),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
       children: [
         Center(child: avatar),
         const SizedBox(height: 10),
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Column(
+            SizedBox(
+              width: double.infinity,
+              child: Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Center(
-                        child: XiText(
-                          profile.nickname,
-                          style: XiTypography.lumiare(
-                            fontSize: 22,
-                            letterSpacing: 0.4,
-                            color: context.xiTextPrimary,
-                          ),
+                      XiText(
+                        profile.nickname,
+                        textAlign: TextAlign.center,
+                        style: XiTypography.lumiare(
+                          fontSize: 22,
+                          letterSpacing: 0.4,
+                          color: context.xiTextPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Center(
-                        child: XiText(
-                          UserPublicTag.format(profile.id),
-                          style: XiTypography.lumiare(
-                            fontSize: 13,
-                            color: XiColors.classicGold,
-                          ),
+                      XiText(
+                        UserPublicTag.format(profile.id),
+                        textAlign: TextAlign.center,
+                        style: XiTypography.lumiare(
+                          fontSize: 13,
+                          color: XiColors.classicGold,
                         ),
                       ),
                     ],
                   ),
-                ),
-                if (showsFavorite)
-                  FavoritePlayerSlot(
-                    loading: false,
-                    favorite: favorite,
-                    showAddPlaceholder: false,
-                  ),
-              ],
+                  if (showsFavorite)
+                    Positioned(
+                      right: -8,
+                      top: 0,
+                      bottom: 0,
+                      child: Center(
+                        child: FavoritePlayerSlot(
+                          loading: false,
+                          favorite: favorite,
+                          showAddPlaceholder: false,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
             _buildFriendAction(theme),
             const SizedBox(height: 8),
