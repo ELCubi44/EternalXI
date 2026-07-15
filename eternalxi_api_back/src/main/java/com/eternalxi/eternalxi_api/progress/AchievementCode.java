@@ -4,8 +4,16 @@ public enum AchievementCode {
     WIN_LEAGUE_1("Primera corona", "Gana una liga válida", 80, AchievementCategory.LEAGUE),
     WIN_LEAGUE_3("Tricampeón", "Gana 3 ligas válidas", 150, AchievementCategory.LEAGUE),
     WIN_LEAGUE_5("Dominador", "Gana 5 ligas válidas", 250, AchievementCategory.LEAGUE),
-    WIN_LEAGUE_10("Dynasty", "Gana 10 ligas válidas", 400, AchievementCategory.LEAGUE),
-    WIN_LEAGUE_30("Emperador fantasy", "Gana 30 ligas válidas", 800, AchievementCategory.LEAGUE),
+
+    GOALS_50("Goleador", "50 goles acumulados con tus jugadores", 60, AchievementCategory.PERFORMANCE),
+    GOALS_100("Artillero", "100 goles acumulados con tus jugadores", 100, AchievementCategory.PERFORMANCE),
+    GOALS_250("Máquina de goles", "250 goles acumulados con tus jugadores", 180, AchievementCategory.PERFORMANCE),
+    ASSISTS_25("Creador", "25 asistencias acumuladas", 55, AchievementCategory.PERFORMANCE),
+    ASSISTS_100("Maestro del pase", "100 asistencias acumuladas", 120, AchievementCategory.PERFORMANCE),
+    CLEAN_SHEETS_10("Muralla", "10 porterías a cero acumuladas", 50, AchievementCategory.PERFORMANCE),
+    CLEAN_SHEETS_50("Fortín", "50 porterías a cero acumuladas", 110, AchievementCategory.PERFORMANCE),
+    INJURIES_15("Consultorio", "15 lesiones acumuladas en tu plantilla", 40, AchievementCategory.PERFORMANCE),
+    SANCTIONS_25("Tarjetero", "25 sanciones acumuladas en tu plantilla", 45, AchievementCategory.PERFORMANCE),
 
     DAY_POINTS_50("Jornada sólida", "50+ pts fantasy en una jornada", 40, AchievementCategory.PERFORMANCE),
     DAY_POINTS_75("Jornada brillante", "75+ pts fantasy en una jornada", 60, AchievementCategory.PERFORMANCE),
@@ -105,12 +113,28 @@ public enum AchievementCode {
             case WIN_LEAGUE_5 -> """
                     Gana 5 ligas válidas en total. Cada campeonato cerrado correctamente suma \
                     una victoria si quedas primero en la clasificación final.""";
-            case WIN_LEAGUE_10 -> """
-                    Gana 10 ligas válidas en total. Es un logro de cuenta: puedes conseguirlo \
-                    en distintas temporadas y grupos de amigos.""";
-            case WIN_LEAGUE_30 -> """
-                    Gana 30 ligas válidas en total. Requiere constancia y ligas con al menos \
-                    3 managers activos que hayan jugado toda la competición.""";
+
+            case GOALS_50 -> """
+                    Suma 50 goles en total con jugadores de tu propiedad en todas tus ligas. \
+                    Cuentan los goles registrados en jornadas finalizadas.""";
+            case GOALS_100 -> """
+                    Alcanza 100 goles acumulados con tus jugadores. El progreso se muestra \
+                    en las estadísticas de tu perfil.""";
+            case GOALS_250 -> """
+                    Llega a 250 goles acumulados con tus jugadores a lo largo de tu cuenta.""";
+            case ASSISTS_25 -> """
+                    Registra 25 asistencias totales con jugadores de tu plantilla en ligas jugadas.""";
+            case ASSISTS_100 -> """
+                    Acumula 100 asistencias con tus jugadores. Aparece en tu perfil público.""";
+            case CLEAN_SHEETS_10 -> """
+                    Consigue 10 porterías a cero con tus porteros en jornadas finalizadas.""";
+            case CLEAN_SHEETS_50 -> """
+                    Acumula 50 porterías a cero con tus porteros en todas tus temporadas.""";
+            case INJURIES_15 -> """
+                    Tus jugadores acumulan 15 lesiones en partido. Un logro irónico visible \
+                    en las estadísticas de tu perfil.""";
+            case SANCTIONS_25 -> """
+                    Tus jugadores suman 25 tarjetas (amarillas + rojas) en jornadas jugadas.""";
 
             case DAY_POINTS_50 -> """
                     En una misma jornada, suma 50 o más puntos fantasy con tu alineación \
@@ -231,8 +255,15 @@ public enum AchievementCode {
             case WIN_LEAGUE_1 -> 1;
             case WIN_LEAGUE_3 -> 3;
             case WIN_LEAGUE_5 -> 5;
-            case WIN_LEAGUE_10 -> 10;
-            case WIN_LEAGUE_30 -> 30;
+            case GOALS_50 -> 50;
+            case GOALS_100 -> 100;
+            case GOALS_250 -> 250;
+            case ASSISTS_25 -> 25;
+            case ASSISTS_100 -> 100;
+            case CLEAN_SHEETS_10 -> 10;
+            case CLEAN_SHEETS_50 -> 50;
+            case INJURIES_15 -> 15;
+            case SANCTIONS_25 -> 25;
             case PACKS_5 -> 5;
             case PACKS_10 -> 10;
             case PACKS_15 -> 15;

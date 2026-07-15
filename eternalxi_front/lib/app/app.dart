@@ -6,6 +6,7 @@ import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/profile/controller/user_preferences_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class EternalXiApp extends StatefulWidget {
@@ -444,8 +445,23 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       theme: _lightTheme,
       darkTheme: _theme,
       routerConfig: appRouter,
-      builder: (context, child) => XiTypographyScope(
-        child: child ?? const SizedBox.shrink(),
+      builder: (context, child) => PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          final router = GoRouter.of(context);
+          if (router.canPop()) {
+            router.pop();
+            return;
+          }
+          final navigator = Navigator.maybeOf(context);
+          if (navigator != null && navigator.canPop()) {
+            navigator.pop();
+          }
+        },
+        child: XiTypographyScope(
+          child: child ?? const SizedBox.shrink(),
+        ),
       ),
     );
   }

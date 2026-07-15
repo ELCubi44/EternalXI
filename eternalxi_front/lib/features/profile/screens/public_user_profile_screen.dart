@@ -106,6 +106,67 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     );
   }
 
+  Future<void> _sendFriendRequest() async {
+    final viewer = _viewerId;
+    final profile = _profile;
+    if (viewer == null || profile == null || profile.id == viewer) return;
+    try {
+      await context.read<UserApiService>().sendFriendRequest(
+        idUsuario: viewer,
+        idAmigo: profile.id,
+      );
+      if (!mounted) return;
+      await _load();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(context.l10n.friendsRequestSent),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Theme.of(context).colorScheme.error,
+          content: Text(
+            e is ApiException ? e.message : context.l10n.friendsRequestError,
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _buildFriendAction(ThemeData theme) {
+    final profile = _profile!;
+    final viewer = _viewerId;
+    if (viewer == null || viewer == profile.id || profile.isFriend) {
+      return const SizedBox.shrink();
+    }
+    if (profile.isPendingOutgoing) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Text(
+          context.l10n.friendsRequestSent,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: context.xiTextSecondary,
+          ),
+        ),
+      );
+    }
+    if (profile.isPendingIncoming) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: FilledButton.icon(
+        onPressed: _sendFriendRequest,
+        icon: const Icon(Icons.person_add_alt_1_rounded, size: 20),
+        label: Text(context.l10n.friendsAdd),
+      ),
+    );
+  }
+
   Widget _buildPrincipalHeader(ThemeData theme) {
     final profile = _profile!;
     final progress = _progress;
@@ -154,6 +215,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
             const SizedBox(height: 16),
             _FavoritePlayerCard(player: profile.jugadorFavorito!),
           ],
+          _buildFriendAction(theme),
           const SizedBox(height: 8),
         ],
       ),
@@ -365,6 +427,8 @@ class _FavoritePlayerCard extends StatelessWidget {
 
   final UserPublicFavoritePlayer player;
 
+  static const double _photoSize = 80;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -374,22 +438,27 @@ class _FavoritePlayerCard extends StatelessWidget {
         child: Row(
           children: [
             if (player.photoUrl != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  player.photoUrl!,
-                  width: 52,
-                  height: 52,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => const Icon(
+              Image.network(
+                player.photoUrl!,
+                width: _photoSize,
+                height: _photoSize,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => SizedBox(
+                  width: _photoSize,
+                  height: _photoSize,
+                  child: const Icon(
                     Icons.sports_soccer_rounded,
-                    size: 40,
+                    size: 48,
                   ),
                 ),
               )
             else
-              const Icon(Icons.sports_soccer_rounded, size: 40),
-            const SizedBox(width: 12),
+              SizedBox(
+                width: _photoSize,
+                height: _photoSize,
+                child: const Icon(Icons.sports_soccer_rounded, size: 48),
+              ),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

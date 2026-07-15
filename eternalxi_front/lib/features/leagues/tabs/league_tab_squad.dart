@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
@@ -21,6 +22,7 @@ import 'package:eternal_xi/features/leagues/widgets/league_squad_player_tile.dar
 import 'package:eternal_xi/shared/widgets/lineup_history_icon.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class LeagueTabSquad extends StatefulWidget {
@@ -862,7 +864,7 @@ class _LeagueTabSquadState extends State<LeagueTabSquad>
         }
         final leave = await _confirmLeaveLineupEditor();
         if (leave && context.mounted) {
-          Navigator.of(context).pop();
+          context.go(AppRoutes.leagues);
         }
       },
       child: Column(

@@ -4,6 +4,7 @@ import com.eternalxi.eternalxi_api.config.DBConnection;
 import com.eternalxi.eternalxi_api.dto.user.UserAchievementResponse;
 import com.eternalxi.eternalxi_api.dto.user.UserProgressEventResponse;
 import com.eternalxi.eternalxi_api.dto.user.UserProgressResponse;
+import com.eternalxi.eternalxi_api.dto.user.UserPublicStatsResponse;
 import com.eternalxi.eternalxi_api.progress.AccountLevelMath;
 import com.eternalxi.eternalxi_api.progress.AchievementCode;
 import org.slf4j.Logger;
@@ -130,6 +131,7 @@ public class AccountProgressService {
             ensureSchema(conn);
             processDailyLogin(conn, idUsuario);
             repairDayPointAchievementTiers(conn, idUsuario);
+            syncStatsAchievements(conn, idUsuario);
             return buildProgressResponse(conn, idUsuario);
         }
     }
@@ -138,6 +140,7 @@ public class AccountProgressService {
     public UserProgressResponse loadPublicProgress(Long idUsuario) throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
             ensureSchema(conn);
+            syncStatsAchievements(conn, idUsuario);
             UserProgressResponse full = buildProgressResponse(conn, idUsuario);
             return new UserProgressResponse(
                     full.idUsuario(),
@@ -250,6 +253,7 @@ public class AccountProgressService {
             }
 
             tryUnlock(conn, row.idUsuario(), AchievementCode.FIRST_LEAGUE, idLiga);
+            syncStatsAchievements(conn, row.idUsuario());
             syncFavoriteRosterAchievements(
                     conn,
                     row.idUsuario(),
@@ -303,6 +307,7 @@ public class AccountProgressService {
     ) throws SQLException {
         int xp = grantRoundParticipationXpIfAbsent(conn, idUsuario, idLiga, idJornada);
         xp += onRoundFantasyPoints(conn, idLiga, idUsuario, fantasyPoints);
+        syncStatsAchievements(conn, idUsuario);
         return xp;
     }
 
@@ -465,12 +470,6 @@ public class AccountProgressService {
     private void incrementWinLeagueAchievements(Connection conn, Long idUsuario, Long idLiga) throws SQLException {
         recordLeagueWin(conn, idUsuario, idLiga);
         int wins = countLeagueWins(conn, idUsuario);
-        if (wins >= 30) {
-            tryUnlock(conn, idUsuario, AchievementCode.WIN_LEAGUE_30, idLiga);
-        }
-        if (wins >= 10) {
-            tryUnlock(conn, idUsuario, AchievementCode.WIN_LEAGUE_10, idLiga);
-        }
         if (wins >= 5) {
             tryUnlock(conn, idUsuario, AchievementCode.WIN_LEAGUE_5, idLiga);
         }
@@ -479,6 +478,49 @@ public class AccountProgressService {
         }
         if (wins >= 1) {
             tryUnlock(conn, idUsuario, AchievementCode.WIN_LEAGUE_1, idLiga);
+        }
+    }
+
+    public void syncStatsAchievements(Connection conn, Long idUsuario) throws SQLException {
+        if (idUsuario == null || idUsuario <= 0) {
+            return;
+        }
+        UserPublicStatsResponse stats = userPublicProfileService.loadCareerStats(conn, idUsuario);
+        if (stats.goles() >= 50) {
+            tryUnlock(conn, idUsuario, AchievementCode.GOALS_50, null);
+        }
+        if (stats.goles() >= 100) {
+            tryUnlock(conn, idUsuario, AchievementCode.GOALS_100, null);
+        }
+        if (stats.goles() >= 250) {
+            tryUnlock(conn, idUsuario, AchievementCode.GOALS_250, null);
+        }
+        if (stats.asistencias() >= 25) {
+            tryUnlock(conn, idUsuario, AchievementCode.ASSISTS_25, null);
+        }
+        if (stats.asistencias() >= 100) {
+            tryUnlock(conn, idUsuario, AchievementCode.ASSISTS_100, null);
+        }
+        if (stats.porteriasCero() >= 10) {
+            tryUnlock(conn, idUsuario, AchievementCode.CLEAN_SHEETS_10, null);
+        }
+        if (stats.porteriasCero() >= 50) {
+            tryUnlock(conn, idUsuario, AchievementCode.CLEAN_SHEETS_50, null);
+        }
+        if (stats.lesiones() >= 15) {
+            tryUnlock(conn, idUsuario, AchievementCode.INJURIES_15, null);
+        }
+        if (stats.sanciones() >= 25) {
+            tryUnlock(conn, idUsuario, AchievementCode.SANCTIONS_25, null);
+        }
+    }
+
+    public void syncStatsAchievements(Long idUsuario) throws SQLException {
+        if (idUsuario == null || idUsuario <= 0) {
+            return;
+        }
+        try (Connection conn = DBConnection.getConnection()) {
+            syncStatsAchievements(conn, idUsuario);
         }
     }
 
@@ -729,12 +771,19 @@ public class AccountProgressService {
         int rosterPercent = catalogPlayers > 0
                 ? Math.min(100, (signedPlayers * 100) / catalogPlayers)
                 : 0;
+        UserPublicStatsResponse careerStats = userPublicProfileService.loadCareerStats(conn, idUsuario);
         List<UserAchievementResponse> achievements = new ArrayList<>();
         for (AchievementCode def : AchievementCode.values()) {
             Instant at = unlocked.get(def.code());
             Integer target = def.progressTarget();
             Integer actual = resolveProgressActual(
-                    def, target, leagueWins, maxPacksInLeague, friendCount, rosterPercent
+                    def,
+                    target,
+                    leagueWins,
+                    maxPacksInLeague,
+                    friendCount,
+                    rosterPercent,
+                    careerStats
             );
             achievements.add(UserAchievementResponse.fromDefinition(def, at != null, at, actual, target));
         }
@@ -875,14 +924,25 @@ public class AccountProgressService {
             int leagueWins,
             int maxPacksInLeague,
             int friendCount,
-            int rosterPercent
+            int rosterPercent,
+            UserPublicStatsResponse careerStats
     ) {
         if (target == null) {
             return null;
         }
         return switch (def) {
-            case WIN_LEAGUE_1, WIN_LEAGUE_3, WIN_LEAGUE_5, WIN_LEAGUE_10, WIN_LEAGUE_30 ->
+            case WIN_LEAGUE_1, WIN_LEAGUE_3, WIN_LEAGUE_5 ->
                     Math.min(leagueWins, target);
+            case GOALS_50, GOALS_100, GOALS_250 ->
+                    Math.min(careerStats.goles(), target);
+            case ASSISTS_25, ASSISTS_100 ->
+                    Math.min(careerStats.asistencias(), target);
+            case CLEAN_SHEETS_10, CLEAN_SHEETS_50 ->
+                    Math.min(careerStats.porteriasCero(), target);
+            case INJURIES_15 ->
+                    Math.min(careerStats.lesiones(), target);
+            case SANCTIONS_25 ->
+                    Math.min(careerStats.sanciones(), target);
             case PACKS_5, PACKS_10, PACKS_15, PACKS_20 ->
                     Math.min(maxPacksInLeague, target);
             case FRIEND_1, FRIEND_5, FRIEND_15 ->

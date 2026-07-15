@@ -568,30 +568,6 @@ class _ResultPhase extends StatelessWidget {
                   ),
                 ),
               ],
-              if (winner.bonusPuntos > 0) ...[
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: XiColors.classicGold.withValues(alpha: 0.12),
-                    border: Border.all(
-                      color: XiColors.classicGold.withValues(alpha: 0.35),
-                    ),
-                  ),
-                  child: Text(
-                    '+${winner.bonusPuntos} pts bonus',
-                    style: const TextStyle(
-                      fontFamily: 'Lumiare',
-                      color: XiColors.classicGold,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ],
             ],
           ),
         ),

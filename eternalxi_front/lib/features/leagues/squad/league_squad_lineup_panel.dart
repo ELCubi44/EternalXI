@@ -392,9 +392,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
     }
   }
 
-  bool _isPlayerEligibleForLineup(LeagueSquadPlayer player) =>
-      !leaguePlayerEstadoIsLesionado(player.estado) &&
-      !leaguePlayerEstadoIsSancionado(player.estado);
+  bool _isPlayerEligibleForLineup(LeagueSquadPlayer player) => true;
 
   int _compareByPlayProbability(LeagueSquadPlayer a, LeagueSquadPlayer b) {
     final pa = a.probabilidadTitular ?? -1;

@@ -171,6 +171,16 @@ public class UserPublicProfileService {
         }
     }
 
+    public UserPublicStatsResponse loadCareerStats(Connection conn, long userId) throws SQLException {
+        return loadStats(conn, userId);
+    }
+
+    public UserPublicStatsResponse loadCareerStats(long userId) throws SQLException {
+        try (Connection conn = DBConnection.getConnection()) {
+            return loadStats(conn, userId);
+        }
+    }
+
     private UserPublicStatsResponse loadStats(Connection conn, long userId) throws SQLException {
         String sql = """
                 SELECT

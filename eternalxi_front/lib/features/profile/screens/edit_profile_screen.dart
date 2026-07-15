@@ -715,7 +715,7 @@ class _FavoritePlayerSlot extends StatelessWidget {
   final UserPublicFavoritePlayer? favorite;
   final VoidCallback? onTap;
 
-  static const double _size = 52;
+  static const double _size = 80;
 
   @override
   Widget build(BuildContext context) {
@@ -723,27 +723,24 @@ class _FavoritePlayerSlot extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(_size / 2),
       child: SizedBox(
         height: _size,
         child: Center(
           child: loading
-              ? const SizedBox(
+              ? SizedBox(
                   width: _size,
                   height: _size,
-                  child: Center(
+                  child: const Center(
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                 )
               : hasPhoto
-              ? ClipOval(
-                  child: Image.network(
-                    favorite!.photoUrl!,
-                    width: _size,
-                    height: _size,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => _emptySlot(context),
-                  ),
+              ? Image.network(
+                  favorite!.photoUrl!,
+                  width: _size,
+                  height: _size,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => _emptySlot(context),
                 )
               : _emptySlot(context),
         ),

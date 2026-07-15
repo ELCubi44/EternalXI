@@ -1,5 +1,6 @@
 import 'package:eternal_xi/app/localization/rewards_l10n.dart';
 import 'package:eternal_xi/features/rewards/data/models/reward_summary_model.dart';
+import 'package:eternal_xi/shared/widgets/league_chip_icon.dart';
 import 'package:eternal_xi/shared/widgets/reward_cards_icon.dart';
 import 'package:flutter/material.dart';
 
@@ -31,16 +32,24 @@ class RewardsSummaryHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          _ChipStat(
-            leading: Icon(Icons.stars_rounded, size: 20, color: colorScheme.primary),
-            label: rl10n.rewardPoints,
-            value: '${summary.puntosRecompensaUsuario}',
-          ),
-          const SizedBox(height: 8),
-          _ChipStat(
-            leading: const RewardCardsIcon(size: 22),
-            label: rl10n.cardsAvailable,
-            value: '${summary.cartasDisponibles}',
+          Row(
+            children: [
+              Expanded(
+                child: _ChipStat(
+                  leading: const LeagueChipIcon(size: 22),
+                  label: rl10n.fichas,
+                  value: '${summary.puntosRecompensaUsuario}',
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _ChipStat(
+                  leading: const RewardCardsIcon(size: 22),
+                  label: rl10n.cardsAvailable,
+                  value: '${summary.cartasDisponibles}',
+                ),
+              ),
+            ],
           ),
         ],
       ),
