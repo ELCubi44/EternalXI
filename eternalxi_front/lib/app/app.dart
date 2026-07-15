@@ -1,4 +1,5 @@
 import 'package:eternal_xi/app/router.dart';
+import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_typography.dart';
 import 'package:eternal_xi/core/notifications/push_notification_handler.dart';
@@ -461,14 +462,22 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
             navigator.pop();
           }
         },
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            const FantasyAtmosphereBackground(),
-            XiTypographyScope(
-              child: child ?? const SizedBox.shrink(),
-            ),
-          ],
+        // Rebuild al navegar: el splash de entrada (dos chicos) no usa el fondo N.
+        child: ListenableBuilder(
+          listenable: appRouter.routerDelegate,
+          builder: (context, _) {
+            final location = appRouter.state.uri.path;
+            final showAtmosphere = location != AppRoutes.splash;
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                if (showAtmosphere) const FantasyAtmosphereBackground(),
+                XiTypographyScope(
+                  child: child ?? const SizedBox.shrink(),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
