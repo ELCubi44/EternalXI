@@ -41,36 +41,20 @@ public class LeagueSeasonService {
      * si la temporada ya termino de forma natural).
      */
     public static String sqlVisibleInMyLeagues() {
-        return """
-                l.cerrada_en IS NULL
-                AND NOT (
-                    """ + sqlSeasonNaturallyCompleteOnLeagueAlias("l") + """
-                    AND COALESCE((
-                        SELECT MAX(pj.inicio_en)
-                        FROM partidos_jornada pj
-                        INNER JOIN jornadas j ON j.id = pj.id_jornada
-                        WHERE j.id_liga = l.id
-                          AND COALESCE(pj.estado, '') = 'FINALIZADO'
-                    ), '1970-01-01') <= DATE_SUB(NOW(), INTERVAL """
-                + ARCHIVE_DAYS_AFTER_LAST_MATCH + " DAY)"
-                + """
-                )
-                """;
+        return "l.cerrada_en IS NULL AND NOT (("
+                + sqlSeasonNaturallyCompleteOnLeagueAlias("l")
+                + ") AND COALESCE(("
+                + "SELECT MAX(pj.inicio_en) FROM partidos_jornada pj "
+                + "INNER JOIN jornadas j ON j.id = pj.id_jornada "
+                + "WHERE j.id_liga = l.id AND COALESCE(pj.estado, '') = 'FINALIZADO'"
+                + "), '1970-01-01') <= DATE_SUB(NOW(), INTERVAL "
+                + ARCHIVE_DAYS_AFTER_LAST_MATCH + " DAY))";
     }
 
     public static String sqlSeasonNaturallyCompleteOnLeagueAlias(String leagueAlias) {
-        return """
-                EXISTS (SELECT 1 FROM jornadas jx WHERE jx.id_liga = """
-                + leagueAlias + ".id)"
-                + """
-                AND NOT EXISTS (
-                    SELECT 1 FROM jornadas jx
-                    WHERE jx.id_liga = """
-                + leagueAlias + ".id"
-                + """
-                      AND COALESCE(jx.estado, '') <> 'FINALIZADA'
-                )
-                """;
+        return "EXISTS (SELECT 1 FROM jornadas jx WHERE jx.id_liga = " + leagueAlias + ".id) "
+                + "AND NOT EXISTS (SELECT 1 FROM jornadas jx WHERE jx.id_liga = " + leagueAlias + ".id "
+                + "AND COALESCE(jx.estado, '') <> 'FINALIZADA')";
     }
 
     public boolean isSeasonNaturallyComplete(Connection conn, long idLiga) throws SQLException {

@@ -340,40 +340,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
                   const SizedBox(height: 4),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: PendingNotificationBadge(
-                          count: pending,
-                          child: _ProfileActionCard(
-                            icon: Icons.people_alt_rounded,
-                            label: l10n.friendsTitle,
-                            onTap: () => context.push(AppRoutes.profileFriends),
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: PendingNotificationBadge(
+                            count: pending,
+                            child: _ProfileActionCard(
+                              icon: Icons.people_alt_rounded,
+                              label: l10n.friendsTitle,
+                              onTap: () => context.push(AppRoutes.profileFriends),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            _FavoritePlayerSlot(
-                              loading: _loadingPublicProfile,
-                              favorite: _publicProfile?.jugadorFavorito,
-                              onTap: userId == null
-                                  ? null
-                                  : () => _openFavoritePlayerPicker(userId),
-                            ),
-                            const SizedBox(height: 10),
-                            _ProfileActionCard(
-                              icon: Icons.home_rounded,
-                              label: l10n.profileBackToTitle,
-                              onTap: () => context.go(AppRoutes.splash),
-                            ),
-                          ],
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              _FavoritePlayerSlot(
+                                loading: _loadingPublicProfile,
+                                favorite: _publicProfile?.jugadorFavorito,
+                                onTap: userId == null
+                                    ? null
+                                    : () => _openFavoritePlayerPicker(userId),
+                              ),
+                              const SizedBox(height: 10),
+                              Expanded(
+                                child: _ProfileActionCard(
+                                  icon: Icons.home_rounded,
+                                  label: l10n.profileBackToTitle,
+                                  onTap: () => context.go(AppRoutes.splash),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 18),
                   Text(
@@ -712,81 +716,77 @@ class _FavoritePlayerSlot extends StatelessWidget {
   final UserPublicFavoritePlayer? favorite;
   final VoidCallback? onTap;
 
-  static const double _size = 56;
+  static const double _size = 64;
 
   @override
   Widget build(BuildContext context) {
     final hasPhoto = favorite?.photoUrl?.isNotEmpty == true;
 
-    return Material(
-      color: context.xiCardSurface,
-      borderRadius: BorderRadius.circular(14),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: context.xiDivider),
-          ),
-          child: Column(
-            children: [
-              if (loading)
-                const SizedBox(
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(_size / 2),
+      child: SizedBox(
+        height: _size,
+        child: Center(
+          child: loading
+              ? const SizedBox(
                   width: _size,
                   height: _size,
                   child: Center(
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                 )
-              else if (hasPhoto)
-                ClipOval(
+              : hasPhoto
+              ? ClipOval(
                   child: Image.network(
                     favorite!.photoUrl!,
                     width: _size,
                     height: _size,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _emptySlot(context),
+                    errorBuilder: (_, _, _) => _emptySlot(context),
                   ),
                 )
-              else
-                _emptySlot(context),
-              if (!loading && favorite?.nombre.isNotEmpty == true) ...[
-                const SizedBox(height: 6),
-                Text(
-                  favorite!.nombre,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'Lumiare',
-                    fontSize: 10,
-                    color: context.xiTextPrimary,
-                  ),
-                ),
-              ],
-            ],
-          ),
+              : _emptySlot(context),
         ),
       ),
     );
   }
 
   Widget _emptySlot(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: _size,
       height: _size,
-      decoration: BoxDecoration(
-        color: context.xiTextSecondary.withValues(alpha: 0.18),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        Icons.add_rounded,
-        size: 28,
-        color: context.xiTextSecondary.withValues(alpha: 0.75),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: context.xiTextSecondary.withValues(alpha: 0.22),
+              shape: BoxShape.circle,
+            ),
+          ),
+          Icon(
+            Icons.person_rounded,
+            size: 34,
+            color: context.xiTextSecondary.withValues(alpha: 0.55),
+          ),
+          Container(
+            width: 22,
+            height: 22,
+            decoration: BoxDecoration(
+              color: context.xiCardSurface,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: context.xiTextSecondary.withValues(alpha: 0.35),
+              ),
+            ),
+            child: Icon(
+              Icons.add_rounded,
+              size: 16,
+              color: context.xiTextSecondary.withValues(alpha: 0.85),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -4911,7 +4911,7 @@ private int calculateFantasyPoints(PlayerMatchAccumulator acc, int newspaperNote
                        WHERE jp.id_liga_jugador = lj.id
                        ORDER BY jp.id_jornada DESC
                        LIMIT """
-            + LeagueDynamicValuePolicy.RECENT_FORM_MATCH_LIMIT
+            + " " + LeagueDynamicValuePolicy.RECENT_FORM_MATCH_LIMIT
             + """
                    ) t
                ), 0) AS media_ultimos_3,
