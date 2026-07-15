@@ -195,47 +195,27 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       child: Column(
         children: [
-          Stack(
-            alignment: Alignment.bottomCenter,
-            clipBehavior: Clip.none,
-            children: [
-              Column(
-                children: [
-                  Center(child: avatar),
-                  const SizedBox(height: 10),
-                  Center(
-                    child: XiText(
-                      profile.nickname,
-                      style: XiTypography.lumiare(
-                        fontSize: 22,
-                        letterSpacing: 0.4,
-                        color: context.xiTextPrimary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Center(
-                    child: XiText(
-                      UserPublicTag.format(profile.id),
-                      style: XiTypography.lumiare(
-                        fontSize: 13,
-                        color: XiColors.classicGold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                ],
+          Center(child: avatar),
+          const SizedBox(height: 10),
+          Center(
+            child: XiText(
+              profile.nickname,
+              style: XiTypography.lumiare(
+                fontSize: 22,
+                letterSpacing: 0.4,
+                color: context.xiTextPrimary,
               ),
-              Positioned(
-                right: 8,
-                bottom: 14,
-                child: FavoritePlayerSlot(
-                  loading: _loading,
-                  favorite: profile.jugadorFavorito,
-                  showAddPlaceholder: false,
-                ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Center(
+            child: XiText(
+              UserPublicTag.format(profile.id),
+              style: XiTypography.lumiare(
+                fontSize: 13,
+                color: XiColors.classicGold,
               ),
-            ],
+            ),
           ),
           _buildFriendAction(theme),
           const SizedBox(height: 8),
@@ -349,7 +329,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                         child: ListView(
                           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
                           children: [
-                            _StatsGrid(stats: _profile!.stats),
+                            _StatsGrid(
+                              stats: _profile!.stats,
+                              favorite: _profile!.jugadorFavorito,
+                            ),
                           ],
                         ),
                       ),
@@ -375,70 +358,153 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
 }
 
 class _StatsGrid extends StatelessWidget {
-  const _StatsGrid({required this.stats});
+  const _StatsGrid({
+    required this.stats,
+    this.favorite,
+  });
 
   final UserPublicStats stats;
+  final UserPublicFavoritePlayer? favorite;
+
+  static const double _spacing = 8;
+
+  bool get _showsFavorite => favorite?.photoUrl?.isNotEmpty == true;
 
   @override
   Widget build(BuildContext context) {
-    final items = [
-      _StatTile(label: 'Ligas ganadas', value: '${stats.ligasGanadas}'),
-      _StatTile(label: 'Goles', value: '${stats.goles}'),
-      _StatTile(label: 'Asistencias', value: '${stats.asistencias}'),
-      _StatTile(label: 'Porter\u00edas a 0', value: '${stats.porteriasCero}'),
-      _StatTile(label: 'Lesiones', value: '${stats.lesiones}'),
-      _StatTile(label: 'Sanciones', value: '${stats.sanciones}'),
-    ];
+    final golesTile = _StatTile(
+      label: 'Goles',
+      value: '${stats.goles}',
+      roundTopCorners: !_showsFavorite,
+    );
 
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 8,
-      crossAxisSpacing: 8,
-      childAspectRatio: 2.2,
-      children: items,
+    return Column(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: _StatTile(
+                label: 'Ligas ganadas',
+                value: '${stats.ligasGanadas}',
+              ),
+            ),
+            const SizedBox(width: _spacing),
+            Expanded(
+              child: _showsFavorite
+                  ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: FavoritePlayerSlot(
+                            loading: false,
+                            favorite: favorite,
+                            showAddPlaceholder: false,
+                          ),
+                        ),
+                        golesTile,
+                      ],
+                    )
+                  : golesTile,
+            ),
+          ],
+        ),
+        const SizedBox(height: _spacing),
+        Row(
+          children: [
+            Expanded(
+              child: _StatTile(
+                label: 'Asistencias',
+                value: '${stats.asistencias}',
+              ),
+            ),
+            const SizedBox(width: _spacing),
+            Expanded(
+              child: _StatTile(
+                label: 'Porter\u00edas a 0',
+                value: '${stats.porteriasCero}',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: _spacing),
+        Row(
+          children: [
+            Expanded(
+              child: _StatTile(
+                label: 'Lesiones',
+                value: '${stats.lesiones}',
+              ),
+            ),
+            const SizedBox(width: _spacing),
+            Expanded(
+              child: _StatTile(
+                label: 'Sanciones',
+                value: '${stats.sanciones}',
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
 
 class _StatTile extends StatelessWidget {
-  const _StatTile({required this.label, required this.value});
+  const _StatTile({
+    required this.label,
+    required this.value,
+    this.roundTopCorners = true,
+  });
 
   final String label;
   final String value;
+  final bool roundTopCorners;
 
   @override
   Widget build(BuildContext context) {
+    const radius = 12.0;
+    final borderRadius = roundTopCorners
+        ? BorderRadius.circular(radius)
+        : const BorderRadius.only(
+            bottomLeft: Radius.circular(radius),
+            bottomRight: Radius.circular(radius),
+          );
+
     return DecoratedBox(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: borderRadius,
         color: context.xiCardSurface,
         border: Border.all(
           color: context.xiTextSecondary.withValues(alpha: 0.2),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            XiText(
-              value,
-              style: XiTypography.lumiare(
-                fontSize: 16,
-                color: context.xiTextPrimary,
+      child: SizedBox(
+        height: 64,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              XiText(
+                value,
+                style: XiTypography.lumiare(
+                  fontSize: 16,
+                  color: context.xiTextPrimary,
+                ),
               ),
-            ),
-            XiText(
-              label,
-              style: XiTypography.lumiare(
-                fontSize: 11,
-                color: context.xiTextSecondary,
+              XiText(
+                label,
+                style: XiTypography.lumiare(
+                  fontSize: 11,
+                  color: context.xiTextSecondary,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
