@@ -416,9 +416,7 @@ class _LeagueTabChatState extends State<LeagueTabChat>
       );
     }
 
-    return ColoredBox(
-      color: context.xiBackground,
-      child: Column(
+    return Column(
         children: [
           if (_error != null && !_loading)
             Material(
@@ -568,7 +566,6 @@ class _LeagueTabChatState extends State<LeagueTabChat>
           ),
           ],
         ],
-      ),
     );
   }
 }
