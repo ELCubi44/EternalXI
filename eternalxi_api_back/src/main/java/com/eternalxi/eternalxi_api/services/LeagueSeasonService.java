@@ -52,7 +52,8 @@ public class LeagueSeasonService {
     }
 
     public static String sqlSeasonNaturallyCompleteOnLeagueAlias(String leagueAlias) {
-        return "EXISTS (SELECT 1 FROM jornadas jx WHERE jx.id_liga = " + leagueAlias + ".id) "
+        // Espacio inicial: los text blocks de Java eliminan espacios finales antes de """.
+        return " EXISTS (SELECT 1 FROM jornadas jx WHERE jx.id_liga = " + leagueAlias + ".id) "
                 + "AND NOT EXISTS (SELECT 1 FROM jornadas jx WHERE jx.id_liga = " + leagueAlias + ".id "
                 + "AND COALESCE(jx.estado, '') <> 'FINALIZADA')";
     }
