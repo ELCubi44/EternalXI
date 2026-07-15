@@ -65,7 +65,6 @@ class RewardsL10n {
   String get fichas => points;
 
   String get fichasUnit => _t('fichas', 'chips');
-  String get fichas => _t('Fichas', 'Chips');
   String get cardsAvailable => _t('Cartas disponibles', 'Available cards');
 
   String get spin => _t('Girar', 'Spin');
