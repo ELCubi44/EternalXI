@@ -466,7 +466,9 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         child: ListenableBuilder(
           listenable: appRouter.routerDelegate,
           builder: (context, _) {
-            final location = appRouter.state.uri.path;
+            final matches = appRouter.routerDelegate.currentConfiguration;
+            final location =
+                matches.isEmpty ? AppRoutes.splash : matches.uri.path;
             final showAtmosphere = location != AppRoutes.splash;
             return Stack(
               fit: StackFit.expand,
