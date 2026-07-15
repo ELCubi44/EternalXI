@@ -10,7 +10,7 @@ SET @has_fav := (
 );
 SET @ddl_fav := IF(
     @has_fav = 0,
-    'ALTER TABLE usuarios ADD COLUMN id_jugador_favorito BIGINT NULL DEFAULT NULL, ADD CONSTRAINT fk_usuarios_jugador_favorito FOREIGN KEY (id_jugador_favorito) REFERENCES jugadores(id) ON DELETE SET NULL',
+    'ALTER TABLE usuarios ADD COLUMN id_jugador_favorito INT NULL DEFAULT NULL, ADD CONSTRAINT fk_usuarios_jugador_favorito FOREIGN KEY (id_jugador_favorito) REFERENCES jugadores(id) ON DELETE SET NULL',
     'SELECT 1'
 );
 PREPARE stmt_fav FROM @ddl_fav;
