@@ -37,8 +37,8 @@ public class LeagueSeasonService {
     }
 
     /**
-     * Ligas visibles en "Mis ligas": abiertas y no archivadas (menos de 7 dùas desde el ùltimo partido
-     * si la temporada ya terminù de forma natural).
+     * Ligas visibles en "Mis ligas": abiertas y no archivadas (menos de 7 dias desde el ultimo partido
+     * si la temporada ya termino de forma natural).
      */
     public static String sqlVisibleInMyLeagues() {
         return """
@@ -278,7 +278,7 @@ public class LeagueSeasonService {
                     continue;
                 }
                 String titulo = "Temporada finalizada";
-                String mensaje = "En %s has quedado en la posiciùn %d de %d con %d puntos."
+                String mensaje = "En %s has quedado en la posicion %d de %d con %d puntos."
                         .formatted(nombreLiga, standing.posicion(), standing.totalParticipantes(), standing.puntosEfectivos());
                 String clave = NOTIFICATION_TYPE + "_" + idLiga + "_" + p.idUsuario();
                 Map<String, Object> datos = new HashMap<>();
