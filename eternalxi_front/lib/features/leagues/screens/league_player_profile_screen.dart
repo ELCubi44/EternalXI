@@ -867,7 +867,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
     final pointsLabel = LeagueMoneyFormat.points(puntosTotales);
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(ll.playerTitle),
         scrolledUnderElevation: 0,

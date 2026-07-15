@@ -144,7 +144,7 @@ class _LeagueDayMatchesScreenState extends State<LeagueDayMatchesScreen> {
 
     final ll = context.leagueL10n;
     return Scaffold(
-      backgroundColor: colorScheme.surfaceContainerLowest,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(ll.matchesOnDate(_titleDate(widget.day))),
         centerTitle: false,
@@ -201,7 +201,9 @@ class _LeagueDayMatchesScreenState extends State<LeagueDayMatchesScreen> {
                     end: Alignment.bottomRight,
                     colors: [
                       colorScheme.surfaceContainerHigh,
-                      colorScheme.surface.withValues(alpha: 0.92),
+                      // No usar colorScheme.surface: en Fantasy es transparente
+                      // para dejar ver el estadio detrás del Material de la ruta.
+                      const Color(0xEB0A0A0A),
                     ],
                   ),
                   border: Border.all(

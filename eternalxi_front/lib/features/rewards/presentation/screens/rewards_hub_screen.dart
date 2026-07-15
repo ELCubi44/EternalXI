@@ -72,6 +72,7 @@ class _RewardsHubScreenState extends State<RewardsHubScreen> {
     if (id != null && id > 0) {
       if (user == null || user.id <= 0) {
         return Scaffold(
+          backgroundColor: Colors.transparent,
           appBar: AppBar(title: Text(context.l10n.rewards)),
           body: Center(
             child: Padding(
@@ -90,6 +91,7 @@ class _RewardsHubScreenState extends State<RewardsHubScreen> {
       }
       if (_loadingName || _leagueName == null) {
         return Scaffold(
+          backgroundColor: Colors.transparent,
           appBar: AppBar(title: Text(context.l10n.leagueRewards)),
           body: const Center(child: CircularProgressIndicator()),
         );

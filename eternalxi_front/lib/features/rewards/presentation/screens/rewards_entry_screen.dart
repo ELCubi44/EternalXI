@@ -40,6 +40,7 @@ class _RewardsEntryScreenState extends State<RewardsEntryScreen> {
     final leagues = context.watch<LeaguesController>();
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(context.l10n.rewards),
         bottom: PreferredSize(

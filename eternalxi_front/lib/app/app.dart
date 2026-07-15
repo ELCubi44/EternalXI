@@ -432,6 +432,17 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
     ));
   }
 
+  /// Path actual sin tumbar el arranque (GoRouter puede ir vacio un frame).
+  static String _safeRoutePath() {
+    try {
+      final config = appRouter.routerDelegate.currentConfiguration;
+      if (config.isEmpty) return '/';
+      return config.uri.path;
+    } catch (_) {
+      return '/';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final preferences = context.watch<UserPreferencesController>();
@@ -443,7 +454,7 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       localeResolutionCallback: AppLocalizations.localeResolutionCallback,
-      // Trial: look oscuro negro + fondo atmosferico en toda la app.
+      // Look oscuro negro; estadio N solo en Fantasy / modo / perfil.
       themeMode: ThemeMode.dark,
       theme: _lightTheme,
       darkTheme: _theme,
@@ -462,16 +473,39 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
             navigator.pop();
           }
         },
-        // Fondo N en toda la app. El splash de entrada lo tapa con su propio arte
-        // (dos personajes) mediante scaffold e imagen opacos.
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            const FantasyAtmosphereBackground(),
-            XiTypographyScope(
-              child: child ?? const SizedBox.shrink(),
-            ),
-          ],
+        child: ListenableBuilder(
+          listenable: appRouter.routerDelegate,
+          builder: (context, _) {
+            final path = _safeRoutePath();
+            final showAtmosphere =
+                FantasyAtmosphereBackground.appliesTo(path);
+            final baseTheme = Theme.of(context);
+            // MaterialPage usa colorScheme.surface: si es opaco tapa el estadio.
+            final pageTheme = showAtmosphere
+                ? baseTheme.copyWith(
+                    colorScheme: baseTheme.colorScheme.copyWith(
+                      surface: Colors.transparent,
+                      surfaceContainerLowest: Colors.transparent,
+                    ),
+                  )
+                : baseTheme;
+
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                if (showAtmosphere)
+                  const FantasyAtmosphereBackground()
+                else
+                  const ColoredBox(color: Color(0xFF0A0A0A)),
+                Theme(
+                  data: pageTheme,
+                  child: XiTypographyScope(
+                    child: child ?? const SizedBox.shrink(),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

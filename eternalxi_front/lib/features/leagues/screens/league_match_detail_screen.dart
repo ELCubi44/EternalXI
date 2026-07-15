@@ -443,7 +443,7 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
     final payload = _payload;
 
     return Scaffold(
-      backgroundColor: colorScheme.surfaceContainerLowest,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(
           _appBarTitle(),

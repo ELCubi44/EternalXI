@@ -123,6 +123,7 @@ class _LeagueRewardsScreenState extends State<LeagueRewardsScreen>
           final theme = Theme.of(context);
 
           return Scaffold(
+            backgroundColor: Colors.transparent,
             appBar: AppBar(
               title: Text(context.l10n.leagueRewards),
               bottom: PreferredSize(

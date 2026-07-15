@@ -10,7 +10,10 @@ extension XiThemeExtension on BuildContext {
   Color get xiBackground =>
       isXiDark ? Colors.transparent : XiColors.ivoryUniform;
 
-  Color get xiCardSurface => isXiDark ? XiColors.navyBlue : XiColors.warmWhite;
+  /// En oscuro semi-transparente para que se vea el estadio N detrás.
+  Color get xiCardSurface => isXiDark
+      ? const Color(0xCC1A1A1A)
+      : XiColors.warmWhite;
 
   Color get xiCardElevated =>
       isXiDark ? XiColors.surfaceElevated : XiColors.warmWhite;
@@ -56,31 +59,31 @@ extension XiThemeExtension on BuildContext {
       : [XiColors.warmWhite, const Color(0xFFF5EDD8)];
 
   List<Color> get xiCompactCardGradient => isXiDark
-      ? [const Color(0xFF1A1A1A), const Color(0xFF0A0A0A)]
+      ? [const Color(0xCC1A1A1A), const Color(0x990A0A0A)]
       : [XiColors.warmWhite, const Color(0xFFFFF3DC)];
 
   List<Color> get xiBudgetBarGradient => isXiDark
-      ? [const Color(0xFF1A1A1A), XiColors.surfaceContainer]
+      ? [const Color(0xCC1A1A1A), const Color(0xB3111111)]
       : [XiColors.warmWhite, const Color(0xFFFFF0D4)];
 
   List<Color> get xiStandingDefaultGradient => isXiDark
-      ? [const Color(0xFF141414), const Color(0xFF0A0A0A)]
+      ? [const Color(0xCC141414), const Color(0x990A0A0A)]
       : [XiColors.warmWhite, const Color(0xFFFFF6E8)];
 
   List<Color> get xiStandingGoldGradient => isXiDark
-      ? [const Color(0xFF1E1A10), const Color(0xFF12100A)]
+      ? [const Color(0xCC1E1A10), const Color(0x9912100A)]
       : [const Color(0xFFFFF8E8), const Color(0xFFFFEEC8)];
 
   List<Color> get xiStandingSilverGradient => isXiDark
-      ? [const Color(0xFF18191E), const Color(0xFF0F1014)]
+      ? [const Color(0xCC18191E), const Color(0x990F1014)]
       : [const Color(0xFFF4F6F8), const Color(0xFFE8ECF0)];
 
   List<Color> get xiStandingBronzeGradient => isXiDark
-      ? [const Color(0xFF1A1208), const Color(0xFF100C06)]
+      ? [const Color(0xCC1A1208), const Color(0x99100C06)]
       : [const Color(0xFFFFF4E8), const Color(0xFFFFE8D0)];
 
   List<Color> get xiStandingMeGradient => isXiDark
-      ? [const Color(0xFF1C1C1C), const Color(0xFF0E0E0E)]
+      ? [const Color(0xCC1C1C1C), const Color(0x990E0E0E)]
       : [const Color(0xFFEEF3FF), const Color(0xFFE0E9FF)];
 
   // ── Nav / iconos ──────────────────────────────────────────────────────────
