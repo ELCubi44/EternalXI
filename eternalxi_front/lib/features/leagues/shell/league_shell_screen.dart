@@ -23,7 +23,6 @@ import 'package:eternal_xi/features/leagues/widgets/league_notifications_panel.d
 import 'package:eternal_xi/features/leagues/widgets/league_season_wrap_overlay.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_shell_budget_bar.dart';
 import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.dart';
-import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:eternal_xi/shared/widgets/league_settings_icon.dart';
 import 'package:eternal_xi/shared/widgets/notification_bell_icon.dart';
 import 'package:eternal_xi/shared/widgets/user_tokens_action.dart';
@@ -115,18 +114,12 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
           confirmLeaveLineupIfNeeded: _confirmLeaveLineupIfNeeded,
           child: Scaffold(
             backgroundColor: Colors.transparent,
-            body: Stack(
-              fit: StackFit.expand,
+            body: Column(
               children: [
-                const FantasyAtmosphereBackground(),
-                Column(
-                  children: [
-                    _XiSettingsOverlayHeader(
-                      onBack: () => Navigator.of(routeContext).pop(),
-                    ),
-                    const Expanded(child: LeagueTabSettings()),
-                  ],
+                _XiSettingsOverlayHeader(
+                  onBack: () => Navigator.of(routeContext).pop(),
                 ),
+                const Expanded(child: LeagueTabSettings()),
               ],
             ),
           ),
@@ -317,11 +310,7 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
       },
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            const FantasyAtmosphereBackground(),
-            Column(
+        body: Column(
           children: [
             // ── Custom header ────────────────────────────────────────────
             _XiLeagueHeader(
@@ -385,8 +374,6 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
                         ),
                       ),
                     ),
-            ),
-          ],
             ),
           ],
         ),

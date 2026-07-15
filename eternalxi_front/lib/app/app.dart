@@ -4,6 +4,7 @@ import 'package:eternal_xi/app/theme/xi_typography.dart';
 import 'package:eternal_xi/core/notifications/push_notification_handler.dart';
 import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/profile/controller/user_preferences_controller.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -163,7 +164,7 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       useMaterial3: true,
       colorScheme: scheme,
       fontFamily: XiTypography.family,
-      scaffoldBackgroundColor: XiColors.background,
+      scaffoldBackgroundColor: Colors.transparent,
       cardColor: scheme.surfaceContainer,
       dividerColor: XiColors.divider,
       appBarTheme: AppBarTheme(
@@ -441,7 +442,8 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       localeResolutionCallback: AppLocalizations.localeResolutionCallback,
-      themeMode: preferences.appThemeMode,
+      // Trial: look oscuro negro + fondo atmosferico en toda la app.
+      themeMode: ThemeMode.dark,
       theme: _lightTheme,
       darkTheme: _theme,
       routerConfig: appRouter,
@@ -459,8 +461,14 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
             navigator.pop();
           }
         },
-        child: XiTypographyScope(
-          child: child ?? const SizedBox.shrink(),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            const FantasyAtmosphereBackground(),
+            XiTypographyScope(
+              child: child ?? const SizedBox.shrink(),
+            ),
+          ],
         ),
       ),
     );

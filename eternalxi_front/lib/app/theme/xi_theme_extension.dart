@@ -6,8 +6,9 @@ extension XiThemeExtension on BuildContext {
   bool get isXiDark => Theme.of(this).brightness == Brightness.dark;
 
   // ── Fondos base ───────────────────────────────────────────────────────────
+  /// En oscuro es transparente para dejar ver el fondo atmosferico global.
   Color get xiBackground =>
-      isXiDark ? XiColors.nightBlue : XiColors.ivoryUniform;
+      isXiDark ? Colors.transparent : XiColors.ivoryUniform;
 
   Color get xiCardSurface => isXiDark ? XiColors.navyBlue : XiColors.warmWhite;
 
@@ -18,7 +19,7 @@ extension XiThemeExtension on BuildContext {
       isXiDark ? XiColors.surfaceContainer : const Color(0xFFF0E6D2);
 
   Color get xiSurfaceInset =>
-      isXiDark ? const Color(0xFF0D1525) : const Color(0xFFEDE4D0);
+      isXiDark ? const Color(0xFF0E0E0E) : const Color(0xFFEDE4D0);
 
   Color get xiChipBackground =>
       isXiDark ? XiColors.navyBlue.withValues(alpha: 0.8) : XiColors.warmWhite;
@@ -55,15 +56,15 @@ extension XiThemeExtension on BuildContext {
       : [XiColors.warmWhite, const Color(0xFFF5EDD8)];
 
   List<Color> get xiCompactCardGradient => isXiDark
-      ? [const Color(0xFF111D34), const Color(0xFF0A1020)]
+      ? [const Color(0xFF1A1A1A), const Color(0xFF0A0A0A)]
       : [XiColors.warmWhite, const Color(0xFFFFF3DC)];
 
   List<Color> get xiBudgetBarGradient => isXiDark
-      ? [const Color(0xFF152240), XiColors.surfaceContainer]
+      ? [const Color(0xFF1A1A1A), XiColors.surfaceContainer]
       : [XiColors.warmWhite, const Color(0xFFFFF0D4)];
 
   List<Color> get xiStandingDefaultGradient => isXiDark
-      ? [const Color(0xFF0D1525), const Color(0xFF080F1A)]
+      ? [const Color(0xFF141414), const Color(0xFF0A0A0A)]
       : [XiColors.warmWhite, const Color(0xFFFFF6E8)];
 
   List<Color> get xiStandingGoldGradient => isXiDark
@@ -79,7 +80,7 @@ extension XiThemeExtension on BuildContext {
       : [const Color(0xFFFFF4E8), const Color(0xFFFFE8D0)];
 
   List<Color> get xiStandingMeGradient => isXiDark
-      ? [const Color(0xFF0F1A35), const Color(0xFF0A1020)]
+      ? [const Color(0xFF1C1C1C), const Color(0xFF0E0E0E)]
       : [const Color(0xFFEEF3FF), const Color(0xFFE0E9FF)];
 
   // ── Nav / iconos ──────────────────────────────────────────────────────────

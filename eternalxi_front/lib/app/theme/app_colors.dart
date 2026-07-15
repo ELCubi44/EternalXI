@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 abstract final class XiColors {
   // --- Paleta principal ---
-  static const nightBlue = Color(0xFF101B35);
-  static const navyBlue = Color(0xFF173A63);
+  // Trial look oscuro en negro (antes night/navy azul).
+  static const nightBlue = Color(0xFF0A0A0A);
+  static const navyBlue = Color(0xFF1A1A1A);
   static const royalBlue = Color(0xFF2457C5);
   static const iceBlue = Color(0xFF8FD9FF);
   static const techCyan = Color(0xFF30D6E8);
@@ -20,16 +21,16 @@ abstract final class XiColors {
   static const magicPurple = Color(0xFF4B2E83);
   static const accentViolet = Color(0xFF9D6BFF);
   static const darkViolet = Color(0xFF2A1848);
-  static const uniformBlack = Color(0xFF111217);
-  static const steelGray = Color(0xFF59606D);
+  static const uniformBlack = Color(0xFF000000);
+  static const steelGray = Color(0xFF8A8F98);
   static const techLightGray = Color(0xFFDDE4EA);
 
   // --- Superficies UI (derivadas de la paleta) ---
   static const background = nightBlue;
-  static const surfaceCard = Color(0xFF152240); // navyBlue ligeramente más oscuro
-  static const surfaceElevated = Color(0xFF1C2E52);
-  static const surfaceContainer = Color(0xFF0D1628);
-  static const divider = Color(0xFF4A6490); // visible sobre fondos oscuros
+  static const surfaceCard = Color(0xFF161616);
+  static const surfaceElevated = Color(0xFF222222);
+  static const surfaceContainer = Color(0xFF111111);
+  static const divider = Color(0xFF3A3A3A);
 
   // --- Texto ---
   static const textPrimary = warmWhite;
@@ -68,13 +69,13 @@ abstract final class XiColors {
     surface: nightBlue,
     onSurface: warmWhite,
     surfaceContainerLowest: uniformBlack,
-    surfaceContainerLow: Color(0xFF0D1628),
-    surfaceContainer: Color(0xFF152240),
-    surfaceContainerHigh: Color(0xFF1C2E52),
-    surfaceContainerHighest: Color(0xFF233565),
+    surfaceContainerLow: Color(0xFF111111),
+    surfaceContainer: Color(0xFF161616),
+    surfaceContainerHigh: Color(0xFF222222),
+    surfaceContainerHighest: Color(0xFF2C2C2C),
     onSurfaceVariant: techLightGray,
-    outline: Color(0xFF6B8EC4),       // visible sobre todos los fondos oscuros
-    outlineVariant: Color(0xFF4A6490), // mismo que divider
+    outline: Color(0xFF6A6A6A),
+    outlineVariant: Color(0xFF3A3A3A),
     shadow: Colors.black,
     scrim: Colors.black,
     inverseSurface: ivoryUniform,
