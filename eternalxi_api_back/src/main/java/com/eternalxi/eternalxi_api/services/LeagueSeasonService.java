@@ -41,7 +41,7 @@ public class LeagueSeasonService {
      * si la temporada ya termino de forma natural).
      */
     public static String sqlVisibleInMyLeagues() {
-        return "l.cerrada_en IS NULL AND NOT (("
+        return " " + "l.cerrada_en IS NULL AND NOT (("
                 + sqlSeasonNaturallyCompleteOnLeagueAlias("l")
                 + ") AND COALESCE(("
                 + "SELECT MAX(pj.inicio_en) FROM partidos_jornada pj "

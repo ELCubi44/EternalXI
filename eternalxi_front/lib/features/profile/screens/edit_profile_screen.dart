@@ -274,60 +274,76 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: SafeArea(
                     bottom: false,
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 28),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      padding: const EdgeInsets.fromLTRB(12, 28, 12, 0),
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
                         children: [
-                          PendingNotificationBadge(
-                            count: pending,
-                            child: AccountLevelAvatarRing(
-                              nivel: progress?.nivel ?? user?.nivel ?? 1,
-                              xpEnNivel: progress?.xpEnNivel ?? 0,
-                              xpParaSiguiente:
-                                  progress?.xpParaSiguienteNivel ?? 100,
-                              ringStroke: 3,
-                              ringGap: 2.5,
-                              child: _ProfileAvatar(
-                                userId: userId,
-                                hasPhoto: user?.hasProfilePhoto ?? false,
-                                photoVersion: _photoVersion,
-                                initial: initial,
-                                colorScheme: colorScheme,
-                                theme: theme,
-                                onEditTap: userId == null
-                                    ? null
-                                    : () => _showPhotoSourcePicker(userId),
-                                size: 84,
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              PendingNotificationBadge(
+                                count: pending,
+                                child: AccountLevelAvatarRing(
+                                  nivel: progress?.nivel ?? user?.nivel ?? 1,
+                                  xpEnNivel: progress?.xpEnNivel ?? 0,
+                                  xpParaSiguiente:
+                                      progress?.xpParaSiguienteNivel ?? 100,
+                                  ringStroke: 3,
+                                  ringGap: 2.5,
+                                  child: _ProfileAvatar(
+                                    userId: userId,
+                                    hasPhoto: user?.hasProfilePhoto ?? false,
+                                    photoVersion: _photoVersion,
+                                    initial: initial,
+                                    colorScheme: colorScheme,
+                                    theme: theme,
+                                    onEditTap: userId == null
+                                        ? null
+                                        : () => _showPhotoSourcePicker(userId),
+                                    size: 84,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          XiText(
-                            user?.nickname ?? 'Jugador',
-                            style: XiTypography.lumiare(
-                              fontSize: 22,
-                              letterSpacing: 0.4,
-                              color: context.xiTextPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          if (userId != null)
-                            XiText(
-                              UserPublicTag.format(userId),
-                              style: XiTypography.lumiare(
-                                fontSize: 13,
-                                color: XiColors.classicGold,
+                              const SizedBox(height: 10),
+                              XiText(
+                                user?.nickname ?? 'Jugador',
+                                style: XiTypography.lumiare(
+                                  fontSize: 22,
+                                  letterSpacing: 0.4,
+                                  color: context.xiTextPrimary,
+                                ),
                               ),
-                            ),
-                          const SizedBox(height: 4),
-                          XiText(
-                            '${progress?.rango ?? 'Novato'} · ${progress?.xpEnNivel ?? 0}/${progress?.xpParaSiguienteNivel ?? 100} XP',
-                            style: XiTypography.lumiare(
-                              fontSize: 13,
-                              color: context.xiTextSecondary,
+                              const SizedBox(height: 4),
+                              if (userId != null)
+                                XiText(
+                                  UserPublicTag.format(userId),
+                                  style: XiTypography.lumiare(
+                                    fontSize: 13,
+                                    color: XiColors.classicGold,
+                                  ),
+                                ),
+                              const SizedBox(height: 4),
+                              XiText(
+                                '${progress?.rango ?? 'Novato'} · ${progress?.xpEnNivel ?? 0}/${progress?.xpParaSiguienteNivel ?? 100} XP',
+                                style: XiTypography.lumiare(
+                                  fontSize: 13,
+                                  color: context.xiTextSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                            ],
+                          ),
+                          Positioned(
+                            right: 8,
+                            bottom: 14,
+                            child: _FavoritePlayerSlot(
+                              loading: _loadingPublicProfile,
+                              favorite: _publicProfile?.jugadorFavorito,
+                              onTap: userId == null
+                                  ? null
+                                  : () => _openFavoritePlayerPicker(userId),
                             ),
                           ),
-                          const SizedBox(height: 14),
                         ],
                       ),
                     ),
@@ -340,44 +356,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
                   const SizedBox(height: 4),
-                  IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: PendingNotificationBadge(
-                            count: pending,
-                            child: _ProfileActionCard(
-                              icon: Icons.people_alt_rounded,
-                              label: l10n.friendsTitle,
-                              onTap: () => context.push(AppRoutes.profileFriends),
-                            ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: PendingNotificationBadge(
+                          count: pending,
+                          child: _ProfileActionCard(
+                            icon: Icons.people_alt_rounded,
+                            label: l10n.friendsTitle,
+                            onTap: () => context.push(AppRoutes.profileFriends),
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              _FavoritePlayerSlot(
-                                loading: _loadingPublicProfile,
-                                favorite: _publicProfile?.jugadorFavorito,
-                                onTap: userId == null
-                                    ? null
-                                    : () => _openFavoritePlayerPicker(userId),
-                              ),
-                              const SizedBox(height: 10),
-                              Expanded(
-                                child: _ProfileActionCard(
-                                  icon: Icons.home_rounded,
-                                  label: l10n.profileBackToTitle,
-                                  onTap: () => context.go(AppRoutes.splash),
-                                ),
-                              ),
-                            ],
-                          ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _ProfileActionCard(
+                          icon: Icons.home_rounded,
+                          label: l10n.profileBackToTitle,
+                          onTap: () => context.go(AppRoutes.splash),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 18),
                   Text(
@@ -716,7 +715,7 @@ class _FavoritePlayerSlot extends StatelessWidget {
   final UserPublicFavoritePlayer? favorite;
   final VoidCallback? onTap;
 
-  static const double _size = 64;
+  static const double _size = 52;
 
   @override
   Widget build(BuildContext context) {

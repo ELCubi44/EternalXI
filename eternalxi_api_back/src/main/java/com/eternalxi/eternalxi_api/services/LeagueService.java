@@ -202,8 +202,8 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
             FROM liga_participantes lp
             INNER JOIN ligas l ON l.id = lp.id_liga
             WHERE lp.id_usuario = ?
-              AND """ + LeagueSeasonService.sqlVisibleInMyLeagues() + """
-            """;
+              AND """
+            + LeagueSeasonService.sqlVisibleInMyLeagues();
 
     try (PreparedStatement ps = conn.prepareStatement(sql)) {
         ps.setLong(1, idUsuario);
@@ -356,7 +356,9 @@ private int countActiveOpenLeaguesForUser(Connection conn, Long idUsuario) throw
                     FROM liga_participantes lp
                     INNER JOIN ligas l ON l.id = lp.id_liga
                     WHERE lp.id_usuario = ?
-                      AND """ + LeagueSeasonService.sqlVisibleInMyLeagues() + """
+                      AND """
+                    + LeagueSeasonService.sqlVisibleInMyLeagues()
+                    + """
                     ORDER BY l.id DESC
                     """;
 
