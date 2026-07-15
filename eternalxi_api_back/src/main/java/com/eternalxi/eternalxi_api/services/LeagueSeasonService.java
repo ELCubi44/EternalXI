@@ -58,6 +58,14 @@ public class LeagueSeasonService {
                 + "AND COALESCE(jx.estado, '') <> 'FINALIZADA')";
     }
 
+    /**
+     * Estadísticas de carrera en perfil: ligas en marcha o finalizadas de forma natural.
+     * Excluye ligas cerradas por el administrador ({@code cerrada_en}).
+     */
+    public static String sqlLeagueEligibleForCareerStats(String leagueAlias) {
+        return leagueAlias + ".cerrada_en IS NULL";
+    }
+
     public boolean isSeasonNaturallyComplete(Connection conn, long idLiga) throws SQLException {
         String sql = """
                 SELECT 1

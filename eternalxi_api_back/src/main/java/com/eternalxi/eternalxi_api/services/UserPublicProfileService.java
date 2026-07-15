@@ -182,6 +182,7 @@ public class UserPublicProfileService {
     }
 
     private UserPublicStatsResponse loadStats(Connection conn, long userId) throws SQLException {
+        String eligibleLeague = LeagueSeasonService.sqlLeagueEligibleForCareerStats("l");
         String sql = """
                 SELECT
                     COALESCE(SUM(jpj.goles), 0) AS goles,
@@ -190,12 +191,13 @@ public class UserPublicProfileService {
                     COALESCE(SUM(CASE WHEN jpj.lesionado_en_partido = 1 THEN 1 ELSE 0 END), 0) AS lesiones,
                     COALESCE(SUM(jpj.tarjetas_amarillas + jpj.tarjetas_rojas), 0) AS sanciones
                 FROM liga_participantes lp
+                INNER JOIN ligas l ON l.id = lp.id_liga
                 INNER JOIN liga_jugadores lj
                   ON lj.id_liga = lp.id_liga
                  AND lj.id_usuario_dueno = lp.id_usuario
                 INNER JOIN jugadores_puntos_jornada jpj ON jpj.id_liga_jugador = lj.id
                 WHERE lp.id_usuario = ?
-                """;
+                  AND """ + eligibleLeague;
         int goles = 0;
         int asistencias = 0;
         int porteriasCero = 0;
@@ -220,7 +222,7 @@ public class UserPublicProfileService {
                 FROM liga_participantes lp
                 INNER JOIN ligas l ON l.id = lp.id_liga
                 WHERE lp.id_usuario = ?
-                  AND l.cerrada_en IS NULL
+                  AND """ + LeagueSeasonService.sqlLeagueEligibleForCareerStats("l") + """
                   AND """ + LeagueSeasonService.sqlSeasonNaturallyCompleteOnLeagueAlias("l") + """
                   AND lp.puntos_totales + COALESCE((
                       SELECT SUM(pb.puntos)
@@ -264,7 +266,7 @@ public class UserPublicProfileService {
                 FROM liga_participantes lp
                 INNER JOIN ligas l ON l.id = lp.id_liga
                 WHERE lp.id_usuario = ?
-                  AND l.cerrada_en IS NULL
+                  AND """ + LeagueSeasonService.sqlLeagueEligibleForCareerStats("l") + """
                   AND """ + LeagueSeasonService.sqlSeasonNaturallyCompleteOnLeagueAlias("l") + """
                 ORDER BY lp.id DESC
                 LIMIT 30
