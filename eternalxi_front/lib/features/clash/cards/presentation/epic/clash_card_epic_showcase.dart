@@ -1,7 +1,6 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/core/utils/league_asset_urls.dart';
-import 'package:eternal_xi/core/widgets/transparent_network_image.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_table.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
@@ -101,7 +100,6 @@ class _PortraitLayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rarity = entry.effectiveRarity;
-    final portraitHeight = compact ? 130.0 : 300.0;
     final top = compact ? 28.0 : 48.0;
 
     return Stack(
@@ -138,11 +136,14 @@ class _PortraitLayer extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: top + (compact ? 36 : 52),
-          left: compact ? 16 : 32,
-          right: compact ? 16 : 32,
-          height: portraitHeight,
-          child: _PlayerPortrait(entry: entry, compact: compact),
+          top: top + (compact ? 36 : 40),
+          left: compact ? 20 : 36,
+          right: compact ? 20 : 36,
+          bottom: compact ? 56 : 200,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: _PlayerPortrait(entry: entry, compact: compact),
+          ),
         ),
       ],
     );
@@ -270,22 +271,12 @@ class _PlayerPortrait extends StatelessWidget {
       return _InitialsFallback(name: entry.name);
     }
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.35),
-            blurRadius: compact ? 12 : 18,
-            offset: Offset(0, compact ? 6 : 10),
-          ),
-        ],
-      ),
-      child: TransparentNetworkImage(
-        url: url,
-        fit: BoxFit.contain,
-        alignment: Alignment.bottomCenter,
-        errorBuilder: (context) => _InitialsFallback(name: entry.name),
-      ),
+    return Image.network(
+      url,
+      fit: BoxFit.cover,
+      alignment: const Alignment(0, -0.15),
+      filterQuality: FilterQuality.high,
+      errorBuilder: (_, __, ___) => _InitialsFallback(name: entry.name),
     );
   }
 }
@@ -394,7 +385,7 @@ class _StatsPanel extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${entry.team} ù ${card.position.displayNameEs}',
+                              '${entry.team} ∑ ${card.position.displayNameEs}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.bodySmall?.copyWith(
@@ -404,7 +395,7 @@ class _StatsPanel extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '${card.style.displayNameEs} ∑ $levelLabel',
+                              '${card.style.displayNameEs} ù $levelLabel',
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: XiColors.classicGold,
                                 fontWeight: FontWeight.w700,
