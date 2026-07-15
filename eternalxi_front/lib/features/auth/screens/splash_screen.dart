@@ -118,14 +118,16 @@ class _SplashScreenState extends State<SplashScreen>
         ? nickname
         : null;
 
+    // Fondo opaco para tapar el estadio N global; solo se ve el arte de entrada.
     return Scaffold(
-      backgroundColor: XiColors.nightBlue,
+      backgroundColor: const Color(0xFF000000),
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: _sessionReady && _contentReady ? _enter : null,
         child: Stack(
           fit: StackFit.expand,
           children: [
+            const ColoredBox(color: Color(0xFF000000)),
             Image.asset(
               SplashScreen.splashArtAsset,
               fit: BoxFit.cover,
@@ -139,10 +141,10 @@ class _SplashScreenState extends State<SplashScreen>
                   end: Alignment.bottomCenter,
                   stops: [0.0, 0.52, 0.72, 1.0],
                   colors: [
-                    Color(0x1A101B35),
+                    Color(0x1A000000),
                     Colors.transparent,
-                    Color(0x99101B35),
-                    Color(0xE6101B35),
+                    Color(0x99000000),
+                    Color(0xE6000000),
                   ],
                 ),
               ),
