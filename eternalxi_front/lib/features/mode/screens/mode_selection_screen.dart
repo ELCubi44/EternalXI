@@ -66,16 +66,8 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
         : null;
 
     return Scaffold(
-      backgroundColor: context.xiBackground,
-      body: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: context.xiHeaderGradient,
-          ),
-        ),
-        child: SafeArea(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
           child: ProgressCelebrationOverlay(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -182,7 +174,6 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
               ],
             ),
           ),
-        ),
       ),
     );
   }

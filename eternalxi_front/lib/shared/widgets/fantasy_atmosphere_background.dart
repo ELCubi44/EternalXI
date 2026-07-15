@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Fondo atmosferico (estadio N) con tinte negro para la prueba de look oscuro.
+/// Fondo atmosferico (estadio N) visible en toda la app.
 class FantasyAtmosphereBackground extends StatelessWidget {
   const FantasyAtmosphereBackground({super.key});
 
@@ -14,22 +14,29 @@ class FantasyAtmosphereBackground extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           const ColoredBox(color: Color(0xFF000000)),
-          ColorFiltered(
-            colorFilter: const ColorFilter.matrix(<double>[
-              // Desatura y oscurece el azul del estadio hacia negro.
-              0.22, 0.22, 0.22, 0, 0,
-              0.22, 0.22, 0.22, 0, 0,
-              0.22, 0.22, 0.22, 0, 0,
-              0, 0, 0, 1, 0,
-            ]),
-            child: Image.asset(
-              assetPath,
-              fit: BoxFit.cover,
-              alignment: Alignment.center,
-              filterQuality: FilterQuality.medium,
+          Image.asset(
+            assetPath,
+            fit: BoxFit.cover,
+            alignment: Alignment.center,
+            filterQuality: FilterQuality.medium,
+            errorBuilder: (_, __, ___) => const ColoredBox(
+              color: Color(0xFF0A1020),
             ),
           ),
-          const ColoredBox(color: Color(0x99000000)),
+          // Velo suave: oscurece un poco sin matar el estadio.
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0x66000000),
+                  Color(0x33000000),
+                  Color(0x88000000),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

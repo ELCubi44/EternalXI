@@ -165,6 +165,7 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       colorScheme: scheme,
       fontFamily: XiTypography.family,
       scaffoldBackgroundColor: Colors.transparent,
+      canvasColor: Colors.transparent,
       cardColor: scheme.surfaceContainer,
       dividerColor: XiColors.divider,
       appBarTheme: AppBarTheme(
@@ -184,7 +185,7 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: XiColors.surfaceContainer,
+        backgroundColor: const Color(0xCC111111),
         indicatorColor: XiColors.royalBlue.withValues(alpha: 0.35),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {

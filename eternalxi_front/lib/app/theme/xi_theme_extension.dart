@@ -48,11 +48,11 @@ extension XiThemeExtension on BuildContext {
 
   // ── Gradientes ──────────────────────────────────────────────────────────
   List<Color> get xiHeaderGradient => isXiDark
-      ? [XiColors.navyBlue, XiColors.nightBlue]
+      ? [const Color(0xB31A1A1A), const Color(0x660A0A0A)]
       : [XiColors.warmWhite, XiColors.ivoryUniform];
 
   List<Color> get xiNavGradient => isXiDark
-      ? [XiColors.surfaceElevated, XiColors.nightBlue]
+      ? [const Color(0xCC222222), const Color(0x990A0A0A)]
       : [XiColors.warmWhite, const Color(0xFFF5EDD8)];
 
   List<Color> get xiCompactCardGradient => isXiDark
