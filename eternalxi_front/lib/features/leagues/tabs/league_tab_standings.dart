@@ -8,6 +8,7 @@ import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.d
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
 import 'package:eternal_xi/features/leagues/utils/league_jornada_points_display.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_standing_row_card.dart';
+import 'package:eternal_xi/features/profile/navigation/user_profile_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -201,6 +202,20 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
     );
   }
 
+  void _openProfile({
+    required int idUsuario,
+    required String nickname,
+  }) {
+    if (idUsuario <= 0) {
+      return;
+    }
+    UserProfileNavigation.openPublicProfile(
+      context,
+      userId: idUsuario,
+      nicknameHint: nickname,
+    );
+  }
+
   LeagueStandingRow _roundAsGlobalRow(LeagueRoundStandingRow round) {
     return LeagueStandingRow(
       posicion: round.posicion,
@@ -352,6 +367,12 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
                       row: row,
                       isFirstPlace: row.posicion == 1,
                       isCurrentUser: isMe,
+                      onAvatarTap: row.idUsuario <= 0
+                          ? null
+                          : () => _openProfile(
+                              idUsuario: row.idUsuario,
+                              nickname: row.nickname,
+                            ),
                       onPeerTap: shell == null || row.idUsuario <= 0
                           ? null
                           : () => _openPeer(
@@ -382,6 +403,12 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
                     showRoundFantasyPoints: true,
                     showRoundRewardPoints: selectedRound != null &&
                         leagueJornadaShowsGrantedPoints(selectedRound.estado),
+                    onAvatarTap: row.idUsuario <= 0
+                        ? null
+                        : () => _openProfile(
+                            idUsuario: row.idUsuario,
+                            nickname: row.nickname,
+                          ),
                     onPeerTap: shell == null || row.idUsuario <= 0
                         ? null
                         : () => _openPeer(

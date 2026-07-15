@@ -15,6 +15,7 @@ class LeagueStandingRowCard extends StatefulWidget {
     required this.isFirstPlace,
     required this.isCurrentUser,
     this.onPeerTap,
+    this.onAvatarTap,
     this.puntosFantasyJornada,
     this.puntosRecompensaJornada,
     this.showRoundFantasyPoints = true,
@@ -25,6 +26,7 @@ class LeagueStandingRowCard extends StatefulWidget {
   final bool isFirstPlace;
   final bool isCurrentUser;
   final VoidCallback? onPeerTap;
+  final VoidCallback? onAvatarTap;
   final int? puntosFantasyJornada;
   final int? puntosRecompensaJornada;
   final bool showRoundFantasyPoints;
@@ -80,51 +82,63 @@ class _LeagueStandingRowCardState extends State<LeagueStandingRowCard>
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: GestureDetector(
-        onTapDown: widget.onPeerTap != null ? (_) => _press.forward() : null,
-        onTapUp: widget.onPeerTap != null
-            ? (_) {
-                _press.reverse();
-                widget.onPeerTap!();
-              }
-            : null,
-        onTapCancel: widget.onPeerTap != null ? () => _press.reverse() : null,
-        child: AnimatedBuilder(
-          animation: _scale,
-          builder: (_, child) =>
-              Transform.scale(scale: _scale.value, child: child),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: medal.gradient,
-              ),
-              border: Border.all(color: medal.border, width: medal.borderWidth),
-              boxShadow: [
-                if (medal.glow != Colors.transparent)
-                  BoxShadow(
-                    color: medal.glow.withValues(alpha: 0.28),
-                    blurRadius: 14,
-                    offset: const Offset(0, 4),
-                  ),
-              ],
+      child: AnimatedBuilder(
+        animation: _scale,
+        builder: (_, child) => Transform.scale(scale: _scale.value, child: child),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: medal.gradient,
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _PosBadge(position: pos, medal: medal),
-                  const SizedBox(width: 10),
-                  _Avatar(
+            border: Border.all(color: medal.border, width: medal.borderWidth),
+            boxShadow: [
+              if (medal.glow != Colors.transparent)
+                BoxShadow(
+                  color: medal.glow.withValues(alpha: 0.28),
+                  blurRadius: 14,
+                  offset: const Offset(0, 4),
+                ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _PeerTapTarget(
+                  enabled: widget.onPeerTap != null,
+                  onTap: widget.onPeerTap,
+                  onPressStart: widget.onPeerTap != null
+                      ? () => _press.forward()
+                      : null,
+                  onPressEnd: widget.onPeerTap != null
+                      ? () => _press.reverse()
+                      : null,
+                  child: _PosBadge(position: pos, medal: medal),
+                ),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: widget.onAvatarTap,
+                  child: _Avatar(
                     nickname: row.nickname,
                     imageUrl: row.resolvedFotoUsuarioUrl(),
                     ringColor: medal.ring,
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _PeerTapTarget(
+                    enabled: widget.onPeerTap != null,
+                    onTap: widget.onPeerTap,
+                    onPressStart: widget.onPeerTap != null
+                        ? () => _press.forward()
+                        : null,
+                    onPressEnd: widget.onPeerTap != null
+                        ? () => _press.reverse()
+                        : null,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
@@ -165,8 +179,18 @@ class _LeagueStandingRowCardState extends State<LeagueStandingRowCard>
                       ],
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
+                ),
+                const SizedBox(width: 8),
+                _PeerTapTarget(
+                  enabled: widget.onPeerTap != null,
+                  onTap: widget.onPeerTap,
+                  onPressStart: widget.onPeerTap != null
+                      ? () => _press.forward()
+                      : null,
+                  onPressEnd: widget.onPeerTap != null
+                      ? () => _press.reverse()
+                      : null,
+                  child: Text(
                     pointsText,
                     style: TextStyle(
                       fontFamily: 'Lumiare',
@@ -178,12 +202,45 @@ class _LeagueStandingRowCardState extends State<LeagueStandingRowCard>
                       shadows: medal.ptsShadow,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PeerTapTarget extends StatelessWidget {
+  const _PeerTapTarget({
+    required this.enabled,
+    required this.child,
+    this.onTap,
+    this.onPressStart,
+    this.onPressEnd,
+  });
+
+  final bool enabled;
+  final Widget child;
+  final VoidCallback? onTap;
+  final VoidCallback? onPressStart;
+  final VoidCallback? onPressEnd;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!enabled || onTap == null) {
+      return child;
+    }
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: (_) => onPressStart?.call(),
+      onTapUp: (_) {
+        onPressEnd?.call();
+        onTap?.call();
+      },
+      onTapCancel: () => onPressEnd?.call(),
+      child: child,
     );
   }
 }
