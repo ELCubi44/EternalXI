@@ -14,6 +14,7 @@ import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/shared/widgets/pending_notification_badge.dart';
 import 'package:eternal_xi/features/profile/controller/profile_controller.dart';
 import 'package:eternal_xi/features/profile/widgets/account_level_display.dart';
+import 'package:eternal_xi/features/profile/widgets/favorite_player_slot.dart';
 import 'package:eternal_xi/shared/widgets/app_loading_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -336,7 +337,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           Positioned(
                             right: 8,
                             bottom: 14,
-                            child: _FavoritePlayerSlot(
+                            child: FavoritePlayerSlot(
                               loading: _loadingPublicProfile,
                               favorite: _publicProfile?.jugadorFavorito,
                               onTap: userId == null
@@ -699,90 +700,6 @@ class _AvatarPlaceholder extends StatelessWidget {
                   color: colorScheme.onPrimaryContainer,
                 ),
               ),
-      ),
-    );
-  }
-}
-
-class _FavoritePlayerSlot extends StatelessWidget {
-  const _FavoritePlayerSlot({
-    required this.loading,
-    required this.favorite,
-    required this.onTap,
-  });
-
-  final bool loading;
-  final UserPublicFavoritePlayer? favorite;
-  final VoidCallback? onTap;
-
-  static const double _size = 80;
-
-  @override
-  Widget build(BuildContext context) {
-    final hasPhoto = favorite?.photoUrl?.isNotEmpty == true;
-
-    return InkWell(
-      onTap: onTap,
-      child: SizedBox(
-        height: _size,
-        child: Center(
-          child: loading
-              ? SizedBox(
-                  width: _size,
-                  height: _size,
-                  child: const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                )
-              : hasPhoto
-              ? Image.network(
-                  favorite!.photoUrl!,
-                  width: _size,
-                  height: _size,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => _emptySlot(context),
-                )
-              : _emptySlot(context),
-        ),
-      ),
-    );
-  }
-
-  Widget _emptySlot(BuildContext context) {
-    return SizedBox(
-      width: _size,
-      height: _size,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: context.xiTextSecondary.withValues(alpha: 0.22),
-              shape: BoxShape.circle,
-            ),
-          ),
-          Icon(
-            Icons.person_rounded,
-            size: 34,
-            color: context.xiTextSecondary.withValues(alpha: 0.55),
-          ),
-          Container(
-            width: 22,
-            height: 22,
-            decoration: BoxDecoration(
-              color: context.xiCardSurface,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: context.xiTextSecondary.withValues(alpha: 0.35),
-              ),
-            ),
-            child: Icon(
-              Icons.add_rounded,
-              size: 16,
-              color: context.xiTextSecondary.withValues(alpha: 0.85),
-            ),
-          ),
-        ],
       ),
     );
   }

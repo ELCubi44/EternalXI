@@ -11,6 +11,7 @@ import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/leagues/screens/participant_lineup_history_screen.dart';
 import 'package:eternal_xi/features/profile/widgets/account_level_display.dart';
 import 'package:eternal_xi/features/profile/widgets/achievements_tab.dart';
+import 'package:eternal_xi/features/profile/widgets/favorite_player_slot.dart';
 import 'package:eternal_xi/shared/widgets/user_profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -175,7 +176,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
       userId: profile.id,
       photoPath: profile.foto,
       nickname: profile.nickname,
-      size: 96,
+      size: 84,
     );
 
     if (progress != null) {
@@ -183,38 +184,56 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
         nivel: progress.nivel,
         xpEnNivel: progress.xpEnNivel,
         xpParaSiguiente: progress.xpParaSiguienteNivel,
+        ringStroke: 3,
+        ringGap: 2.5,
         child: avatar,
       );
     }
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       child: Column(
         children: [
-          Center(child: avatar),
-          const SizedBox(height: 12),
-          Center(
-            child: Text(
-              profile.nickname,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800,
+          Stack(
+            alignment: Alignment.bottomCenter,
+            clipBehavior: Clip.none,
+            children: [
+              Column(
+                children: [
+                  Center(child: avatar),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: Text(
+                      profile.nickname,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Center(
+                    child: Text(
+                      UserPublicTag.format(profile.id),
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: XiColors.classicGold,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                ],
               ),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Center(
-            child: Text(
-              UserPublicTag.format(profile.id),
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: XiColors.classicGold,
-                fontWeight: FontWeight.w700,
+              Positioned(
+                right: 8,
+                bottom: 14,
+                child: FavoritePlayerSlot(
+                  loading: _loading,
+                  favorite: profile.jugadorFavorito,
+                  showAddPlaceholder: false,
+                ),
               ),
-            ),
+            ],
           ),
-          if (profile.jugadorFavorito != null) ...[
-            const SizedBox(height: 16),
-            _FavoritePlayerCard(player: profile.jugadorFavorito!),
-          ],
           _buildFriendAction(theme),
           const SizedBox(height: 8),
         ],
@@ -413,74 +432,6 @@ class _StatTile extends StatelessWidget {
               label,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: context.xiTextSecondary,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _FavoritePlayerCard extends StatelessWidget {
-  const _FavoritePlayerCard({required this.player});
-
-  final UserPublicFavoritePlayer player;
-
-  static const double _photoSize = 80;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            if (player.photoUrl != null)
-              Image.network(
-                player.photoUrl!,
-                width: _photoSize,
-                height: _photoSize,
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => SizedBox(
-                  width: _photoSize,
-                  height: _photoSize,
-                  child: const Icon(
-                    Icons.sports_soccer_rounded,
-                    size: 48,
-                  ),
-                ),
-              )
-            else
-              SizedBox(
-                width: _photoSize,
-                height: _photoSize,
-                child: const Icon(Icons.sports_soccer_rounded, size: 48),
-              ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Jugador favorito',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: context.xiTextSecondary,
-                    ),
-                  ),
-                  Text(
-                    player.nombre,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  if (player.equipo.isNotEmpty)
-                    Text(
-                      player.equipo,
-                      style: theme.textTheme.bodySmall,
-                    ),
-                ],
               ),
             ),
           ],
