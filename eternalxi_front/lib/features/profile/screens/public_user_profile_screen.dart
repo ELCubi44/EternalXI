@@ -199,14 +199,13 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
       children: [
         Center(child: avatar),
         const SizedBox(height: 10),
-        Stack(
-          clipBehavior: Clip.none,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Padding(
-                  padding: EdgeInsets.only(right: showsFavorite ? 76 : 0),
+                Expanded(
                   child: Column(
                     children: [
                       Center(
@@ -229,41 +228,37 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                           ),
                         ),
                       ),
-                      _buildFriendAction(theme),
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _StatTile(
-                        label: 'Ligas ganadas',
-                        value: '${profile.stats.ligasGanadas}',
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _StatTile(
-                        label: 'Goles',
-                        value: '${profile.stats.goles}',
-                        roundTopCorners: !showsFavorite,
-                      ),
-                    ),
-                  ],
+                if (showsFavorite)
+                  FavoritePlayerSlot(
+                    loading: false,
+                    favorite: favorite,
+                    showAddPlaceholder: false,
+                  ),
+              ],
+            ),
+            _buildFriendAction(theme),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _StatTile(
+                    label: 'Ligas ganadas',
+                    value: '${profile.stats.ligasGanadas}',
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _StatTile(
+                    label: 'Goles',
+                    value: '${profile.stats.goles}',
+                    roundTopCorners: !showsFavorite,
+                  ),
                 ),
               ],
             ),
-            if (showsFavorite)
-              Positioned(
-                right: 0,
-                bottom: _StatTile.height,
-                child: FavoritePlayerSlot(
-                  loading: false,
-                  favorite: favorite,
-                  showAddPlaceholder: false,
-                ),
-              ),
           ],
         ),
         const SizedBox(height: 8),
