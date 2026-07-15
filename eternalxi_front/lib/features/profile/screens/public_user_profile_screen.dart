@@ -169,9 +169,11 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     );
   }
 
-  Widget _buildPrincipalHeader(ThemeData theme) {
+  Widget _buildPrincipalTab(ThemeData theme) {
     final profile = _profile!;
     final progress = _progress;
+    final favorite = profile.jugadorFavorito;
+    final showsFavorite = favorite?.photoUrl?.isNotEmpty == true;
 
     Widget avatar = UserProfileAvatar(
       userId: profile.id,
@@ -191,35 +193,116 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-      child: Column(
-        children: [
-          Center(child: avatar),
-          const SizedBox(height: 10),
-          Center(
-            child: XiText(
-              profile.nickname,
-              style: XiTypography.lumiare(
-                fontSize: 22,
-                letterSpacing: 0.4,
-                color: context.xiTextPrimary,
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(20, 12, 12, 28),
+      children: [
+        Center(child: avatar),
+        const SizedBox(height: 10),
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(right: showsFavorite ? 76 : 0),
+                  child: Column(
+                    children: [
+                      Center(
+                        child: XiText(
+                          profile.nickname,
+                          style: XiTypography.lumiare(
+                            fontSize: 22,
+                            letterSpacing: 0.4,
+                            color: context.xiTextPrimary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Center(
+                        child: XiText(
+                          UserPublicTag.format(profile.id),
+                          style: XiTypography.lumiare(
+                            fontSize: 13,
+                            color: XiColors.classicGold,
+                          ),
+                        ),
+                      ),
+                      _buildFriendAction(theme),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _StatTile(
+                        label: 'Ligas ganadas',
+                        value: '${profile.stats.ligasGanadas}',
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _StatTile(
+                        label: 'Goles',
+                        value: '${profile.stats.goles}',
+                        roundTopCorners: !showsFavorite,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            if (showsFavorite)
+              Positioned(
+                right: 0,
+                bottom: _StatTile.height,
+                child: FavoritePlayerSlot(
+                  loading: false,
+                  favorite: favorite,
+                  showAddPlaceholder: false,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: _StatTile(
+                label: 'Asistencias',
+                value: '${profile.stats.asistencias}',
               ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Center(
-            child: XiText(
-              UserPublicTag.format(profile.id),
-              style: XiTypography.lumiare(
-                fontSize: 13,
-                color: XiColors.classicGold,
+            const SizedBox(width: 8),
+            Expanded(
+              child: _StatTile(
+                label: 'Porter\u00edas a 0',
+                value: '${profile.stats.porteriasCero}',
               ),
             ),
-          ),
-          _buildFriendAction(theme),
-        ],
-      ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: _StatTile(
+                label: 'Lesiones',
+                value: '${profile.stats.lesiones}',
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _StatTile(
+                label: 'Sanciones',
+                value: '${profile.stats.sanciones}',
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -289,7 +372,6 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final showHeader = _tabs.index == 0;
 
     return Scaffold(
       backgroundColor: context.xiBackground,
@@ -318,22 +400,13 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
           : Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (showHeader) _buildPrincipalHeader(theme),
                 Expanded(
                   child: TabBarView(
                     controller: _tabs,
                     children: [
                       RefreshIndicator(
                         onRefresh: _load,
-                        child: ListView(
-                          padding: const EdgeInsets.fromLTRB(20, 0, 12, 28),
-                          children: [
-                            _StatsGrid(
-                              stats: _profile!.stats,
-                              favorite: _profile!.jugadorFavorito,
-                            ),
-                          ],
-                        ),
+                        child: _buildPrincipalTab(theme),
                       ),
                       RefreshIndicator(
                         onRefresh: _load,
@@ -356,110 +429,14 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
   }
 }
 
-class _StatsGrid extends StatelessWidget {
-  const _StatsGrid({
-    required this.stats,
-    this.favorite,
-  });
-
-  final UserPublicStats stats;
-  final UserPublicFavoritePlayer? favorite;
-
-  static const double _spacing = 8;
-
-  bool get _showsFavorite => favorite?.photoUrl?.isNotEmpty == true;
-
-  @override
-  Widget build(BuildContext context) {
-    final golesTile = _StatTile(
-      label: 'Goles',
-      value: '${stats.goles}',
-      roundTopCorners: !_showsFavorite,
-    );
-
-    return Column(
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: _StatTile(
-                label: 'Ligas ganadas',
-                value: '${stats.ligasGanadas}',
-              ),
-            ),
-            const SizedBox(width: _spacing),
-            Expanded(
-              child: _showsFavorite
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Transform.translate(
-                          offset: const Offset(14, 0),
-                          child: Align(
-                            alignment: Alignment.bottomRight,
-                            child: FavoritePlayerSlot(
-                              loading: false,
-                              favorite: favorite,
-                              showAddPlaceholder: false,
-                            ),
-                          ),
-                        ),
-                        golesTile,
-                      ],
-                    )
-                  : golesTile,
-            ),
-          ],
-        ),
-        const SizedBox(height: _spacing),
-        Row(
-          children: [
-            Expanded(
-              child: _StatTile(
-                label: 'Asistencias',
-                value: '${stats.asistencias}',
-              ),
-            ),
-            const SizedBox(width: _spacing),
-            Expanded(
-              child: _StatTile(
-                label: 'Porter\u00edas a 0',
-                value: '${stats.porteriasCero}',
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: _spacing),
-        Row(
-          children: [
-            Expanded(
-              child: _StatTile(
-                label: 'Lesiones',
-                value: '${stats.lesiones}',
-              ),
-            ),
-            const SizedBox(width: _spacing),
-            Expanded(
-              child: _StatTile(
-                label: 'Sanciones',
-                value: '${stats.sanciones}',
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
 class _StatTile extends StatelessWidget {
   const _StatTile({
     required this.label,
     required this.value,
     this.roundTopCorners = true,
   });
+
+  static const double height = 64;
 
   final String label;
   final String value;
@@ -484,7 +461,7 @@ class _StatTile extends StatelessWidget {
         ),
       ),
       child: SizedBox(
-        height: 64,
+        height: height,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Column(
