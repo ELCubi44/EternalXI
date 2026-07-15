@@ -1,14 +1,12 @@
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
-import 'package:eternal_xi/data/models/catalog_team_player.dart';
-import 'package:eternal_xi/data/models/season_summary.dart';
-import 'package:eternal_xi/data/services/leagues_api_service.dart';
+import 'package:eternal_xi/data/models/eligible_favorite_player.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// Selector de jugador favorito del catálogo Eterno Campeón.
+/// Selector de jugador favorito entre fichajes en ligas terminadas.
 class FavoritePlayerPickerScreen extends StatefulWidget {
   const FavoritePlayerPickerScreen({
     required this.userId,
@@ -27,7 +25,7 @@ class FavoritePlayerPickerScreen extends StatefulWidget {
 class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen> {
   final _searchCtrl = TextEditingController();
 
-  List<CatalogTeamPlayer> _players = const [];
+  List<EligibleFavoritePlayer> _players = const [];
   bool _loading = true;
   bool _saving = false;
   String? _error;
@@ -51,38 +49,12 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
       _error = null;
     });
     try {
-      final api = context.read<LeaguesApiService>();
-      final seasons = await api.fetchSeasonCatalog();
-      final season = _pickEternoCampeonSeason(seasons);
-      if (season == null) {
-        throw const ApiException('No hay temporada Eterno Campeón disponible.');
-      }
-      final teams = await api.fetchCatalogTeamsBySeason(seasonId: season.id);
-      final batches = await Future.wait(
-        teams.map(
-          (team) => api.getCatalogTeamPlayers(
-            idEquipo: team.id,
-            seasonId: season.id,
-          ),
-        ),
-      );
-      final seen = <int>{};
-      final merged = <CatalogTeamPlayer>[];
-      for (final batch in batches) {
-        for (final player in batch) {
-          if (seen.add(player.idJugador)) {
-            merged.add(player);
-          }
-        }
-      }
-      merged.sort(
-        (a, b) => a.displayName().toLowerCase().compareTo(
-          b.displayName().toLowerCase(),
-        ),
+      final rows = await context.read<UserApiService>().getFavoritePlayerOptions(
+        userId: widget.userId,
       );
       if (!mounted) return;
       setState(() {
-        _players = merged;
+        _players = rows;
         _loading = false;
       });
     } catch (e) {
@@ -94,20 +66,7 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
     }
   }
 
-  SeasonSummary? _pickEternoCampeonSeason(List<SeasonSummary> seasons) {
-    for (final s in seasons) {
-      final n = s.nombre.toLowerCase();
-      if (n.contains('eterno') && n.contains('campe')) {
-        return s;
-      }
-    }
-    for (final s in seasons) {
-      if (s.id == 2) return s;
-    }
-    return seasons.isNotEmpty ? seasons.first : null;
-  }
-
-  Future<void> _pickPlayer(CatalogTeamPlayer player) async {
+  Future<void> _pickPlayer(EligibleFavoritePlayer player) async {
     if (_saving) return;
     setState(() => _saving = true);
     try {
@@ -151,11 +110,11 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
     }
   }
 
-  List<CatalogTeamPlayer> get _filteredPlayers {
+  List<EligibleFavoritePlayer> get _filteredPlayers {
     final q = _searchCtrl.text.trim().toLowerCase();
     if (q.isEmpty) return _players;
     return _players
-        .where((p) => p.displayName().toLowerCase().contains(q))
+        .where((p) => p.nombre.toLowerCase().contains(q))
         .toList(growable: false);
   }
 
@@ -180,6 +139,18 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
           : Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  child: Text(
+                    'Solo aparecen jugadores que hayas fichado en ligas terminadas.',
+                    style: TextStyle(
+                      fontFamily: 'Lumiare',
+                      fontSize: 13,
+                      color: context.xiTextSecondary,
+                      height: 1.35,
+                    ),
+                  ),
+                ),
                 if (_error != null)
                   Padding(
                     padding: const EdgeInsets.all(16),
@@ -222,11 +193,17 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
                 Expanded(
                   child: _filteredPlayers.isEmpty
                       ? Center(
-                          child: Text(
-                            'No hay jugadores que coincidan.',
-                            style: TextStyle(
-                              fontFamily: 'Lumiare',
-                              color: context.xiTextSecondary,
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Text(
+                              _players.isEmpty
+                                  ? 'Aún no tienes jugadores elegibles. Ficha jugadores en una liga y espera a que termine.'
+                                  : 'No hay jugadores que coincidan.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'Lumiare',
+                                color: context.xiTextSecondary,
+                              ),
                             ),
                           ),
                         )
@@ -257,13 +234,13 @@ class _FavoritePlayerPickRow extends StatelessWidget {
     required this.onPick,
   });
 
-  final CatalogTeamPlayer player;
+  final EligibleFavoritePlayer player;
   final bool saving;
   final VoidCallback onPick;
 
   @override
   Widget build(BuildContext context) {
-    final photo = player.resolvedFotoJugadorUrl();
+    final photo = player.photoUrl;
 
     return Container(
       decoration: BoxDecoration(
@@ -285,14 +262,14 @@ class _FavoritePlayerPickRow extends StatelessWidget {
                     width: 48,
                     height: 48,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _photoFallback(),
+                    errorBuilder: (_, _, _) => _photoFallback(),
                   )
                 : _photoFallback(),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              player.displayName(),
+              player.nombre,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(

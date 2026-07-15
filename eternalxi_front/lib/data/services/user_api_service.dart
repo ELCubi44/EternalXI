@@ -7,6 +7,7 @@ import 'package:eternal_xi/data/models/user_notification_item.dart';
 import 'package:eternal_xi/data/models/user_preferences_response.dart';
 import 'package:eternal_xi/data/models/user_resources_response.dart';
 import 'package:eternal_xi/data/models/user_model.dart';
+import 'package:eternal_xi/data/models/eligible_favorite_player.dart';
 import 'package:eternal_xi/data/models/friendship.dart';
 import 'package:eternal_xi/data/models/user_public_profile.dart';
 import 'package:eternal_xi/data/models/user_search_result.dart';
@@ -328,6 +329,30 @@ class UserApiService {
         '${ApiConstants.users}/$userId/favorite-player',
         data: {'idJugador': idJugador},
       );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<List<EligibleFavoritePlayer>> getFavoritePlayerOptions({
+    required int userId,
+  }) async {
+    try {
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.users}/$userId/favorite-player-options',
+      );
+      final data = response.data;
+      if (data is! List) return const [];
+      return data
+          .whereType<Map>()
+          .map(
+            (row) => EligibleFavoritePlayer.fromJson(
+              row is Map<String, dynamic>
+                  ? row
+                  : Map<String, dynamic>.from(row),
+            ),
+          )
+          .toList(growable: false);
     } catch (e) {
       throw ApiException(_apiClient.extractErrorMessage(e));
     }

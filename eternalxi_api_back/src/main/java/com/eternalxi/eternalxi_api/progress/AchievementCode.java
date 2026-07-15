@@ -45,7 +45,20 @@ public enum AchievementCode {
 
     FRIEND_1("Primer colega", "Consigue tu primer amigo en Eternal XI", 35, AchievementCategory.SOCIAL),
     FRIEND_5("Mano extendida", "Ten 5 amigos en la plataforma", 80, AchievementCategory.SOCIAL),
-    FRIEND_15("Capitán social", "Ten 15 amigos en la plataforma", 150, AchievementCategory.SOCIAL);
+    FRIEND_15("Capitán social", "Ten 15 amigos en la plataforma", 150, AchievementCategory.SOCIAL),
+
+    FAVORITE_ROSTER_HALF(
+            "Mediatoteca",
+            "Ficha al menos el 50% de los jugadores del catálogo en ligas terminadas",
+            120,
+            AchievementCategory.CARDS
+    ),
+    FAVORITE_ROSTER_COMPLETE(
+            "Colección total",
+            "Ficha al 100% de los jugadores del catálogo en ligas terminadas",
+            250,
+            AchievementCategory.CARDS
+    );
 
     private final String title;
     private final String description;
@@ -200,6 +213,15 @@ public enum AchievementCode {
             case FRIEND_15 -> """
                     Llega a 15 amigos confirmados en Eternal XI. Un logro social para managers \
                     que disfrutan compitiendo con su gente.""";
+            case FAVORITE_ROSTER_HALF -> """
+                    Ficha jugadores distintos en ligas que hayan terminado de forma natural \
+                    (todas las jornadas finalizadas). Cuando hayas fichado al menos la mitad \
+                    del catálogo total en esas ligas, desbloqueas este logro. Cada jugador \
+                    cuenta una sola vez aunque lo hayas tenido en varias temporadas.""";
+            case FAVORITE_ROSTER_COMPLETE -> """
+                    Ficha todos los jugadores del catálogo al menos una vez en ligas terminadas. \
+                    Es el complemento del logro al 50%: necesitas haber sido propietario de cada \
+                    jugador en alguna liga que ya haya acabado.""";
         };
     }
 
@@ -218,6 +240,8 @@ public enum AchievementCode {
             case FRIEND_1 -> 1;
             case FRIEND_5 -> 5;
             case FRIEND_15 -> 15;
+            case FAVORITE_ROSTER_HALF -> 50;
+            case FAVORITE_ROSTER_COMPLETE -> 100;
             default -> null;
         };
     }

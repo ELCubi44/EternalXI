@@ -1,6 +1,7 @@
 package com.eternalxi.eternalxi_api.services;
 
 import com.eternalxi.eternalxi_api.config.DBConnection;
+import com.eternalxi.eternalxi_api.dto.user.EligibleFavoritePlayerResponse;
 import com.eternalxi.eternalxi_api.dto.user.UserPublicFavoritePlayerResponse;
 import com.eternalxi.eternalxi_api.dto.user.UserPublicLeagueSummaryResponse;
 import com.eternalxi.eternalxi_api.dto.user.UserPublicProfileResponse;
@@ -20,9 +21,14 @@ import java.util.List;
 public class UserPublicProfileService {
 
     private final LeagueSeasonService leagueSeasonService;
+    private final AccountProgressService accountProgressService;
 
-    public UserPublicProfileService(LeagueSeasonService leagueSeasonService) {
+    public UserPublicProfileService(
+            LeagueSeasonService leagueSeasonService,
+            AccountProgressService accountProgressService
+    ) {
         this.leagueSeasonService = leagueSeasonService;
+        this.accountProgressService = accountProgressService;
     }
 
     public UserPublicProfileResponse loadProfile(Long viewerId, Long targetId) throws SQLException {
@@ -85,26 +91,64 @@ public class UserPublicProfileService {
         }
         try (Connection conn = DBConnection.getConnection()) {
             if (idJugador != null && idJugador > 0) {
-                try (PreparedStatement check = conn.prepareStatement(
-                        "SELECT 1 FROM jugadores WHERE id = ? LIMIT 1")) {
-                    check.setLong(1, idJugador);
-                    try (ResultSet rs = check.executeQuery()) {
-                        if (!rs.next()) {
-                            throw new IllegalArgumentException("Jugador no encontrado");
-                        }
-                    }
+                if (!isEligibleFavoritePlayer(conn, userId, idJugador)) {
+                    throw new IllegalArgumentException(
+                            "Solo puedes elegir jugadores que hayas fichado en una liga terminada"
+                    );
                 }
             }
             try (PreparedStatement ps = conn.prepareStatement(
                     "UPDATE usuarios SET id_jugador_favorito = ? WHERE id = ?")) {
                 if (idJugador == null || idJugador <= 0) {
-                    ps.setNull(1, java.sql.Types.BIGINT);
+                    ps.setNull(1, java.sql.Types.INTEGER);
                 } else {
                     ps.setLong(1, idJugador);
                 }
                 ps.setLong(2, userId);
                 ps.executeUpdate();
             }
+            accountProgressService.syncFavoriteRosterAchievements(
+                    conn,
+                    userId,
+                    countSignedPlayersInFinishedLeagues(conn, userId),
+                    countCatalogPlayers(conn)
+            );
+        }
+    }
+
+    public List<EligibleFavoritePlayerResponse> listEligibleFavoritePlayers(Long userId) throws SQLException {
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("Usuario no valido");
+        }
+        try (Connection conn = DBConnection.getConnection()) {
+            return loadEligibleFavoritePlayers(conn, userId);
+        }
+    }
+
+    public int countSignedPlayersInFinishedLeagues(Connection conn, long userId) throws SQLException {
+        String sql = """
+                SELECT COUNT(DISTINCT lj.id_jugador) AS total
+                FROM liga_participantes lp
+                INNER JOIN ligas l ON l.id = lp.id_liga
+                INNER JOIN liga_jugadores lj
+                  ON lj.id_liga = lp.id_liga
+                 AND lj.id_usuario_dueno = lp.id_usuario
+                WHERE lp.id_usuario = ?
+                  AND l.cerrada_en IS NULL
+                  AND """
+                + LeagueSeasonService.sqlSeasonNaturallyCompleteOnLeagueAlias("l");
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt("total") : 0;
+            }
+        }
+    }
+
+    public int countCatalogPlayers(Connection conn) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) AS total FROM jugadores");
+             ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getInt("total") : 0;
         }
     }
 
@@ -136,7 +180,9 @@ public class UserPublicProfileService {
                     COALESCE(SUM(CASE WHEN jpj.lesionado_en_partido = 1 THEN 1 ELSE 0 END), 0) AS lesiones,
                     COALESCE(SUM(jpj.tarjetas_amarillas + jpj.tarjetas_rojas), 0) AS sanciones
                 FROM liga_participantes lp
-                INNER JOIN liga_jugadores lj ON lj.id_liga_participante = lp.id
+                INNER JOIN liga_jugadores lj
+                  ON lj.id_liga = lp.id_liga
+                 AND lj.id_usuario_dueno = lp.id_usuario
                 INNER JOIN jugadores_puntos_jornada jpj ON jpj.id_liga_jugador = lj.id
                 WHERE lp.id_usuario = ?
                 """;
@@ -267,10 +313,13 @@ public class UserPublicProfileService {
                     return null;
                 }
                 long id = rs.getLong("id");
+                String nombre = rs.getString("nombre");
+                String fotoRaw = rs.getString("foto");
+                String foto = LeagueAssetUrls.coercePublicAsset(fotoRaw, LeagueAssetUrls.player(id));
                 return new UserPublicFavoritePlayerResponse(
                         id,
-                        rs.getString("nombre"),
-                        LeagueAssetUrls.player(id),
+                        nombre,
+                        foto,
                         rs.getString("equipo")
                 );
             }
@@ -310,4 +359,71 @@ public class UserPublicProfileService {
     }
 
     private record FriendshipRelation(String estado, Long idAmistad, boolean soySolicitante) {}
+
+    private boolean isEligibleFavoritePlayer(Connection conn, long userId, long idJugador)
+            throws SQLException {
+        String sql = """
+                SELECT 1
+                FROM liga_participantes lp
+                INNER JOIN ligas l ON l.id = lp.id_liga
+                INNER JOIN liga_jugadores lj
+                  ON lj.id_liga = lp.id_liga
+                 AND lj.id_usuario_dueno = lp.id_usuario
+                WHERE lp.id_usuario = ?
+                  AND lj.id_jugador = ?
+                  AND l.cerrada_en IS NULL
+                  AND """
+                + LeagueSeasonService.sqlSeasonNaturallyCompleteOnLeagueAlias("l")
+                + """
+                LIMIT 1
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            ps.setLong(2, idJugador);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    private List<EligibleFavoritePlayerResponse> loadEligibleFavoritePlayers(Connection conn, long userId)
+            throws SQLException {
+        String sql = """
+                SELECT DISTINCT j.id,
+                       COALESCE(NULLIF(TRIM(j.pila), ''), j.nombre) AS nombre,
+                       COALESCE(j.foto, '') AS foto,
+                       COALESCE(e.nombre, '') AS equipo
+                FROM liga_participantes lp
+                INNER JOIN ligas l ON l.id = lp.id_liga
+                INNER JOIN liga_jugadores lj
+                  ON lj.id_liga = lp.id_liga
+                 AND lj.id_usuario_dueno = lp.id_usuario
+                INNER JOIN jugadores j ON j.id = lj.id_jugador
+                LEFT JOIN equipos e ON e.id = j.id_equipo
+                WHERE lp.id_usuario = ?
+                  AND l.cerrada_en IS NULL
+                  AND """
+                + LeagueSeasonService.sqlSeasonNaturallyCompleteOnLeagueAlias("l")
+                + """
+                ORDER BY nombre ASC
+                """;
+        List<EligibleFavoritePlayerResponse> rows = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    long id = rs.getLong("id");
+                    String fotoRaw = rs.getString("foto");
+                    String foto = LeagueAssetUrls.coercePublicAsset(fotoRaw, LeagueAssetUrls.player(id));
+                    rows.add(new EligibleFavoritePlayerResponse(
+                            id,
+                            rs.getString("nombre"),
+                            foto,
+                            rs.getString("equipo")
+                    ));
+                }
+            }
+        }
+        return rows;
+    }
 }

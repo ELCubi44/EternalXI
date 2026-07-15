@@ -38,6 +38,15 @@ public class UserPublicProfileController {
         }
     }
 
+    @GetMapping("/{id}/favorite-player-options")
+    public ResponseEntity<?> getFavoritePlayerOptions(@PathVariable Long id) throws SQLException {
+        try {
+            return ResponseEntity.ok(userPublicProfileService.listEligibleFavoritePlayers(id));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(new ApiMessageResponse(ex.getMessage()));
+        }
+    }
+
     @PatchMapping("/{id}/favorite-player")
     public ResponseEntity<?> updateFavoritePlayer(
             @PathVariable Long id,

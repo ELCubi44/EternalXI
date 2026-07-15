@@ -8,6 +8,7 @@ import com.eternalxi.eternalxi_api.progress.AccountLevelMath;
 import com.eternalxi.eternalxi_api.progress.AchievementCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -37,9 +38,14 @@ public class AccountProgressService {
     private static final int MIN_LEAGUE_PARTICIPANTS = 3;
 
     private final PushNotificationService pushNotificationService;
+    private final UserPublicProfileService userPublicProfileService;
 
-    public AccountProgressService(PushNotificationService pushNotificationService) {
+    public AccountProgressService(
+            PushNotificationService pushNotificationService,
+            @Lazy UserPublicProfileService userPublicProfileService
+    ) {
         this.pushNotificationService = pushNotificationService;
+        this.userPublicProfileService = userPublicProfileService;
     }
 
     public void ensureSchema() throws SQLException {
@@ -226,6 +232,44 @@ public class AccountProgressService {
             }
 
             tryUnlock(conn, row.idUsuario(), AchievementCode.FIRST_LEAGUE, idLiga);
+            syncFavoriteRosterAchievements(
+                    conn,
+                    row.idUsuario(),
+                    userPublicProfileService.countSignedPlayersInFinishedLeagues(conn, row.idUsuario()),
+                    userPublicProfileService.countCatalogPlayers(conn)
+            );
+        }
+    }
+
+    public void syncFavoriteRosterAchievements(
+            Connection conn,
+            Long idUsuario,
+            int signedPlayers,
+            int catalogPlayers
+    ) throws SQLException {
+        if (idUsuario == null || catalogPlayers <= 0) {
+            return;
+        }
+        int percent = Math.min(100, (signedPlayers * 100) / catalogPlayers);
+        if (percent >= 50) {
+            tryUnlock(conn, idUsuario, AchievementCode.FAVORITE_ROSTER_HALF, null);
+        }
+        if (signedPlayers >= catalogPlayers) {
+            tryUnlock(conn, idUsuario, AchievementCode.FAVORITE_ROSTER_COMPLETE, null);
+        }
+    }
+
+    public void syncFavoriteRosterAchievements(Long idUsuario) throws SQLException {
+        if (idUsuario == null || idUsuario <= 0) {
+            return;
+        }
+        try (Connection conn = DBConnection.getConnection()) {
+            syncFavoriteRosterAchievements(
+                    conn,
+                    idUsuario,
+                    userPublicProfileService.countSignedPlayersInFinishedLeagues(conn, idUsuario),
+                    userPublicProfileService.countCatalogPlayers(conn)
+            );
         }
     }
 
@@ -662,11 +706,18 @@ public class AccountProgressService {
         int leagueWins = countLeagueWins(conn, idUsuario);
         int maxPacksInLeague = countMaxPackOpensInAnyLeague(conn, idUsuario);
         int friendCount = countAcceptedFriends(conn, idUsuario);
+        int signedPlayers = userPublicProfileService.countSignedPlayersInFinishedLeagues(conn, idUsuario);
+        int catalogPlayers = userPublicProfileService.countCatalogPlayers(conn);
+        int rosterPercent = catalogPlayers > 0
+                ? Math.min(100, (signedPlayers * 100) / catalogPlayers)
+                : 0;
         List<UserAchievementResponse> achievements = new ArrayList<>();
         for (AchievementCode def : AchievementCode.values()) {
             Instant at = unlocked.get(def.code());
             Integer target = def.progressTarget();
-            Integer actual = resolveProgressActual(def, target, leagueWins, maxPacksInLeague, friendCount);
+            Integer actual = resolveProgressActual(
+                    def, target, leagueWins, maxPacksInLeague, friendCount, rosterPercent
+            );
             achievements.add(UserAchievementResponse.fromDefinition(def, at != null, at, actual, target));
         }
         List<UserProgressEventResponse> pending = loadPendingEvents(conn, idUsuario);
@@ -805,7 +856,8 @@ public class AccountProgressService {
             Integer target,
             int leagueWins,
             int maxPacksInLeague,
-            int friendCount
+            int friendCount,
+            int rosterPercent
     ) {
         if (target == null) {
             return null;
@@ -817,6 +869,8 @@ public class AccountProgressService {
                     Math.min(maxPacksInLeague, target);
             case FRIEND_1, FRIEND_5, FRIEND_15 ->
                     Math.min(friendCount, target);
+            case FAVORITE_ROSTER_HALF, FAVORITE_ROSTER_COMPLETE ->
+                    Math.min(rosterPercent, target);
             default -> null;
         };
     }
