@@ -1,6 +1,7 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/app/theme/xi_typography.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/core/utils/user_public_tag.dart';
 import 'package:eternal_xi/data/models/user_progress_response.dart';
@@ -203,20 +204,22 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                   Center(child: avatar),
                   const SizedBox(height: 10),
                   Center(
-                    child: Text(
+                    child: XiText(
                       profile.nickname,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
+                      style: XiTypography.lumiare(
+                        fontSize: 22,
+                        letterSpacing: 0.4,
+                        color: context.xiTextPrimary,
                       ),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Center(
-                    child: Text(
+                    child: XiText(
                       UserPublicTag.format(profile.id),
-                      style: theme.textTheme.labelLarge?.copyWith(
+                      style: XiTypography.lumiare(
+                        fontSize: 13,
                         color: XiColors.classicGold,
-                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
@@ -319,7 +322,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
             ? null
             : TabBar(
                 controller: _tabs,
-                labelStyle: const TextStyle(fontFamily: 'Lumiare'),
+                labelStyle: XiTypography.lumiare(fontSize: 13),
                 tabs: const [
                   Tab(text: 'Principal'),
                   Tab(text: 'Ligas'),
@@ -407,7 +410,6 @@ class _StatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -422,15 +424,17 @@ class _StatTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            XiText(
               value,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w900,
+              style: XiTypography.lumiare(
+                fontSize: 16,
+                color: context.xiTextPrimary,
               ),
             ),
-            Text(
+            XiText(
               label,
-              style: theme.textTheme.labelSmall?.copyWith(
+              style: XiTypography.lumiare(
+                fontSize: 11,
                 color: context.xiTextSecondary,
               ),
             ),
