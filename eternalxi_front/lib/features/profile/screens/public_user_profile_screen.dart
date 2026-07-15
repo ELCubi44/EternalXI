@@ -218,7 +218,6 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
             ),
           ),
           _buildFriendAction(theme),
-          const SizedBox(height: 8),
         ],
       ),
     );
@@ -327,7 +326,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                       RefreshIndicator(
                         onRefresh: _load,
                         child: ListView(
-                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+                          padding: const EdgeInsets.fromLTRB(20, 0, 12, 28),
                           children: [
                             _StatsGrid(
                               stats: _profile!.stats,
@@ -381,7 +380,7 @@ class _StatsGrid extends StatelessWidget {
     return Column(
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: _StatTile(
@@ -396,12 +395,15 @@ class _StatsGrid extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: FavoritePlayerSlot(
-                            loading: false,
-                            favorite: favorite,
-                            showAddPlaceholder: false,
+                        Transform.translate(
+                          offset: const Offset(14, 0),
+                          child: Align(
+                            alignment: Alignment.bottomRight,
+                            child: FavoritePlayerSlot(
+                              loading: false,
+                              favorite: favorite,
+                              showAddPlaceholder: false,
+                            ),
                           ),
                         ),
                         golesTile,
