@@ -4,6 +4,8 @@ public record EligibleFavoritePlayerResponse(
         long idJugador,
         String nombre,
         String foto,
-        String equipo
+        long idEquipo,
+        String equipo,
+        String fotoEquipo
 ) {
 }

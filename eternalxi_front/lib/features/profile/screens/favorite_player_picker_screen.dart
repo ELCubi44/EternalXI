@@ -3,10 +3,11 @@ import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/eligible_favorite_player.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
+import 'package:eternal_xi/features/profile/widgets/favorite_picker_team_expand_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// Selector de jugador favorito entre alineaciones congeladas.
+/// Selector de jugador favorito (Eterno Campe\u00f3n, alineaciones congeladas).
 class FavoritePlayerPickerScreen extends StatefulWidget {
   const FavoritePlayerPickerScreen({
     required this.userId,
@@ -110,16 +111,34 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
     }
   }
 
-  List<EligibleFavoritePlayer> get _filteredPlayers {
+  List<FavoritePickerTeamGroup> get _filteredTeams {
     final q = _searchCtrl.text.trim().toLowerCase();
-    if (q.isEmpty) return _players;
-    return _players
-        .where((p) => p.nombre.toLowerCase().contains(q))
-        .toList(growable: false);
+    final all = groupEligibleFavoritePlayersByTeam(_players);
+    if (q.isEmpty) return all;
+
+    final out = <FavoritePickerTeamGroup>[];
+    for (final team in all) {
+      final teamMatches = team.nombreEquipo.toLowerCase().contains(q);
+      final matchedPlayers = teamMatches
+          ? team.players
+          : team.players
+                .where((p) => p.nombre.toLowerCase().contains(q))
+                .toList(growable: false);
+      if (matchedPlayers.isEmpty) continue;
+      final copy = FavoritePickerTeamGroup(
+        idEquipo: team.idEquipo,
+        nombreEquipo: team.nombreEquipo,
+        fotoEquipo: team.fotoEquipo,
+      )..players.addAll(matchedPlayers);
+      out.add(copy);
+    }
+    return out;
   }
 
   @override
   Widget build(BuildContext context) {
+    final teams = _filteredTeams;
+
     return Scaffold(
       backgroundColor: context.xiBackground,
       appBar: AppBar(
@@ -142,7 +161,7 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: Text(
-                    'Solo aparecen jugadores que hayas alineado en una jornada ya iniciada.',
+                    'Jugadores de Eterno Campe\u00f3n que hayas alineado en una jornada ya iniciada.',
                     style: TextStyle(
                       fontFamily: 'Lumiare',
                       fontSize: 13,
@@ -179,7 +198,7 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
                       color: context.xiTextPrimary,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Buscar jugador',
+                      hintText: 'Buscar jugador o equipo',
                       prefixIcon: const Icon(Icons.search_rounded),
                       filled: true,
                       fillColor: context.xiCardSurface,
@@ -191,14 +210,14 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
                   ),
                 ),
                 Expanded(
-                  child: _filteredPlayers.isEmpty
+                  child: teams.isEmpty
                       ? Center(
                           child: Padding(
                             padding: const EdgeInsets.all(24),
                             child: Text(
                               _players.isEmpty
-                                  ? 'A\u00fan no tienes jugadores elegibles. Alinea jugadores en una jornada que ya haya empezado.'
-                                  : 'No hay jugadores que coincidan.',
+                                  ? 'A\u00fan no tienes jugadores elegibles en Eterno Campe\u00f3n. Alinea jugadores en una jornada que ya haya empezado.'
+                                  : 'No hay jugadores o equipos que coincidan.',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontFamily: 'Lumiare',
@@ -209,100 +228,19 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
                         )
                       : ListView.separated(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                          itemCount: _filteredPlayers.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 8),
+                          itemCount: teams.length,
+                          separatorBuilder: (_, __) => const SizedBox(height: 10),
                           itemBuilder: (context, index) {
-                            final player = _filteredPlayers[index];
-                            return _FavoritePlayerPickRow(
-                              player: player,
+                            return FavoritePickerTeamExpandCard(
+                              group: teams[index],
                               saving: _saving,
-                              onPick: () => _pickPlayer(player),
+                              onPick: _pickPlayer,
                             );
                           },
                         ),
                 ),
               ],
             ),
-    );
-  }
-}
-
-class _FavoritePlayerPickRow extends StatelessWidget {
-  const _FavoritePlayerPickRow({
-    required this.player,
-    required this.saving,
-    required this.onPick,
-  });
-
-  final EligibleFavoritePlayer player;
-  final bool saving;
-  final VoidCallback onPick;
-
-  @override
-  Widget build(BuildContext context) {
-    final photo = player.photoUrl;
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: context.xiCompactCardGradient,
-        ),
-        border: Border.all(color: context.xiBorderSubtle),
-      ),
-      padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
-      child: Row(
-        children: [
-          ClipOval(
-            child: photo != null
-                ? Image.network(
-                    photo,
-                    width: 48,
-                    height: 48,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => _photoFallback(),
-                  )
-                : _photoFallback(),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              player.nombre,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontFamily: 'Lumiare',
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: context.xiTextPrimary,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          FilledButton.tonal(
-            onPressed: saving ? null : onPick,
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: const Text('Elegir'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _photoFallback() {
-    return ColoredBox(
-      color: XiColors.royalBlue.withValues(alpha: 0.12),
-      child: const SizedBox(
-        width: 48,
-        height: 48,
-        child: Icon(Icons.person_rounded, color: XiColors.royalBlue),
-      ),
     );
   }
 }
