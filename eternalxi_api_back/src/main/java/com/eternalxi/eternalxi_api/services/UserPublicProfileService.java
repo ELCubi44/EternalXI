@@ -250,7 +250,7 @@ public class UserPublicProfileService {
         String sql = """
                 SELECT lp.id AS id_lp, lp.id_liga, lp.puntos_totales,
                        COALESCE(l.nombre, CONCAT('Liga ', l.id)) AS nombre_liga,
-                       COALESCE(l.estado, '') AS estado_liga
+                       'FINALIZADA' AS estado_liga
                 FROM liga_participantes lp
                 INNER JOIN ligas l ON l.id = lp.id_liga
                 WHERE lp.id_usuario = ?
