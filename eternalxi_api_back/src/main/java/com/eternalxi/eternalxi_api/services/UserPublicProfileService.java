@@ -182,7 +182,6 @@ public class UserPublicProfileService {
     }
 
     private UserPublicStatsResponse loadStats(Connection conn, long userId) throws SQLException {
-        String eligibleLeague = LeagueSeasonService.sqlLeagueEligibleForCareerStats("l");
         String sql = """
                 SELECT
                     COALESCE(SUM(jpj.goles), 0) AS goles,
@@ -197,7 +196,8 @@ public class UserPublicProfileService {
                  AND lj.id_usuario_dueno = lp.id_usuario
                 INNER JOIN jugadores_puntos_jornada jpj ON jpj.id_liga_jugador = lj.id
                 WHERE lp.id_usuario = ?
-                  AND """ + eligibleLeague;
+                  AND"""
+                + LeagueSeasonService.sqlLeagueEligibleForCareerStats("l");
         int goles = 0;
         int asistencias = 0;
         int porteriasCero = 0;

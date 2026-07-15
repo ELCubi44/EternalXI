@@ -63,7 +63,7 @@ public class LeagueSeasonService {
      * Excluye ligas cerradas por el administrador ({@code cerrada_en}).
      */
     public static String sqlLeagueEligibleForCareerStats(String leagueAlias) {
-        return leagueAlias + ".cerrada_en IS NULL";
+        return " " + leagueAlias + ".cerrada_en IS NULL";
     }
 
     public boolean isSeasonNaturallyComplete(Connection conn, long idLiga) throws SQLException {
