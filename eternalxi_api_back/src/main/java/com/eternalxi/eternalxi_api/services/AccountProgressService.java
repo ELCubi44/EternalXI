@@ -134,6 +134,24 @@ public class AccountProgressService {
         }
     }
 
+    /** Logros y nivel visibles en el perfil de otro usuario (sin eventos pendientes privados). */
+    public UserProgressResponse loadPublicProgress(Long idUsuario) throws SQLException {
+        try (Connection conn = DBConnection.getConnection()) {
+            ensureSchema(conn);
+            UserProgressResponse full = buildProgressResponse(conn, idUsuario);
+            return new UserProgressResponse(
+                    full.idUsuario(),
+                    full.nivel(),
+                    full.experienciaTotal(),
+                    full.xpEnNivel(),
+                    full.xpParaSiguienteNivel(),
+                    full.rango(),
+                    full.logros(),
+                    List.of()
+            );
+        }
+    }
+
     public UserProgressResponse markEventsSeen(Long idUsuario, List<Long> eventIds) throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
             ensureSchema(conn);

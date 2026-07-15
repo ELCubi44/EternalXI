@@ -28,7 +28,7 @@ public class RequestUserIdGuardFilter extends OncePerRequestFilter {
 
     private static final Pattern USER_PATH = Pattern.compile("^/api/v1/users/(\\d+)(?:/|$)");
     private static final Pattern USER_PUBLIC_READ_PATH =
-            Pattern.compile("^/api/v1/users/\\d+/(?:photo|public-profile)$");
+            Pattern.compile("^/api/v1/users/\\d+/(?:photo|public-profile|public-progress)$");
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {

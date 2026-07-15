@@ -93,7 +93,7 @@ public class UserPublicProfileService {
             if (idJugador != null && idJugador > 0) {
                 if (!isEligibleFavoritePlayer(conn, userId, idJugador)) {
                     throw new IllegalArgumentException(
-                            "Solo puedes elegir jugadores que hayas fichado en una liga terminada"
+                            "Solo puedes elegir jugadores que hayas alineado en una jornada ya iniciada"
                     );
                 }
             }
@@ -360,20 +360,35 @@ public class UserPublicProfileService {
 
     private record FriendshipRelation(String estado, Long idAmistad, boolean soySolicitante) {}
 
+    /**
+     * Jornada con alineación fantasy congelada (ya empezó por hora o estado de partidos).
+     * Espacio inicial por stripping de text blocks Java.
+     */
+    static String sqlJornadaLineupFrozenOnAlias(String jornadaAlias) {
+        return " (" + jornadaAlias + ".estado IN ('EN_CURSO', 'FINALIZADA') OR EXISTS ("
+                + "SELECT 1 FROM partidos_jornada pj_fz WHERE pj_fz.id_jornada = " + jornadaAlias + ".id "
+                + "AND (COALESCE(pj_fz.estado, '') IN ('EN_JUEGO', 'FINALIZADO') "
+                + "OR pj_fz.inicio_en <= NOW()))) ";
+    }
+
     private boolean isEligibleFavoritePlayer(Connection conn, long userId, long idJugador)
             throws SQLException {
         String sql = """
                 SELECT 1
                 FROM liga_participantes lp
-                INNER JOIN ligas l ON l.id = lp.id_liga
                 INNER JOIN liga_jugadores lj
                   ON lj.id_liga = lp.id_liga
                  AND lj.id_usuario_dueno = lp.id_usuario
+                INNER JOIN alineacion_jornada_participante ajp
+                  ON ajp.id_liga_participante = lp.id
+                 AND ajp.id_liga_jugador = lj.id
+                INNER JOIN jornadas jrn
+                  ON jrn.id = ajp.id_jornada
+                 AND jrn.id_liga = lp.id_liga
                 WHERE lp.id_usuario = ?
                   AND lj.id_jugador = ?
-                  AND l.cerrada_en IS NULL
                   AND """
-                + LeagueSeasonService.sqlSeasonNaturallyCompleteOnLeagueAlias("l")
+                + sqlJornadaLineupFrozenOnAlias("jrn")
                 + """
                 LIMIT 1
                 """;
@@ -394,16 +409,20 @@ public class UserPublicProfileService {
                        COALESCE(j.foto, '') AS foto,
                        COALESCE(e.nombre, '') AS equipo
                 FROM liga_participantes lp
-                INNER JOIN ligas l ON l.id = lp.id_liga
                 INNER JOIN liga_jugadores lj
                   ON lj.id_liga = lp.id_liga
                  AND lj.id_usuario_dueno = lp.id_usuario
+                INNER JOIN alineacion_jornada_participante ajp
+                  ON ajp.id_liga_participante = lp.id
+                 AND ajp.id_liga_jugador = lj.id
+                INNER JOIN jornadas jrn
+                  ON jrn.id = ajp.id_jornada
+                 AND jrn.id_liga = lp.id_liga
                 INNER JOIN jugadores j ON j.id = lj.id_jugador
                 LEFT JOIN equipos e ON e.id = j.id_equipo
                 WHERE lp.id_usuario = ?
-                  AND l.cerrada_en IS NULL
                   AND """
-                + LeagueSeasonService.sqlSeasonNaturallyCompleteOnLeagueAlias("l")
+                + sqlJornadaLineupFrozenOnAlias("jrn")
                 + """
                 ORDER BY nombre ASC
                 """;

@@ -3,6 +3,7 @@ package com.eternalxi.eternalxi_api.controller.user;
 import com.eternalxi.eternalxi_api.dto.auth.ApiMessageResponse;
 import com.eternalxi.eternalxi_api.dto.user.UpdateFavoritePlayerRequest;
 import com.eternalxi.eternalxi_api.dto.user.UserPublicProfileResponse;
+import com.eternalxi.eternalxi_api.services.AccountProgressService;
 import com.eternalxi.eternalxi_api.services.UserPublicProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +21,14 @@ import java.sql.SQLException;
 public class UserPublicProfileController {
 
     private final UserPublicProfileService userPublicProfileService;
+    private final AccountProgressService accountProgressService;
 
-    public UserPublicProfileController(UserPublicProfileService userPublicProfileService) {
+    public UserPublicProfileController(
+            UserPublicProfileService userPublicProfileService,
+            AccountProgressService accountProgressService
+    ) {
         this.userPublicProfileService = userPublicProfileService;
+        this.accountProgressService = accountProgressService;
     }
 
     @GetMapping("/{id}/public-profile")
@@ -35,6 +41,16 @@ public class UserPublicProfileController {
             return ResponseEntity.ok(profile);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(new ApiMessageResponse(ex.getMessage()));
+        }
+    }
+
+    @GetMapping("/{id}/public-progress")
+    public ResponseEntity<?> getPublicProgress(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(accountProgressService.loadPublicProgress(id));
+        } catch (SQLException e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ApiMessageResponse("No se pudo cargar el progreso"));
         }
     }
 

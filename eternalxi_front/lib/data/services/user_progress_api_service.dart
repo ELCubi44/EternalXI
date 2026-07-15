@@ -21,6 +21,19 @@ class UserProgressApiService {
     }
   }
 
+  Future<UserProgressResponse> getPublicProgress(int userId) async {
+    try {
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.users}/$userId/public-progress',
+      );
+      return UserProgressResponse.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
   Future<UserProgressResponse> markEventsSeen({
     required int userId,
     required List<int> eventIds,

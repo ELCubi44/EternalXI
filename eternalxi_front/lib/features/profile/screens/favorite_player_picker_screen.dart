@@ -6,7 +6,7 @@ import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// Selector de jugador favorito entre fichajes en ligas terminadas.
+/// Selector de jugador favorito entre alineaciones congeladas.
 class FavoritePlayerPickerScreen extends StatefulWidget {
   const FavoritePlayerPickerScreen({
     required this.userId,
@@ -142,7 +142,7 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: Text(
-                    'Solo aparecen jugadores que hayas fichado en ligas terminadas.',
+                    'Solo aparecen jugadores que hayas alineado en una jornada ya iniciada.',
                     style: TextStyle(
                       fontFamily: 'Lumiare',
                       fontSize: 13,
@@ -197,7 +197,7 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
                             padding: const EdgeInsets.all(24),
                             child: Text(
                               _players.isEmpty
-                                  ? 'Aún no tienes jugadores elegibles. Ficha jugadores en una liga y espera a que termine.'
+                                  ? 'Aún no tienes jugadores elegibles. Alinea jugadores en una jornada que ya haya empezado.'
                                   : 'No hay jugadores que coincidan.',
                               textAlign: TextAlign.center,
                               style: TextStyle(

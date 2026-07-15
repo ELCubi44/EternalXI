@@ -3,11 +3,15 @@ import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/core/utils/user_public_tag.dart';
+import 'package:eternal_xi/data/models/user_progress_response.dart';
 import 'package:eternal_xi/data/models/user_public_profile.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
+import 'package:eternal_xi/data/services/user_progress_api_service.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/leagues/screens/participant_lineup_history_screen.dart';
 import 'package:eternal_xi/features/profile/controller/friends_pending_controller.dart';
+import 'package:eternal_xi/features/profile/widgets/account_level_display.dart';
+import 'package:eternal_xi/features/profile/widgets/achievements_tab.dart';
 import 'package:eternal_xi/shared/widgets/user_profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,11 +31,15 @@ class PublicUserProfileScreen extends StatefulWidget {
       _PublicUserProfileScreenState();
 }
 
-class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
+class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
+    with SingleTickerProviderStateMixin {
   UserPublicProfile? _profile;
+  UserProgressResponse? _progress;
   bool _loading = true;
   String? _error;
   bool _friendBusy = false;
+
+  late final TabController _tabs;
 
   int? get _viewerId => context.read<AuthController>().currentUser?.id;
 
@@ -41,7 +49,14 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
   @override
   void initState() {
     super.initState();
+    _tabs = TabController(length: 2, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+  }
+
+  @override
+  void dispose() {
+    _tabs.dispose();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -50,13 +65,19 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
       _error = null;
     });
     try {
-      final profile = await context.read<UserApiService>().getPublicProfile(
-        targetUserId: widget.userId,
-        viewerUserId: _viewerId,
-      );
+      final userApi = context.read<UserApiService>();
+      final progressApi = context.read<UserProgressApiService>();
+      final results = await Future.wait<Object?>([
+        userApi.getPublicProfile(
+          targetUserId: widget.userId,
+          viewerUserId: _viewerId,
+        ),
+        progressApi.getPublicProgress(widget.userId),
+      ]);
       if (!mounted) return;
       setState(() {
-        _profile = profile;
+        _profile = results[0] as UserPublicProfile;
+        _progress = results[1] as UserProgressResponse;
         _loading = false;
       });
     } catch (e) {
@@ -144,6 +165,86 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     );
   }
 
+  Widget _buildHeader(ThemeData theme) {
+    final profile = _profile!;
+    final progress = _progress;
+    final nivel = progress?.nivel ?? profile.nivel;
+
+    Widget avatar = UserProfileAvatar(
+      userId: profile.id,
+      photoPath: profile.foto,
+      nickname: profile.nickname,
+      size: 96,
+    );
+
+    if (progress != null) {
+      avatar = AccountLevelAvatarRing(
+        nivel: progress.nivel,
+        xpEnNivel: progress.xpEnNivel,
+        xpParaSiguiente: progress.xpParaSiguienteNivel,
+        child: avatar,
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+      child: Column(
+        children: [
+          Center(child: avatar),
+          const SizedBox(height: 12),
+          Center(
+            child: Text(
+              profile.nickname,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Center(
+            child: Text(
+              UserPublicTag.format(profile.id),
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: XiColors.classicGold,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (progress != null)
+            AccountLevelDisplay(
+              compact: true,
+              nivel: progress.nivel,
+              rango: progress.rango,
+              xpEnNivel: progress.xpEnNivel,
+              xpParaSiguiente: progress.xpParaSiguienteNivel,
+            )
+          else
+            Text(
+              'Nivel $nivel',
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: context.xiTextSecondary,
+              ),
+            ),
+          if (!_isOwnProfile) ...[
+            const SizedBox(height: 16),
+            _FriendActionButton(
+              profile: profile,
+              busy: _friendBusy,
+              onSend: _sendFriendRequest,
+              onAccept: _acceptFriendRequest,
+            ),
+          ],
+          if (profile.jugadorFavorito != null) ...[
+            const SizedBox(height: 16),
+            _FavoritePlayerCard(player: profile.jugadorFavorito!),
+          ],
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -151,120 +252,110 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
 
     return Scaffold(
       backgroundColor: context.xiBackground,
-      appBar: AppBar(title: Text(l10n.profile)),
+      appBar: AppBar(
+        title: Text(l10n.profile),
+        backgroundColor: context.xiBackground,
+        foregroundColor: context.xiTextPrimary,
+        bottom: _loading || _error != null || _profile == null
+            ? null
+            : TabBar(
+                controller: _tabs,
+                labelStyle: const TextStyle(fontFamily: 'Lumiare'),
+                tabs: const [
+                  Tab(text: 'Estadísticas'),
+                  Tab(text: 'Logros'),
+                ],
+              ),
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
           ? Center(child: Text(_error!))
           : _profile == null
           ? const SizedBox.shrink()
-          : RefreshIndicator(
-              onRefresh: _load,
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-                children: [
-                  Center(
-                    child: UserProfileAvatar(
-                      userId: _profile!.id,
-                      photoPath: _profile!.foto,
-                      nickname: _profile!.nickname,
-                      size: 96,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Center(
-                    child: Text(
-                      _profile!.nickname,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Center(
-                    child: Text(
-                      UserPublicTag.format(_profile!.id),
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: XiColors.classicGold,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  if (!_isOwnProfile) ...[
-                    const SizedBox(height: 16),
-                    _FriendActionButton(
-                      profile: _profile!,
-                      busy: _friendBusy,
-                      onSend: _sendFriendRequest,
-                      onAccept: _acceptFriendRequest,
-                    ),
-                  ],
-                  if (_profile!.jugadorFavorito != null) ...[
-                    const SizedBox(height: 20),
-                    _FavoritePlayerCard(player: _profile!.jugadorFavorito!),
-                  ],
-                  const SizedBox(height: 20),
-                  Text(
-                    'Estadsticas',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  _StatsGrid(stats: _profile!.stats),
-                  const SizedBox(height: 22),
-                  Text(
-                    'Ligas',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  if (_profile!.ligas.isEmpty)
-                    Text(
-                      'Sin ligas finalizadas',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: context.xiTextSecondary,
-                      ),
-                    )
-                  else
-                    ..._profile!.ligas.map(
-                      (league) => Card(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        child: ListTile(
-                          title: Text(league.nombreLiga),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (league.posicionFinal > 0)
-                                Text(
-                                  '${league.posicionFinal} de ${league.totalParticipantes}  ${league.puntosFantasy} pts',
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildHeader(theme),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabs,
+                    children: [
+                      RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView(
+                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+                          children: [
+                            _StatsGrid(stats: _profile!.stats),
+                            const SizedBox(height: 22),
+                            Text(
+                              'Ligas',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            if (_profile!.ligas.isEmpty)
+                              Text(
+                                'Sin ligas finalizadas',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: context.xiTextSecondary,
                                 ),
-                              if (league.maxGoleador != null)
-                                Text(
-                                  'Goleador: ${league.maxGoleador!.nombre} (${league.maxGoleador!.total})',
-                                  style: theme.textTheme.bodySmall,
+                              )
+                            else
+                              ..._profile!.ligas.map(
+                                (league) => Card(
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  child: ListTile(
+                                    title: Text(league.nombreLiga),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (league.posicionFinal > 0)
+                                          Text(
+                                            '${league.posicionFinal}º de ${league.totalParticipantes} · ${league.puntosFantasy} pts',
+                                          ),
+                                        if (league.maxGoleador != null)
+                                          Text(
+                                            'Goleador: ${league.maxGoleador!.nombre} (${league.maxGoleador!.total})',
+                                            style: theme.textTheme.bodySmall,
+                                          ),
+                                        if (league.maxAsistente != null)
+                                          Text(
+                                            'Asistencias: ${league.maxAsistente!.nombre} (${league.maxAsistente!.total})',
+                                            style: theme.textTheme.bodySmall,
+                                          ),
+                                        if (league.maxPorteriasCero != null)
+                                          Text(
+                                            'Porterías a 0: ${league.maxPorteriasCero!.nombre} (${league.maxPorteriasCero!.total})',
+                                            style: theme.textTheme.bodySmall,
+                                          ),
+                                      ],
+                                    ),
+                                    isThreeLine: true,
+                                    trailing: const Icon(
+                                      Icons.chevron_right_rounded,
+                                    ),
+                                    onTap: () => _openLeagueHistory(league),
+                                  ),
                                 ),
-                              if (league.maxAsistente != null)
-                                Text(
-                                  'Asistencias: ${league.maxAsistente!.nombre} (${league.maxAsistente!.total})',
-                                  style: theme.textTheme.bodySmall,
-                                ),
-                              if (league.maxPorteriasCero != null)
-                                Text(
-                                  'Porterias a 0: ${league.maxPorteriasCero!.nombre} (${league.maxPorteriasCero!.total})',
-                                  style: theme.textTheme.bodySmall,
-                                ),
-                            ],
-                          ),
-                          isThreeLine: true,
-                          trailing: const Icon(Icons.chevron_right_rounded),
-                          onTap: () => _openLeagueHistory(league),
+                              ),
+                          ],
                         ),
                       ),
-                    ),
-                ],
-              ),
+                      RefreshIndicator(
+                        onRefresh: _load,
+                        child: AchievementsTab(
+                          progressOverride: _progress,
+                          showLevelHeader: false,
+                          onRetry: _load,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
     );
   }
@@ -335,7 +426,7 @@ class _StatsGrid extends StatelessWidget {
       _StatTile(label: 'Ligas ganadas', value: '${stats.ligasGanadas}'),
       _StatTile(label: 'Goles', value: '${stats.goles}'),
       _StatTile(label: 'Asistencias', value: '${stats.asistencias}'),
-      _StatTile(label: 'Porteras a 0', value: '${stats.porteriasCero}'),
+      _StatTile(label: 'Porterías a 0', value: '${stats.porteriasCero}'),
       _StatTile(label: 'Lesiones', value: '${stats.lesiones}'),
       _StatTile(label: 'Sanciones', value: '${stats.sanciones}'),
     ];
@@ -415,6 +506,10 @@ class _FavoritePlayerCard extends StatelessWidget {
                   width: 52,
                   height: 52,
                   fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => const Icon(
+                    Icons.sports_soccer_rounded,
+                    size: 40,
+                  ),
                 ),
               )
             else

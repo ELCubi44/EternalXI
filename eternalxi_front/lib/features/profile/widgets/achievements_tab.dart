@@ -12,10 +12,14 @@ class AchievementsTab extends StatelessWidget {
     super.key,
     this.onRetry,
     this.embedded = false,
+    this.progressOverride,
+    this.showLevelHeader = true,
   });
 
   final Future<void> Function()? onRetry;
   final bool embedded;
+  final UserProgressResponse? progressOverride;
+  final bool showLevelHeader;
 
   static const _categoryIcons = <String, IconData>{
     'LEAGUE': Icons.emoji_events_outlined,
@@ -31,13 +35,18 @@ class AchievementsTab extends StatelessWidget {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
     final progressCtrl = context.watch<AccountProgressController>();
-    final progress = progressCtrl.progress;
+    final progress = progressOverride ?? progressCtrl.progress;
+    final loading = progressOverride == null && progressCtrl.isLoading && progress == null;
+    final fromCache = progressOverride == null && progressCtrl.isFromCache;
 
-    if (progressCtrl.isLoading && progress == null) {
+    if (loading) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (progress == null) {
+      final errorText = progressOverride == null
+          ? (progressCtrl.errorMessage ?? l10n.achievementsLoadError)
+          : l10n.achievementsLoadError;
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(24),
@@ -45,7 +54,7 @@ class AchievementsTab extends StatelessWidget {
           Icon(Icons.military_tech_outlined, size: 48, color: cs.outline),
           const SizedBox(height: 16),
           Text(
-            progressCtrl.errorMessage ?? l10n.achievementsLoadError,
+            errorText,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyLarge,
           ),
@@ -76,7 +85,7 @@ class AchievementsTab extends StatelessWidget {
           : const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       children: [
-        if (progressCtrl.isFromCache)
+        if (fromCache)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: MaterialBanner(
@@ -93,14 +102,16 @@ class AchievementsTab extends StatelessWidget {
               ],
             ),
           ),
-        AccountLevelDisplay(
-          compact: true,
-          nivel: progress.nivel,
-          rango: progress.rango,
-          xpEnNivel: progress.xpEnNivel,
-          xpParaSiguiente: progress.xpParaSiguienteNivel,
-        ),
-        const SizedBox(height: 16),
+        if (showLevelHeader) ...[
+          AccountLevelDisplay(
+            compact: true,
+            nivel: progress.nivel,
+            rango: progress.rango,
+            xpEnNivel: progress.xpEnNivel,
+            xpParaSiguiente: progress.xpParaSiguienteNivel,
+          ),
+          const SizedBox(height: 16),
+        ],
         Text(
           l10n.achievementsUnlockedSummary(unlocked, total),
           style: theme.textTheme.titleSmall?.copyWith(
