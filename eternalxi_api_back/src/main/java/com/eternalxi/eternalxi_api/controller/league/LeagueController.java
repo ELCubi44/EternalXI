@@ -28,6 +28,8 @@ import com.eternalxi.eternalxi_api.services.LeagueActivityService;
 import com.eternalxi.eternalxi_api.services.LeagueChatService;
 import com.eternalxi.eternalxi_api.services.LeagueDmService;
 import com.eternalxi.eternalxi_api.services.LeagueLineupService;
+import com.eternalxi.eternalxi_api.dto.league.LeagueSeasonWrapResponse;
+import com.eternalxi.eternalxi_api.services.LeagueSeasonService;
 import com.eternalxi.eternalxi_api.services.LeagueService;
 import com.eternalxi.eternalxi_api.services.LeagueStarterProbabilityService;
 import com.eternalxi.eternalxi_api.services.UserSafetyService;
@@ -50,6 +52,7 @@ public class LeagueController {
     private final LeagueChatService leagueChatService;
     private final LeagueDmService leagueDmService;
     private final UserSafetyService userSafetyService;
+    private final LeagueSeasonService leagueSeasonService;
 
     public LeagueController(
             LeagueService leagueService,
@@ -58,7 +61,8 @@ public class LeagueController {
             LeagueActivityService leagueActivityService,
             LeagueChatService leagueChatService,
             LeagueDmService leagueDmService,
-            UserSafetyService userSafetyService
+            UserSafetyService userSafetyService,
+            LeagueSeasonService leagueSeasonService
     ) {
         this.leagueService = leagueService;
         this.leagueLineupService = leagueLineupService;
@@ -67,6 +71,7 @@ public class LeagueController {
         this.leagueChatService = leagueChatService;
         this.leagueDmService = leagueDmService;
         this.userSafetyService = userSafetyService;
+        this.leagueSeasonService = leagueSeasonService;
     }
 
     @PostMapping
@@ -100,6 +105,26 @@ public class LeagueController {
     public ResponseEntity<?> getMyLeagues(@RequestParam Long idUsuario) throws SQLException {
         List<LeagueSummaryResponse> response = leagueService.getMyLeagues(idUsuario);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{idLiga}/season-wrap")
+    public ResponseEntity<?> getSeasonWrap(
+            @PathVariable Long idLiga,
+            @RequestParam Long idUsuario
+    ) throws SQLException {
+        AuthenticatedUser.assertSameUser(idUsuario);
+        LeagueSeasonWrapResponse response = leagueSeasonService.getSeasonWrap(idLiga, idUsuario);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{idLiga}/season-wrap/seen")
+    public ResponseEntity<?> markSeasonWrapSeen(
+            @PathVariable Long idLiga,
+            @RequestParam Long idUsuario
+    ) throws SQLException {
+        AuthenticatedUser.assertSameUser(idUsuario);
+        leagueSeasonService.markSeasonWrapSeen(idLiga, idUsuario);
+        return ResponseEntity.ok(new ApiMessageResponse("Cinematica registrada"));
     }
 
     @GetMapping("/{idLiga}")

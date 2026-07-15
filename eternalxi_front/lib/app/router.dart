@@ -51,6 +51,7 @@ import 'package:eternal_xi/features/profile/screens/confirm_account_deletion_scr
 import 'package:eternal_xi/features/profile/screens/confirm_change_nickname_screen.dart';
 import 'package:eternal_xi/features/profile/screens/edit_profile_screen.dart';
 import 'package:eternal_xi/features/profile/screens/friends_screen.dart';
+import 'package:eternal_xi/features/profile/screens/public_user_profile_screen.dart';
 import 'package:eternal_xi/features/legal/screens/legal_document_screen.dart';
 import 'package:eternal_xi/features/legal/screens/legal_hub_screen.dart';
 import 'package:eternal_xi/features/profile/screens/request_change_email_screen.dart';
@@ -372,6 +373,14 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: 'friends',
           builder: (context, state) => const FriendsScreen(),
+        ),
+        GoRoute(
+          path: 'users/:userId',
+          builder: (context, state) {
+            final raw = state.pathParameters['userId'] ?? '';
+            final userId = int.tryParse(raw) ?? 0;
+            return PublicUserProfileScreen(userId: userId);
+          },
         ),
       ],
     ),

@@ -8,7 +8,11 @@ import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/friendship.dart';
 import 'package:eternal_xi/data/models/user_search_result.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
+import 'package:eternal_xi/core/utils/user_public_tag.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/features/profile/controller/friends_pending_controller.dart';
+import 'package:eternal_xi/features/profile/navigation/user_profile_navigation.dart';
+import 'package:eternal_xi/shared/widgets/user_profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -97,6 +101,9 @@ class _FriendsScreenState extends State<FriendsScreen>
         _loading = false;
         _loadError = null;
       });
+      if (mounted) {
+        context.read<FriendsPendingController>().refresh(userId);
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -208,6 +215,9 @@ class _FriendsScreenState extends State<FriendsScreen>
       );
       await _load();
       await _runSearch(_lastQuery);
+      if (mounted) {
+        context.read<FriendsPendingController>().refresh(userId);
+      }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -383,9 +393,15 @@ class _FriendsScreenState extends State<FriendsScreen>
       itemBuilder: (context, index) {
         final u = _searchResults[index];
         return _FriendCard(
+          userId: u.id,
           nickname: u.nickname,
-          photoUrl: u.resolvedPhotoUrl(),
+          photoPath: u.foto,
           trailing: _searchAction(u, l10n),
+          onTap: () => UserProfileNavigation.openPublicProfile(
+            context,
+            userId: u.id,
+            nicknameHint: u.nickname,
+          ),
         );
       },
     );
@@ -393,18 +409,11 @@ class _FriendsScreenState extends State<FriendsScreen>
 
   Widget _searchAction(UserSearchResult u, AppLocalizations l10n) {
     if (u.isFriend) {
-      return Chip(
-        label: Text(l10n.friendsBadge),
-        backgroundColor: XiColors.classicGold.withValues(alpha: 0.15),
-        labelStyle: const TextStyle(
-          fontFamily: 'Lumiare',
-          color: XiColors.classicGold,
-        ),
-      );
+      return const SizedBox.shrink();
     }
     if (u.isPending) {
       return Text(
-        l10n.friendsPending,
+        l10n.friendsRequestSent,
         style: TextStyle(
           fontFamily: 'Lumiare',
           color: context.xiTextSecondary,
@@ -476,10 +485,15 @@ class _FriendsList extends StatelessWidget {
         itemBuilder: (context, index) {
           final f = friends[index];
           return _FriendCard(
+            userId: f.idUsuario,
             nickname: f.nickname,
-            photoUrl: f.resolvedPhotoUrl(),
-            badge: context.l10n.friendsBadge,
+            photoPath: f.foto,
             onMore: () => onRemove(f),
+            onTap: () => UserProfileNavigation.openPublicProfile(
+              context,
+              userId: f.idUsuario,
+              nicknameHint: f.nickname,
+            ),
           );
         },
       ),
@@ -530,8 +544,9 @@ class _RequestsList extends StatelessWidget {
             (f) => Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: _FriendCard(
+                userId: f.idUsuario,
                 nickname: f.nickname,
-                photoUrl: f.resolvedPhotoUrl(),
+                photoPath: f.foto,
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -544,6 +559,11 @@ class _RequestsList extends StatelessWidget {
                       child: Text(l10n.friendsAccept),
                     ),
                   ],
+                ),
+                onTap: () => UserProfileNavigation.openPublicProfile(
+                  context,
+                  userId: f.idUsuario,
+                  nicknameHint: f.nickname,
                 ),
               ),
             ),
@@ -563,14 +583,20 @@ class _RequestsList extends StatelessWidget {
             (f) => Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: _FriendCard(
+                userId: f.idUsuario,
                 nickname: f.nickname,
-                photoUrl: f.resolvedPhotoUrl(),
+                photoPath: f.foto,
                 trailing: Text(
-                  l10n.friendsPending,
+                  l10n.friendsRequestSent,
                   style: TextStyle(
                     fontFamily: 'Lumiare',
                     color: context.xiTextSecondary,
                   ),
+                ),
+                onTap: () => UserProfileNavigation.openPublicProfile(
+                  context,
+                  userId: f.idUsuario,
+                  nicknameHint: f.nickname,
                 ),
               ),
             ),
@@ -583,103 +609,79 @@ class _RequestsList extends StatelessWidget {
 
 class _FriendCard extends StatelessWidget {
   const _FriendCard({
+    required this.userId,
     required this.nickname,
-    required this.photoUrl,
-    this.badge,
+    this.photoPath,
     this.trailing,
     this.onMore,
+    this.onTap,
   });
 
+  final int userId;
   final String nickname;
-  final String? photoUrl;
-  final String? badge;
+  final String? photoPath;
   final Widget? trailing;
   final VoidCallback? onMore;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final initial = nickname.trim().isNotEmpty
-        ? nickname.trim()[0].toUpperCase()
-        : '?';
-
-    return Container(
-      decoration: BoxDecoration(
-        color: context.xiCardSurface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.xiBorderSubtle),
-        boxShadow: context.xiCardShadow,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      child: Row(
-        children: [
-          _Avatar(photoUrl: photoUrl, initial: initial),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  nickname,
-                  style: TextStyle(
-                    fontFamily: 'Lumiare',
-                    fontSize: 15,
-                    color: context.xiTextPrimary,
-                  ),
-                ),
-                if (badge != null)
-                  Text(
-                    badge!,
-                    style: const TextStyle(
-                      fontFamily: 'Lumiare',
-                      fontSize: 11,
-                      color: XiColors.classicGold,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          if (trailing != null) trailing!,
-          if (onMore != null)
-            IconButton(
-              onPressed: onMore,
-              icon: const Icon(Icons.more_horiz_rounded),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Avatar extends StatelessWidget {
-  const _Avatar({required this.photoUrl, required this.initial});
-
-  final String? photoUrl;
-  final String initial;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: XiColors.royalBlue.withValues(alpha: 0.45)),
-      ),
+    return Material(
+      color: context.xiCardSurface,
+      borderRadius: BorderRadius.circular(16),
       clipBehavior: Clip.antiAlias,
-      child: photoUrl != null
-          ? Image.network(photoUrl!, fit: BoxFit.cover)
-          : ColoredBox(
-              color: XiColors.royalBlue.withValues(alpha: 0.12),
-              child: Center(
-                child: Text(
-                  initial,
-                  style: const TextStyle(
-                    fontFamily: 'Lumiare',
-                    color: XiColors.royalBlue,
-                  ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: context.xiBorderSubtle),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: context.xiCardShadow,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          child: Row(
+            children: [
+              UserProfileAvatar(
+                userId: userId,
+                photoPath: photoPath,
+                nickname: nickname,
+                size: 48,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      nickname,
+                      style: TextStyle(
+                        fontFamily: 'Lumiare',
+                        fontSize: 15,
+                        color: context.xiTextPrimary,
+                      ),
+                    ),
+                    Text(
+                      UserPublicTag.format(userId),
+                      style: TextStyle(
+                        fontFamily: 'Lumiare',
+                        fontSize: 11,
+                        color: context.xiTextSecondary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
+              if (trailing != null) trailing!,
+              if (onMore != null)
+                IconButton(
+                  onPressed: onMore,
+                  icon: const Icon(Icons.more_horiz_rounded),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

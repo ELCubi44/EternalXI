@@ -32,6 +32,12 @@ class RewardsSummaryHeader extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           _ChipStat(
+            leading: Icon(Icons.stars_rounded, size: 20, color: colorScheme.primary),
+            label: rl10n.rewardPoints,
+            value: '${summary.puntosRecompensaUsuario}',
+          ),
+          const SizedBox(height: 8),
+          _ChipStat(
             leading: const RewardCardsIcon(size: 22),
             label: rl10n.cardsAvailable,
             value: '${summary.cartasDisponibles}',

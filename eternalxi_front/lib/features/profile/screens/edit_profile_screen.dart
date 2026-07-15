@@ -5,7 +5,13 @@ import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/app/theme/xi_typography.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/core/utils/user_public_tag.dart';
 import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
+import 'package:eternal_xi/features/profile/controller/friends_pending_controller.dart';
+import 'package:eternal_xi/features/profile/screens/favorite_player_picker_screen.dart';
+import 'package:eternal_xi/data/models/user_public_profile.dart';
+import 'package:eternal_xi/data/services/user_api_service.dart';
+import 'package:eternal_xi/shared/widgets/pending_notification_badge.dart';
 import 'package:eternal_xi/features/profile/controller/profile_controller.dart';
 import 'package:eternal_xi/features/profile/widgets/account_level_display.dart';
 import 'package:eternal_xi/shared/widgets/app_loading_overlay.dart';
@@ -26,6 +32,8 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   int _photoVersion = DateTime.now().millisecondsSinceEpoch;
+  UserPublicProfile? _publicProfile;
+  bool _loadingPublicProfile = false;
 
   @override
   void initState() {
@@ -42,12 +50,46 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
     await profileController.loadProfile(userId);
     await context.read<AccountProgressController>().loadProgress(userId);
+    await context.read<FriendsPendingController>().refresh(userId);
+    await _loadPublicProfile(userId);
     if (!mounted) {
       return;
     }
     setState(() {
       _photoVersion = DateTime.now().millisecondsSinceEpoch;
     });
+  }
+
+  Future<void> _loadPublicProfile(int userId) async {
+    setState(() => _loadingPublicProfile = true);
+    try {
+      final profile = await context.read<UserApiService>().getPublicProfile(
+        targetUserId: userId,
+        viewerUserId: userId,
+      );
+      if (!mounted) return;
+      setState(() {
+        _publicProfile = profile;
+        _loadingPublicProfile = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _loadingPublicProfile = false);
+    }
+  }
+
+  Future<void> _openFavoritePlayerPicker(int userId) async {
+    final currentId = _publicProfile?.jugadorFavorito?.idJugador;
+    final picked = await Navigator.of(context).push<int>(
+      MaterialPageRoute<int>(
+        builder: (_) => FavoritePlayerPickerScreen(
+          userId: userId,
+          currentPlayerId: currentId,
+        ),
+      ),
+    );
+    if (picked == null || !mounted) return;
+    await _loadPublicProfile(userId);
   }
 
   Future<void> _showPhotoSourcePicker(int userId) async {
@@ -202,6 +244,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final progressCtrl = context.watch<AccountProgressController>();
     final progress = progressCtrl.progress;
     final auth = context.watch<AuthController>();
+    final pending = context.watch<FriendsPendingController>().incomingCount;
     final user = profile.user ?? auth.currentUser;
     final userId = auth.currentUser?.id;
     final initial = _initials(user?.nickname);
@@ -235,24 +278,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          AccountLevelAvatarRing(
-                            nivel: progress?.nivel ?? user?.nivel ?? 1,
-                            xpEnNivel: progress?.xpEnNivel ?? 0,
-                            xpParaSiguiente:
-                                progress?.xpParaSiguienteNivel ?? 100,
-                            ringStroke: 3,
-                            ringGap: 2.5,
-                            child: _ProfileAvatar(
-                              userId: userId,
-                              hasPhoto: user?.hasProfilePhoto ?? false,
-                              photoVersion: _photoVersion,
-                              initial: initial,
-                              colorScheme: colorScheme,
-                              theme: theme,
-                              onEditTap: userId == null
-                                  ? null
-                                  : () => _showPhotoSourcePicker(userId),
-                              size: 84,
+                          PendingNotificationBadge(
+                            count: pending,
+                            child: AccountLevelAvatarRing(
+                              nivel: progress?.nivel ?? user?.nivel ?? 1,
+                              xpEnNivel: progress?.xpEnNivel ?? 0,
+                              xpParaSiguiente:
+                                  progress?.xpParaSiguienteNivel ?? 100,
+                              ringStroke: 3,
+                              ringGap: 2.5,
+                              child: _ProfileAvatar(
+                                userId: userId,
+                                hasPhoto: user?.hasProfilePhoto ?? false,
+                                photoVersion: _photoVersion,
+                                initial: initial,
+                                colorScheme: colorScheme,
+                                theme: theme,
+                                onEditTap: userId == null
+                                    ? null
+                                    : () => _showPhotoSourcePicker(userId),
+                                size: 84,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -264,6 +310,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               color: context.xiTextPrimary,
                             ),
                           ),
+                          const SizedBox(height: 4),
+                          if (userId != null)
+                            XiText(
+                              UserPublicTag.format(userId),
+                              style: XiTypography.lumiare(
+                                fontSize: 13,
+                                color: XiColors.classicGold,
+                              ),
+                            ),
                           const SizedBox(height: 4),
                           XiText(
                             '${progress?.rango ?? 'Novato'} · ${progress?.xpEnNivel ?? 0}/${progress?.xpParaSiguienteNivel ?? 100} XP',
@@ -286,20 +341,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 delegate: SliverChildListDelegate([
                   const SizedBox(height: 4),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: _ProfileActionCard(
-                          icon: Icons.people_alt_rounded,
-                          label: l10n.friendsTitle,
-                          onTap: () => context.push(AppRoutes.profileFriends),
+                        child: PendingNotificationBadge(
+                          count: pending,
+                          child: _ProfileActionCard(
+                            icon: Icons.people_alt_rounded,
+                            label: l10n.friendsTitle,
+                            onTap: () => context.push(AppRoutes.profileFriends),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: _ProfileActionCard(
-                          icon: Icons.home_rounded,
-                          label: l10n.profileBackToTitle,
-                          onTap: () => context.go(AppRoutes.splash),
+                        child: Column(
+                          children: [
+                            _FavoritePlayerSlot(
+                              loading: _loadingPublicProfile,
+                              favorite: _publicProfile?.jugadorFavorito,
+                              onTap: userId == null
+                                  ? null
+                                  : () => _openFavoritePlayerPicker(userId),
+                            ),
+                            const SizedBox(height: 10),
+                            _ProfileActionCard(
+                              icon: Icons.home_rounded,
+                              label: l10n.profileBackToTitle,
+                              onTap: () => context.go(AppRoutes.splash),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -625,6 +696,97 @@ class _AvatarPlaceholder extends StatelessWidget {
                   color: colorScheme.onPrimaryContainer,
                 ),
               ),
+      ),
+    );
+  }
+}
+
+class _FavoritePlayerSlot extends StatelessWidget {
+  const _FavoritePlayerSlot({
+    required this.loading,
+    required this.favorite,
+    required this.onTap,
+  });
+
+  final bool loading;
+  final UserPublicFavoritePlayer? favorite;
+  final VoidCallback? onTap;
+
+  static const double _size = 56;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasPhoto = favorite?.photoUrl?.isNotEmpty == true;
+
+    return Material(
+      color: context.xiCardSurface,
+      borderRadius: BorderRadius.circular(14),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: context.xiDivider),
+          ),
+          child: Column(
+            children: [
+              if (loading)
+                const SizedBox(
+                  width: _size,
+                  height: _size,
+                  child: Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              else if (hasPhoto)
+                ClipOval(
+                  child: Image.network(
+                    favorite!.photoUrl!,
+                    width: _size,
+                    height: _size,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _emptySlot(context),
+                  ),
+                )
+              else
+                _emptySlot(context),
+              if (!loading && favorite?.nombre.isNotEmpty == true) ...[
+                const SizedBox(height: 6),
+                Text(
+                  favorite!.nombre,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Lumiare',
+                    fontSize: 10,
+                    color: context.xiTextPrimary,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _emptySlot(BuildContext context) {
+    return Container(
+      width: _size,
+      height: _size,
+      decoration: BoxDecoration(
+        color: context.xiTextSecondary.withValues(alpha: 0.18),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        Icons.add_rounded,
+        size: 28,
+        color: context.xiTextSecondary.withValues(alpha: 0.75),
       ),
     );
   }

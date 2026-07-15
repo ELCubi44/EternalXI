@@ -11,8 +11,9 @@ import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.da
 import 'package:eternal_xi/features/clash/shared/di/clash_providers.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/leagues/controller/leagues_controller.dart';
-import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
 import 'package:eternal_xi/features/profile/controller/profile_controller.dart';
+import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
+import 'package:eternal_xi/features/profile/controller/friends_pending_controller.dart';
 import 'package:eternal_xi/features/profile/controller/user_preferences_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -84,6 +85,11 @@ Future<void> main() async {
           create: (context) => ProfileController(
             userApiService: context.read<UserApiService>(),
             secureStorageService: context.read<SecureStorageService>(),
+          ),
+        ),
+        ChangeNotifierProvider<FriendsPendingController>(
+          create: (context) => FriendsPendingController(
+            context.read<UserApiService>(),
           ),
         ),
         ChangeNotifierProvider<AccountProgressController>(

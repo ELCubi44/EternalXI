@@ -11,6 +11,8 @@ import 'package:eternal_xi/data/models/league_participant.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
+import 'package:eternal_xi/features/profile/navigation/user_profile_navigation.dart';
+import 'package:eternal_xi/shared/widgets/user_profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -438,9 +440,15 @@ class _LeaguePrivateChatPanelState extends State<LeaguePrivateChatPanel> {
                   icon: const Icon(Icons.arrow_back_rounded),
                 ),
                 _PeerAvatar(
-                  photoUrl: peer.photoUrl,
-                  initial: peer.initial,
+                  userId: peer.id,
+                  photoPath: peer.photoPath,
+                  nickname: peer.nickname,
                   size: 40,
+                  onTap: () => UserProfileNavigation.openPublicProfile(
+                    context,
+                    userId: peer.id,
+                    nicknameHint: peer.nickname,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -474,6 +482,15 @@ class _LeaguePrivateChatPanelState extends State<LeaguePrivateChatPanel> {
                     onPressed: () => _addFriend(peer),
                     icon: const Icon(Icons.person_add_alt_1_rounded, size: 18),
                     label: Text(l10n.friendsAdd),
+                  )
+                else if (peer.solicitudPendiente)
+                  Text(
+                    l10n.friendsRequestSent,
+                    style: TextStyle(
+                      fontFamily: 'Lumiare',
+                      fontSize: 12,
+                      color: context.xiTextSecondary,
+                    ),
                   ),
               ],
             ),
@@ -526,7 +543,7 @@ class LeagueDmPeer {
   const LeagueDmPeer({
     required this.id,
     required this.nickname,
-    required this.photoUrl,
+    required this.photoPath,
     required this.initial,
     this.esAmigo = false,
     this.solicitudPendiente = false,
@@ -534,7 +551,7 @@ class LeagueDmPeer {
 
   final int id;
   final String nickname;
-  final String? photoUrl;
+  final String photoPath;
   final String initial;
   final bool esAmigo;
   final bool solicitudPendiente;
@@ -543,8 +560,8 @@ class LeagueDmPeer {
     final nick = t.nicknamePeer.trim();
     return LeagueDmPeer(
       id: t.idPeer,
-      nickname: nick.isEmpty ? '�' : nick,
-      photoUrl: t.resolvedPhotoUrl(),
+      nickname: nick.isEmpty ? '—' : nick,
+      photoPath: t.fotoPeer,
       initial: nick.isNotEmpty ? nick[0].toUpperCase() : '?',
       esAmigo: t.esAmigo,
     );
@@ -554,8 +571,8 @@ class LeagueDmPeer {
     final nick = p.nickname.trim();
     return LeagueDmPeer(
       id: p.idUsuario,
-      nickname: nick.isEmpty ? '�' : nick,
-      photoUrl: p.resolvedFotoUsuarioUrl(),
+      nickname: nick.isEmpty ? '—' : nick,
+      photoPath: p.fotoUsuario,
       initial: nick.isNotEmpty ? nick[0].toUpperCase() : '?',
     );
   }
@@ -567,7 +584,7 @@ class LeagueDmPeer {
     return LeagueDmPeer(
       id: id,
       nickname: nickname,
-      photoUrl: photoUrl,
+      photoPath: photoPath,
       initial: initial,
       esAmigo: esAmigo ?? this.esAmigo,
       solicitudPendiente: solicitudPendiente ?? this.solicitudPendiente,
@@ -584,7 +601,6 @@ class _DmThreadTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final nick = thread.nicknamePeer.trim();
-    final initial = nick.isNotEmpty ? nick[0].toUpperCase() : '?';
     final time = thread.ultimoEn != null
         ? DateFormat.Hm().format(thread.ultimoEn!)
         : '';
@@ -605,9 +621,15 @@ class _DmThreadTile extends StatelessWidget {
           child: Row(
             children: [
               _PeerAvatar(
-                photoUrl: thread.resolvedPhotoUrl(),
-                initial: initial,
+                userId: thread.idPeer,
+                photoPath: thread.fotoPeer,
+                nickname: nick.isEmpty ? null : nick,
                 size: 48,
+                onTap: () => UserProfileNavigation.openPublicProfile(
+                  context,
+                  userId: thread.idPeer,
+                  nicknameHint: nick.isEmpty ? null : nick,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -691,9 +713,15 @@ class _ParticipantPickTile extends StatelessWidget {
     final nick = participant.nickname.trim();
     return ListTile(
       leading: _PeerAvatar(
-        photoUrl: participant.resolvedFotoUsuarioUrl(),
-        initial: nick.isNotEmpty ? nick[0].toUpperCase() : '?',
+        userId: participant.idUsuario,
+        photoPath: participant.fotoUsuario,
+        nickname: nick.isEmpty ? null : nick,
         size: 40,
+        onTap: () => UserProfileNavigation.openPublicProfile(
+          context,
+          userId: participant.idUsuario,
+          nicknameHint: nick.isEmpty ? null : nick,
+        ),
       ),
       title: Text(
         nick.isEmpty ? '�' : nick,
@@ -707,51 +735,27 @@ class _ParticipantPickTile extends StatelessWidget {
 
 class _PeerAvatar extends StatelessWidget {
   const _PeerAvatar({
-    required this.photoUrl,
-    required this.initial,
+    required this.userId,
+    required this.photoPath,
+    this.nickname,
     this.size = 36,
+    this.onTap,
   });
 
-  final String? photoUrl;
-  final String initial;
+  final int userId;
+  final String photoPath;
+  final String? nickname;
   final double size;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: XiColors.royalBlue.withValues(alpha: 0.45),
-          width: 1.5,
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: photoUrl != null
-          ? Image.network(
-              photoUrl!,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => _fallback(),
-            )
-          : _fallback(),
-    );
-  }
-
-  Widget _fallback() {
-    return ColoredBox(
-      color: XiColors.royalBlue.withValues(alpha: 0.12),
-      child: Center(
-        child: Text(
-          initial,
-          style: TextStyle(
-            fontFamily: 'Lumiare',
-            fontSize: size * 0.38,
-            color: XiColors.royalBlue,
-          ),
-        ),
-      ),
+    return UserProfileAvatar(
+      userId: userId,
+      photoPath: photoPath.isEmpty ? null : photoPath,
+      nickname: nickname,
+      size: size,
+      onTap: onTap,
     );
   }
 }

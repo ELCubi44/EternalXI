@@ -13,47 +13,94 @@ class ClashCardEpicShowcase extends StatelessWidget {
   const ClashCardEpicShowcase({
     required this.entry,
     this.compact = false,
+    this.detailHero = false,
+    this.onLevelUpTap,
+    this.height,
     super.key,
   });
 
   final ClashCardCatalogEntry entry;
   final bool compact;
+  final bool detailHero;
+  final VoidCallback? onLevelUpTap;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
-    final height = compact
-        ? 280.0
-        : (MediaQuery.sizeOf(context).height * 0.68);
+    final resolvedHeight = height ??
+        (compact
+            ? 280.0
+            : (MediaQuery.sizeOf(context).height * 0.68));
+
+    final clampedHeight = this.height != null
+        ? resolvedHeight
+        : resolvedHeight.clamp(
+            compact ? 240.0 : 380.0,
+            compact ? 320.0 : 720.0,
+          );
+
+    if (compact) {
+      return SizedBox(
+        height: clampedHeight,
+        width: double.infinity,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              _EpicBackground(entry: entry),
+              _PortraitLayer(
+                entry: entry,
+                compact: true,
+                detailHero: detailHero,
+              ),
+              _CompactFooter(entry: entry),
+            ],
+          ),
+        ),
+      );
+    }
 
     return SizedBox(
-      height: height.clamp(compact ? 240.0 : 380.0, compact ? 320.0 : 720.0),
+      height: clampedHeight,
       width: double.infinity,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(compact ? 14 : 0),
-        child: Stack(
-          fit: StackFit.expand,
+        child: Column(
           children: [
-            _EpicBackground(entry: entry),
-            if (!compact)
-              Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black.withValues(alpha: 0.2),
-                        Colors.transparent,
-                        Colors.black.withValues(alpha: 0.35),
-                      ],
-                      stops: const [0, 0.5, 1],
+            Expanded(
+              child: Stack(
+                clipBehavior: Clip.hardEdge,
+                fit: StackFit.expand,
+                children: [
+                  _EpicBackground(entry: entry),
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withValues(alpha: 0.12),
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.18),
+                          ],
+                          stops: const [0, 0.55, 1],
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  _PortraitLayer(
+                    entry: entry,
+                    compact: false,
+                    detailHero: detailHero,
+                  ),
+                ],
               ),
-            _PortraitLayer(entry: entry, compact: compact),
-            if (!compact) _StatsPanel(entry: entry),
-            if (compact) _CompactFooter(entry: entry),
+            ),
+            _StatsPanel(
+              entry: entry,
+              onLevelUpTap: onLevelUpTap,
+            ),
           ],
         ),
       ),
@@ -94,56 +141,64 @@ class _EpicBackground extends StatelessWidget {
 }
 
 class _PortraitLayer extends StatelessWidget {
-  const _PortraitLayer({required this.entry, required this.compact});
+  const _PortraitLayer({
+    required this.entry,
+    required this.compact,
+    required this.detailHero,
+  });
 
   final ClashCardCatalogEntry entry;
   final bool compact;
+  final bool detailHero;
 
   @override
   Widget build(BuildContext context) {
     final rarity = entry.effectiveRarity;
-    final top = compact ? 28.0 : 40.0;
-    const statsReserve = 188.0;
+    final safeTop = MediaQuery.paddingOf(context).top;
+    final badgeRowHeight = compact
+        ? 52.0
+        : (detailHero ? 84.0 : 64.0);
+    final top = compact
+        ? 28.0
+        : (detailHero ? safeTop + 54.0 : 36.0);
+    final sideInset = compact ? 12.0 : 16.0;
 
     return Stack(
-      clipBehavior: Clip.none,
+      clipBehavior: Clip.hardEdge,
+      fit: StackFit.expand,
       children: [
-        if (!compact)
-          Positioned(
-            top: top + 48,
-            left: 24,
-            right: 24,
-            bottom: statsReserve + 8,
-            child: Center(
-              child: Image.asset(
-                ClashEpicAssets.auraGlow(rarity),
-                fit: BoxFit.contain,
-                color: ClashRarityBadge.color(rarity).withValues(alpha: 0.55),
-                colorBlendMode: BlendMode.srcATop,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-              ),
-            ),
-          ),
         Positioned(
           top: top,
-          left: compact ? 12 : 16,
-          right: compact ? 12 : 16,
+          left: sideInset,
+          right: sideInset,
+          height: badgeRowHeight,
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _RarityFrameBadge(rarity: rarity, compact: compact),
+              _RarityFrameBadge(
+                rarity: rarity,
+                compact: compact,
+                detailHero: detailHero,
+              ),
               const Spacer(),
-              _PwrBadge(power: entry.power, compact: compact),
+              _PwrBadge(
+                power: entry.power,
+                compact: compact,
+                detailHero: detailHero,
+              ),
             ],
           ),
         ),
         Positioned(
-          top: top + (compact ? 40 : 52),
-          left: compact ? 20 : 32,
-          right: compact ? 20 : 32,
-          bottom: compact ? 56 : statsReserve,
-          child: Center(
-            child: _PlayerPortrait(entry: entry, compact: compact),
+          top: top + badgeRowHeight + (compact ? 4.0 : 6.0),
+          left: compact ? 20 : 24,
+          right: compact ? 20 : 24,
+          bottom: compact ? 56 : 0,
+          child: ClipRect(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: _PlayerPortrait(entry: entry, compact: compact),
+            ),
           ),
         ),
       ],
@@ -152,14 +207,21 @@ class _PortraitLayer extends StatelessWidget {
 }
 
 class _RarityFrameBadge extends StatelessWidget {
-  const _RarityFrameBadge({required this.rarity, required this.compact});
+  const _RarityFrameBadge({
+    required this.rarity,
+    required this.compact,
+    this.detailHero = false,
+  });
 
   final ClashRarity rarity;
   final bool compact;
+  final bool detailHero;
 
   @override
   Widget build(BuildContext context) {
-    final size = compact ? 44.0 : 56.0;
+    final size = compact
+        ? 44.0
+        : (detailHero ? 76.0 : 56.0);
 
     final color = ClashRarityBadge.color(rarity);
 
@@ -185,7 +247,7 @@ class _RarityFrameBadge extends StatelessWidget {
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: color,
               fontWeight: FontWeight.w900,
-              fontSize: compact ? 10 : 12,
+              fontSize: compact ? 10 : (detailHero ? 16 : 12),
             ),
           ),
         ],
@@ -195,14 +257,21 @@ class _RarityFrameBadge extends StatelessWidget {
 }
 
 class _PwrBadge extends StatelessWidget {
-  const _PwrBadge({required this.power, required this.compact});
+  const _PwrBadge({
+    required this.power,
+    required this.compact,
+    this.detailHero = false,
+  });
 
   final int power;
   final bool compact;
+  final bool detailHero;
 
   @override
   Widget build(BuildContext context) {
-    final size = compact ? 52.0 : 64.0;
+    final size = compact
+        ? 52.0
+        : (detailHero ? 88.0 : 64.0);
 
     return SizedBox(
       width: size,
@@ -229,7 +298,7 @@ class _PwrBadge extends StatelessWidget {
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   color: XiColors.warmWhite,
                   fontWeight: FontWeight.w900,
-                  fontSize: compact ? 11 : 13,
+                  fontSize: compact ? 11 : (detailHero ? 16 : 13),
                   height: 1,
                 ),
               ),
@@ -238,7 +307,7 @@ class _PwrBadge extends StatelessWidget {
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: XiColors.classicGold,
                   fontWeight: FontWeight.w800,
-                  fontSize: compact ? 8 : 9,
+                  fontSize: compact ? 8 : (detailHero ? 11 : 9),
                   height: 1.1,
                 ),
               ),
@@ -310,9 +379,12 @@ class _InitialsFallback extends StatelessWidget {
 }
 
 class _StatsPanel extends StatelessWidget {
-  const _StatsPanel({required this.entry});
+  const _StatsPanel({required this.entry, this.onLevelUpTap});
 
   final ClashCardCatalogEntry entry;
+  final VoidCallback? onLevelUpTap;
+
+  static const _statSegment = 100;
 
   @override
   Widget build(BuildContext context) {
@@ -333,28 +405,19 @@ class _StatsPanel extends StatelessWidget {
         );
     final xpRatio = needed <= 0 ? 1.0 : (currentXp / needed).clamp(0.0, 1.0);
 
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        height: 188,
-        margin: const EdgeInsets.symmetric(horizontal: 10),
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              XiColors.navyBlue.withValues(alpha: 0.72),
-              XiColors.navyBlue.withValues(alpha: 0.98),
-            ],
-          ),
-          border: Border.all(
-            color: XiColors.classicGold.withValues(alpha: 0.65),
-            width: 1.5,
-          ),
+    return Container(
+      height: 208,
+      margin: const EdgeInsets.fromLTRB(10, 0, 10, 8),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+        color: XiColors.navyBlue.withValues(alpha: 0.98),
+        border: Border.all(
+          color: XiColors.classicGold.withValues(alpha: 0.65),
+          width: 1.5,
         ),
+      ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -377,7 +440,7 @@ class _StatsPanel extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${entry.team} · ${card.position.displayNameEs}',
+                          card.position.displayNameEs,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodySmall?.copyWith(
@@ -385,7 +448,7 @@ class _StatsPanel extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '${card.style.displayNameEs} · $levelLabel',
+                          card.style.displayNameEs,
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: XiColors.classicGold,
                             fontWeight: FontWeight.w700,
@@ -394,30 +457,52 @@ class _StatsPanel extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
                   SizedBox(
-                    width: 108,
+                    width: 116,
                     child: Column(
                       children: [
                         _EpicStatRow(
                           kind: ClashEpicStatKind.par,
                           label: 'PAR',
                           value: stats.save,
+                          segment: _statSegment,
                         ),
                         _EpicStatRow(
                           kind: ClashEpicStatKind.def,
                           label: 'DEF',
                           value: stats.defense,
+                          segment: _statSegment,
                         ),
                         _EpicStatRow(
                           kind: ClashEpicStatKind.pas,
                           label: 'PAS',
                           value: stats.pass,
+                          segment: _statSegment,
                         ),
                         _EpicStatRow(
                           kind: ClashEpicStatKind.reg,
                           label: 'REG',
                           value: stats.dribble,
+                          segment: _statSegment,
+                        ),
+                        _EpicStatRow(
+                          kind: ClashEpicStatKind.tir,
+                          label: 'TIR',
+                          value: stats.shot,
+                          segment: _statSegment,
+                        ),
+                        _EpicStatRow(
+                          kind: ClashEpicStatKind.pt,
+                          label: 'PT',
+                          value: stats.techniquePoints,
+                          segment: _statSegment,
+                        ),
+                        _EpicStatRow(
+                          kind: ClashEpicStatKind.res,
+                          label: 'RES',
+                          value: stats.stamina,
+                          segment: _statSegment,
                         ),
                       ],
                     ),
@@ -425,44 +510,60 @@ class _StatsPanel extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
+              Row(
                 children: [
-                  _EpicStatChip(
-                    kind: ClashEpicStatKind.tir,
-                    label: 'TIR',
-                    value: stats.shot,
+                  Text(
+                    levelLabel,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: XiColors.warmWhite,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                  _EpicStatChip(
-                    kind: ClashEpicStatKind.pt,
-                    label: 'PT',
-                    value: stats.techniquePoints,
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(999),
+                      child: LinearProgressIndicator(
+                        value: entry.isMaxLevel ? 1.0 : xpRatio,
+                        minHeight: 7,
+                        backgroundColor: Colors.black.withValues(alpha: 0.35),
+                        color: XiColors.classicGold,
+                      ),
+                    ),
                   ),
-                  _EpicStatChip(
-                    kind: ClashEpicStatKind.res,
-                    label: 'RES',
-                    value: stats.stamina,
+                  const SizedBox(width: 8),
+                  Material(
+                    color: XiColors.classicGold.withValues(alpha: 0.22),
+                    borderRadius: BorderRadius.circular(8),
+                    child: InkWell(
+                      onTap: entry.isMaxLevel ? null : onLevelUpTap,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: XiColors.classicGold.withValues(alpha: 0.8),
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.add_rounded,
+                          color: entry.isMaxLevel
+                              ? XiColors.warmWhite.withValues(alpha: 0.35)
+                              : XiColors.classicGold,
+                          size: 22,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
-              if (!entry.isMaxLevel) ...[
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(999),
-                  child: LinearProgressIndicator(
-                    value: xpRatio,
-                    minHeight: 6,
-                    backgroundColor: Colors.black.withValues(alpha: 0.35),
-                    color: XiColors.classicGold,
-                  ),
-                ),
-              ],
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }
 
@@ -535,54 +636,93 @@ class _EpicStatRow extends StatelessWidget {
     required this.kind,
     required this.label,
     required this.value,
+    required this.segment,
   });
 
   final ClashEpicStatKind kind;
   final String label;
   final int value;
+  final int segment;
 
   @override
   Widget build(BuildContext context) {
     final color = ClashEpicAssets.statColor(kind);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 3),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Row(
         children: [
           SizedBox(
-            width: 34,
+            width: 30,
             child: Text(
               label,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: color,
                 fontWeight: FontWeight.w800,
+                fontSize: 10,
               ),
             ),
           ),
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(3),
-              child: LinearProgressIndicator(
-                value: (value / 150).clamp(0.0, 1.0),
-                minHeight: 5,
-                backgroundColor: Colors.black.withValues(alpha: 0.35),
-                color: color,
-              ),
-            ),
-          ),
-          const SizedBox(width: 6),
+          Expanded(child: _LayeredStatBar(value: value, color: color, segment: segment)),
+          const SizedBox(width: 4),
           SizedBox(
-            width: 28,
+            width: 26,
             child: Text(
               '$value',
               textAlign: TextAlign.end,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: XiColors.warmWhite,
                 fontWeight: FontWeight.w800,
+                fontSize: 10,
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _LayeredStatBar extends StatelessWidget {
+  const _LayeredStatBar({
+    required this.value,
+    required this.color,
+    required this.segment,
+  });
+
+  final int value;
+  final Color color;
+  final int segment;
+
+  @override
+  Widget build(BuildContext context) {
+    final safeSegment = segment <= 0 ? 100 : segment;
+    final baseFill = (value.clamp(0, safeSegment)) / safeSegment;
+    final overflowFill = value > safeSegment
+        ? ((value - safeSegment).clamp(0, safeSegment)) / safeSegment
+        : 0.0;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(3),
+      child: SizedBox(
+        height: 5,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ColoredBox(color: Colors.black.withValues(alpha: 0.35)),
+            FractionallySizedBox(
+              alignment: Alignment.centerLeft,
+              widthFactor: baseFill.clamp(0.0, 1.0),
+              child: ColoredBox(color: color),
+            ),
+            if (overflowFill > 0)
+              FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: overflowFill.clamp(0.0, 1.0),
+                child: ColoredBox(color: XiColors.classicGold),
+              ),
+          ],
+        ),
       ),
     );
   }

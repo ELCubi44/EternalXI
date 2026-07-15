@@ -10,6 +10,8 @@ import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_data.dart';
 import 'package:eternal_xi/features/leagues/tabs/league_private_chat_panel.dart';
+import 'package:eternal_xi/features/profile/navigation/user_profile_navigation.dart';
+import 'package:eternal_xi/shared/widgets/user_profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -699,10 +701,19 @@ class _WhatsAppMessageRow extends StatelessWidget {
       ),
     );
 
-    final avatar = _ChatAvatar(
-      photoUrl: message.photoUrl,
-      initial: message.avatarInitial ?? '?',
-      isMine: isMine,
+    final avatar = UserProfileAvatar(
+      userId: message.idUsuario,
+      photoPath: message.photoUrl,
+      nickname: message.author,
+      size: 36,
+      ringColor: isMine ? XiColors.royalBlue : XiColors.classicGold,
+      onTap: isMine
+          ? null
+          : () => UserProfileNavigation.openPublicProfile(
+              context,
+              userId: message.idUsuario,
+              nicknameHint: message.author,
+            ),
     );
 
     final nick = Padding(
@@ -752,61 +763,6 @@ class _WhatsAppMessageRow extends StatelessWidget {
                 ),
               ],
       ),
-      ),
-    );
-  }
-}
-
-class _ChatAvatar extends StatelessWidget {
-  const _ChatAvatar({
-    required this.photoUrl,
-    required this.initial,
-    required this.isMine,
-  });
-
-  final String? photoUrl;
-  final String initial;
-  final bool isMine;
-
-  @override
-  Widget build(BuildContext context) {
-    final ring = isMine ? XiColors.royalBlue : XiColors.classicGold;
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: ring.withValues(alpha: 0.55), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: ring.withValues(alpha: 0.2),
-            blurRadius: 6,
-          ),
-        ],
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: photoUrl != null
-          ? Image.network(
-              photoUrl!,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => _initialFallback(ring),
-            )
-          : _initialFallback(ring),
-    );
-  }
-
-  Widget _initialFallback(Color ring) {
-    return ColoredBox(
-      color: ring.withValues(alpha: 0.15),
-      child: Center(
-        child: Text(
-          initial.toUpperCase(),
-          style: TextStyle(
-            fontFamily: 'Lumiare',
-            fontSize: 14,
-            color: ring,
-          ),
-        ),
       ),
     );
   }

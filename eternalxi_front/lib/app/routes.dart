@@ -61,6 +61,7 @@ class AppRoutes {
 
   static const profile = '/profile';
   static const profileFriends = '/profile/friends';
+  static String publicUserProfile(int userId) => '/profile/users/$userId';
   static const legalHub = '/legal';
   static String legalDocument(String type) => '/legal/$type';
   static const changeEmailRequest = '/profile/change-email';

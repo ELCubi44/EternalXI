@@ -27,13 +27,13 @@ public class RequestUserIdGuardFilter extends OncePerRequestFilter {
     );
 
     private static final Pattern USER_PATH = Pattern.compile("^/api/v1/users/(\\d+)(?:/|$)");
-    private static final Pattern USER_PHOTO_PATH =
-            Pattern.compile("^/api/v1/users/\\d+/photo$");
+    private static final Pattern USER_PUBLIC_READ_PATH =
+            Pattern.compile("^/api/v1/users/\\d+/(?:photo|public-profile)$");
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         return "GET".equalsIgnoreCase(request.getMethod())
-                && USER_PHOTO_PATH.matcher(request.getRequestURI()).matches();
+                && USER_PUBLIC_READ_PATH.matcher(request.getRequestURI()).matches();
     }
 
     @Override

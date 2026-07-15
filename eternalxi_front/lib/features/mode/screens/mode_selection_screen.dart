@@ -6,6 +6,8 @@ import 'package:eternal_xi/app/theme/xi_typography.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
+import 'package:eternal_xi/features/profile/controller/friends_pending_controller.dart';
+import 'package:eternal_xi/shared/widgets/pending_notification_badge.dart';
 import 'package:eternal_xi/features/profile/widgets/achievements_tab.dart';
 import 'package:eternal_xi/features/profile/widgets/progress_celebration_overlay.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +42,9 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
     final userId = context.read<AuthController>().currentUser?.id;
     if (userId == null) return;
     await context.read<AccountProgressController>().loadProgress(userId);
+    if (mounted) {
+      context.read<FriendsPendingController>().refresh(userId);
+    }
   }
 
   @override
@@ -47,6 +52,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final auth = context.watch<AuthController>();
+    final pending = context.watch<FriendsPendingController>().incomingCount;
     final user = auth.currentUser;
     final nickname = user?.nickname.trim();
     final greeting = (nickname != null && nickname.isNotEmpty)
@@ -100,11 +106,14 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
                           ],
                         ),
                       ),
-                      _ModeProfileButton(
-                        nickname: greeting,
-                        nivel: user?.nivel ?? 1,
-                        photoUrl: photoUrl,
-                        onTap: () => context.push(AppRoutes.profile),
+                      PendingNotificationBadge(
+                        count: pending,
+                        child: _ModeProfileButton(
+                          nickname: greeting,
+                          nivel: user?.nivel ?? 1,
+                          photoUrl: photoUrl,
+                          onTap: () => context.push(AppRoutes.profile),
+                        ),
                       ),
                     ],
                   ),

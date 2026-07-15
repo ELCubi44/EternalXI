@@ -2,6 +2,7 @@ import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/league_participant_lineup_history.dart';
+import 'package:eternal_xi/data/models/user_public_profile.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/navigation/league_inner_navigation.dart';
 import 'package:eternal_xi/features/leagues/utils/league_spanish_datetime.dart';
@@ -20,6 +21,7 @@ class ParticipantLineupHistoryScreen extends StatefulWidget {
     required this.idUsuarioSolicitante,
     this.idUsuarioParticipante,
     this.nickname,
+    this.leagueSummary,
   });
 
   final int idLiga;
@@ -27,6 +29,7 @@ class ParticipantLineupHistoryScreen extends StatefulWidget {
   final int idUsuarioSolicitante;
   final int? idUsuarioParticipante;
   final String? nickname;
+  final UserPublicLeagueSummary? leagueSummary;
 
   @override
   State<ParticipantLineupHistoryScreen> createState() =>
@@ -280,6 +283,10 @@ class _ParticipantLineupHistoryScreenState
                     style: theme.textTheme.headlineSmall?.copyWith(
                       ),
                   ),
+                  if (widget.leagueSummary != null) ...[
+                    const SizedBox(height: 12),
+                    _LeagueSeasonStatsHeader(summary: widget.leagueSummary!),
+                  ],
                   const SizedBox(height: 12),
                   SizedBox(
                     height: 44,
@@ -761,6 +768,106 @@ class _HistoryBenchPlayerBubble extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _LeagueSeasonStatsHeader extends StatelessWidget {
+  const _LeagueSeasonStatsHeader({required this.summary});
+
+  final UserPublicLeagueSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              summary.nombreLiga,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            if (summary.posicionFinal > 0) ...[
+              const SizedBox(height: 4),
+              Text(
+                'Posicion ${summary.posicionFinal} de ${summary.totalParticipantes} · ${summary.puntosFantasy} pts',
+                style: theme.textTheme.bodySmall,
+              ),
+            ],
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                if (summary.maxGoleador != null)
+                  _StatChip(
+                    label: 'Goleador',
+                    name: summary.maxGoleador!.nombre,
+                    value: '${summary.maxGoleador!.total} goles',
+                  ),
+                if (summary.maxAsistente != null)
+                  _StatChip(
+                    label: 'Asistencias',
+                    name: summary.maxAsistente!.nombre,
+                    value: '${summary.maxAsistente!.total}',
+                  ),
+                if (summary.maxPorteriasCero != null)
+                  _StatChip(
+                    label: 'Porterias a 0',
+                    name: summary.maxPorteriasCero!.nombre,
+                    value: '${summary.maxPorteriasCero!.total}',
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatChip extends StatelessWidget {
+  const _StatChip({
+    required this.label,
+    required this.name,
+    required this.value,
+  });
+
+  final String label;
+  final String name;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: 150,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: theme.colorScheme.surfaceContainerHighest,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: theme.textTheme.labelSmall),
+          const SizedBox(height: 2),
+          Text(
+            name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          Text(value, style: theme.textTheme.bodySmall),
+        ],
       ),
     );
   }

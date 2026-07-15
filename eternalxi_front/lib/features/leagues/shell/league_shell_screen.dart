@@ -20,6 +20,7 @@ import 'package:eternal_xi/features/leagues/tabs/league_tab_settings.dart';
 import 'package:eternal_xi/features/leagues/tabs/league_tab_squad.dart';
 import 'package:eternal_xi/features/leagues/tabs/league_tab_standings.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_notifications_panel.dart';
+import 'package:eternal_xi/features/leagues/widgets/league_season_wrap_overlay.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_shell_budget_bar.dart';
 import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.dart';
 import 'package:eternal_xi/shared/widgets/league_settings_icon.dart';
@@ -220,6 +221,13 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
         });
       }
       _loadRewardPoints(idUsuario);
+      if (mounted) {
+        await LeagueSeasonWrapOverlay.showIfNeeded(
+          context,
+          idLiga: widget.leagueId,
+          idUsuario: idUsuario,
+        );
+      }
     } catch (e) {
       if (mounted) {
         setState(() {

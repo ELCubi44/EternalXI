@@ -55,6 +55,11 @@ class PushNotificationHandler {
     if (idLiga == null || idLiga <= 0) {
       return;
     }
+    if (type == 'LEAGUE_SEASON_WRAP' || data['actionRoute'] == 'league_season_wrap') {
+      router.push(AppRoutes.leagueDetail(idLiga));
+      return;
+    }
+
     router.push(AppRoutes.leagueDetail(idLiga));
   }
 }

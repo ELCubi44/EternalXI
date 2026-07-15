@@ -8,6 +8,7 @@ import 'package:eternal_xi/data/models/league_dm_thread.dart';
 import 'package:eternal_xi/data/models/league_calendar_models.dart';
 import 'package:eternal_xi/data/models/catalog_team_player.dart';
 import 'package:eternal_xi/data/models/catalog_team_squad.dart';
+import 'package:eternal_xi/data/models/catalog_team_summary.dart';
 import 'package:eternal_xi/data/models/league_squad_response.dart';
 import 'package:eternal_xi/data/models/league_detail.dart';
 import 'package:eternal_xi/data/models/league_editable_lineup.dart';
@@ -26,6 +27,7 @@ import 'package:eternal_xi/data/models/league_buy_now_result.dart';
 import 'package:eternal_xi/data/models/league_sell_player_result.dart';
 import 'package:eternal_xi/data/models/league_squad_player.dart';
 import 'package:eternal_xi/data/models/league_round_standing_row.dart';
+import 'package:eternal_xi/data/models/league_season_wrap.dart';
 import 'package:eternal_xi/data/models/league_standing_row.dart';
 import 'package:eternal_xi/data/models/league_team_standing_row.dart';
 import 'package:eternal_xi/data/models/create_league_request.dart';
@@ -109,13 +111,35 @@ class LeaguesApiService {
     }
   }
 
-  /// GET /catalog/teams/{idEquipo}/players
-  Future<List<CatalogTeamPlayer>> getCatalogTeamPlayers({
-    required int idEquipo,
+  /// GET /catalog/teams?seasonId=
+  Future<List<CatalogTeamSummary>> fetchCatalogTeamsBySeason({
+    required int seasonId,
   }) async {
     try {
       final response = await _apiClient.dio.get(
+        '/catalog/teams',
+        queryParameters: {'seasonId': seasonId},
+      );
+      final rows = readLeagueListMap(response.data);
+      return rows.map(CatalogTeamSummary.fromJson).where((t) => t.id > 0).toList();
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  /// GET /catalog/teams/{idEquipo}/players
+  Future<List<CatalogTeamPlayer>> getCatalogTeamPlayers({
+    required int idEquipo,
+    int? seasonId,
+  }) async {
+    try {
+      final qp = <String, dynamic>{};
+      if (seasonId != null && seasonId > 0) {
+        qp['seasonId'] = seasonId;
+      }
+      final response = await _apiClient.dio.get(
         '/catalog/teams/$idEquipo/players',
+        queryParameters: qp.isEmpty ? null : qp,
       );
       final rows = readLeagueListMap(response.data);
       return rows.map(CatalogTeamPlayer.fromJson).toList();
@@ -626,6 +650,41 @@ class LeaguesApiService {
         throw const ApiException('Respuesta vacía del detalle de liga.');
       }
       return LeagueDetail.fromJson(map);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  /// GET /leagues/{idLiga}/season-wrap?idUsuario=
+  Future<LeagueSeasonWrap> getSeasonWrap({
+    required int idLiga,
+    required int idUsuario,
+  }) async {
+    try {
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.leagues}/$idLiga/season-wrap',
+        queryParameters: <String, dynamic>{'idUsuario': idUsuario},
+      );
+      final map = readLeagueSingleMap(response.data);
+      if (map.isEmpty) {
+        throw const ApiException('Respuesta vacía del resumen de temporada.');
+      }
+      return LeagueSeasonWrap.fromJson(map);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  /// POST /leagues/{idLiga}/season-wrap/seen?idUsuario=
+  Future<void> markSeasonWrapSeen({
+    required int idLiga,
+    required int idUsuario,
+  }) async {
+    try {
+      await _apiClient.dio.post(
+        '${ApiConstants.leagues}/$idLiga/season-wrap/seen',
+        queryParameters: <String, dynamic>{'idUsuario': idUsuario},
+      );
     } catch (e) {
       throw ApiException(_apiClient.extractErrorMessage(e));
     }

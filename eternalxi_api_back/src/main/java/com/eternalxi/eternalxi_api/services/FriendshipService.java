@@ -186,7 +186,10 @@ public class FriendshipService {
                 SELECT u.id, u.nickname, COALESCE(u.foto, '') AS foto
                 FROM usuarios u
                 WHERE u.id <> ?
-                  AND u.nickname LIKE ?
+                  AND (
+                      u.nickname LIKE ?
+                      OR ((u.id * 7919 + 104729) % 900000 + 100000) = ?
+                  )
                   AND u.id NOT IN (
                       SELECT id_usuario_bloqueado FROM usuario_bloqueados WHERE id_usuario = ?
                   )
@@ -197,13 +200,23 @@ public class FriendshipService {
                 LIMIT 20
                 """;
 
+        int tagCode = 0;
+        if (q.startsWith("#")) {
+            try {
+                tagCode = Integer.parseInt(q.substring(1).trim());
+            } catch (NumberFormatException ignored) {
+                tagCode = 0;
+            }
+        }
+
         try (Connection conn = DBConnection.getConnection()) {
             List<UserSearchResultResponse> rows = new ArrayList<>();
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setLong(1, idUsuario);
                 ps.setString(2, "%" + q + "%");
-                ps.setLong(3, idUsuario);
+                ps.setInt(3, tagCode);
                 ps.setLong(4, idUsuario);
+                ps.setLong(5, idUsuario);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         long peerId = rs.getLong("id");

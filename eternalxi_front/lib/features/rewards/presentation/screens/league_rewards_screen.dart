@@ -18,6 +18,8 @@ import 'package:eternal_xi/features/rewards/presentation/widgets/reward_card_gri
 import 'package:eternal_xi/features/rewards/presentation/widgets/reward_card_redeem_sheet.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/reward_pack_card.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/rewards_summary_header.dart';
+import 'package:eternal_xi/features/rewards/utils/reward_formatters.dart';
+import 'package:eternal_xi/shared/widgets/league_chip_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -120,10 +122,32 @@ class _LeagueRewardsScreenState extends State<LeagueRewardsScreen>
           final showCartas = s?.showCartasTab ?? false;
           final rl10n = context.rewardsL10n;
           final colorScheme = Theme.of(context).colorScheme;
+          final theme = Theme.of(context);
 
           return Scaffold(
             appBar: AppBar(
               title: Text(context.l10n.leagueRewards),
+              actions: [
+                if (s != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Center(
+                      child: ActionChip(
+                        avatar: const LeagueChipIcon(size: 20),
+                        label: Text(
+                          formatRewardPointsForChip(
+                            s.puntosRecompensaUsuario,
+                            compact: MediaQuery.sizeOf(context).width < 400,
+                            unit: rl10n.fichasUnit,
+                          ),
+                          style: theme.textTheme.labelLarge,
+                        ),
+                        onPressed: null,
+                        backgroundColor: colorScheme.secondaryContainer,
+                      ),
+                    ),
+                  ),
+              ],
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(22),
                 child: Align(

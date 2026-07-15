@@ -8,6 +8,7 @@ import 'package:eternal_xi/data/models/user_preferences_response.dart';
 import 'package:eternal_xi/data/models/user_resources_response.dart';
 import 'package:eternal_xi/data/models/user_model.dart';
 import 'package:eternal_xi/data/models/friendship.dart';
+import 'package:eternal_xi/data/models/user_public_profile.dart';
 import 'package:eternal_xi/data/models/user_search_result.dart';
 
 class UserApiService {
@@ -295,6 +296,37 @@ class UserApiService {
     try {
       await _apiClient.dio.delete(
         '${ApiConstants.users}/$idUsuario/friends/$idAmigo',
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<UserPublicProfile> getPublicProfile({
+    required int targetUserId,
+    int? viewerUserId,
+  }) async {
+    try {
+      final response = await _apiClient.dio.get(
+        '${ApiConstants.users}/$targetUserId/public-profile',
+        queryParameters: {
+          if (viewerUserId != null) 'idUsuario': viewerUserId,
+        },
+      );
+      return UserPublicProfile.fromJson(response.data as Map<String, dynamic>);
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<void> updateFavoritePlayer({
+    required int userId,
+    int? idJugador,
+  }) async {
+    try {
+      await _apiClient.dio.patch(
+        '${ApiConstants.users}/$userId/favorite-player',
+        data: {'idJugador': idJugador},
       );
     } catch (e) {
       throw ApiException(_apiClient.extractErrorMessage(e));
