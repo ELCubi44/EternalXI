@@ -197,7 +197,7 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
                             padding: const EdgeInsets.all(24),
                             child: Text(
                               _players.isEmpty
-                                  ? 'Aún no tienes jugadores elegibles. Alinea jugadores en una jornada que ya haya empezado.'
+                                  ? 'A\u00fan no tienes jugadores elegibles. Alinea jugadores en una jornada que ya haya empezado.'
                                   : 'No hay jugadores que coincidan.',
                               textAlign: TextAlign.center,
                               style: TextStyle(

@@ -9,7 +9,6 @@ import 'package:eternal_xi/data/services/user_api_service.dart';
 import 'package:eternal_xi/data/services/user_progress_api_service.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/leagues/screens/participant_lineup_history_screen.dart';
-import 'package:eternal_xi/features/profile/controller/friends_pending_controller.dart';
 import 'package:eternal_xi/features/profile/widgets/account_level_display.dart';
 import 'package:eternal_xi/features/profile/widgets/achievements_tab.dart';
 import 'package:eternal_xi/shared/widgets/user_profile_avatar.dart';
@@ -37,19 +36,20 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
   UserProgressResponse? _progress;
   bool _loading = true;
   String? _error;
-  bool _friendBusy = false;
 
   late final TabController _tabs;
 
   int? get _viewerId => context.read<AuthController>().currentUser?.id;
 
-  bool get _isOwnProfile =>
-      _viewerId != null && _viewerId == widget.userId;
-
   @override
   void initState() {
     super.initState();
-    _tabs = TabController(length: 2, vsync: this);
+    _tabs = TabController(length: 3, vsync: this);
+    _tabs.addListener(() {
+      if (!_tabs.indexIsChanging) {
+        setState(() {});
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
 
@@ -89,65 +89,6 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     }
   }
 
-  Future<void> _sendFriendRequest() async {
-    final viewer = _viewerId;
-    if (viewer == null || _profile == null || _friendBusy) return;
-    setState(() => _friendBusy = true);
-    try {
-      await context.read<UserApiService>().sendFriendRequest(
-        idUsuario: viewer,
-        idAmigo: _profile!.id,
-      );
-      await _load();
-      if (!mounted) return;
-      context.read<FriendsPendingController>().refresh(viewer);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text(context.l10n.friendsRequestSent),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text(
-            e is ApiException ? e.message : context.l10n.friendsLoadError,
-          ),
-        ),
-      );
-    } finally {
-      if (mounted) setState(() => _friendBusy = false);
-    }
-  }
-
-  Future<void> _acceptFriendRequest() async {
-    final viewer = _viewerId;
-    final profile = _profile;
-    if (viewer == null || profile?.idAmistad == null || _friendBusy) return;
-    setState(() => _friendBusy = true);
-    try {
-      await context.read<UserApiService>().acceptFriendRequest(
-        idUsuario: viewer,
-        idAmistad: profile!.idAmistad!,
-      );
-      await _load();
-      if (!mounted) return;
-      context.read<FriendsPendingController>().refresh(viewer);
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text(e is ApiException ? e.message : 'Error'),
-        ),
-      );
-    } finally {
-      if (mounted) setState(() => _friendBusy = false);
-    }
-  }
-
   void _openLeagueHistory(UserPublicLeagueSummary league) {
     final viewer = _viewerId;
     if (viewer == null) return;
@@ -165,10 +106,9 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     );
   }
 
-  Widget _buildHeader(ThemeData theme) {
+  Widget _buildPrincipalHeader(ThemeData theme) {
     final profile = _profile!;
     final progress = _progress;
-    final nivel = progress?.nivel ?? profile.nivel;
 
     Widget avatar = UserProfileAvatar(
       userId: profile.id,
@@ -210,31 +150,6 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
               ),
             ),
           ),
-          const SizedBox(height: 8),
-          if (progress != null)
-            AccountLevelDisplay(
-              compact: true,
-              nivel: progress.nivel,
-              rango: progress.rango,
-              xpEnNivel: progress.xpEnNivel,
-              xpParaSiguiente: progress.xpParaSiguienteNivel,
-            )
-          else
-            Text(
-              'Nivel $nivel',
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: context.xiTextSecondary,
-              ),
-            ),
-          if (!_isOwnProfile) ...[
-            const SizedBox(height: 16),
-            _FriendActionButton(
-              profile: profile,
-              busy: _friendBusy,
-              onSend: _sendFriendRequest,
-              onAccept: _acceptFriendRequest,
-            ),
-          ],
           if (profile.jugadorFavorito != null) ...[
             const SizedBox(height: 16),
             _FavoritePlayerCard(player: profile.jugadorFavorito!),
@@ -245,10 +160,73 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     );
   }
 
+  Widget _buildLeaguesTab(ThemeData theme) {
+    final ligas = _profile!.ligas;
+    if (ligas.isEmpty) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(24),
+        children: [
+          Text(
+            'Sin ligas finalizadas',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: context.xiTextSecondary,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return ListView.separated(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+      itemCount: ligas.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      itemBuilder: (context, index) {
+        final league = ligas[index];
+        return Card(
+          margin: EdgeInsets.zero,
+          child: ListTile(
+            title: Text(league.nombreLiga),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (league.posicionFinal > 0)
+                  Text(
+                    '${league.posicionFinal}\u00ba de ${league.totalParticipantes} \u00b7 ${league.puntosFantasy} pts',
+                  ),
+                if (league.maxGoleador != null)
+                  Text(
+                    'Goleador: ${league.maxGoleador!.nombre} (${league.maxGoleador!.total})',
+                    style: theme.textTheme.bodySmall,
+                  ),
+                if (league.maxAsistente != null)
+                  Text(
+                    'Asistencias: ${league.maxAsistente!.nombre} (${league.maxAsistente!.total})',
+                    style: theme.textTheme.bodySmall,
+                  ),
+                if (league.maxPorteriasCero != null)
+                  Text(
+                    'Porter\u00edas a 0: ${league.maxPorteriasCero!.nombre} (${league.maxPorteriasCero!.total})',
+                    style: theme.textTheme.bodySmall,
+                  ),
+              ],
+            ),
+            isThreeLine: true,
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () => _openLeagueHistory(league),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final showHeader = _tabs.index == 0;
 
     return Scaffold(
       backgroundColor: context.xiBackground,
@@ -262,7 +240,8 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                 controller: _tabs,
                 labelStyle: const TextStyle(fontFamily: 'Lumiare'),
                 tabs: const [
-                  Tab(text: 'Estadísticas'),
+                  Tab(text: 'Principal'),
+                  Tab(text: 'Ligas'),
                   Tab(text: 'Logros'),
                 ],
               ),
@@ -276,7 +255,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
           : Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildHeader(theme),
+                if (showHeader) _buildPrincipalHeader(theme),
                 Expanded(
                   child: TabBarView(
                     controller: _tabs,
@@ -287,62 +266,12 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
                           children: [
                             _StatsGrid(stats: _profile!.stats),
-                            const SizedBox(height: 22),
-                            Text(
-                              'Ligas',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            if (_profile!.ligas.isEmpty)
-                              Text(
-                                'Sin ligas finalizadas',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: context.xiTextSecondary,
-                                ),
-                              )
-                            else
-                              ..._profile!.ligas.map(
-                                (league) => Card(
-                                  margin: const EdgeInsets.only(bottom: 8),
-                                  child: ListTile(
-                                    title: Text(league.nombreLiga),
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        if (league.posicionFinal > 0)
-                                          Text(
-                                            '${league.posicionFinal}º de ${league.totalParticipantes} · ${league.puntosFantasy} pts',
-                                          ),
-                                        if (league.maxGoleador != null)
-                                          Text(
-                                            'Goleador: ${league.maxGoleador!.nombre} (${league.maxGoleador!.total})',
-                                            style: theme.textTheme.bodySmall,
-                                          ),
-                                        if (league.maxAsistente != null)
-                                          Text(
-                                            'Asistencias: ${league.maxAsistente!.nombre} (${league.maxAsistente!.total})',
-                                            style: theme.textTheme.bodySmall,
-                                          ),
-                                        if (league.maxPorteriasCero != null)
-                                          Text(
-                                            'Porterías a 0: ${league.maxPorteriasCero!.nombre} (${league.maxPorteriasCero!.total})',
-                                            style: theme.textTheme.bodySmall,
-                                          ),
-                                      ],
-                                    ),
-                                    isThreeLine: true,
-                                    trailing: const Icon(
-                                      Icons.chevron_right_rounded,
-                                    ),
-                                    onTap: () => _openLeagueHistory(league),
-                                  ),
-                                ),
-                              ),
                           ],
                         ),
+                      ),
+                      RefreshIndicator(
+                        onRefresh: _load,
+                        child: _buildLeaguesTab(theme),
                       ),
                       RefreshIndicator(
                         onRefresh: _load,
@@ -361,60 +290,6 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
   }
 }
 
-class _FriendActionButton extends StatelessWidget {
-  const _FriendActionButton({
-    required this.profile,
-    required this.busy,
-    required this.onSend,
-    required this.onAccept,
-  });
-
-  final UserPublicProfile profile;
-  final bool busy;
-  final VoidCallback onSend;
-  final VoidCallback onAccept;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-
-    if (profile.isFriend) {
-      return FilledButton.tonal(
-        onPressed: null,
-        child: Text(l10n.friendsTabFriends),
-      );
-    }
-    if (profile.isPendingOutgoing) {
-      return FilledButton.tonal(
-        onPressed: null,
-        child: Text(l10n.friendsRequestSent),
-      );
-    }
-    if (profile.isPendingIncoming) {
-      return FilledButton(
-        onPressed: busy ? null : onAccept,
-        child: busy
-            ? const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : Text(l10n.friendsAccept),
-      );
-    }
-    return FilledButton(
-      onPressed: busy ? null : onSend,
-      child: busy
-          ? const SizedBox(
-              width: 18,
-              height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : Text(l10n.friendsAdd),
-    );
-  }
-}
-
 class _StatsGrid extends StatelessWidget {
   const _StatsGrid({required this.stats});
 
@@ -426,7 +301,7 @@ class _StatsGrid extends StatelessWidget {
       _StatTile(label: 'Ligas ganadas', value: '${stats.ligasGanadas}'),
       _StatTile(label: 'Goles', value: '${stats.goles}'),
       _StatTile(label: 'Asistencias', value: '${stats.asistencias}'),
-      _StatTile(label: 'Porterías a 0', value: '${stats.porteriasCero}'),
+      _StatTile(label: 'Porter\u00edas a 0', value: '${stats.porteriasCero}'),
       _StatTile(label: 'Lesiones', value: '${stats.lesiones}'),
       _StatTile(label: 'Sanciones', value: '${stats.sanciones}'),
     ];
