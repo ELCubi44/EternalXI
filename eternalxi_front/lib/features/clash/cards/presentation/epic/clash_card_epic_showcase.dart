@@ -1,6 +1,7 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/core/utils/league_asset_urls.dart';
+import 'package:eternal_xi/core/widgets/transparent_network_image.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_table.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
@@ -8,7 +9,7 @@ import 'package:eternal_xi/features/clash/cards/presentation/epic/clash_epic_ass
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_rarity_badge.dart';
 import 'package:flutter/material.dart';
 
-/// Presentaciùn ùpica de carta Clash (detalle o tile compacto).
+/// Presentacion epica de carta Clash (detalle o tile compacto).
 class ClashCardEpicShowcase extends StatelessWidget {
   const ClashCardEpicShowcase({
     required this.entry,
@@ -100,23 +101,24 @@ class _PortraitLayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rarity = entry.effectiveRarity;
-    final portraitHeight = compact ? 130.0 : 240.0;
-    final top = compact ? 28.0 : 56.0;
+    final portraitHeight = compact ? 130.0 : 300.0;
+    final top = compact ? 28.0 : 48.0;
 
     return Stack(
+      clipBehavior: Clip.none,
       children: [
         if (!compact)
           Positioned(
-            top: top + 20,
+            top: top + 36,
             left: 0,
             right: 0,
             child: Center(
               child: Image.asset(
                 ClashEpicAssets.auraGlow(rarity),
-                width: 260,
-                height: 260,
+                width: 280,
+                height: 280,
                 fit: BoxFit.contain,
-                color: ClashRarityBadge.color(rarity).withValues(alpha: 0.85),
+                color: ClashRarityBadge.color(rarity).withValues(alpha: 0.65),
                 colorBlendMode: BlendMode.srcATop,
                 errorBuilder: (_, __, ___) => const SizedBox.shrink(),
               ),
@@ -124,8 +126,8 @@ class _PortraitLayer extends StatelessWidget {
           ),
         Positioned(
           top: top,
-          left: compact ? 12 : 24,
-          right: compact ? 12 : 24,
+          left: compact ? 12 : 20,
+          right: compact ? 12 : 20,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -136,11 +138,11 @@ class _PortraitLayer extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: top + (compact ? 36 : 48),
-          left: compact ? 24 : 48,
-          right: compact ? 24 : 48,
+          top: top + (compact ? 36 : 52),
+          left: compact ? 16 : 32,
+          right: compact ? 16 : 32,
           height: portraitHeight,
-          child: _PlayerPortrait(entry: entry),
+          child: _PlayerPortrait(entry: entry, compact: compact),
         ),
       ],
     );
@@ -157,6 +159,8 @@ class _RarityFrameBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = compact ? 44.0 : 56.0;
 
+    final color = ClashRarityBadge.color(rarity);
+
     return SizedBox(
       width: size,
       height: size,
@@ -166,12 +170,18 @@ class _RarityFrameBadge extends StatelessWidget {
           Image.asset(
             ClashEpicAssets.rarityBadgeFrame(rarity),
             fit: BoxFit.contain,
-            errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+            errorBuilder: (_, __, ___) => DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: color.withValues(alpha: 0.85), width: 2),
+                color: Colors.black.withValues(alpha: 0.45),
+              ),
+            ),
           ),
           Text(
             ClashRarityBadge.label(rarity),
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: ClashRarityBadge.color(rarity),
+              color: color,
               fontWeight: FontWeight.w900,
               fontSize: compact ? 10 : 12,
             ),
@@ -239,9 +249,10 @@ class _PwrBadge extends StatelessWidget {
 }
 
 class _PlayerPortrait extends StatelessWidget {
-  const _PlayerPortrait({required this.entry});
+  const _PlayerPortrait({required this.entry, required this.compact});
 
   final ClashCardCatalogEntry entry;
+  final bool compact;
 
   String? get _photoUrl {
     final id = entry.playerId;
@@ -255,17 +266,26 @@ class _PlayerPortrait extends StatelessWidget {
   Widget build(BuildContext context) {
     final url = _photoUrl;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: url == null
-          ? _InitialsFallback(name: entry.name)
-          : Image.network(
-              url,
-              fit: BoxFit.cover,
-              alignment: Alignment.topCenter,
-              errorBuilder: (_, __, ___) =>
-                  _InitialsFallback(name: entry.name),
-            ),
+    if (url == null) {
+      return _InitialsFallback(name: entry.name);
+    }
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.35),
+            blurRadius: compact ? 12 : 18,
+            offset: Offset(0, compact ? 6 : 10),
+          ),
+        ],
+      ),
+      child: TransparentNetworkImage(
+        url: url,
+        fit: BoxFit.contain,
+        alignment: Alignment.bottomCenter,
+        errorBuilder: (context) => _InitialsFallback(name: entry.name),
+      ),
     );
   }
 }
@@ -324,29 +344,35 @@ class _StatsPanel extends StatelessWidget {
     return Align(
       alignment: Alignment.bottomCenter,
       child: SizedBox(
-        height: 240,
+        height: 220,
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
-              ClashEpicAssets.statsPanel,
-              fit: BoxFit.fill,
-              alignment: Alignment.bottomCenter,
-              errorBuilder: (_, __, ___) => DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      XiColors.navyBlue.withValues(alpha: 0.92),
-                    ],
-                  ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    XiColors.navyBlue.withValues(alpha: 0.55),
+                    XiColors.navyBlue.withValues(alpha: 0.96),
+                  ],
+                  stops: const [0, 0.35, 1],
                 ),
               ),
             ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Image.asset(
+                ClashEpicAssets.statsPanel,
+                fit: BoxFit.fitWidth,
+                alignment: Alignment.bottomCenter,
+                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+              ),
+            ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 36, 16, 14),
+              padding: const EdgeInsets.fromLTRB(16, 28, 16, 14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -378,7 +404,7 @@ class _StatsPanel extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '${card.style.displayNameEs} ù $levelLabel',
+                              '${card.style.displayNameEs} ∑ $levelLabel',
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: XiColors.classicGold,
                                 fontWeight: FontWeight.w700,
