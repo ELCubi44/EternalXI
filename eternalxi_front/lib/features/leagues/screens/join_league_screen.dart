@@ -6,6 +6,7 @@ import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/shared/widgets/app_loading_overlay.dart';
 import 'package:eternal_xi/shared/widgets/app_primary_button.dart';
 import 'package:eternal_xi/shared/widgets/app_text_field.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -112,67 +113,70 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return AppLoadingOverlay(
-      isLoading: _submitting,
-      child: Scaffold(
-        appBar: AppBar(title: Text(l10n.joinLeague)),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  l10n.joinLeagueDescription,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                AppTextField(
-                  controller: _codeController,
-                  label: l10n.invitationCode,
-                  hintText: l10n.invitationHint,
-                  textCapitalization: TextCapitalization.characters,
-                  textInputAction: TextInputAction.done,
-                  validator: (value) => Validators.invitationCode(value, l10n),
-                ),
-                if (_error != null) ...[
-                  const SizedBox(height: 16),
-                  Material(
-                    color: colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(12),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(
-                            Icons.error_outline,
-                            color: colorScheme.onErrorContainer,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              _error!,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onErrorContainer,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+    return WithFantasyAtmosphere(
+      child: AppLoadingOverlay(
+        isLoading: _submitting,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(title: Text(l10n.joinLeague)),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    l10n.joinLeagueDescription,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
+                  const SizedBox(height: 24),
+                  AppTextField(
+                    controller: _codeController,
+                    label: l10n.invitationCode,
+                    hintText: l10n.invitationHint,
+                    textCapitalization: TextCapitalization.characters,
+                    textInputAction: TextInputAction.done,
+                    validator: (value) => Validators.invitationCode(value, l10n),
+                  ),
+                  if (_error != null) ...[
+                    const SizedBox(height: 16),
+                    Material(
+                      color: colorScheme.errorContainer,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              color: colorScheme.onErrorContainer,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                _error!,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onErrorContainer,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 28),
+                  AppPrimaryButton(
+                    label: l10n.join,
+                    isLoading: _submitting,
+                    onPressed: _submitting ? null : _submit,
+                  ),
                 ],
-                const SizedBox(height: 28),
-                AppPrimaryButton(
-                  label: l10n.join,
-                  isLoading: _submitting,
-                  onPressed: _submitting ? null : _submit,
-                ),
-              ],
+              ),
             ),
           ),
         ),

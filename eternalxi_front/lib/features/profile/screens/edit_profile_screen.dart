@@ -16,6 +16,7 @@ import 'package:eternal_xi/features/profile/controller/profile_controller.dart';
 import 'package:eternal_xi/features/profile/widgets/account_level_display.dart';
 import 'package:eternal_xi/features/profile/widgets/favorite_player_slot.dart';
 import 'package:eternal_xi/shared/widgets/app_loading_overlay.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -250,11 +251,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final userId = auth.currentUser?.id;
     final initial = _initials(user?.nickname);
 
-    return AppLoadingOverlay(
-      isLoading: profile.isLoading,
-      child: Scaffold(
-        backgroundColor: context.xiBackground,
-        body: CustomScrollView(
+    return WithFantasyAtmosphere(
+      child: AppLoadingOverlay(
+        isLoading: profile.isLoading,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
             SliverAppBar(
@@ -433,6 +435,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

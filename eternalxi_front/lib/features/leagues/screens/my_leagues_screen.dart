@@ -12,6 +12,7 @@ import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/legal/widgets/age_confirmation_dialog.dart';
 import 'package:eternal_xi/features/leagues/controller/leagues_controller.dart';
 import 'package:eternal_xi/core/utils/league_asset_urls.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:eternal_xi/shared/widgets/league_participants_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -62,9 +63,10 @@ class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
           )
         : null;
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Column(
+    return WithFantasyAtmosphere(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Column(
             children: [
               // ── Header personalizado ──────────────────────────────
               SafeArea(
@@ -149,6 +151,7 @@ class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
                       ),
               ),
             ],
+        ),
       ),
     );
   }

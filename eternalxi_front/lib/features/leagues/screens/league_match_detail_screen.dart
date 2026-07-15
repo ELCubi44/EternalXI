@@ -14,6 +14,7 @@ import 'package:eternal_xi/features/leagues/utils/league_spanish_datetime.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_match_lineups_tab.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_match_timeline_tab.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -442,16 +443,17 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
     final ll = context.leagueL10n;
     final payload = _payload;
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text(
-          _appBarTitle(),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+    return WithFantasyAtmosphere(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(
+            _appBarTitle(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
-      ),
-      body: RefreshIndicator(
+        body: RefreshIndicator(
         onRefresh: () async {
           _stopLivePolling();
           await _load();
@@ -538,6 +540,7 @@ class _LeagueMatchDetailScreenState extends State<LeagueMatchDetailScreen> {
             ],
           ],
         ),
+      ),
       ),
     );
   }

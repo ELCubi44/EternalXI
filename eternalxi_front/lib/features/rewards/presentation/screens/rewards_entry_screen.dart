@@ -4,6 +4,7 @@ import 'package:eternal_xi/data/models/league_summary.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/leagues/controller/leagues_controller.dart';
 import 'package:eternal_xi/features/rewards/presentation/screens/league_rewards_screen.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -39,32 +40,33 @@ class _RewardsEntryScreenState extends State<RewardsEntryScreen> {
     final user = context.watch<AuthController>().currentUser;
     final leagues = context.watch<LeaguesController>();
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text(context.l10n.rewards),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(22),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16, bottom: 8),
-              child: Text(
-                l10n.shopSubtitle,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+    return WithFantasyAtmosphere(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(context.l10n.rewards),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(22),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, bottom: 8),
+                child: Text(
+                  l10n.shopSubtitle,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-      body: user == null || user.id <= 0
-          ? _Message(
-              icon: Icons.person_off_outlined,
-              text: l10n.noUserSession,
-            )
-          : RefreshIndicator(
+        body: user == null || user.id <= 0
+            ? _Message(
+                icon: Icons.person_off_outlined,
+                text: l10n.noUserSession,
+              )
+            : RefreshIndicator(
               color: colorScheme.primary,
               onRefresh: _load,
               child: ListView(
@@ -120,6 +122,7 @@ class _RewardsEntryScreenState extends State<RewardsEntryScreen> {
                 ],
               ),
             ),
+      ),
     );
   }
 }

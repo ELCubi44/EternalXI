@@ -66,9 +66,10 @@ abstract final class XiColors {
     onError: warmWhite,
     errorContainer: Color(0xFF5C1210),
     onErrorContainer: Color(0xFFFFB3AE),
-    surface: nightBlue,
+    // Transparente: el Material de cada ruta no tapa el fondo atmosferico.
+    surface: Color(0x00000000),
     onSurface: warmWhite,
-    surfaceContainerLowest: uniformBlack,
+    surfaceContainerLowest: Color(0x00000000),
     surfaceContainerLow: Color(0xFF111111),
     surfaceContainer: Color(0xFF161616),
     surfaceContainerHigh: Color(0xFF222222),

@@ -18,6 +18,7 @@ import 'package:eternal_xi/features/rewards/presentation/widgets/reward_card_gri
 import 'package:eternal_xi/features/rewards/presentation/widgets/reward_card_redeem_sheet.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/reward_pack_card.dart';
 import 'package:eternal_xi/features/rewards/presentation/widgets/rewards_summary_header.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -122,36 +123,37 @@ class _LeagueRewardsScreenState extends State<LeagueRewardsScreen>
           final colorScheme = Theme.of(context).colorScheme;
           final theme = Theme.of(context);
 
-          return Scaffold(
-            backgroundColor: Colors.transparent,
-            appBar: AppBar(
-              title: Text(context.l10n.leagueRewards),
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(22),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 16, bottom: 8),
-                    child: Text(
-                      rl10n.shopSubtitle,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+          return WithFantasyAtmosphere(
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                title: Text(context.l10n.leagueRewards),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(22),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16, bottom: 8),
+                      child: Text(
+                        rl10n.shopSubtitle,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            body: c.loadingSummary && s == null
-                ? const Center(child: CircularProgressIndicator())
-                : c.errorMessage != null && s == null
-                ? _ErrorBody(
-                    message: c.errorMessage!,
-                    onRetry: () => _reloadAll(context.read<RewardsController>()),
-                  )
-                : s == null || _tabs == null
-                ? const SizedBox.shrink()
-                : Column(
+              body: c.loadingSummary && s == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : c.errorMessage != null && s == null
+                  ? _ErrorBody(
+                      message: c.errorMessage!,
+                      onRetry: () => _reloadAll(context.read<RewardsController>()),
+                    )
+                  : s == null || _tabs == null
+                  ? const SizedBox.shrink()
+                  : Column(
                     children: [
                       Expanded(
                         child: NestedScrollView(
@@ -244,6 +246,7 @@ class _LeagueRewardsScreenState extends State<LeagueRewardsScreen>
                       ),
                     ],
                   ),
+            ),
           );
         },
       ),

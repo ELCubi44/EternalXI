@@ -12,6 +12,7 @@ import 'package:eternal_xi/core/utils/user_public_tag.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/profile/controller/friends_pending_controller.dart';
 import 'package:eternal_xi/features/profile/navigation/user_profile_navigation.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:eternal_xi/shared/widgets/user_profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -245,36 +246,37 @@ class _FriendsScreenState extends State<FriendsScreen>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
-    return Scaffold(
-      backgroundColor: context.xiBackground,
-      appBar: AppBar(
-        title: Text(l10n.friendsTitle),
-        backgroundColor: context.xiBackground,
-        foregroundColor: context.xiTextPrimary,
-        bottom: TabBar(
-          controller: _tabs,
-          labelStyle: const TextStyle(
-            fontFamily: 'Lumiare',
-          ),
-          tabs: [
-            Tab(text: l10n.friendsTabFriends),
-            Tab(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(l10n.friendsTabRequests),
-                  if (_incoming.isNotEmpty) ...[
-                    const SizedBox(width: 6),
-                    _BadgeCount(count: _incoming.length),
-                  ],
-                ],
-              ),
+    return WithFantasyAtmosphere(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(l10n.friendsTitle),
+          backgroundColor: context.xiBackground,
+          foregroundColor: context.xiTextPrimary,
+          bottom: TabBar(
+            controller: _tabs,
+            labelStyle: const TextStyle(
+              fontFamily: 'Lumiare',
             ),
-          ],
+            tabs: [
+              Tab(text: l10n.friendsTabFriends),
+              Tab(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(l10n.friendsTabRequests),
+                    if (_incoming.isNotEmpty) ...[
+                      const SizedBox(width: 6),
+                      _BadgeCount(count: _incoming.length),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-      body: Column(
-        children: [
+        body: Column(
+          children: [
           if (_showSearchBar)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
@@ -371,6 +373,7 @@ class _FriendsScreenState extends State<FriendsScreen>
                   ),
           ),
         ],
+        ),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/rewards/presentation/screens/league_rewards_screen.dart';
 import 'package:eternal_xi/features/rewards/presentation/screens/rewards_entry_screen.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -71,29 +72,33 @@ class _RewardsHubScreenState extends State<RewardsHubScreen> {
     final rl10n = context.rewardsL10n;
     if (id != null && id > 0) {
       if (user == null || user.id <= 0) {
-        return Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(title: Text(context.l10n.rewards)),
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(
-                rl10n.noUserSession,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      height: 1.35,
-                    ),
+        return WithFantasyAtmosphere(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(title: Text(context.l10n.rewards)),
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  rl10n.noUserSession,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        height: 1.35,
+                      ),
+                ),
               ),
             ),
           ),
         );
       }
       if (_loadingName || _leagueName == null) {
-        return Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(title: Text(context.l10n.leagueRewards)),
-          body: const Center(child: CircularProgressIndicator()),
+        return WithFantasyAtmosphere(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(title: Text(context.l10n.leagueRewards)),
+            body: const Center(child: CircularProgressIndicator()),
+          ),
         );
       }
       return LeagueRewardsScreen(

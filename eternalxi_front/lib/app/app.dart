@@ -4,7 +4,6 @@ import 'package:eternal_xi/app/theme/xi_typography.dart';
 import 'package:eternal_xi/core/notifications/push_notification_handler.dart';
 import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/profile/controller/user_preferences_controller.dart';
-import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -432,17 +431,6 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
     ));
   }
 
-  /// Path actual sin tumbar el arranque (GoRouter puede ir vacio un frame).
-  static String _safeRoutePath() {
-    try {
-      final config = appRouter.routerDelegate.currentConfiguration;
-      if (config.isEmpty) return '/';
-      return config.uri.path;
-    } catch (_) {
-      return '/';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final preferences = context.watch<UserPreferencesController>();
@@ -454,7 +442,7 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       localeResolutionCallback: AppLocalizations.localeResolutionCallback,
-      // Look oscuro negro; estadio N solo en Fantasy / modo / perfil.
+      // Look oscuro negro. El estadio N se aplica por pantalla (Fantasy/modo/perfil).
       themeMode: ThemeMode.dark,
       theme: _lightTheme,
       darkTheme: _theme,
@@ -473,39 +461,15 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
             navigator.pop();
           }
         },
-        child: ListenableBuilder(
-          listenable: appRouter.routerDelegate,
-          builder: (context, _) {
-            final path = _safeRoutePath();
-            final showAtmosphere =
-                FantasyAtmosphereBackground.appliesTo(path);
-            final baseTheme = Theme.of(context);
-            // MaterialPage usa colorScheme.surface: si es opaco tapa el estadio.
-            final pageTheme = showAtmosphere
-                ? baseTheme.copyWith(
-                    colorScheme: baseTheme.colorScheme.copyWith(
-                      surface: Colors.transparent,
-                      surfaceContainerLowest: Colors.transparent,
-                    ),
-                  )
-                : baseTheme;
-
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                if (showAtmosphere)
-                  const FantasyAtmosphereBackground()
-                else
-                  const ColoredBox(color: Color(0xFF0A0A0A)),
-                Theme(
-                  data: pageTheme,
-                  child: XiTypographyScope(
-                    child: child ?? const SizedBox.shrink(),
-                  ),
-                ),
-              ],
-            );
-          },
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Base negra para Clash/auth/splash. Fantasy añade su estadio encima.
+            const ColoredBox(color: Color(0xFF0A0A0A)),
+            XiTypographyScope(
+              child: child ?? const SizedBox.shrink(),
+            ),
+          ],
         ),
       ),
     );

@@ -13,6 +13,7 @@ import 'package:eternal_xi/features/leagues/screens/participant_lineup_history_s
 import 'package:eternal_xi/features/profile/widgets/account_level_display.dart';
 import 'package:eternal_xi/features/profile/widgets/achievements_tab.dart';
 import 'package:eternal_xi/features/profile/widgets/favorite_player_slot.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:eternal_xi/shared/widgets/user_profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -376,58 +377,60 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     final l10n = context.l10n;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      backgroundColor: context.xiBackground,
-      appBar: AppBar(
-        title: Text(l10n.profile),
-        backgroundColor: context.xiBackground,
-        foregroundColor: context.xiTextPrimary,
-        bottom: _loading || _error != null || _profile == null
-            ? null
-            : TabBar(
-                controller: _tabs,
-                labelStyle: XiTypography.lumiare(fontSize: 13),
-                tabs: const [
-                  Tab(text: 'Principal'),
-                  Tab(text: 'Ligas'),
-                  Tab(text: 'Logros'),
+    return WithFantasyAtmosphere(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(l10n.profile),
+          backgroundColor: context.xiBackground,
+          foregroundColor: context.xiTextPrimary,
+          bottom: _loading || _error != null || _profile == null
+              ? null
+              : TabBar(
+                  controller: _tabs,
+                  labelStyle: XiTypography.lumiare(fontSize: 13),
+                  tabs: const [
+                    Tab(text: 'Principal'),
+                    Tab(text: 'Ligas'),
+                    Tab(text: 'Logros'),
+                  ],
+                ),
+        ),
+        body: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+            ? Center(child: Text(_error!))
+            : _profile == null
+            ? const SizedBox.shrink()
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabs,
+                      children: [
+                        RefreshIndicator(
+                          onRefresh: _load,
+                          child: _buildPrincipalTab(theme),
+                        ),
+                        RefreshIndicator(
+                          onRefresh: _load,
+                          child: _buildLeaguesTab(theme),
+                        ),
+                        RefreshIndicator(
+                          onRefresh: _load,
+                          child: AchievementsTab(
+                            progressOverride: _progress,
+                            showLevelHeader: false,
+                            onRetry: _load,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-          ? Center(child: Text(_error!))
-          : _profile == null
-          ? const SizedBox.shrink()
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabs,
-                    children: [
-                      RefreshIndicator(
-                        onRefresh: _load,
-                        child: _buildPrincipalTab(theme),
-                      ),
-                      RefreshIndicator(
-                        onRefresh: _load,
-                        child: _buildLeaguesTab(theme),
-                      ),
-                      RefreshIndicator(
-                        onRefresh: _load,
-                        child: AchievementsTab(
-                          progressOverride: _progress,
-                          showLevelHeader: false,
-                          onRetry: _load,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
     );
   }
 }

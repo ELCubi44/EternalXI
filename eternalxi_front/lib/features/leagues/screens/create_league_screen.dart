@@ -11,6 +11,7 @@ import 'package:eternal_xi/features/leagues/widgets/create_league_advanced_confi
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/shared/widgets/app_loading_overlay.dart';
 import 'package:eternal_xi/shared/widgets/app_primary_button.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:eternal_xi/features/profile/controller/user_preferences_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -188,21 +189,23 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return AppLoadingOverlay(
-      isLoading: _submitting,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.createLeague),
-          actions: [
-            if (!_seasonsLoading && _seasons.isEmpty)
-              IconButton(
-                tooltip: l10n.retry,
-                onPressed: _submitting ? null : _loadSeasons,
-                icon: const Icon(Icons.refresh_rounded),
-              ),
-          ],
-        ),
-        body: SingleChildScrollView(
+    return WithFantasyAtmosphere(
+      child: AppLoadingOverlay(
+        isLoading: _submitting,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            title: Text(l10n.createLeague),
+            actions: [
+              if (!_seasonsLoading && _seasons.isEmpty)
+                IconButton(
+                  tooltip: l10n.retry,
+                  onPressed: _submitting ? null : _loadSeasons,
+                  icon: const Icon(Icons.refresh_rounded),
+                ),
+            ],
+          ),
+          body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Form(
             key: _formKey,
@@ -438,6 +441,7 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
               ],
             ),
           ),
+        ),
         ),
       ),
     );

@@ -7,6 +7,7 @@ import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
 import 'package:eternal_xi/features/profile/controller/friends_pending_controller.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:eternal_xi/shared/widgets/pending_notification_badge.dart';
 import 'package:eternal_xi/features/profile/widgets/achievements_tab.dart';
 import 'package:eternal_xi/features/profile/widgets/progress_celebration_overlay.dart';
@@ -65,9 +66,10 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
           )
         : null;
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SafeArea(
+    return WithFantasyAtmosphere(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
           child: ProgressCelebrationOverlay(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -174,6 +176,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
               ],
             ),
           ),
+        ),
       ),
     );
   }

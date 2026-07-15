@@ -20,6 +20,7 @@ import 'package:eternal_xi/features/leagues/utils/league_starter_probability_ui.
 import 'package:eternal_xi/features/leagues/widgets/league_player_avatar.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_player_profile_rounds_section.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:eternal_xi/shared/widgets/money_coins_icon.dart';
 import 'package:eternal_xi/shared/widgets/player_fatigue_icon.dart';
 import 'package:eternal_xi/shared/widgets/player_position_icon.dart';
@@ -866,12 +867,13 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
         ownership.ownerId != LeagueSquadPlayer.usuarioMercadoId;
     final pointsLabel = LeagueMoneyFormat.points(puntosTotales);
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text(ll.playerTitle),
-        scrolledUnderElevation: 0,
-        actions: [
+    return WithFantasyAtmosphere(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(ll.playerTitle),
+          scrolledUnderElevation: 0,
+          actions: [
           if (canOffer)
             IconButton(
               tooltip: ll.makeOffer,
@@ -1268,6 +1270,7 @@ class _LeaguePlayerProfileScreenState extends State<LeaguePlayerProfileScreen> {
               ),
             ),
         ],
+      ),
       ),
     );
   }

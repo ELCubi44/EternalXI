@@ -9,6 +9,7 @@ import 'package:eternal_xi/features/leagues/utils/league_match_visible_state.dar
 import 'package:eternal_xi/features/leagues/utils/league_spanish_datetime.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_team_logo.dart';
 import 'package:eternal_xi/app/localization/league_l10n.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -143,13 +144,14 @@ class _LeagueDayMatchesScreenState extends State<LeagueDayMatchesScreen> {
     }
 
     final ll = context.leagueL10n;
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text(ll.matchesOnDate(_titleDate(widget.day))),
-        centerTitle: false,
-      ),
-      body: ListView.separated(
+    return WithFantasyAtmosphere(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(ll.matchesOnDate(_titleDate(widget.day))),
+          centerTitle: false,
+        ),
+        body: ListView.separated(
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 28),
         itemCount: filtered.length,
         separatorBuilder: (_, _) => const SizedBox(height: 14),
@@ -287,6 +289,7 @@ class _LeagueDayMatchesScreenState extends State<LeagueDayMatchesScreen> {
             ),
           );
         },
+      ),
       ),
     );
   }

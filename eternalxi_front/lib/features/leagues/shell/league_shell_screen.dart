@@ -23,6 +23,7 @@ import 'package:eternal_xi/features/leagues/widgets/league_notifications_panel.d
 import 'package:eternal_xi/features/leagues/widgets/league_season_wrap_overlay.dart';
 import 'package:eternal_xi/features/leagues/widgets/league_shell_budget_bar.dart';
 import 'package:eternal_xi/features/rewards/data/services/rewards_api_service.dart';
+import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:eternal_xi/shared/widgets/league_settings_icon.dart';
 import 'package:eternal_xi/shared/widgets/notification_bell_icon.dart';
 import 'package:eternal_xi/shared/widgets/user_tokens_action.dart';
@@ -112,15 +113,17 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
           openSquad: _openSquad,
           registerLineupLeaveGuard: _registerLineupLeaveGuard,
           confirmLeaveLineupIfNeeded: _confirmLeaveLineupIfNeeded,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Column(
-              children: [
-                _XiSettingsOverlayHeader(
-                  onBack: () => Navigator.of(routeContext).pop(),
-                ),
-                const Expanded(child: LeagueTabSettings()),
-              ],
+          child: WithFantasyAtmosphere(
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Column(
+                children: [
+                  _XiSettingsOverlayHeader(
+                    onBack: () => Navigator.of(routeContext).pop(),
+                  ),
+                  const Expanded(child: LeagueTabSettings()),
+                ],
+              ),
             ),
           ),
         ),
@@ -308,9 +311,10 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
         if (didPop) return;
         await _leaveLeague();
       },
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Column(
+      child: WithFantasyAtmosphere(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Column(
           children: [
             // ── Custom header ────────────────────────────────────────────
             _XiLeagueHeader(
@@ -405,6 +409,7 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
                   ),
                 ],
               ),
+        ),
       ),
     );
   }

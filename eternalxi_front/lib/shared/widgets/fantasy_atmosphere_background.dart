@@ -7,15 +7,6 @@ class FantasyAtmosphereBackground extends StatelessWidget {
   static const String assetPath =
       'assets/images/clash/epic/backgrounds/bg_detail_n.png';
 
-  /// Rutas donde debe verse el estadio N (no Clash, no splash, no auth).
-  static bool appliesTo(String path) {
-    if (path == '/mode' || path.startsWith('/mode/')) return true;
-    if (path == '/leagues' || path.startsWith('/leagues/')) return true;
-    if (path == '/profile' || path.startsWith('/profile/')) return true;
-    if (path == '/home' || path.startsWith('/home/')) return true;
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(
@@ -48,6 +39,24 @@ class FantasyAtmosphereBackground extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Envuelve una pantalla con el estadio N detrás (Fantasy / modo / perfil).
+class WithFantasyAtmosphere extends StatelessWidget {
+  const WithFantasyAtmosphere({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        const FantasyAtmosphereBackground(),
+        child,
+      ],
     );
   }
 }
