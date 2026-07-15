@@ -40,45 +40,49 @@ class ClashShellScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final selectedIndex = _selectedTabIndex(context);
+    final path = GoRouterState.of(context).uri.path;
+    final isCardDetail = RegExp(r'^/clash/cards/[^/]+$').hasMatch(path);
 
     return Scaffold(
       backgroundColor: context.xiBackground,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const ClashHeaderBar(),
+          if (!isCardDetail) const ClashHeaderBar(),
           Expanded(child: body),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
-        onDestinationSelected: (index) => _onTabSelected(context, index),
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.home_outlined),
-            selectedIcon: const Icon(Icons.home_rounded),
-            label: l10n.clashTabHome,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.groups_outlined),
-            selectedIcon: const Icon(Icons.groups_rounded),
-            label: l10n.clashTabTeam,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.auto_awesome_outlined),
-            selectedIcon: Icon(
-              Icons.auto_awesome_rounded,
-              color: XiColors.techCyan,
+      bottomNavigationBar: isCardDetail
+          ? null
+          : NavigationBar(
+              selectedIndex: selectedIndex,
+              onDestinationSelected: (index) => _onTabSelected(context, index),
+              destinations: [
+                NavigationDestination(
+                  icon: const Icon(Icons.home_outlined),
+                  selectedIcon: const Icon(Icons.home_rounded),
+                  label: l10n.clashTabHome,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.groups_outlined),
+                  selectedIcon: const Icon(Icons.groups_rounded),
+                  label: l10n.clashTabTeam,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.auto_awesome_outlined),
+                  selectedIcon: Icon(
+                    Icons.auto_awesome_rounded,
+                    color: XiColors.techCyan,
+                  ),
+                  label: l10n.clashTabSummon,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.storefront_outlined),
+                  selectedIcon: const Icon(Icons.storefront_rounded),
+                  label: l10n.clashTabShop,
+                ),
+              ],
             ),
-            label: l10n.clashTabSummon,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.storefront_outlined),
-            selectedIcon: const Icon(Icons.storefront_rounded),
-            label: l10n.clashTabShop,
-          ),
-        ],
-      ),
     );
   }
 }

@@ -21,17 +21,20 @@ class ClashCardEpicShowcase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = compact ? 280.0 : MediaQuery.sizeOf(context).height * 0.62;
+    final height = compact
+        ? 280.0
+        : (MediaQuery.sizeOf(context).height * 0.68);
 
     return SizedBox(
-      height: height.clamp(compact ? 240.0 : 420.0, compact ? 320.0 : 680.0),
+      height: height.clamp(compact ? 240.0 : 380.0, compact ? 320.0 : 720.0),
+      width: double.infinity,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(compact ? 14 : 0),
         child: Stack(
           fit: StackFit.expand,
           children: [
             _EpicBackground(entry: entry),
-            if (!compact) ...[
+            if (!compact)
               Positioned.fill(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
@@ -39,16 +42,15 @@ class ClashCardEpicShowcase extends StatelessWidget {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.black.withValues(alpha: 0.15),
+                        Colors.black.withValues(alpha: 0.2),
                         Colors.transparent,
-                        Colors.black.withValues(alpha: 0.55),
+                        Colors.black.withValues(alpha: 0.35),
                       ],
-                      stops: const [0, 0.45, 1],
+                      stops: const [0, 0.5, 1],
                     ),
                   ),
                 ),
               ),
-            ],
             _PortraitLayer(entry: entry, compact: compact),
             if (!compact) _StatsPanel(entry: entry),
             if (compact) _CompactFooter(entry: entry),
@@ -100,23 +102,23 @@ class _PortraitLayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rarity = entry.effectiveRarity;
-    final top = compact ? 28.0 : 48.0;
+    final top = compact ? 28.0 : 40.0;
+    const statsReserve = 188.0;
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
         if (!compact)
           Positioned(
-            top: top + 36,
-            left: 0,
-            right: 0,
+            top: top + 48,
+            left: 24,
+            right: 24,
+            bottom: statsReserve + 8,
             child: Center(
               child: Image.asset(
                 ClashEpicAssets.auraGlow(rarity),
-                width: 280,
-                height: 280,
                 fit: BoxFit.contain,
-                color: ClashRarityBadge.color(rarity).withValues(alpha: 0.65),
+                color: ClashRarityBadge.color(rarity).withValues(alpha: 0.55),
                 colorBlendMode: BlendMode.srcATop,
                 errorBuilder: (_, __, ___) => const SizedBox.shrink(),
               ),
@@ -124,8 +126,8 @@ class _PortraitLayer extends StatelessWidget {
           ),
         Positioned(
           top: top,
-          left: compact ? 12 : 20,
-          right: compact ? 12 : 20,
+          left: compact ? 12 : 16,
+          right: compact ? 12 : 16,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -136,12 +138,11 @@ class _PortraitLayer extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: top + (compact ? 36 : 40),
-          left: compact ? 20 : 36,
-          right: compact ? 20 : 36,
-          bottom: compact ? 56 : 200,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
+          top: top + (compact ? 40 : 52),
+          left: compact ? 20 : 32,
+          right: compact ? 20 : 32,
+          bottom: compact ? 56 : statsReserve,
+          child: Center(
             child: _PlayerPortrait(entry: entry, compact: compact),
           ),
         ),
@@ -273,8 +274,8 @@ class _PlayerPortrait extends StatelessWidget {
 
     return Image.network(
       url,
-      fit: BoxFit.cover,
-      alignment: const Alignment(0, -0.15),
+      fit: BoxFit.contain,
+      alignment: Alignment.bottomCenter,
       filterQuality: FilterQuality.high,
       errorBuilder: (_, __, ___) => _InitialsFallback(name: entry.name),
     );
@@ -334,151 +335,131 @@ class _StatsPanel extends StatelessWidget {
 
     return Align(
       alignment: Alignment.bottomCenter,
-      child: SizedBox(
-        height: 220,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    XiColors.navyBlue.withValues(alpha: 0.55),
-                    XiColors.navyBlue.withValues(alpha: 0.96),
-                  ],
-                  stops: const [0, 0.35, 1],
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Image.asset(
-                ClashEpicAssets.statsPanel,
-                fit: BoxFit.fitWidth,
-                alignment: Alignment.bottomCenter,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 28, 16, 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Container(
+        height: 188,
+        margin: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              XiColors.navyBlue.withValues(alpha: 0.72),
+              XiColors.navyBlue.withValues(alpha: 0.98),
+            ],
+          ),
+          border: Border.all(
+            color: XiColors.classicGold.withValues(alpha: 0.65),
+            width: 1.5,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              entry.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                color: XiColors.warmWhite,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${entry.team} ∑ ${card.position.displayNameEs}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: XiColors.warmWhite.withValues(
-                                  alpha: 0.72,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              '${card.style.displayNameEs} ù $levelLabel',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: XiColors.classicGold,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          entry.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: XiColors.warmWhite,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 20,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      SizedBox(
-                        width: 108,
-                        child: Column(
-                          children: [
-                            _EpicStatRow(
-                              kind: ClashEpicStatKind.par,
-                              label: 'PAR',
-                              value: stats.save,
-                            ),
-                            _EpicStatRow(
-                              kind: ClashEpicStatKind.def,
-                              label: 'DEF',
-                              value: stats.defense,
-                            ),
-                            _EpicStatRow(
-                              kind: ClashEpicStatKind.pas,
-                              label: 'PAS',
-                              value: stats.pass,
-                            ),
-                            _EpicStatRow(
-                              kind: ClashEpicStatKind.reg,
-                              label: 'REG',
-                              value: stats.dribble,
-                            ),
-                          ],
+                        const SizedBox(height: 4),
+                        Text(
+                          '${entry.team} ∑ ${card.position.displayNameEs}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: XiColors.warmWhite.withValues(alpha: 0.72),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: Wrap(
-                          spacing: 6,
-                          runSpacing: 6,
-                          children: [
-                            _EpicStatChip(
-                              kind: ClashEpicStatKind.tir,
-                              label: 'TIR',
-                              value: stats.shot,
-                            ),
-                            _EpicStatChip(
-                              kind: ClashEpicStatKind.pt,
-                              label: 'PT',
-                              value: stats.techniquePoints,
-                            ),
-                            _EpicStatChip(
-                              kind: ClashEpicStatKind.res,
-                              label: 'RES',
-                              value: stats.stamina,
-                            ),
-                          ],
+                        Text(
+                          '${card.style.displayNameEs} ∑ $levelLabel',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: XiColors.classicGold,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  if (!entry.isMaxLevel) ...[
-                    const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(999),
-                      child: LinearProgressIndicator(
-                        value: xpRatio,
-                        minHeight: 6,
-                        backgroundColor: Colors.black.withValues(alpha: 0.35),
-                        color: XiColors.classicGold,
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 108,
+                    child: Column(
+                      children: [
+                        _EpicStatRow(
+                          kind: ClashEpicStatKind.par,
+                          label: 'PAR',
+                          value: stats.save,
+                        ),
+                        _EpicStatRow(
+                          kind: ClashEpicStatKind.def,
+                          label: 'DEF',
+                          value: stats.defense,
+                        ),
+                        _EpicStatRow(
+                          kind: ClashEpicStatKind.pas,
+                          label: 'PAS',
+                          value: stats.pass,
+                        ),
+                        _EpicStatRow(
+                          kind: ClashEpicStatKind.reg,
+                          label: 'REG',
+                          value: stats.dribble,
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ],
+              const Spacer(),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  _EpicStatChip(
+                    kind: ClashEpicStatKind.tir,
+                    label: 'TIR',
+                    value: stats.shot,
+                  ),
+                  _EpicStatChip(
+                    kind: ClashEpicStatKind.pt,
+                    label: 'PT',
+                    value: stats.techniquePoints,
+                  ),
+                  _EpicStatChip(
+                    kind: ClashEpicStatKind.res,
+                    label: 'RES',
+                    value: stats.stamina,
+                  ),
+                ],
+              ),
+              if (!entry.isMaxLevel) ...[
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(999),
+                  child: LinearProgressIndicator(
+                    value: xpRatio,
+                    minHeight: 6,
+                    backgroundColor: Colors.black.withValues(alpha: 0.35),
+                    color: XiColors.classicGold,
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );
