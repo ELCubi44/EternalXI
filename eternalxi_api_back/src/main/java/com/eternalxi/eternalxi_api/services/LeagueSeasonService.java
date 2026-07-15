@@ -41,7 +41,7 @@ public class LeagueSeasonService {
      * si la temporada ya termino de forma natural).
      */
     public static String sqlVisibleInMyLeagues() {
-        return " " + "l.cerrada_en IS NULL AND NOT (("
+        return " l.cerrada_en IS NULL AND NOT (("
                 + sqlSeasonNaturallyCompleteOnLeagueAlias("l")
                 + ") AND COALESCE(("
                 + "SELECT MAX(pj.inicio_en) FROM partidos_jornada pj "
@@ -52,10 +52,14 @@ public class LeagueSeasonService {
     }
 
     public static String sqlSeasonNaturallyCompleteOnLeagueAlias(String leagueAlias) {
-        // Espacio inicial: los text blocks de Java eliminan espacios finales antes de """.
-        return " EXISTS (SELECT 1 FROM jornadas jx WHERE jx.id_liga = " + leagueAlias + ".id) "
+        return "EXISTS (SELECT 1 FROM jornadas jx WHERE jx.id_liga = " + leagueAlias + ".id) "
                 + "AND NOT EXISTS (SELECT 1 FROM jornadas jx WHERE jx.id_liga = " + leagueAlias + ".id "
                 + "AND COALESCE(jx.estado, '') <> 'FINALIZADA')";
+    }
+
+    /** Fragmento SQL {@code AND EXISTS (...)} para concatenar tras un text block. */
+    public static String sqlAndSeasonNaturallyCompleteOnLeagueAlias(String leagueAlias) {
+        return " AND " + sqlSeasonNaturallyCompleteOnLeagueAlias(leagueAlias);
     }
 
     /**
@@ -63,16 +67,21 @@ public class LeagueSeasonService {
      * Excluye ligas cerradas por el administrador ({@code cerrada_en}).
      */
     public static String sqlLeagueEligibleForCareerStats(String leagueAlias) {
-        return " " + leagueAlias + ".cerrada_en IS NULL";
+        return leagueAlias + ".cerrada_en IS NULL";
+    }
+
+    /** Fragmento SQL {@code AND alias.cerrada_en IS NULL} para concatenar tras un text block. */
+    public static String sqlAndLeagueEligibleForCareerStats(String leagueAlias) {
+        return " AND " + sqlLeagueEligibleForCareerStats(leagueAlias);
     }
 
     public boolean isSeasonNaturallyComplete(Connection conn, long idLiga) throws SQLException {
         String sql = """
                 SELECT 1
                 FROM ligas l
-                WHERE l.id = ?
-                  AND l.cerrada_en IS NULL
-                  AND """ + sqlSeasonNaturallyCompleteOnLeagueAlias("l") + """
+                WHERE l.id = ?"""
+                + sqlAndLeagueEligibleForCareerStats("l")
+                + sqlAndSeasonNaturallyCompleteOnLeagueAlias("l") + """
                 LIMIT 1
                 """;
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -303,8 +312,8 @@ public class LeagueSeasonService {
         String sql = """
                 SELECT l.id
                 FROM ligas l
-                WHERE l.cerrada_en IS NULL
-                  AND """ + sqlSeasonNaturallyCompleteOnLeagueAlias("l") + """
+                WHERE l.cerrada_en IS NULL"""
+                + sqlAndSeasonNaturallyCompleteOnLeagueAlias("l") + """
                   AND COALESCE((
                       SELECT MAX(pj.inicio_en)
                       FROM partidos_jornada pj

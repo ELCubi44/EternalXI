@@ -133,10 +133,9 @@ public class UserPublicProfileService {
                 INNER JOIN liga_jugadores lj
                   ON lj.id_liga = lp.id_liga
                  AND lj.id_usuario_dueno = lp.id_usuario
-                WHERE lp.id_usuario = ?
-                  AND l.cerrada_en IS NULL
-                  AND """
-                + LeagueSeasonService.sqlSeasonNaturallyCompleteOnLeagueAlias("l");
+                WHERE lp.id_usuario = ?"""
+                + LeagueSeasonService.sqlAndLeagueEligibleForCareerStats("l")
+                + LeagueSeasonService.sqlAndSeasonNaturallyCompleteOnLeagueAlias("l");
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -195,9 +194,8 @@ public class UserPublicProfileService {
                   ON lj.id_liga = lp.id_liga
                  AND lj.id_usuario_dueno = lp.id_usuario
                 INNER JOIN jugadores_puntos_jornada jpj ON jpj.id_liga_jugador = lj.id
-                WHERE lp.id_usuario = ?
-                  AND"""
-                + LeagueSeasonService.sqlLeagueEligibleForCareerStats("l");
+                WHERE lp.id_usuario = ?"""
+                + LeagueSeasonService.sqlAndLeagueEligibleForCareerStats("l");
         int goles = 0;
         int asistencias = 0;
         int porteriasCero = 0;
@@ -221,9 +219,9 @@ public class UserPublicProfileService {
                 SELECT COUNT(*) AS total
                 FROM liga_participantes lp
                 INNER JOIN ligas l ON l.id = lp.id_liga
-                WHERE lp.id_usuario = ?
-                  AND """ + LeagueSeasonService.sqlLeagueEligibleForCareerStats("l") + """
-                  AND """ + LeagueSeasonService.sqlSeasonNaturallyCompleteOnLeagueAlias("l") + """
+                WHERE lp.id_usuario = ?"""
+                + LeagueSeasonService.sqlAndLeagueEligibleForCareerStats("l")
+                + LeagueSeasonService.sqlAndSeasonNaturallyCompleteOnLeagueAlias("l") + """
                   AND lp.puntos_totales + COALESCE((
                       SELECT SUM(pb.puntos)
                       FROM liga_participante_puntos_bonus pb
@@ -265,9 +263,9 @@ public class UserPublicProfileService {
                        'FINALIZADA' AS estado_liga
                 FROM liga_participantes lp
                 INNER JOIN ligas l ON l.id = lp.id_liga
-                WHERE lp.id_usuario = ?
-                  AND """ + LeagueSeasonService.sqlLeagueEligibleForCareerStats("l") + """
-                  AND """ + LeagueSeasonService.sqlSeasonNaturallyCompleteOnLeagueAlias("l") + """
+                WHERE lp.id_usuario = ?"""
+                + LeagueSeasonService.sqlAndLeagueEligibleForCareerStats("l")
+                + LeagueSeasonService.sqlAndSeasonNaturallyCompleteOnLeagueAlias("l") + """
                 ORDER BY lp.id DESC
                 LIMIT 30
                 """;
