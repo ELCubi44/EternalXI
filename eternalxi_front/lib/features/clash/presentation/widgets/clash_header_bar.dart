@@ -108,13 +108,13 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                     final h = constraints.maxHeight;
 
                     final avatarSize = w * 0.245;
-                    // Más grande y un pelín más abajo.
+                    // Lados OK; solo subir un pelín.
                     final avatarLeft = w * 0.065;
-                    final avatarTop = h * 0.185;
+                    final avatarTop = h * 0.165;
 
-                    // Nombre: bajar y acercar al nivel.
-                    final nameLeft = w * 0.325;
-                    final nameRight = w * 0.055;
+                    // Nombre + nivel: muy poco abajo y un poco a la derecha.
+                    final nameLeft = w * 0.34;
+                    final nameRight = w * 0.045;
 
                     return Stack(
                       clipBehavior: Clip.none,
@@ -140,11 +140,11 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             ),
                           ),
                         ),
-                        // Nombre + nivel: más abajo y menos hueco entre ellos.
+                        // Nombre + nivel: muy poco abajo y un poco a la derecha.
                         Positioned(
                           left: nameLeft,
                           right: nameRight,
-                          top: h * 0.21,
+                          top: h * 0.225,
                           height: h * 0.175,
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: w * 0.015),
@@ -178,11 +178,11 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             ),
                           ),
                         ),
-                        // XP: un pelín arriba y a la derecha.
+                        // XP: bajar un pelín (recursos ya OK).
                         Positioned(
                           left: w * 0.365,
                           right: w * 0.04,
-                          top: h * 0.445,
+                          top: h * 0.46,
                           height: h * 0.135,
                           child: Center(
                             child: Stack(
