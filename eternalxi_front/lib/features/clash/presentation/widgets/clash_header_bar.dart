@@ -223,10 +223,10 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                         ),
                         // Recursos: más abajo y a la izquierda.
                         Positioned(
-                          left: w * 0.285,
-                          right: w * 0.065,
-                          top: h * 0.74,
-                          height: h * 0.165,
+                          left: w * 0.28,
+                          right: w * 0.07,
+                          top: h * 0.75,
+                          height: h * 0.16,
                           child: Row(
                             children: [
                               Expanded(
@@ -346,7 +346,8 @@ class _ResourceSlot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Center(
+    return Align(
+      alignment: const Alignment(0, 0.25),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
