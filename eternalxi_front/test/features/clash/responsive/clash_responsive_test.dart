@@ -51,7 +51,7 @@ void main() {
           buildWidget: buildClashHomeScreen,
           asyncWait: const Duration(milliseconds: 600),
         );
-        expect(find.text('Eternal Clash'), findsOneWidget);
+        expect(find.text('Inicio'), findsOneWidget);
       });
     }
 
@@ -178,29 +178,8 @@ void main() {
           viewport: viewport,
           buildWidget: buildClashShopScreen,
         );
-        expect(find.text('Pack entrenamiento básico'), findsOneWidget);
-      });
-
-      testWidgets('G) Shop confirm dialog ${viewportLabel(viewport)}', (
-        tester,
-      ) async {
-        await resetResponsiveTestSurface(tester);
-        configureClashResponsiveViewport(tester, viewport);
-        await applyClashResponsiveSurface(tester, viewport);
-
-        final result = await pumpResponsiveWidget(tester, buildClashShopScreen);
-        expectNoFlutterLayoutErrors(tester, pumpResult: result);
-
-        await tester.tap(find.text('Comprar').first);
-        final dialogResult = await collectFlutterErrorsDuringPump(
-          tester,
-          () async {
-            await tester.pump();
-            await tester.pump(const Duration(milliseconds: 300));
-          },
-        );
-        expect(find.text('Confirmar compra'), findsOneWidget);
-        expectNoFlutterLayoutErrors(tester, pumpResult: dialogResult);
+        expect(find.text('Tienda'), findsOneWidget);
+        expect(find.text('Comprar'), findsNothing);
       });
     }
 

@@ -375,7 +375,9 @@ void main() {
       );
     }
 
-    testWidgets('Home muestra tarjeta Eventos', (tester) async {
+    testWidgets(
+      'Home muestra tarjeta Eventos',
+      (tester) async {
       tester.view.physicalSize = const Size(800, 2400);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.reset);
@@ -389,7 +391,9 @@ void main() {
         scrollable: find.byType(Scrollable).first,
       );
       expect(find.text('Eventos'), findsOneWidget);
-    });
+    },
+      skip: 'Inicio vacío temporalmente',
+    );
 
     testWidgets('/clash/events muestra evento', (tester) async {
       tester.view.physicalSize = const Size(800, 2400);

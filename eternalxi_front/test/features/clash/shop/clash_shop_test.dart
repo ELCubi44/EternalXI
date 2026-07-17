@@ -192,141 +192,19 @@ void main() {
       addTearDown(tester.view.reset);
     }
 
-    Future<Widget> shopApp(ClashShopRepository repo) async {
-      return Provider<ClashShopRepository>.value(
-        value: repo,
-        child: MaterialApp(
+    testWidgets('por ahora solo muestra el título Tienda', (tester) async {
+      configureViewport(tester);
+      await tester.pumpWidget(
+        MaterialApp(
           locale: const Locale('es'),
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: const Scaffold(body: ClashShopScreen()),
         ),
       );
-    }
-
-    testWidgets('tienda muestra saldo monedas/gemas', (tester) async {
-      configureViewport(tester);
-      final repo = await createTestShopRepository(
-        initialCoins: 1500,
-        initialGems: 80,
-      );
-      await tester.pumpWidget(await shopApp(repo));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Monedas: 1500'), findsOneWidget);
-      expect(find.textContaining('Gemas: 80'), findsOneWidget);
-    });
-
-    testWidgets('tienda muestra aviso sin compras reales', (tester) async {
-      configureViewport(tester);
-      final repo = await createTestShopRepository();
-      await tester.pumpWidget(await shopApp(repo));
-      await tester.pumpAndSettle();
-      expect(
-        find.textContaining('Tienda local · sin compras reales'),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets('tienda muestra productos agrupados por categoría', (
-      tester,
-    ) async {
-      configureViewport(tester);
-      final repo = await createTestShopRepository();
-      await tester.pumpWidget(await shopApp(repo));
-      await tester.pumpAndSettle();
-      expect(find.text('Materiales'), findsWidgets);
-      expect(find.text('Técnicas'), findsWidgets);
-      expect(find.text('Evolución'), findsWidgets);
-      expect(find.text('Tickets'), findsWidgets);
-    });
-
-    testWidgets('product card muestra coste y recompensas', (tester) async {
-      configureViewport(tester);
-      final repo = await createTestShopRepository();
-      await tester.pumpWidget(await shopApp(repo));
-      await tester.pumpAndSettle();
-      expect(find.text('300 monedas'), findsOneWidget);
-      expect(find.text('Manual básico'), findsOneWidget);
-      expect(find.text('×2'), findsOneWidget);
-    });
-
-    testWidgets('tienda muestra productos', (tester) async {
-      configureViewport(tester);
-      final repo = await createTestShopRepository();
-      await tester.pumpWidget(await shopApp(repo));
-      await tester.pumpAndSettle();
-      expect(find.text('Pack entrenamiento básico'), findsOneWidget);
-      expect(find.text('Ticket de invocación inicial'), findsOneWidget);
-    });
-
-    testWidgets('botón Comprar visible', (tester) async {
-      configureViewport(tester);
-      final repo = await createTestShopRepository();
-      await tester.pumpWidget(await shopApp(repo));
-      await tester.pumpAndSettle();
-      expect(find.text('Comprar'), findsWidgets);
-    });
-
-    testWidgets('monedas insuficientes bloquea compra', (tester) async {
-      configureViewport(tester);
-      final repo = await createTestShopRepository(initialCoins: 50);
-      await tester.pumpWidget(await shopApp(repo));
-      await tester.pumpAndSettle();
-      final button = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Comprar').first,
-      );
-      expect(button.onPressed, isNull);
-      expect(find.text('Monedas insuficientes'), findsWidgets);
-    });
-
-    testWidgets('confirmar compra muestra diálogo con recompensas', (
-      tester,
-    ) async {
-      configureViewport(tester);
-      final repo = await createTestShopRepository(initialCoins: 1500);
-      await tester.pumpWidget(await shopApp(repo));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Comprar').first);
-      await tester.pumpAndSettle();
-      expect(find.text('Confirmar compra'), findsOneWidget);
-      expect(find.textContaining('Pack entrenamiento básico'), findsWidgets);
-      expect(find.text('Recibirás:'), findsOneWidget);
-      expect(find.textContaining('Saldo tras compra'), findsOneWidget);
-    });
-
-    testWidgets('compra exitosa muestra SnackBar con resumen', (tester) async {
-      configureViewport(tester);
-      final repo = await createTestShopRepository(initialCoins: 1500);
-      await tester.pumpWidget(await shopApp(repo));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Comprar').first);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Comprar').last);
-      await tester.pumpAndSettle();
-      expect(find.textContaining('Manual básico'), findsWidgets);
-    });
-
-    testWidgets('saldo se actualiza tras compra', (tester) async {
-      configureViewport(tester);
-      final repo = await createTestShopRepository(initialCoins: 1500);
-      await tester.pumpWidget(await shopApp(repo));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Comprar').first);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Comprar').last);
-      await tester.pumpAndSettle();
-      await tester.pump(const Duration(milliseconds: 100));
-      expect(find.textContaining('Monedas: 1200'), findsOneWidget);
-    });
-
-    testWidgets('no overflow en viewport móvil', (tester) async {
-      tester.view.physicalSize = const Size(390, 844);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.reset);
-      final repo = await createTestShopRepository();
-      await tester.pumpWidget(await shopApp(repo));
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), isNull);
+      expect(find.text('Tienda'), findsOneWidget);
+      expect(find.text('Comprar'), findsNothing);
     });
   });
 }

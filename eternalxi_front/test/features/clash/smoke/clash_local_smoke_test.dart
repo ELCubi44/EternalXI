@@ -190,12 +190,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Eternal Clash'), findsOneWidget);
-      expect(find.text('Historia'), findsWidgets);
-      expect(find.text('Eventos'), findsWidgets);
-      expect(find.text('Equipo'), findsWidgets);
-      expect(find.text('Invocar'), findsWidgets);
-      expect(find.text('Tienda'), findsOneWidget);
+      expect(find.text('Inicio'), findsOneWidget);
+      expect(find.text('Historia'), findsNothing);
+      expect(find.text('Eventos'), findsNothing);
       _expectNoFlutterErrors(tester);
     });
 
@@ -326,21 +323,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Comprar').first);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Comprar').last);
-      await tester.pumpAndSettle();
-      await tester.runAsync(() async {
-        await Future<void>.delayed(Duration.zero);
-      });
-
-      expect(find.textContaining('Manual básico'), findsWidgets);
-      expect(find.textContaining('Monedas: 1200'), findsOneWidget);
-      expect(historyRepository.loadEntries(), isNotEmpty);
-      expect(
-        historyRepository.loadEntries().first.sourceType,
-        ClashRewardHistorySourceType.shop,
-      );
+      expect(find.text('Tienda'), findsOneWidget);
+      expect(find.text('Comprar'), findsNothing);
       _expectNoFlutterErrors(tester);
     });
 

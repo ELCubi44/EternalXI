@@ -264,7 +264,7 @@ void main() {
       expect(find.text('Tienda'), findsWidgets);
     });
 
-    testWidgets('Inicio muestra Historia y Eventos', (tester) async {
+    testWidgets('Inicio queda vacío por ahora', (tester) async {
       tester.view.physicalSize = const Size(800, 2400);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.reset);
@@ -273,31 +273,12 @@ void main() {
       await tester.pumpWidget(app);
       await tester.pumpAndSettle();
 
-      await tester.scrollUntilVisible(
-        find.text('Historia'),
-        120,
-        scrollable: find.byType(Scrollable).first,
-      );
-      expect(find.text('Historia'), findsOneWidget);
-      expect(find.text('Eventos'), findsOneWidget);
-      expect(find.text('Misiones diarias'), findsOneWidget);
-      expect(find.text('Misiones semanales'), findsOneWidget);
-      expect(find.text('Logros'), findsOneWidget);
-      await tester.scrollUntilVisible(
-        find.text('Noticias'),
-        120,
-        scrollable: find.byType(Scrollable).first,
-      );
-      expect(find.text('Noticias'), findsOneWidget);
-      await tester.scrollUntilVisible(
-        find.text('Regalos'),
-        120,
-        scrollable: find.byType(Scrollable).first,
-      );
-      expect(find.text('Regalos'), findsOneWidget);
+      expect(find.text('Inicio'), findsWidgets);
+      expect(find.text('Historia'), findsNothing);
+      expect(find.text('Eventos'), findsNothing);
     });
 
-    testWidgets('cambiar a Equipo muestra alineaciones', (tester) async {
+    testWidgets('cambiar a Equipo muestra Personajes', (tester) async {
       tester.view.physicalSize = const Size(800, 2400);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.reset);
@@ -309,18 +290,14 @@ void main() {
       await tester.tap(find.text('Equipo').last);
       await tester.pumpAndSettle();
 
-      expect(find.text('Resumen del equipo'), findsOneWidget);
-      expect(find.text('Alineación 7vs7'), findsOneWidget);
-      expect(find.text('Alineación 11vs11'), findsOneWidget);
+      expect(find.text('Personajes'), findsOneWidget);
+      expect(find.text('Alineación 7vs7'), findsNothing);
     });
 
-    testWidgets('cambiar a Invocar muestra Single y Multi', (tester) async {
+    testWidgets('cambiar a Invocar queda vacío por ahora', (tester) async {
       tester.view.physicalSize = const Size(800, 2000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.reset);
-
-      final deps = await _shellDeps();
-      expect(deps.storyController.clashTeamUnlocked, isTrue);
 
       final (app, nav) = await _shellApp(auth());
       await tester.pumpWidget(app);
@@ -329,15 +306,11 @@ void main() {
       nav.selectTab(2);
       await tester.pumpAndSettle();
 
-      expect(
-        find.textContaining('Simulación local · sin compras reales'),
-        findsOneWidget,
-      );
-      expect(find.byType(FilledButton), findsAtLeastNWidgets(1));
-      expect(find.textContaining('95 gemas'), findsOneWidget);
+      expect(find.text('Invocar'), findsWidgets);
+      expect(find.textContaining('95 gemas'), findsNothing);
     });
 
-    testWidgets('cambiar a Tienda muestra productos locales', (tester) async {
+    testWidgets('cambiar a Tienda queda vacío por ahora', (tester) async {
       final (app, _) = await _shellApp(auth());
       await tester.pumpWidget(app);
       await tester.pumpAndSettle();
@@ -345,12 +318,8 @@ void main() {
       await tester.tap(find.text('Tienda').last);
       await tester.pumpAndSettle();
 
-      expect(
-        find.textContaining('Tienda local · sin compras reales'),
-        findsOneWidget,
-      );
-      expect(find.textContaining('Monedas:'), findsOneWidget);
-      expect(find.text('Comprar'), findsWidgets);
+      expect(find.text('Tienda'), findsWidgets);
+      expect(find.text('Comprar'), findsNothing);
     });
 
     testWidgets('volver al selector funciona', (tester) async {
