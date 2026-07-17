@@ -34,7 +34,7 @@ class ClashTeamScreen extends StatelessWidget {
   }
 }
 
-/// Barra más compacta; el icono tapa el borde izquierdo del asset (sin doble marco).
+/// Barra compacta; el círculo queda más grande y sobresale por arriba/abajo.
 class _TeamSectionBar extends StatelessWidget {
   const _TeamSectionBar({
     required this.iconAsset,
@@ -48,30 +48,33 @@ class _TeamSectionBar extends StatelessWidget {
   final VoidCallback onTap;
   final TextStyle? titleStyle;
 
-  static const double _barHeight = 46;
-  static const double _iconSize = 44;
+  static const double _barHeight = 42;
+  static const double _iconSize = 58;
   /// Empieza bajo el icono para ocultar el borde vertical del hueco.
-  static const double _barLeftInset = 18;
+  static const double _barLeftInset = 22;
 
   @override
   Widget build(BuildContext context) {
+    final rowHeight = _iconSize;
+    final barTop = (rowHeight - _barHeight) / 2;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: SizedBox(
-          height: _barHeight,
+          height: rowHeight,
           width: double.infinity,
           child: Stack(
-            clipBehavior: Clip.hardEdge,
+            clipBehavior: Clip.none,
             alignment: Alignment.centerLeft,
             children: [
               Positioned(
                 left: _barLeftInset,
                 right: 0,
-                top: 0,
-                bottom: 0,
+                top: barTop,
+                height: _barHeight,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
@@ -84,7 +87,7 @@ class _TeamSectionBar extends StatelessWidget {
               ),
               Positioned(
                 left: 0,
-                top: (_barHeight - _iconSize) / 2,
+                top: 0,
                 child: Container(
                   width: _iconSize,
                   height: _iconSize,
@@ -92,7 +95,7 @@ class _TeamSectionBar extends StatelessWidget {
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: XiColors.classicGold.withValues(alpha: 0.7),
-                      width: 1.4,
+                      width: 1.6,
                     ),
                     boxShadow: [
                       BoxShadow(
@@ -111,10 +114,10 @@ class _TeamSectionBar extends StatelessWidget {
                 ),
               ),
               Positioned(
-                left: _iconSize + 10,
+                left: _iconSize + 8,
                 right: 16,
-                top: 0,
-                bottom: 0,
+                top: barTop,
+                height: _barHeight,
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
