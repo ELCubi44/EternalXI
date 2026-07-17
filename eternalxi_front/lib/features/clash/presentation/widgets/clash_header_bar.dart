@@ -108,22 +108,23 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                   builder: (context, constraints) {
                     final w = constraints.maxWidth;
                     final h = constraints.maxHeight;
+                    final avatarSize = w * 0.205;
                     return Stack(
                       clipBehavior: Clip.none,
                       children: [
                         Positioned.fill(
                           child: Image.asset(
                             ClashEpicAssets.clashHeaderPlateBg,
-                            fit: BoxFit.contain,
+                            fit: BoxFit.fill,
                             filterQuality: FilterQuality.high,
                           ),
                         ),
-                        // Avatar
+                        // Avatar centrado en el círculo.
                         Positioned(
-                          left: w * 0.072,
-                          top: h * 0.18,
-                          width: w * 0.22,
-                          height: w * 0.22,
+                          left: w * 0.078,
+                          top: (h - avatarSize) / 2,
+                          width: avatarSize,
+                          height: avatarSize,
                           child: InkWell(
                             onTap: _openProfile,
                             customBorder: const CircleBorder(),
@@ -133,107 +134,122 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             ),
                           ),
                         ),
-                        // Nombre + nivel + rango
+                        // Nombre / nivel / rango centrados en el panel superior.
                         Positioned(
-                          left: w * 0.335,
-                          right: w * 0.055,
-                          top: h * 0.14,
-                          height: h * 0.28,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      displayName,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: theme.textTheme.titleSmall
-                                          ?.copyWith(
-                                        color: XiColors.warmWhite,
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: (h * 0.105).clamp(
-                                          12.0,
-                                          15.0,
+                          left: w * 0.33,
+                          right: w * 0.05,
+                          top: h * 0.11,
+                          height: h * 0.30,
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        displayName,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                        style: theme.textTheme.titleSmall
+                                            ?.copyWith(
+                                          color: XiColors.warmWhite,
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: (h * 0.10).clamp(
+                                            12.0,
+                                            14.5,
+                                          ),
+                                          height: 1.05,
                                         ),
-                                        height: 1.05,
                                       ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Nv. $nivel',
+                                      style: theme.textTheme.labelMedium
+                                          ?.copyWith(
+                                        color: XiColors.classicGold,
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: (h * 0.085).clamp(
+                                          11.0,
+                                          13.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (rango.isNotEmpty) ...[
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    rango,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.labelSmall
+                                        ?.copyWith(
+                                      color: XiColors.warmWhite.withValues(
+                                        alpha: 0.75,
+                                      ),
+                                      fontSize: (h * 0.065).clamp(9.0, 11.0),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                        // XP centrado en la barra media.
+                        Positioned(
+                          left: w * 0.345,
+                          right: w * 0.06,
+                          top: h * 0.435,
+                          height: h * 0.145,
+                          child: Center(
+                            child: SizedBox(
+                              height: (h * 0.09).clamp(7.0, 9.0),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(999),
+                                    child: LinearProgressIndicator(
+                                      value: xpFraction,
+                                      minHeight: (h * 0.09).clamp(7.0, 9.0),
+                                      backgroundColor: Colors.black.withValues(
+                                        alpha: 0.4,
+                                      ),
+                                      color: XiColors.techCyan,
                                     ),
                                   ),
                                   Text(
-                                    'Nv. $nivel',
-                                    style: theme.textTheme.labelMedium
-                                        ?.copyWith(
-                                      color: XiColors.classicGold,
+                                    '$xpEn/$xpMax xp',
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: XiColors.warmWhite,
                                       fontWeight: FontWeight.w800,
-                                      fontSize: (h * 0.09).clamp(11.0, 13.0),
+                                      fontSize: (h * 0.065).clamp(9.0, 10.5),
+                                      height: 1,
+                                      shadows: const [
+                                        Shadow(
+                                          color: Colors.black87,
+                                          blurRadius: 3,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
-                              if (rango.isNotEmpty) ...[
-                                const SizedBox(height: 2),
-                                Text(
-                                  rango,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: XiColors.warmWhite.withValues(
-                                      alpha: 0.72,
-                                    ),
-                                    fontSize: (h * 0.07).clamp(9.0, 11.0),
-                                  ),
-                                ),
-                              ],
-                            ],
+                            ),
                           ),
                         ),
-                        // Barra XP
+                        // Recursos centrados en cada hueco.
                         Positioned(
-                          left: w * 0.355,
-                          right: w * 0.07,
-                          top: h * 0.445,
-                          height: h * 0.13,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(999),
-                                child: LinearProgressIndicator(
-                                  value: xpFraction,
-                                  minHeight: (h * 0.085).clamp(6.0, 8.0),
-                                  backgroundColor: Colors.black.withValues(
-                                    alpha: 0.4,
-                                  ),
-                                  color: XiColors.techCyan,
-                                ),
-                              ),
-                              Text(
-                                '$xpEn/$xpMax xp',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: XiColors.warmWhite,
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: (h * 0.07).clamp(9.0, 11.0),
-                                  height: 1,
-                                  shadows: const [
-                                    Shadow(
-                                      color: Colors.black87,
-                                      blurRadius: 3,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Recursos
-                        Positioned(
-                          left: w * 0.34,
-                          right: w * 0.05,
-                          top: h * 0.63,
-                          height: h * 0.24,
+                          left: w * 0.33,
+                          right: w * 0.045,
+                          top: h * 0.615,
+                          height: h * 0.265,
                           child: Row(
                             children: [
                               Expanded(
@@ -356,9 +372,9 @@ class _ResourceSlot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 3),
+    return Center(
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           if (iconWidget != null)
             iconWidget!
@@ -371,10 +387,10 @@ class _ResourceSlot extends StatelessWidget {
               filterQuality: FilterQuality.medium,
             ),
           const SizedBox(width: 4),
-          Expanded(
+          Flexible(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   primary,
