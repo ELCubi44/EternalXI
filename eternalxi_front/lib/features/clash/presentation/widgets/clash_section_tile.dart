@@ -10,6 +10,9 @@ class ClashSectionTile extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.onTap,
+    this.showChevron = true,
+    this.titleStyle,
+    this.iconSize = 40,
   }) : assert(icon != null || iconAsset != null);
 
   final IconData? icon;
@@ -17,6 +20,9 @@ class ClashSectionTile extends StatelessWidget {
   final String title;
   final String? subtitle;
   final VoidCallback? onTap;
+  final bool showChevron;
+  final TextStyle? titleStyle;
+  final double iconSize;
 
   @override
   Widget build(BuildContext context) {
@@ -47,18 +53,16 @@ class ClashSectionTile extends StatelessWidget {
           child: Row(
             children: [
               if (iconAsset != null)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
-                    iconAsset!,
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.cover,
-                    filterQuality: FilterQuality.medium,
-                    errorBuilder: (_, __, ___) => Icon(
-                      icon ?? Icons.image_rounded,
-                      color: theme.colorScheme.primary,
-                    ),
+                Image.asset(
+                  iconAsset!,
+                  width: iconSize,
+                  height: iconSize,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.medium,
+                  errorBuilder: (_, __, ___) => Icon(
+                    icon ?? Icons.image_rounded,
+                    color: theme.colorScheme.primary,
+                    size: iconSize,
                   ),
                 )
               else
@@ -70,9 +74,10 @@ class ClashSectionTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: context.xiTextPrimary,
-                      ),
+                      style: titleStyle ??
+                          theme.textTheme.titleSmall?.copyWith(
+                            color: context.xiTextPrimary,
+                          ),
                     ),
                     if (subtitle != null) ...[
                       const SizedBox(height: 2),
@@ -88,10 +93,11 @@ class ClashSectionTile extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: context.xiTextSecondary.withValues(alpha: 0.5),
-              ),
+              if (showChevron)
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: context.xiTextSecondary.withValues(alpha: 0.5),
+                ),
             ],
           ),
         ),
