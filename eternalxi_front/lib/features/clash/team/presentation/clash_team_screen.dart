@@ -34,7 +34,7 @@ class ClashTeamScreen extends StatelessWidget {
   }
 }
 
-/// Fila compacta Equipo: icono + texto juntos sobre barra de fondo.
+/// Fila compacta Equipo: ancho según contenido (icono + texto).
 class _TeamSectionBar extends StatelessWidget {
   const _TeamSectionBar({
     required this.iconAsset,
@@ -50,52 +50,45 @@ class _TeamSectionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Ink(
-          height: 56,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: XiColors.techCyan.withValues(alpha: 0.35),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.35),
-                blurRadius: 10,
-                offset: const Offset(0, 3),
-              ),
-            ],
-            image: const DecorationImage(
-              image: AssetImage(ClashEpicAssets.teamSectionBarBg),
-              fit: BoxFit.cover,
-              alignment: Alignment.center,
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              children: [
-                Image.asset(
-                  iconAsset,
-                  width: 40,
-                  height: 40,
-                  fit: BoxFit.contain,
-                  filterQuality: FilterQuality.medium,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: titleStyle,
-                  ),
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Ink(
+            height: 52,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: XiColors.techCyan.withValues(alpha: 0.18),
+                  blurRadius: 12,
+                  offset: const Offset(0, 3),
                 ),
               ],
+              image: const DecorationImage(
+                image: AssetImage(ClashEpicAssets.teamSectionBarBg),
+                fit: BoxFit.fill,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 6, 18, 6),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    iconAsset,
+                    width: 38,
+                    height: 38,
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.medium,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(title, style: titleStyle),
+                ],
+              ),
             ),
           ),
         ),
