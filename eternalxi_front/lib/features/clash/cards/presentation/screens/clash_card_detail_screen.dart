@@ -409,60 +409,6 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
             ),
           ),
         ),
-        ValueListenableBuilder<double>(
-          valueListenable: _sheetExtentNotifier,
-          builder: (context, sheetExtent, _) {
-            final sheetMinLocal = _sheetMinFor(screenHeight);
-            final dragT =
-                ((sheetExtent - sheetMinLocal) / (_sheetMax - sheetMinLocal))
-                    .clamp(0.0, 1.0);
-            final cardScale = 1.0 - (dragT * 0.48);
-
-            return Positioned.fill(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Transform.scale(
-                  scale: cardScale,
-                  alignment: Alignment.topCenter,
-                  child: SizedBox(
-                    height: baseCardHeight,
-                    width: double.infinity,
-                    child: ClashCardEpicShowcase(
-                      entry: entry,
-                      detailHero: true,
-                      height: baseCardHeight,
-                      onLevelUpTap: _openUpgradeSheet,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-        SafeArea(
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(10, 4, 8, 8),
-              child: Material(
-                color: Colors.black.withValues(alpha: 0.42),
-                borderRadius: BorderRadius.circular(12),
-                child: InkWell(
-                  onTap: () => context.pop(),
-                  borderRadius: BorderRadius.circular(12),
-                  child: const SizedBox(
-                    width: 44,
-                    height: 44,
-                    child: Icon(
-                      Icons.arrow_back_rounded,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
         DraggableScrollableSheet(
           controller: _sheetController,
           initialChildSize: sheetMin,
@@ -523,6 +469,7 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
                       ),
                     ),
                   ),
+                  if (_sheetHeaderVisible) const SizedBox(height: 48),
                   AnimatedOpacity(
                     duration: const Duration(milliseconds: 160),
                     opacity: _sheetHeaderVisible ? 1 : 0,
@@ -630,6 +577,77 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
               ),
             );
           },
+        ),
+        ValueListenableBuilder<double>(
+          valueListenable: _sheetExtentNotifier,
+          builder: (context, sheetExtent, _) {
+            final sheetMinLocal = _sheetMinFor(screenHeight);
+            final dragT =
+                ((sheetExtent - sheetMinLocal) / (_sheetMax - sheetMinLocal))
+                    .clamp(0.0, 1.0);
+            final sheetTop = screenHeight * (1.0 - sheetExtent);
+            // Solape ligero sobre el borde del panel; el título queda debajo.
+            final overlap = 56.0 * dragT;
+            final availableHeight =
+                (sheetTop + overlap).clamp(1.0, screenHeight);
+            final fitScale =
+                (availableHeight / baseCardHeight).clamp(0.32, 1.0);
+            final easedScale = 1.0 - (dragT * 0.48);
+            final cardScale =
+                dragT <= 0 ? 1.0 : (easedScale < fitScale ? easedScale : fitScale);
+            final scaledCardHeight = baseCardHeight * cardScale;
+            final translateY = sheetTop + overlap - scaledCardHeight;
+
+            return Positioned.fill(
+              child: IgnorePointer(
+                ignoring: _sheetHeaderVisible,
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Transform.translate(
+                    offset: Offset(0, translateY),
+                    child: Transform.scale(
+                      scale: cardScale,
+                      alignment: Alignment.topCenter,
+                      child: SizedBox(
+                        height: baseCardHeight,
+                        width: double.infinity,
+                        child: ClashCardEpicShowcase(
+                          entry: entry,
+                          detailHero: true,
+                          height: baseCardHeight,
+                          onLevelUpTap: _openUpgradeSheet,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+        SafeArea(
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 4, 8, 8),
+              child: Material(
+                color: Colors.black.withValues(alpha: 0.42),
+                borderRadius: BorderRadius.circular(12),
+                child: InkWell(
+                  onTap: () => context.pop(),
+                  borderRadius: BorderRadius.circular(12),
+                  child: const SizedBox(
+                    width: 44,
+                    height: 44,
+                    child: Icon(
+                      Icons.arrow_back_rounded,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ],
     );
