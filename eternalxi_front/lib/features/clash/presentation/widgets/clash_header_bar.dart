@@ -163,7 +163,7 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                         primary: energy?.fractionLabel ?? '—/—',
                         secondary: energy?.countdownLabel,
                         accent: XiColors.techCyan,
-                        iconGap: 10,
+                        iconGap: 12,
                       ),
                     ),
                     const SizedBox(width: 8),

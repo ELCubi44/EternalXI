@@ -24,8 +24,8 @@ class ClashTeamScreen extends StatelessWidget {
           titleStyle: theme.textTheme.titleMedium?.copyWith(
             color: context.xiTextPrimary,
             fontWeight: FontWeight.w800,
-            fontSize: 18,
-            height: 1.1,
+            fontSize: 17,
+            height: 1.15,
           ),
           onTap: () => context.push(AppRoutes.clashCards),
         ),
@@ -34,7 +34,7 @@ class ClashTeamScreen extends StatelessWidget {
   }
 }
 
-/// Fila compacta Equipo: ancho según contenido (icono + texto).
+/// Entrada Equipo: pastilla compacta con icono y texto alineados dentro.
 class _TeamSectionBar extends StatelessWidget {
   const _TeamSectionBar({
     required this.iconAsset,
@@ -50,45 +50,64 @@ class _TeamSectionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Ink(
-            height: 52,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: XiColors.techCyan.withValues(alpha: 0.18),
-                  blurRadius: 12,
-                  offset: const Offset(0, 3),
-                ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                XiColors.techCyan.withValues(alpha: 0.18),
+                Colors.black.withValues(alpha: 0.42),
               ],
-              image: const DecorationImage(
-                image: AssetImage(ClashEpicAssets.teamSectionBarBg),
-                fit: BoxFit.fill,
-              ),
             ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 6, 18, 6),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
+            border: Border.all(
+              color: XiColors.techCyan.withValues(alpha: 0.45),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: XiColors.techCyan.withValues(alpha: 0.14),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: XiColors.classicGold.withValues(alpha: 0.55),
+                      width: 1.2,
+                    ),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Image.asset(
                     iconAsset,
-                    width: 38,
-                    height: 38,
-                    fit: BoxFit.contain,
+                    fit: BoxFit.cover,
                     filterQuality: FilterQuality.medium,
                   ),
-                  const SizedBox(width: 8),
-                  Text(title, style: titleStyle),
-                ],
-              ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: titleStyle,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
