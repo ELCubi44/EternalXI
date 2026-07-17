@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-/// Cabecera Clash: avatar + nivel/XP + energia/monedas/gemas (sin cambiar modo).
+/// Cabecera Clash: avatar + XP + bandeja de recursos (sin anillo ni pills).
 class ClashHeaderBar extends StatefulWidget {
   const ClashHeaderBar({super.key});
 
@@ -113,17 +113,11 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                   children: [
                     InkWell(
                       onTap: _openProfile,
-                      borderRadius: BorderRadius.circular(28),
-                      child: AccountLevelAvatarRing(
-                        nivel: nivel,
-                        xpEnNivel: xpEn,
-                        xpParaSiguiente: xpMax,
-                        ringStroke: 3.2,
-                        ringGap: 3.5,
-                        child: _HeaderAvatar(
-                          photoUrl: photoUrl,
-                          nickname: displayName,
-                        ),
+                      customBorder: const CircleBorder(),
+                      child: _HeaderAvatar(
+                        photoUrl: photoUrl,
+                        nickname: displayName,
+                        size: 56,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -144,6 +138,7 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                           const SizedBox(height: 6),
                           AccountLevelDisplay(
                             compact: true,
+                            showXpUnit: true,
                             nivel: nivel,
                             rango: progress?.rango ?? '',
                             xpEnNivel: xpEn,
@@ -155,35 +150,11 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _ResourcePill(
-                        iconAsset: ClashEpicAssets.clashEnergyIcon,
-                        primary: energy?.fractionLabel ?? '—/—',
-                        secondary: energy?.countdownLabel,
-                        accent: XiColors.techCyan,
-                        iconGap: 12,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _ResourcePill(
-                        iconWidget: const MoneyCoinsIcon(size: 18),
-                        primary: _formatAmount(coins),
-                        accent: XiColors.classicGold,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _ResourcePill(
-                        iconAsset: ClashEpicAssets.clashGachaGemIcon,
-                        primary: _formatAmount(gems),
-                        accent: const Color(0xFF6EE7FF),
-                        iconGap: 8,
-                      ),
-                    ),
-                  ],
+                _ResourcesTray(
+                  energyPrimary: energy?.fractionLabel ?? '—/—',
+                  energySecondary: energy?.countdownLabel,
+                  coinsLabel: _formatAmount(coins),
+                  gemsLabel: _formatAmount(gems),
                 ),
               ],
             ),
@@ -208,9 +179,14 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
 }
 
 class _HeaderAvatar extends StatelessWidget {
-  const _HeaderAvatar({required this.nickname, this.photoUrl});
+  const _HeaderAvatar({
+    required this.nickname,
+    required this.size,
+    this.photoUrl,
+  });
 
   final String nickname;
+  final double size;
   final String? photoUrl;
 
   @override
@@ -219,13 +195,13 @@ class _HeaderAvatar extends StatelessWidget {
         ? '?'
         : nickname.trim().characters.first.toUpperCase();
     return Container(
-      width: 46,
-      height: 46,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
           color: XiColors.classicGold.withValues(alpha: 0.75),
-          width: 1.4,
+          width: 1.6,
         ),
         boxShadow: [
           BoxShadow(
@@ -241,10 +217,11 @@ class _HeaderAvatar extends StatelessWidget {
               child: Center(
                 child: Text(
                   initial,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Lumiare',
                     color: XiColors.warmWhite,
                     fontWeight: FontWeight.w700,
+                    fontSize: size * 0.34,
                   ),
                 ),
               ),
@@ -254,21 +231,97 @@ class _HeaderAvatar extends StatelessWidget {
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => ColoredBox(
                 color: XiColors.royalBlue.withValues(alpha: 0.25),
-                child: Center(child: Text(initial)),
+                child: Center(
+                  child: Text(
+                    initial,
+                    style: TextStyle(
+                      fontFamily: 'Lumiare',
+                      color: XiColors.warmWhite,
+                      fontWeight: FontWeight.w700,
+                      fontSize: size * 0.34,
+                    ),
+                  ),
+                ),
               ),
             ),
     );
   }
 }
 
-class _ResourcePill extends StatelessWidget {
-  const _ResourcePill({
+/// Bandeja única estilo HUD: iconos/valores sin pastillas individuales.
+class _ResourcesTray extends StatelessWidget {
+  const _ResourcesTray({
+    required this.energyPrimary,
+    required this.coinsLabel,
+    required this.gemsLabel,
+    this.energySecondary,
+  });
+
+  final String energyPrimary;
+  final String? energySecondary;
+  final String coinsLabel;
+  final String gemsLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 52,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          image: const DecorationImage(
+            image: AssetImage(ClashEpicAssets.clashResourcesTrayBg),
+            fit: BoxFit.fill,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.35),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
+          child: Row(
+            children: [
+              Expanded(
+                child: _ResourceSlot(
+                  iconAsset: ClashEpicAssets.clashEnergyIcon,
+                  primary: energyPrimary,
+                  secondary: energySecondary,
+                  accent: XiColors.techCyan,
+                ),
+              ),
+              Expanded(
+                child: _ResourceSlot(
+                  iconWidget: const MoneyCoinsIcon(size: 18),
+                  primary: coinsLabel,
+                  accent: XiColors.classicGold,
+                ),
+              ),
+              Expanded(
+                child: _ResourceSlot(
+                  iconAsset: ClashEpicAssets.clashGachaGemIcon,
+                  primary: gemsLabel,
+                  accent: const Color(0xFF6EE7FF),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ResourceSlot extends StatelessWidget {
+  const _ResourceSlot({
     required this.primary,
     required this.accent,
     this.secondary,
     this.iconAsset,
     this.iconWidget,
-    this.iconGap = 6,
   });
 
   final String primary;
@@ -276,32 +329,12 @@ class _ResourcePill extends StatelessWidget {
   final Color accent;
   final String? iconAsset;
   final Widget? iconWidget;
-  final double iconGap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            accent.withValues(alpha: 0.22),
-            Colors.black.withValues(alpha: 0.35),
-          ],
-        ),
-        border: Border.all(color: accent.withValues(alpha: 0.45)),
-        boxShadow: [
-          BoxShadow(
-            color: accent.withValues(alpha: 0.18),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6),
       child: Row(
         children: [
           if (iconWidget != null)
@@ -309,16 +342,16 @@ class _ResourcePill extends StatelessWidget {
           else if (iconAsset != null)
             Image.asset(
               iconAsset!,
-              width: 18,
-              height: 18,
+              width: 20,
+              height: 20,
               fit: BoxFit.contain,
               filterQuality: FilterQuality.medium,
             ),
-          SizedBox(width: iconGap),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   primary,

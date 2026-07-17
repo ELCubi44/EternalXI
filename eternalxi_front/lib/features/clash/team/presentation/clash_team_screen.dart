@@ -34,7 +34,7 @@ class ClashTeamScreen extends StatelessWidget {
   }
 }
 
-/// Entrada Equipo: pastilla compacta con icono y texto alineados dentro.
+/// Icono un poco mayor que la barra; la barra empieza bajo el icono.
 class _TeamSectionBar extends StatelessWidget {
   const _TeamSectionBar({
     required this.iconAsset,
@@ -48,6 +48,10 @@ class _TeamSectionBar extends StatelessWidget {
   final VoidCallback onTap;
   final TextStyle? titleStyle;
 
+  static const double _iconSize = 58;
+  static const double _barHeight = 48;
+  static const double _iconOverlap = 22;
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -55,41 +59,65 @@ class _TeamSectionBar extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        child: Ink(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                XiColors.techCyan.withValues(alpha: 0.18),
-                Colors.black.withValues(alpha: 0.42),
-              ],
-            ),
-            border: Border.all(
-              color: XiColors.techCyan.withValues(alpha: 0.45),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: XiColors.techCyan.withValues(alpha: 0.14),
-                blurRadius: 10,
-                offset: const Offset(0, 3),
+        child: SizedBox(
+          height: _iconSize + 4,
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.centerLeft,
+            children: [
+              Positioned(
+                left: _iconOverlap,
+                right: 0,
+                top: (_iconSize + 4 - _barHeight) / 2,
+                height: _barHeight,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.35),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                    image: const DecorationImage(
+                      image: AssetImage(ClashEpicAssets.teamPersonajesBarBg),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.only(left: _iconSize - _iconOverlap + 8),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: titleStyle,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: Row(
-              children: [
-                Container(
-                  width: 42,
-                  height: 42,
+              Positioned(
+                left: 0,
+                top: 2,
+                child: Container(
+                  width: _iconSize,
+                  height: _iconSize,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: XiColors.classicGold.withValues(alpha: 0.55),
-                      width: 1.2,
+                      color: XiColors.classicGold.withValues(alpha: 0.65),
+                      width: 1.4,
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.4),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Image.asset(
@@ -98,17 +126,8 @@ class _TeamSectionBar extends StatelessWidget {
                     filterQuality: FilterQuality.medium,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: titleStyle,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

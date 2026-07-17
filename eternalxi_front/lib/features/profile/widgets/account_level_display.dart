@@ -4,13 +4,15 @@ import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Barra de experiencia de cuenta. [compact] = solo línea + nivel a la derecha.
-class AccountLevelDisplay extends StatelessWidget {  const AccountLevelDisplay({
+class AccountLevelDisplay extends StatelessWidget {
+  const AccountLevelDisplay({
     super.key,
     required this.nivel,
     required this.rango,
     required this.xpEnNivel,
     required this.xpParaSiguiente,
     this.compact = false,
+    this.showXpUnit = false,
     this.animateProgress = false,
     this.displayXpEnNivel,
     this.displayXpParaSiguiente,
@@ -23,6 +25,8 @@ class AccountLevelDisplay extends StatelessWidget {  const AccountLevelDisplay({
   final int xpEnNivel;
   final int xpParaSiguiente;
   final bool compact;
+  /// Si true, muestra "xp" tras el contador (p. ej. `312/354 xp`).
+  final bool showXpUnit;
   final bool animateProgress;
   final int? displayXpEnNivel;
   final int? displayXpParaSiguiente;
@@ -37,6 +41,7 @@ class AccountLevelDisplay extends StatelessWidget {  const AccountLevelDisplay({
         rango: rango,
         xpEnNivel: displayXpEnNivel ?? xpEnNivel,
         xpParaSiguiente: displayXpParaSiguiente ?? xpParaSiguiente,
+        showXpUnit: showXpUnit,
         animateProgress: animateProgress,
         progressFrom: progressFrom,
         progressAnimationDuration: progressAnimationDuration,
@@ -238,6 +243,7 @@ class _CompactLevelBar extends StatelessWidget {
     required this.rango,
     required this.xpEnNivel,
     required this.xpParaSiguiente,
+    required this.showXpUnit,
     required this.animateProgress,
     this.progressFrom,
     this.progressAnimationDuration,
@@ -247,6 +253,7 @@ class _CompactLevelBar extends StatelessWidget {
   final String rango;
   final int xpEnNivel;
   final int xpParaSiguiente;
+  final bool showXpUnit;
   final bool animateProgress;
   final double? progressFrom;
   final Duration? progressAnimationDuration;
@@ -258,6 +265,7 @@ class _CompactLevelBar extends StatelessWidget {
     final maxXp = xpParaSiguiente <= 0 ? 1 : xpParaSiguiente;
     final progress = (xpEnNivel / maxXp).clamp(0.0, 1.0);
     final from = (progressFrom ?? 0).clamp(0.0, 1.0);
+    final xpLabel = showXpUnit ? '$xpEnNivel/$maxXp xp' : '$xpEnNivel/$maxXp';
 
     return Semantics(
       label: 'Nivel $nivel, $rango. Experiencia $xpEnNivel de $maxXp.',
@@ -268,7 +276,7 @@ class _CompactLevelBar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '$xpEnNivel/$maxXp',
+                xpLabel,
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: cs.onSurfaceVariant,
                 ),
