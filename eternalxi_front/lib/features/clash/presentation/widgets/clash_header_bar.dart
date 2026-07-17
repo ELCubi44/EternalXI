@@ -100,7 +100,7 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
           child: Align(
             alignment: Alignment.topCenter,
             child: FractionallySizedBox(
-              widthFactor: 0.86,
+              widthFactor: 0.90,
               child: AspectRatio(
                 aspectRatio: _frameAspect,
                 child: LayoutBuilder(
@@ -117,7 +117,7 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                     final contentRight = w * 0.055;
 
                     return Stack(
-                      clipBehavior: Clip.hardEdge,
+                      clipBehavior: Clip.none,
                       children: [
                         Positioned.fill(
                           child: Image.asset(
@@ -277,10 +277,10 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                                 Expanded(
                                   child: Padding(
                                     padding: EdgeInsets.symmetric(
-                                      horizontal: w * 0.018,
+                                      horizontal: w * 0.01,
                                     ),
                                     child: Align(
-                                      alignment: const Alignment(0, 0.15),
+                                      alignment: Alignment.center,
                                       child: slot,
                                     ),
                                   ),
@@ -404,7 +404,7 @@ class _ResourceSlot extends StatelessWidget {
             style: theme.textTheme.labelLarge?.copyWith(
               color: context.xiTextPrimary,
               fontWeight: FontWeight.w800,
-              fontSize: 9.5,
+              fontSize: 10,
               height: 1.0,
             ),
           ),
