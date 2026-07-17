@@ -221,7 +221,7 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                               ),
                               Expanded(
                                 child: _ResourceSlot(
-                                  iconWidget: const MoneyCoinsIcon(size: 12),
+                                  iconWidget: const MoneyCoinsIcon(size: 18),
                                   primary: _formatAmount(coins),
                                   accent: XiColors.classicGold,
                                 ),
@@ -229,6 +229,7 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                               Expanded(
                                 child: _ResourceSlot(
                                   iconAsset: ClashEpicAssets.clashGachaGemIcon,
+                                  iconSize: 15,
                                   primary: _formatAmount(gems),
                                   accent: const Color(0xFF6EE7FF),
                                 ),
@@ -319,12 +320,14 @@ class _ResourceSlot extends StatelessWidget {
     required this.accent,
     this.iconAsset,
     this.iconWidget,
+    this.iconSize = 12,
   });
 
   final String primary;
   final Color accent;
   final String? iconAsset;
   final Widget? iconWidget;
+  final double iconSize;
 
   @override
   Widget build(BuildContext context) {
@@ -339,8 +342,8 @@ class _ResourceSlot extends StatelessWidget {
           else if (iconAsset != null)
             Image.asset(
               iconAsset!,
-              width: 12,
-              height: 12,
+              width: iconSize,
+              height: iconSize,
               fit: BoxFit.contain,
               filterQuality: FilterQuality.medium,
             ),
