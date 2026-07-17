@@ -106,7 +106,9 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
                           nickname: greeting,
                           nivel: user?.nivel ?? 1,
                           photoUrl: photoUrl,
-                          onTap: () => context.push(AppRoutes.profile),
+                          onTap: () => context.push(
+                            '${AppRoutes.profile}?from=mode',
+                          ),
                         ),
                       ),
                     ],

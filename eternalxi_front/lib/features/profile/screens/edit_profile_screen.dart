@@ -250,8 +250,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final user = profile.user ?? auth.currentUser;
     final userId = auth.currentUser?.id;
     final initial = _initials(user?.nickname);
-    final fromClash =
-        GoRouterState.of(context).uri.queryParameters['from'] == 'clash';
+    final from = GoRouterState.of(context).uri.queryParameters['from'];
+    // Solo desde elegir modo se puede volver al título; en Clash/Fantasy → cambiar modo.
+    final showBackToTitle = from == 'mode';
 
     return WithFantasyAtmosphere(
       child: AppLoadingOverlay(
@@ -376,14 +377,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: _ProfileActionCard(
-                          icon: fromClash
-                              ? Icons.swap_horiz_rounded
-                              : Icons.home_rounded,
-                          label: fromClash
-                              ? l10n.backToModeSelection
-                              : l10n.profileBackToTitle,
+                          icon: showBackToTitle
+                              ? Icons.home_rounded
+                              : Icons.swap_horiz_rounded,
+                          label: showBackToTitle
+                              ? l10n.profileBackToTitle
+                              : l10n.backToModeSelection,
                           onTap: () => context.go(
-                            fromClash ? AppRoutes.mode : AppRoutes.splash,
+                            showBackToTitle
+                                ? AppRoutes.splash
+                                : AppRoutes.mode,
                           ),
                         ),
                       ),

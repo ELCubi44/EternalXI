@@ -98,11 +98,6 @@ class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
                           ],
                         ),
                       ),
-                      IconButton(
-                        tooltip: l10n.backToModeSelection,
-                        onPressed: () => context.go(AppRoutes.mode),
-                        icon: const Icon(Icons.swap_horiz_rounded),
-                      ),
                       if (userId != null) ...[
                         _IconActionButton(
                           assetIcon: 'assets/app/action_join_league.png',
@@ -128,7 +123,9 @@ class _MyLeaguesScreenState extends State<MyLeaguesScreen> {
                           nivel: nivel,
                           nickname: nickname,
                           photoUrl: photoUrl,
-                          onTap: () => context.push(AppRoutes.profile),
+                          onTap: () => context.push(
+                            '${AppRoutes.profile}?from=fantasy',
+                          ),
                         ),
                       ],
                     ],
