@@ -1,4 +1,4 @@
-﻿package com.eternalxi.eternalxi_api.services;
+package com.eternalxi.eternalxi_api.services;
 
 import com.eternalxi.eternalxi_api.config.DBConnection;
 import com.eternalxi.eternalxi_api.dto.user.EligibleFavoritePlayerResponse;
