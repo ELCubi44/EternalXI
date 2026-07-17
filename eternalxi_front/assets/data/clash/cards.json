@@ -16907,7 +16907,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
@@ -16941,7 +16941,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -16985,7 +16985,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,

@@ -137,10 +137,6 @@ class ClashCardsController extends ChangeNotifier {
 
   void setSortField(ClashCardSortField field) {
     _sortField = field;
-    // Orden de posición: Ascendente = POR → DC (alineación natural).
-    if (field == ClashCardSortField.position) {
-      _sortDescending = false;
-    }
     _applyFilters();
     notifyListeners();
   }
