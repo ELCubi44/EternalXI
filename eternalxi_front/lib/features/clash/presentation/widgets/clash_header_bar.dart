@@ -144,8 +144,8 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                         Positioned(
                           left: panelLeft,
                           right: panelRight,
-                          top: h * 0.145,
-                          height: h * 0.265,
+                          top: h * 0.155,
+                          height: h * 0.22,
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: w * 0.02),
                             child: Row(
@@ -181,8 +181,8 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                         Positioned(
                           left: panelLeft + w * 0.015,
                           right: panelRight + w * 0.01,
-                          top: h * 0.44,
-                          height: h * 0.135,
+                          top: h * 0.425,
+                          height: h * 0.145,
                           child: Center(
                             child: Stack(
                               alignment: Alignment.center,
@@ -221,12 +221,12 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             ),
                           ),
                         ),
-                        // Recursos: un pelín más abajo y a la izquierda.
+                        // Recursos: más abajo y a la izquierda.
                         Positioned(
-                          left: w * 0.31,
-                          right: w * 0.055,
-                          top: h * 0.705,
-                          height: h * 0.185,
+                          left: w * 0.295,
+                          right: w * 0.06,
+                          top: h * 0.725,
+                          height: h * 0.175,
                           child: Row(
                             children: [
                               Expanded(
