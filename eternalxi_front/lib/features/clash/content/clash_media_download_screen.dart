@@ -9,7 +9,7 @@ import 'package:eternal_xi/shared/widgets/xi_brand_wordmark.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Primera entrada a Clash: pregunta y descarga fotos con progreso en MB.
+/// Solo se muestra si falta descargar fotos Clash; si ya está listo, redirige sin UI.
 class ClashMediaDownloadScreen extends StatefulWidget {
   const ClashMediaDownloadScreen({super.key});
 
@@ -18,13 +18,13 @@ class ClashMediaDownloadScreen extends StatefulWidget {
       _ClashMediaDownloadScreenState();
 }
 
-enum _Phase { checking, prompt, downloading, error }
+enum _Phase { redirecting, prompt, downloading, error }
 
 class _ClashMediaDownloadScreenState extends State<ClashMediaDownloadScreen> {
   final _service = ClashMediaPackService();
   ClashContentDownloadProgress? _progress;
   String? _error;
-  _Phase _phase = _Phase.checking;
+  _Phase _phase = _Phase.redirecting;
   int _pendingBytes = 0;
 
   @override
@@ -34,17 +34,12 @@ class _ClashMediaDownloadScreenState extends State<ClashMediaDownloadScreen> {
   }
 
   Future<void> _check() async {
-    setState(() {
-      _phase = _Phase.checking;
-      _error = null;
-    });
     await PlayerImageCache.instance.playersDirectory();
     final info = await _service.pendingDownloadInfo();
     if (!mounted) return;
 
     if (!info.needsDownload) {
-      // Marca ready / entra (ensureMediaPack es rápido si ya está).
-      await _download();
+      context.go(AppRoutes.clash);
       return;
     }
 
@@ -82,6 +77,15 @@ class _ClashMediaDownloadScreenState extends State<ClashMediaDownloadScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+
+    // Sin flash de "Preparando Clash" si ya está todo descargado.
+    if (_phase == _Phase.redirecting) {
+      return const Scaffold(
+        backgroundColor: XiColors.nightBlue,
+        body: SizedBox.expand(),
+      );
+    }
+
     final progress = _progress;
     final fraction = progress?.fraction ?? 0.0;
     final mb = progress?.mbLabel ?? '0.0 / 0.0 MB';
@@ -142,8 +146,6 @@ class _ClashMediaDownloadScreenState extends State<ClashMediaDownloadScreen> {
                     ),
                   ),
                 ),
-              ] else if (_phase == _Phase.checking) ...[
-                const CircularProgressIndicator(color: XiColors.techCyan),
               ] else ...[
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),

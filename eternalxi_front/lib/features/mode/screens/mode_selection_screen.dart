@@ -5,6 +5,7 @@ import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/app/theme/xi_typography.dart';
 import 'package:eternal_xi/core/constants/api_constants.dart';
 import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
+import 'package:eternal_xi/features/clash/content/clash_media_pack_service.dart';
 import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
 import 'package:eternal_xi/features/profile/controller/friends_pending_controller.dart';
 import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
@@ -46,6 +47,12 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
     if (mounted) {
       context.read<FriendsPendingController>().refresh(userId);
     }
+  }
+
+  Future<void> _enterClash() async {
+    final ready = await ClashMediaPackService().isPackReadyQuick();
+    if (!mounted) return;
+    context.go(ready ? AppRoutes.clash : AppRoutes.clashPrepare);
   }
 
   @override
@@ -163,7 +170,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
                               title: l10n.modeClashTitle,
                               description: l10n.modeClashDescription,
                               actionLabel: l10n.modeEnter,
-                              onTap: () => context.go(AppRoutes.clashPrepare),
+                              onTap: _enterClash,
                             ),
                           ],
                         ),

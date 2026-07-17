@@ -29,25 +29,33 @@ class ClashMediaPackService {
     return prefs.getBool(_prefsReady) ?? false;
   }
 
+  /// Atajo: si el flag local dice listo, no hace falta mostrar la pantalla de descarga.
+  Future<bool> isPackReadyQuick() async {
+    final manifest = await ClashContentManifest.loadBundled();
+    return isReady(portraitsVersion: manifest.portraitsVersion);
+  }
+
   /// Info para preguntar antes de descargar.
   Future<({bool needsDownload, int pendingBytes, int pendingCount})>
       pendingDownloadInfo() async {
     final manifest = await ClashContentManifest.loadBundled();
+    if (await isReady(portraitsVersion: manifest.portraitsVersion)) {
+      return (needsDownload: false, pendingBytes: 0, pendingCount: 0);
+    }
     final ids = await loadPlayerIdsFromCatalog();
     await _cache.playersDirectory();
     final present = await _cache.countPresent(ids);
-    final ready = await isReady(portraitsVersion: manifest.portraitsVersion);
-    if (ready && present >= ids.length) {
-      return (needsDownload: false, pendingBytes: 0, pendingCount: 0);
-    }
     final missing = ids.length - present;
-    if (missing <= 0 && !ready) {
-      // Archivos listos pero falta marcar versión.
+    if (missing <= 0) {
+      // Archivos listos: marca ready en silencio.
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_prefsPortraitsVersion, manifest.portraitsVersion);
+      await prefs.setBool(_prefsReady, true);
       return (needsDownload: false, pendingBytes: 0, pendingCount: 0);
     }
     final avg = 1650000;
     return (
-      needsDownload: missing > 0,
+      needsDownload: true,
       pendingBytes: missing * avg,
       pendingCount: missing,
     );
