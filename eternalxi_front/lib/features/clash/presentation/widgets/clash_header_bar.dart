@@ -80,7 +80,6 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
     final xpMaxRaw = progress?.xpParaSiguienteNivel ?? 1;
     final xpMax = xpMaxRaw <= 0 ? 1 : xpMaxRaw;
     final xpFraction = (xpEn / xpMax).clamp(0.0, 1.0);
-    final rango = progress?.rango ?? '';
     final photoUrl = user == null
         ? null
         : ApiConstants.userProfilePhotoUrl(
@@ -96,7 +95,7 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 4, 18, 4),
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
           child: Align(
             alignment: Alignment.topCenter,
             child: FractionallySizedBox(
@@ -108,13 +107,13 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                     final w = constraints.maxWidth;
                     final h = constraints.maxHeight;
 
-                    final avatarSize = w * 0.215;
-                    final avatarLeft = w * 0.058;
-                    final avatarTop = h * 0.19;
+                    final avatarSize = w * 0.21;
+                    final avatarLeft = w * 0.06;
+                    final avatarTop = (h - avatarSize) / 2;
 
-                    // Misma columna útil para texto / XP / recursos.
-                    final contentLeft = w * 0.345;
-                    final contentRight = w * 0.055;
+                    // Columna del panel derecho (nombre / XP / recursos).
+                    final panelLeft = w * 0.335;
+                    final panelRight = w * 0.05;
 
                     return Stack(
                       clipBehavior: Clip.none,
@@ -126,6 +125,7 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             filterQuality: FilterQuality.high,
                           ),
                         ),
+                        // Avatar centrado en el círculo.
                         Positioned(
                           left: avatarLeft,
                           top: avatarTop,
@@ -140,87 +140,57 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             ),
                           ),
                         ),
+                        // Solo nombre + nivel, centrados en el panel superior.
                         Positioned(
-                          left: contentLeft,
-                          right: contentRight,
-                          top: h * 0.16,
-                          height: h * 0.255,
+                          left: panelLeft,
+                          right: panelRight,
+                          top: h * 0.145,
+                          height: h * 0.265,
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: w * 0.02),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.baseline,
-                                  textBaseline: TextBaseline.alphabetic,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        displayName,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: theme.textTheme.titleSmall
-                                            ?.copyWith(
-                                          color: XiColors.warmWhite,
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: (h * 0.092).clamp(
-                                            11.5,
-                                            13.5,
-                                          ),
-                                          height: 1.0,
-                                        ),
-                                      ),
-                                    ),
-                                    Text(
-                                      'Nv. $nivel',
-                                      style: theme.textTheme.labelMedium
-                                          ?.copyWith(
-                                        color: XiColors.classicGold,
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: (h * 0.078).clamp(
-                                          11.0,
-                                          12.5,
-                                        ),
-                                        height: 1.0,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                if (rango.isNotEmpty) ...[
-                                  SizedBox(height: h * 0.025),
-                                  Text(
-                                    rango,
+                                Expanded(
+                                  child: Text(
+                                    displayName,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: XiColors.warmWhite.withValues(
-                                        alpha: 0.8,
-                                      ),
-                                      fontSize: (h * 0.055).clamp(8.5, 10.0),
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      color: XiColors.warmWhite,
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: (h * 0.10).clamp(12.0, 14.0),
                                       height: 1.0,
                                     ),
                                   ),
-                                ],
+                                ),
+                                Text(
+                                  'Nv. $nivel',
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    color: XiColors.classicGold,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: (h * 0.085).clamp(11.0, 13.0),
+                                    height: 1.0,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
                         ),
+                        // XP centrado en la ranura media.
                         Positioned(
-                          left: contentLeft,
-                          right: contentRight,
-                          top: h * 0.455,
-                          height: h * 0.12,
-                          child: Align(
-                            alignment: Alignment.center,
+                          left: panelLeft + w * 0.015,
+                          right: panelRight + w * 0.01,
+                          top: h * 0.44,
+                          height: h * 0.135,
+                          child: Center(
                             child: Stack(
-                              alignment: const Alignment(0, 0.15),
+                              alignment: Alignment.center,
                               children: [
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(999),
                                   child: SizedBox(
-                                    height: (h * 0.07).clamp(6.5, 8.0),
+                                    height: (h * 0.075).clamp(7.0, 8.5),
                                     width: double.infinity,
                                     child: LinearProgressIndicator(
                                       value: xpFraction,
@@ -237,7 +207,7 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                                   style: theme.textTheme.labelSmall?.copyWith(
                                     color: XiColors.warmWhite,
                                     fontWeight: FontWeight.w800,
-                                    fontSize: (h * 0.052).clamp(8.5, 10.0),
+                                    fontSize: (h * 0.055).clamp(9.0, 10.5),
                                     height: 1,
                                     shadows: const [
                                       Shadow(
@@ -251,34 +221,35 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             ),
                           ),
                         ),
+                        // Recursos: un pelín más abajo y a la izquierda.
                         Positioned(
-                          left: w * 0.33,
-                          right: w * 0.05,
-                          top: h * 0.675,
-                          height: h * 0.195,
+                          left: w * 0.31,
+                          right: w * 0.055,
+                          top: h * 0.705,
+                          height: h * 0.185,
                           child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              for (final slot in [
-                                _ResourceSlot(
+                              Expanded(
+                                child: _ResourceSlot(
                                   iconAsset: ClashEpicAssets.clashEnergyIcon,
                                   primary: energy?.fractionLabel ?? '—/—',
                                   accent: XiColors.techCyan,
                                 ),
-                                _ResourceSlot(
+                              ),
+                              Expanded(
+                                child: _ResourceSlot(
                                   iconWidget: const MoneyCoinsIcon(size: 12),
                                   primary: _formatAmount(coins),
                                   accent: XiColors.classicGold,
                                 ),
-                                _ResourceSlot(
+                              ),
+                              Expanded(
+                                child: _ResourceSlot(
                                   iconAsset: ClashEpicAssets.clashGachaGemIcon,
                                   primary: _formatAmount(gems),
                                   accent: const Color(0xFF6EE7FF),
                                 ),
-                              ])
-                                Expanded(
-                                  child: Center(child: slot),
-                                ),
+                              ),
                             ],
                           ),
                         ),
