@@ -9,7 +9,7 @@ import 'package:eternal_xi/shared/widgets/xi_brand_wordmark.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Primera entrada a Clash: descarga fotos de jugadores con progreso en MB.
+/// Primera entrada a Clash: pregunta y descarga fotos con progreso en MB.
 class ClashMediaDownloadScreen extends StatefulWidget {
   const ClashMediaDownloadScreen({super.key});
 
@@ -18,27 +18,47 @@ class ClashMediaDownloadScreen extends StatefulWidget {
       _ClashMediaDownloadScreenState();
 }
 
+enum _Phase { checking, prompt, downloading, error }
+
 class _ClashMediaDownloadScreenState extends State<ClashMediaDownloadScreen> {
   final _service = ClashMediaPackService();
   ClashContentDownloadProgress? _progress;
   String? _error;
-  bool _running = false;
+  _Phase _phase = _Phase.checking;
+  int _pendingBytes = 0;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _start());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _check());
   }
 
-  Future<void> _start() async {
-    if (_running) return;
+  Future<void> _check() async {
     setState(() {
-      _running = true;
+      _phase = _Phase.checking;
       _error = null;
     });
-
-    // Prefetch dir so localFileIfReady works in Clash/Fantasy UI.
     await PlayerImageCache.instance.playersDirectory();
+    final info = await _service.pendingDownloadInfo();
+    if (!mounted) return;
+
+    if (!info.needsDownload) {
+      // Marca ready / entra (ensureMediaPack es rápido si ya está).
+      await _download();
+      return;
+    }
+
+    setState(() {
+      _phase = _Phase.prompt;
+      _pendingBytes = info.pendingBytes;
+    });
+  }
+
+  Future<void> _download() async {
+    setState(() {
+      _phase = _Phase.downloading;
+      _error = null;
+    });
 
     final result = await _service.ensureMediaPack(
       onProgress: (p) {
@@ -52,10 +72,12 @@ class _ClashMediaDownloadScreenState extends State<ClashMediaDownloadScreen> {
       return;
     }
     setState(() {
-      _running = false;
+      _phase = _Phase.error;
       _error = result.errorMessage ?? 'Error de descarga';
     });
   }
+
+  String _mb(int bytes) => (bytes / (1024 * 1024)).toStringAsFixed(0);
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +97,9 @@ class _ClashMediaDownloadScreenState extends State<ClashMediaDownloadScreen> {
               const XiBrandWordmark(fontSize: 34),
               const Spacer(),
               Text(
-                l10n.clashMediaDownloadTitle,
+                _phase == _Phase.prompt
+                    ? l10n.clashMediaPromptTitle
+                    : l10n.clashMediaDownloadTitle,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontFamily: 'Lumiare',
@@ -86,7 +110,9 @@ class _ClashMediaDownloadScreenState extends State<ClashMediaDownloadScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                l10n.clashMediaDownloadSubtitle,
+                _phase == _Phase.prompt
+                    ? l10n.clashMediaPromptBody(_mb(_pendingBytes))
+                    : l10n.clashMediaDownloadSubtitle,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Lumiare',
@@ -95,52 +121,79 @@ class _ClashMediaDownloadScreenState extends State<ClashMediaDownloadScreen> {
                   color: Colors.white.withValues(alpha: 0.72),
                 ),
               ),
-              const SizedBox(height: 36),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: LinearProgressIndicator(
-                  value: _error != null ? 0 : fraction.clamp(0.0, 1.0),
-                  minHeight: 10,
-                  backgroundColor: Colors.white.withValues(alpha: 0.12),
-                  color: XiColors.techCyan,
+              const SizedBox(height: 28),
+              if (_phase == _Phase.prompt) ...[
+                FilledButton(
+                  onPressed: _download,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: XiColors.techCyan,
+                    foregroundColor: XiColors.nightBlue,
+                    minimumSize: const Size.fromHeight(48),
+                  ),
+                  child: Text(l10n.contentDownloadAccept),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                mb,
-                style: TextStyle(
-                  fontFamily: 'Lumiare',
-                  fontSize: 15,
-                  color: Colors.white.withValues(alpha: 0.9),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: () => context.go(AppRoutes.mode),
+                  child: Text(
+                    l10n.contentDownloadLater,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.75),
+                    ),
+                  ),
                 ),
-              ),
-              if (_error != null) ...[
-                const SizedBox(height: 18),
+              ] else if (_phase == _Phase.checking) ...[
+                const CircularProgressIndicator(color: XiColors.techCyan),
+              ] else ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: LinearProgressIndicator(
+                    value: _phase == _Phase.error
+                        ? 0
+                        : fraction.clamp(0.0, 1.0),
+                    minHeight: 10,
+                    backgroundColor: Colors.white.withValues(alpha: 0.12),
+                    color: XiColors.techCyan,
+                  ),
+                ),
+                const SizedBox(height: 12),
                 Text(
-                  _error!,
-                  textAlign: TextAlign.center,
+                  mb,
                   style: TextStyle(
                     fontFamily: 'Lumiare',
-                    fontSize: 13,
-                    color: Colors.orangeAccent.withValues(alpha: 0.95),
+                    fontSize: 15,
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: _start,
-                  child: Text(l10n.clashMediaDownloadRetry),
-                ),
+                if (_phase == _Phase.error) ...[
+                  const SizedBox(height: 18),
+                  Text(
+                    _error ?? '',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Lumiare',
+                      fontSize: 13,
+                      color: Colors.orangeAccent.withValues(alpha: 0.95),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: _download,
+                    child: Text(l10n.clashMediaDownloadRetry),
+                  ),
+                ],
               ],
               const Spacer(flex: 2),
-              TextButton(
-                onPressed: () => context.go(AppRoutes.mode),
-                child: Text(
-                  l10n.backToModeSelection,
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.7),
+              if (_phase != _Phase.prompt)
+                TextButton(
+                  onPressed: () => context.go(AppRoutes.mode),
+                  child: Text(
+                    l10n.backToModeSelection,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.7),
+                    ),
                   ),
                 ),
-              ),
               const SizedBox(height: 12),
             ],
           ),

@@ -114,6 +114,14 @@ class AppLocalizations {
       'clashMediaDownloadSubtitle':
           'Para jugar Clash hay que descargar las cartas y las fotos de los jugadores. Fantasy sigue funcionando online; si ya tienes estas fotos, también cargarán más rápido allí.',
       'clashMediaDownloadRetry': 'Reintentar',
+      'clashMediaPromptTitle': 'Descarga necesaria',
+      'clashMediaPromptBody':
+          'Para jugar Clash hay que descargar las fotos de los jugadores (~{mb} MB). ¿Quieres descargarlas ahora?',
+      'contentDownloadAccept': 'Descargar',
+      'contentDownloadLater': 'Más tarde',
+      'splashContentPromptTitle': 'Contenido nuevo disponible',
+      'splashContentPromptBody':
+          'Hay una actualización del catálogo Clash (~{mb} MB). ¿Quieres descargarla ahora?',
       'clashPlaceholderTitle': 'Eternal XI Clash',
       'clashPlaceholderBody':
           'Próximamente: modo de historia, colección de cartas y batallas. Estamos preparando la experiencia.',
@@ -1320,6 +1328,14 @@ class AppLocalizations {
       'clashMediaDownloadSubtitle':
           'To play Clash you need to download the cards and player photos. Fantasy still works online; once these photos are saved they will also load faster there.',
       'clashMediaDownloadRetry': 'Retry',
+      'clashMediaPromptTitle': 'Download required',
+      'clashMediaPromptBody':
+          'To play Clash you need to download the player photos (~{mb} MB). Download now?',
+      'contentDownloadAccept': 'Download',
+      'contentDownloadLater': 'Later',
+      'splashContentPromptTitle': 'New content available',
+      'splashContentPromptBody':
+          'There is a Clash catalog update (~{mb} MB). Download it now?',
       'clashPlaceholderTitle': 'Eternal XI Clash',
       'clashPlaceholderBody':
           'Coming soon: story mode, card collection and battles. We are building the experience.',
@@ -2595,6 +2611,14 @@ class AppLocalizations {
   String get clashMediaDownloadTitle => _t('clashMediaDownloadTitle');
   String get clashMediaDownloadSubtitle => _t('clashMediaDownloadSubtitle');
   String get clashMediaDownloadRetry => _t('clashMediaDownloadRetry');
+  String get clashMediaPromptTitle => _t('clashMediaPromptTitle');
+  String clashMediaPromptBody(String mb) =>
+      _t('clashMediaPromptBody').replaceAll('{mb}', mb);
+  String get contentDownloadAccept => _t('contentDownloadAccept');
+  String get contentDownloadLater => _t('contentDownloadLater');
+  String get splashContentPromptTitle => _t('splashContentPromptTitle');
+  String splashContentPromptBody(String mb) =>
+      _t('splashContentPromptBody').replaceAll('{mb}', mb);
   String get clashPlaceholderTitle => _t('clashPlaceholderTitle');
   String get clashPlaceholderBody => _t('clashPlaceholderBody');
   String get backToModeSelection => _t('backToModeSelection');

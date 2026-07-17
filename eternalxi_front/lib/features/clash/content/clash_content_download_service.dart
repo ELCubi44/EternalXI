@@ -34,6 +34,45 @@ class ClashContentDownloadService {
     return localVersion >= manifest.cardsVersion && await file.exists();
   }
 
+  /// True si hay catálogo nuevo pendiente de descarga.
+  Future<bool> needsDownload() async {
+    final manifest = await ClashContentManifest.loadBundled();
+    return !(await isUpToDate(manifest));
+  }
+
+  Future<ClashContentManifest> loadManifest() =>
+      ClashContentManifest.loadBundled();
+
+  /// Usa el catálogo empaquetado en la app sin marcar la versión remota
+  /// (así la próxima vez se vuelve a preguntar por el contenido nuevo).
+  Future<ClashContentDownloadResult> useBundledForNow({
+    void Function(ClashContentDownloadProgress progress)? onProgress,
+  }) async {
+    try {
+      final bundled = await rootBundle.loadString(_bundledCardsAsset);
+      final file = await _cardsFile();
+      await file.writeAsString(bundled);
+      onProgress?.call(
+        ClashContentDownloadProgress(
+          phase: 'ready',
+          downloadedBytes: bundled.length,
+          totalBytes: bundled.length,
+          detail: 'bundled',
+        ),
+      );
+      return const ClashContentDownloadResult(
+        success: true,
+        usedBundledFallback: true,
+      );
+    } catch (e) {
+      return ClashContentDownloadResult(
+        success: false,
+        usedBundledFallback: false,
+        errorMessage: e.toString(),
+      );
+    }
+  }
+
   Future<String?> loadLocalCardsJson() async {
     final file = await _cardsFile();
     if (await file.exists()) {

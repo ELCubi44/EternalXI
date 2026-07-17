@@ -33,6 +33,8 @@ class _SplashScreenState extends State<SplashScreen>
   bool _hasSession = false;
   bool _contentReady = false;
   bool _contentFailed = false;
+  bool _awaitingDownloadConsent = false;
+  int _pendingContentBytes = 0;
   ClashContentDownloadProgress? _downloadProgress;
 
   final _contentDownload = ClashContentDownloadService();
@@ -69,13 +71,43 @@ class _SplashScreenState extends State<SplashScreen>
         _sessionReady = true;
         _hasSession = hasSession;
       });
-      await _downloadClashContent();
+      await _prepareClashContent();
       // Precalienta la ruta de caché de fotos por si Fantasy/Clash ya tienen pack.
       await PlayerImageCache.instance.playersDirectory();
     });
   }
 
+  Future<void> _prepareClashContent() async {
+    try {
+      final needs = await _contentDownload.needsDownload();
+      if (!mounted) return;
+      if (!needs) {
+        await _downloadClashContent();
+        return;
+      }
+      final manifest = await _contentDownload.loadManifest();
+      if (!mounted) return;
+      setState(() {
+        _awaitingDownloadConsent = true;
+        _pendingContentBytes = manifest.cardsBytes;
+        _contentReady = false;
+        _contentFailed = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _contentReady = false;
+        _contentFailed = true;
+      });
+    }
+  }
+
   Future<void> _downloadClashContent() async {
+    setState(() {
+      _awaitingDownloadConsent = false;
+      _contentFailed = false;
+      _downloadProgress = null;
+    });
     try {
       final result = await _contentDownload.ensureContent(
         onProgress: (progress) {
@@ -95,6 +127,24 @@ class _SplashScreenState extends State<SplashScreen>
         _contentFailed = true;
       });
     }
+  }
+
+  Future<void> _skipContentDownload() async {
+    setState(() {
+      _awaitingDownloadConsent = false;
+      _downloadProgress = null;
+    });
+    final result = await _contentDownload.useBundledForNow(
+      onProgress: (progress) {
+        if (!mounted) return;
+        setState(() => _downloadProgress = progress);
+      },
+    );
+    if (!mounted) return;
+    setState(() {
+      _contentReady = result.success;
+      _contentFailed = !result.success;
+    });
   }
 
   @override
@@ -126,7 +176,11 @@ class _SplashScreenState extends State<SplashScreen>
       backgroundColor: const Color(0xFF000000),
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: _sessionReady && _contentReady ? _enter : null,
+        onTap: _sessionReady &&
+                _contentReady &&
+                !_awaitingDownloadConsent
+            ? _enter
+            : null,
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -209,7 +263,56 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                     ),
                     const SizedBox(height: 22),
-                    if (!_sessionReady || !_contentReady)
+                    if (_awaitingDownloadConsent)
+                      Column(
+                        children: [
+                          Text(
+                            l10n.splashContentPromptTitle,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: 'Lumiare',
+                              fontSize: 15,
+                              color: XiColors.warmWhite.withValues(alpha: 0.95),
+                              letterSpacing: 0.4,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.splashContentPromptBody(
+                              (_pendingContentBytes / (1024 * 1024))
+                                  .toStringAsFixed(1),
+                            ),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: 'Lumiare',
+                              fontSize: 13,
+                              height: 1.4,
+                              color: XiColors.warmWhite.withValues(alpha: 0.78),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          FilledButton(
+                            onPressed: _downloadClashContent,
+                            style: FilledButton.styleFrom(
+                              backgroundColor: XiColors.techCyan,
+                              foregroundColor: XiColors.nightBlue,
+                            ),
+                            child: Text(l10n.contentDownloadAccept),
+                          ),
+                          const SizedBox(height: 8),
+                          TextButton(
+                            onPressed: _skipContentDownload,
+                            child: Text(
+                              l10n.contentDownloadLater,
+                              style: TextStyle(
+                                color:
+                                    XiColors.warmWhite.withValues(alpha: 0.8),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    else if (!_sessionReady || !_contentReady)
                       Column(
                         children: [
                           Text(
@@ -248,7 +351,7 @@ class _SplashScreenState extends State<SplashScreen>
                           ] else
                             AnimatedBuilder(
                               animation: _dotsCtrl,
-                              builder: (_, __) {
+                              builder: (_, _) {
                                 return Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: List.generate(3, (i) {
@@ -289,6 +392,11 @@ class _SplashScreenState extends State<SplashScreen>
                                   alpha: 0.95,
                                 ),
                               ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextButton(
+                              onPressed: _downloadClashContent,
+                              child: Text(l10n.clashMediaDownloadRetry),
                             ),
                           ],
                         ],

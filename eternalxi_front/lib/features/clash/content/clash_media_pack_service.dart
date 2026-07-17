@@ -29,6 +29,30 @@ class ClashMediaPackService {
     return prefs.getBool(_prefsReady) ?? false;
   }
 
+  /// Info para preguntar antes de descargar.
+  Future<({bool needsDownload, int pendingBytes, int pendingCount})>
+      pendingDownloadInfo() async {
+    final manifest = await ClashContentManifest.loadBundled();
+    final ids = await loadPlayerIdsFromCatalog();
+    await _cache.playersDirectory();
+    final present = await _cache.countPresent(ids);
+    final ready = await isReady(portraitsVersion: manifest.portraitsVersion);
+    if (ready && present >= ids.length) {
+      return (needsDownload: false, pendingBytes: 0, pendingCount: 0);
+    }
+    final missing = ids.length - present;
+    if (missing <= 0 && !ready) {
+      // Archivos listos pero falta marcar versión.
+      return (needsDownload: false, pendingBytes: 0, pendingCount: 0);
+    }
+    final avg = 1650000;
+    return (
+      needsDownload: missing > 0,
+      pendingBytes: missing * avg,
+      pendingCount: missing,
+    );
+  }
+
   Future<Set<int>> loadPlayerIdsFromCatalog() async {
     try {
       final docs = await _cache.playersDirectory();
