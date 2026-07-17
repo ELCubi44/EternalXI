@@ -91,11 +91,13 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
     final l10n = context.l10n;
     final controller = context.watch<ClashCardsController>();
 
+    final topInset = MediaQuery.paddingOf(context).top;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(8, 8, 4, 0),
+          padding: EdgeInsets.fromLTRB(8, topInset + 16, 4, 0),
           child: Row(
             children: [
               IconButton(

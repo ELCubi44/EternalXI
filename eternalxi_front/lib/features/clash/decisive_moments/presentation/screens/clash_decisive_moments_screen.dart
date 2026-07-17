@@ -143,7 +143,7 @@ class _ClashDecisiveMomentsScreenState extends State<ClashDecisiveMomentsScreen>
   Widget build(BuildContext context) {
     if (!_initialized) {
       return Scaffold(
-        backgroundColor: context.xiBackground,
+        backgroundColor: Colors.transparent,
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -153,7 +153,7 @@ class _ClashDecisiveMomentsScreenState extends State<ClashDecisiveMomentsScreen>
     final levelTitle = story.activeLevel?.title ?? 'Momentos decisivos';
 
     return Scaffold(
-      backgroundColor: context.xiBackground,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(levelTitle),
         backgroundColor: Colors.transparent,
