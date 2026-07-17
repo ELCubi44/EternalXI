@@ -9,13 +9,12 @@ import 'package:eternal_xi/features/clash/cards/presentation/epic/clash_epic_ass
 import 'package:eternal_xi/features/clash/shared/energy/clash_energy_service.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
-import 'package:eternal_xi/features/profile/widgets/account_level_display.dart';
 import 'package:eternal_xi/shared/widgets/money_coins_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-/// Cabecera Clash: avatar + XP + bandeja de recursos (sin anillo ni pills).
+/// Cabecera Clash unificada: perfil + XP + recursos en un solo panel.
 class ClashHeaderBar extends StatefulWidget {
   const ClashHeaderBar({super.key});
 
@@ -27,6 +26,8 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
   final _energyService = ClashEnergyService();
   ClashEnergyWallet? _energy;
   Timer? _ticker;
+
+  static const double _avatarSize = 64;
 
   @override
   void initState() {
@@ -76,7 +77,10 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
         (nickname != null && nickname.isNotEmpty) ? nickname : '—';
     final nivel = progress?.nivel ?? user?.nivel ?? 1;
     final xpEn = progress?.xpEnNivel ?? 0;
-    final xpMax = progress?.xpParaSiguienteNivel ?? 1;
+    final xpMaxRaw = progress?.xpParaSiguienteNivel ?? 1;
+    final xpMax = xpMaxRaw <= 0 ? 1 : xpMaxRaw;
+    final xpFraction = (xpEn / xpMax).clamp(0.0, 1.0);
+    final rango = progress?.rango ?? '';
     final photoUrl = user == null
         ? null
         : ApiConstants.userProfilePhotoUrl(
@@ -89,74 +93,154 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
 
     return Material(
       color: Colors.transparent,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.black.withValues(alpha: 0.55),
-              Colors.black.withValues(alpha: 0.18),
-              Colors.transparent,
-            ],
-          ),
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 6, 12, 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 6, 10, 10),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: XiColors.techCyan.withValues(alpha: 0.18),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.45),
+                  blurRadius: 12,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+              image: const DecorationImage(
+                image: AssetImage(ClashEpicAssets.clashHeaderPlateBg),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 10, 12, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    InkWell(
-                      onTap: _openProfile,
-                      customBorder: const CircleBorder(),
-                      child: _HeaderAvatar(
-                        photoUrl: photoUrl,
-                        nickname: displayName,
-                        size: 56,
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: _openProfile,
+                          customBorder: const CircleBorder(),
+                          child: _HeaderAvatar(
+                            photoUrl: photoUrl,
+                            nickname: displayName,
+                            size: _avatarSize,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      displayName,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(
+                                        color: XiColors.warmWhite,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 0.2,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    'Nivel $nivel',
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      color: XiColors.warmWhite,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '$xpEn/$xpMax xp',
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  color: XiColors.warmWhite.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(999),
+                                child: LinearProgressIndicator(
+                                  value: xpFraction,
+                                  minHeight: 8,
+                                  backgroundColor: Colors.white.withValues(
+                                    alpha: 0.12,
+                                  ),
+                                  color: XiColors.techCyan,
+                                ),
+                              ),
+                              if (rango.isNotEmpty) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  rango,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: XiColors.warmWhite.withValues(
+                                      alpha: 0.7,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            displayName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              color: XiColors.warmWhite,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 0.2,
-                            ),
+                    const SizedBox(height: 10),
+                    Container(
+                      height: 1,
+                      margin: const EdgeInsets.symmetric(horizontal: 2),
+                      color: XiColors.techCyan.withValues(alpha: 0.28),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _ResourceSlot(
+                            iconAsset: ClashEpicAssets.clashEnergyIcon,
+                            primary: energy?.fractionLabel ?? '—/—',
+                            secondary: energy?.countdownLabel,
+                            accent: XiColors.techCyan,
                           ),
-                          const SizedBox(height: 6),
-                          AccountLevelDisplay(
-                            compact: true,
-                            showXpUnit: true,
-                            nivel: nivel,
-                            rango: progress?.rango ?? '',
-                            xpEnNivel: xpEn,
-                            xpParaSiguiente: xpMax,
+                        ),
+                        _ResourceDivider(),
+                        Expanded(
+                          child: _ResourceSlot(
+                            iconWidget: const MoneyCoinsIcon(size: 18),
+                            primary: _formatAmount(coins),
+                            accent: XiColors.classicGold,
                           ),
-                        ],
-                      ),
+                        ),
+                        _ResourceDivider(),
+                        Expanded(
+                          child: _ResourceSlot(
+                            iconAsset: ClashEpicAssets.clashGachaGemIcon,
+                            primary: _formatAmount(gems),
+                            accent: const Color(0xFF6EE7FF),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                _ResourcesTray(
-                  energyPrimary: energy?.fractionLabel ?? '—/—',
-                  energySecondary: energy?.countdownLabel,
-                  coinsLabel: _formatAmount(coins),
-                  gemsLabel: _formatAmount(gems),
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -175,6 +259,18 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
       }
     }
     return buf.toString();
+  }
+}
+
+class _ResourceDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      height: 28,
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      color: XiColors.techCyan.withValues(alpha: 0.3),
+    );
   }
 }
 
@@ -200,13 +296,14 @@ class _HeaderAvatar extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: XiColors.classicGold.withValues(alpha: 0.75),
-          width: 1.6,
+          color: XiColors.classicGold.withValues(alpha: 0.8),
+          width: 1.8,
         ),
         boxShadow: [
           BoxShadow(
-            color: XiColors.techCyan.withValues(alpha: 0.25),
-            blurRadius: 10,
+            color: Colors.black.withValues(alpha: 0.35),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -248,73 +345,6 @@ class _HeaderAvatar extends StatelessWidget {
   }
 }
 
-/// Bandeja única estilo HUD: iconos/valores sin pastillas individuales.
-class _ResourcesTray extends StatelessWidget {
-  const _ResourcesTray({
-    required this.energyPrimary,
-    required this.coinsLabel,
-    required this.gemsLabel,
-    this.energySecondary,
-  });
-
-  final String energyPrimary;
-  final String? energySecondary;
-  final String coinsLabel;
-  final String gemsLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 52,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          image: const DecorationImage(
-            image: AssetImage(ClashEpicAssets.clashResourcesTrayBg),
-            fit: BoxFit.fill,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.35),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
-          child: Row(
-            children: [
-              Expanded(
-                child: _ResourceSlot(
-                  iconAsset: ClashEpicAssets.clashEnergyIcon,
-                  primary: energyPrimary,
-                  secondary: energySecondary,
-                  accent: XiColors.techCyan,
-                ),
-              ),
-              Expanded(
-                child: _ResourceSlot(
-                  iconWidget: const MoneyCoinsIcon(size: 18),
-                  primary: coinsLabel,
-                  accent: XiColors.classicGold,
-                ),
-              ),
-              Expanded(
-                child: _ResourceSlot(
-                  iconAsset: ClashEpicAssets.clashGachaGemIcon,
-                  primary: gemsLabel,
-                  accent: const Color(0xFF6EE7FF),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _ResourceSlot extends StatelessWidget {
   const _ResourceSlot({
     required this.primary,
@@ -333,53 +363,50 @@ class _ResourceSlot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6),
-      child: Row(
-        children: [
-          if (iconWidget != null)
-            iconWidget!
-          else if (iconAsset != null)
-            Image.asset(
-              iconAsset!,
-              width: 20,
-              height: 20,
-              fit: BoxFit.contain,
-              filterQuality: FilterQuality.medium,
-            ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+    return Row(
+      children: [
+        if (iconWidget != null)
+          iconWidget!
+        else if (iconAsset != null)
+          Image.asset(
+            iconAsset!,
+            width: 20,
+            height: 20,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.medium,
+          ),
+        const SizedBox(width: 7),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                primary,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: context.xiTextPrimary,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13,
+                  height: 1.05,
+                ),
+              ),
+              if (secondary != null && secondary!.isNotEmpty)
                 Text(
-                  primary,
+                  secondary!,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: context.xiTextPrimary,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 13,
-                    height: 1.05,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: accent.withValues(alpha: 0.95),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 10,
+                    height: 1.1,
                   ),
                 ),
-                if (secondary != null && secondary!.isNotEmpty)
-                  Text(
-                    secondary!,
-                    maxLines: 1,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: accent.withValues(alpha: 0.95),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 10,
-                      height: 1.1,
-                    ),
-                  ),
-              ],
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
