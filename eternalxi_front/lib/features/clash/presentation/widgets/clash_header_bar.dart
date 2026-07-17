@@ -185,7 +185,7 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                           height: h * 0.145,
                           child: Center(
                             child: Stack(
-                              alignment: Alignment.center,
+                              alignment: const Alignment(0, 0.2),
                               children: [
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(999),
@@ -223,10 +223,10 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                         ),
                         // Recursos: más abajo y a la izquierda.
                         Positioned(
-                          left: w * 0.295,
-                          right: w * 0.06,
-                          top: h * 0.725,
-                          height: h * 0.175,
+                          left: w * 0.285,
+                          right: w * 0.065,
+                          top: h * 0.74,
+                          height: h * 0.165,
                           child: Row(
                             children: [
                               Expanded(
