@@ -803,7 +803,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -837,7 +837,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -881,7 +881,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -1331,7 +1331,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -1365,7 +1365,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -1409,7 +1409,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -2123,7 +2123,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -2157,7 +2157,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -2201,7 +2201,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -3179,7 +3179,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -3213,7 +3213,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -3257,7 +3257,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -3707,7 +3707,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -3741,7 +3741,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -3785,7 +3785,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -4631,7 +4631,7 @@
       "rarity": "n",
       "level": 1,
       "style": "potente",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
@@ -4665,7 +4665,7 @@
       "rarity": "r",
       "level": 1,
       "style": "potente",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -4709,7 +4709,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "potente",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -5555,7 +5555,7 @@
       "rarity": "n",
       "level": 1,
       "style": "potente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -5589,7 +5589,7 @@
       "rarity": "r",
       "level": 1,
       "style": "potente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -5633,7 +5633,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "potente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -6215,7 +6215,7 @@
       "rarity": "n",
       "level": 1,
       "style": "valiente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -6249,7 +6249,7 @@
       "rarity": "r",
       "level": 1,
       "style": "valiente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -6293,7 +6293,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "valiente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -6611,7 +6611,7 @@
       "rarity": "n",
       "level": 1,
       "style": "potente",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
@@ -6645,7 +6645,7 @@
       "rarity": "r",
       "level": 1,
       "style": "potente",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -6689,7 +6689,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "potente",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -6875,7 +6875,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
@@ -6909,7 +6909,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -6953,7 +6953,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -8327,7 +8327,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -8361,7 +8361,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -8405,7 +8405,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -8855,7 +8855,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -8889,7 +8889,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -8933,7 +8933,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -9647,7 +9647,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -9681,7 +9681,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -9725,7 +9725,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -10835,7 +10835,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -10869,7 +10869,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -10913,7 +10913,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -11363,7 +11363,7 @@
       "rarity": "n",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -11397,7 +11397,7 @@
       "rarity": "r",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -11441,7 +11441,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -11759,7 +11759,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -11793,7 +11793,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -11837,7 +11837,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -12023,7 +12023,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
@@ -12057,7 +12057,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -12101,7 +12101,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -12815,7 +12815,7 @@
       "rarity": "n",
       "level": 1,
       "style": "preciso",
-      "position": "centreBack",
+      "position": "fullBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
@@ -12849,7 +12849,7 @@
       "rarity": "r",
       "level": 1,
       "style": "preciso",
-      "position": "centreBack",
+      "position": "fullBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
@@ -12893,7 +12893,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "preciso",
-      "position": "centreBack",
+      "position": "fullBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 6,
@@ -13343,7 +13343,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -13377,7 +13377,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -13421,7 +13421,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -13871,7 +13871,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -13905,7 +13905,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -13949,7 +13949,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -14399,7 +14399,7 @@
       "rarity": "n",
       "level": 1,
       "style": "preciso",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -14433,7 +14433,7 @@
       "rarity": "r",
       "level": 1,
       "style": "preciso",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -14477,7 +14477,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "preciso",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -15191,7 +15191,7 @@
       "rarity": "n",
       "level": 1,
       "style": "valiente",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
@@ -15225,7 +15225,7 @@
       "rarity": "r",
       "level": 1,
       "style": "valiente",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
@@ -15269,7 +15269,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "valiente",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 6,
@@ -16379,7 +16379,7 @@
       "rarity": "n",
       "level": 1,
       "style": "potente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -16413,7 +16413,7 @@
       "rarity": "r",
       "level": 1,
       "style": "potente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -16457,7 +16457,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "potente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -18359,7 +18359,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -18393,7 +18393,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -18437,7 +18437,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -18623,7 +18623,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -18657,7 +18657,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -18701,7 +18701,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -19151,7 +19151,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -19185,7 +19185,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -19229,7 +19229,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -20207,7 +20207,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
@@ -20241,7 +20241,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 6,
@@ -20285,7 +20285,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 6,
@@ -20867,7 +20867,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -20901,7 +20901,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -20945,7 +20945,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -21395,7 +21395,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -21429,7 +21429,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -21473,7 +21473,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -21791,7 +21791,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -21825,7 +21825,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -21869,7 +21869,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -22187,7 +22187,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
@@ -22221,7 +22221,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -22265,7 +22265,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -22979,7 +22979,7 @@
       "rarity": "n",
       "level": 1,
       "style": "preciso",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
@@ -23013,7 +23013,7 @@
       "rarity": "r",
       "level": 1,
       "style": "preciso",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
@@ -23057,7 +23057,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "preciso",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 6,
@@ -23375,7 +23375,7 @@
       "rarity": "n",
       "level": 1,
       "style": "valiente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -23409,7 +23409,7 @@
       "rarity": "r",
       "level": 1,
       "style": "valiente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -23453,7 +23453,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "valiente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -23771,7 +23771,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -23805,7 +23805,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -23849,7 +23849,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -24167,7 +24167,7 @@
       "rarity": "n",
       "level": 1,
       "style": "potente",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
@@ -24201,7 +24201,7 @@
       "rarity": "r",
       "level": 1,
       "style": "potente",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -24245,7 +24245,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "potente",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -24563,7 +24563,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -24597,7 +24597,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -24641,7 +24641,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -25883,7 +25883,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -25917,7 +25917,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -25961,7 +25961,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -26411,7 +26411,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
@@ -26445,7 +26445,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -26489,7 +26489,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -26939,7 +26939,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -26973,7 +26973,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -27017,7 +27017,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -27071,7 +27071,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -27105,7 +27105,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -27149,7 +27149,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -27335,7 +27335,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -27369,7 +27369,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -27413,7 +27413,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -28259,7 +28259,7 @@
       "rarity": "n",
       "level": 1,
       "style": "potente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -28293,7 +28293,7 @@
       "rarity": "r",
       "level": 1,
       "style": "potente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -28337,7 +28337,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "potente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -28523,7 +28523,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -28557,7 +28557,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -28601,7 +28601,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -28787,7 +28787,7 @@
       "rarity": "n",
       "level": 1,
       "style": "preciso",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -28821,7 +28821,7 @@
       "rarity": "r",
       "level": 1,
       "style": "preciso",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -28865,7 +28865,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "preciso",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -29051,7 +29051,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -29085,7 +29085,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -29129,7 +29129,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -29447,7 +29447,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
@@ -29481,7 +29481,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -29525,7 +29525,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -29579,7 +29579,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
@@ -29613,7 +29613,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 6,
@@ -29657,7 +29657,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 6,
@@ -30107,7 +30107,7 @@
       "rarity": "n",
       "level": 1,
       "style": "preciso",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
@@ -30141,7 +30141,7 @@
       "rarity": "r",
       "level": 1,
       "style": "preciso",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 6,
@@ -30185,7 +30185,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "preciso",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 6,
@@ -31031,7 +31031,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -31065,7 +31065,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -31109,7 +31109,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -31295,7 +31295,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -31329,7 +31329,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -31373,7 +31373,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -31955,7 +31955,7 @@
       "rarity": "n",
       "level": 1,
       "style": "preciso",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -31989,7 +31989,7 @@
       "rarity": "r",
       "level": 1,
       "style": "preciso",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -32033,7 +32033,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "preciso",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -32087,7 +32087,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -32121,7 +32121,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -32165,7 +32165,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -32219,7 +32219,7 @@
       "rarity": "n",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
@@ -32253,7 +32253,7 @@
       "rarity": "r",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
@@ -32297,7 +32297,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -33803,7 +33803,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -33837,7 +33837,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -33881,7 +33881,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -34067,7 +34067,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
@@ -34101,7 +34101,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -34145,7 +34145,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -34463,7 +34463,7 @@
       "rarity": "n",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -34497,7 +34497,7 @@
       "rarity": "r",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -34541,7 +34541,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -34727,7 +34727,7 @@
       "rarity": "n",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -34761,7 +34761,7 @@
       "rarity": "r",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -34805,7 +34805,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -34859,7 +34859,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -34893,7 +34893,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -34937,7 +34937,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -35915,7 +35915,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -35949,7 +35949,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -35993,7 +35993,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -36443,7 +36443,7 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -36477,7 +36477,7 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -36521,7 +36521,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -37103,7 +37103,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
@@ -37137,7 +37137,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -37181,7 +37181,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -37895,7 +37895,7 @@
       "rarity": "n",
       "level": 1,
       "style": "valiente",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
@@ -37929,7 +37929,7 @@
       "rarity": "r",
       "level": 1,
       "style": "valiente",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
@@ -37973,7 +37973,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "valiente",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 6,
@@ -38291,7 +38291,7 @@
       "rarity": "n",
       "level": 1,
       "style": "valiente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -38325,7 +38325,7 @@
       "rarity": "r",
       "level": 1,
       "style": "valiente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -38369,7 +38369,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "valiente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -38819,7 +38819,7 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -38853,7 +38853,7 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -38897,7 +38897,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -39479,7 +39479,7 @@
       "rarity": "n",
       "level": 1,
       "style": "valiente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
@@ -39513,7 +39513,7 @@
       "rarity": "r",
       "level": 1,
       "style": "valiente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -39557,7 +39557,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "valiente",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -39611,7 +39611,7 @@
       "rarity": "n",
       "level": 1,
       "style": "potente",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -39645,7 +39645,7 @@
       "rarity": "r",
       "level": 1,
       "style": "potente",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
@@ -39689,7 +39689,7 @@
       "rarity": "sr",
       "level": 1,
       "style": "potente",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
