@@ -19,6 +19,16 @@ enum ClashPosition {
     ClashPosition.striker => 'Delantero',
   };
 
+  /// Grupo táctico amplio (defensa / medio / delantero / portero).
+  ClashPositionGroup get group => switch (this) {
+    ClashPosition.goalkeeper => ClashPositionGroup.goalkeeper,
+    ClashPosition.centreBack || ClashPosition.fullBack =>
+      ClashPositionGroup.defense,
+    ClashPosition.defensiveMidfielder || ClashPosition.attackingMidfielder =>
+      ClashPositionGroup.midfield,
+    ClashPosition.winger || ClashPosition.striker => ClashPositionGroup.attack,
+  };
+
   String toJson() => name;
 
   static ClashPosition fromJson(Object? value) {
@@ -51,4 +61,42 @@ enum ClashPosition {
       ),
     };
   }
+}
+
+/// Agrupación de posiciones para filtros de colección.
+enum ClashPositionGroup {
+  goalkeeper,
+  defense,
+  midfield,
+  attack;
+
+  String get displayNameEs => switch (this) {
+    ClashPositionGroup.goalkeeper => 'Portero',
+    ClashPositionGroup.defense => 'Defensas',
+    ClashPositionGroup.midfield => 'Medios',
+    ClashPositionGroup.attack => 'Delanteros',
+  };
+
+  String get emoji => switch (this) {
+    ClashPositionGroup.goalkeeper => '🧤',
+    ClashPositionGroup.defense => '🛡️',
+    ClashPositionGroup.midfield => '🌀',
+    ClashPositionGroup.attack => '⚽',
+  };
+
+  List<ClashPosition> get positions => switch (this) {
+    ClashPositionGroup.goalkeeper => const [ClashPosition.goalkeeper],
+    ClashPositionGroup.defense => const [
+      ClashPosition.centreBack,
+      ClashPosition.fullBack,
+    ],
+    ClashPositionGroup.midfield => const [
+      ClashPosition.defensiveMidfielder,
+      ClashPosition.attackingMidfielder,
+    ],
+    ClashPositionGroup.attack => const [
+      ClashPosition.winger,
+      ClashPosition.striker,
+    ],
+  };
 }

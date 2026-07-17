@@ -15,6 +15,15 @@ enum ClashPlayerStyle {
     ClashPlayerStyle.valiente => 'Valiente',
   };
 
+  /// Emoticono corto para filtros (sin texto).
+  String get emoji => switch (this) {
+    ClashPlayerStyle.picaro => '🎭',
+    ClashPlayerStyle.potente => '💪',
+    ClashPlayerStyle.agil => '⚡',
+    ClashPlayerStyle.preciso => '🎯',
+    ClashPlayerStyle.valiente => '🦁',
+  };
+
   String toJson() => name;
 
   static ClashPlayerStyle fromJson(Object? value) {

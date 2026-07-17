@@ -1,10 +1,12 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
+import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_player_style.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
+import 'package:eternal_xi/features/clash/cards/presentation/epic/clash_epic_assets.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_tile.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_collection_empty_state.dart';
 import 'package:flutter/material.dart';
@@ -86,12 +88,30 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
     );
   }
 
+  Future<void> _openFilters(ClashCardsController controller) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) {
+        return ChangeNotifierProvider<ClashCardsController>.value(
+          value: controller,
+          child: const _CollectionFilterSheet(),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final controller = context.watch<ClashCardsController>();
-
     final topInset = MediaQuery.paddingOf(context).top;
+    final filtersActive = controller.rarityFilter != null ||
+        controller.positionFilter != null ||
+        controller.positionGroupFilter != null ||
+        controller.styleFilter != null ||
+        controller.teamFilter != null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -165,6 +185,15 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
               ),
               if (!_searchOpen) ...[
                 IconButton(
+                  tooltip: l10n.clashFilterRarity,
+                  onPressed: () => _openFilters(controller),
+                  icon: Badge(
+                    isLabelVisible: filtersActive,
+                    smallSize: 8,
+                    child: const Icon(Icons.tune_rounded),
+                  ),
+                ),
+                IconButton(
                   tooltip: l10n.clashSearchHint,
                   onPressed: _openSearch,
                   icon: const Icon(Icons.search_rounded),
@@ -178,7 +207,6 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
             ],
           ),
         ),
-        _FiltersBar(controller: controller),
         Expanded(
           child: _CollectionBody(
             controller: controller,
@@ -190,123 +218,370 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
   }
 }
 
-class _FiltersBar extends StatelessWidget {
-  const _FiltersBar({required this.controller});
-
-  final ClashCardsController controller;
+class _CollectionFilterSheet extends StatelessWidget {
+  const _CollectionFilterSheet();
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final controller = context.watch<ClashCardsController>();
+    final bottom = MediaQuery.paddingOf(context).bottom;
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
-      child: Row(
-        children: [
-          _FilterMenu<ClashRarity?>(
-            label: l10n.clashFilterRarity,
-            value: controller.rarityFilter,
-            items: [
-              _FilterItem(null, l10n.clashFilterAll),
-              ...ClashRarity.values.map(
-                (r) => _FilterItem(r, r.name.toUpperCase()),
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(16, 0, 16, bottom + 12),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Filtros',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: () {
+                      controller.clearFilters();
+                    },
+                    child: Text(l10n.clashFilterAll),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              _SectionTitle(emoji: '📍', label: l10n.clashFilterPosition),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _EmojiChoiceChip(
+                    selected: controller.positionGroupFilter == null &&
+                        controller.positionFilter == null,
+                    label: '✨',
+                    tooltip: l10n.clashFilterAll,
+                    onTap: () {
+                      controller.setPositionGroupFilter(null);
+                      controller.setPositionFilter(null);
+                    },
+                  ),
+                  ...ClashPositionGroup.values.map((group) {
+                    final selected = controller.positionGroupFilter == group &&
+                        controller.positionFilter == null;
+                    return _EmojiChoiceChip(
+                      selected: selected ||
+                          (controller.positionFilter != null &&
+                              controller.positionFilter!.group == group),
+                      label: group.emoji,
+                      tooltip: group.displayNameEs,
+                      onTap: () => controller.setPositionGroupFilter(
+                        selected ? null : group,
+                      ),
+                    );
+                  }),
+                ],
+              ),
+              if (controller.positionGroupFilter != null &&
+                  controller.positionGroupFilter!.positions.length > 1) ...[
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _EmojiChoiceChip(
+                      selected: controller.positionFilter == null,
+                      label: '✨',
+                      tooltip: controller.positionGroupFilter!.displayNameEs,
+                      onTap: () => controller.setPositionFilter(null),
+                    ),
+                    ...controller.positionGroupFilter!.positions.map((pos) {
+                      return _IconChoiceChip(
+                        selected: controller.positionFilter == pos,
+                        asset: ClashEpicAssets.positionIcon(pos),
+                        tooltip: pos.displayNameEs,
+                        onTap: () => controller.setPositionFilter(
+                          controller.positionFilter == pos ? null : pos,
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 16),
+              _SectionTitle(emoji: '🎭', label: l10n.clashFilterStyle),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _EmojiChoiceChip(
+                    selected: controller.styleFilter == null,
+                    label: '✨',
+                    tooltip: l10n.clashFilterAll,
+                    onTap: () => controller.setStyleFilter(null),
+                  ),
+                  ...ClashPlayerStyle.values.map((style) {
+                    return _EmojiChoiceChip(
+                      selected: controller.styleFilter == style,
+                      label: style.emoji,
+                      tooltip: style.displayNameEs,
+                      onTap: () => controller.setStyleFilter(
+                        controller.styleFilter == style ? null : style,
+                      ),
+                    );
+                  }),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _SectionTitle(emoji: '💎', label: l10n.clashFilterRarity),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _EmojiChoiceChip(
+                    selected: controller.rarityFilter == null,
+                    label: '✨',
+                    tooltip: l10n.clashFilterAll,
+                    onTap: () => controller.setRarityFilter(null),
+                  ),
+                  ...ClashRarity.values.map((rarity) {
+                    return _IconChoiceChip(
+                      selected: controller.rarityFilter == rarity,
+                      asset: ClashEpicAssets.rarityIcon(rarity),
+                      tooltip: rarity.name.toUpperCase(),
+                      onTap: () => controller.setRarityFilter(
+                        controller.rarityFilter == rarity ? null : rarity,
+                      ),
+                    );
+                  }),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _SectionTitle(emoji: '🏟️', label: 'Equipo'),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _EmojiChoiceChip(
+                    selected: controller.teamFilter == null,
+                    label: '✨',
+                    tooltip: l10n.clashFilterAll,
+                    onTap: () => controller.setTeamFilter(null),
+                  ),
+                  ...controller.ownedTeams.map((team) {
+                    return _TextChoiceChip(
+                      selected: controller.teamFilter == team,
+                      label: team,
+                      onTap: () => controller.setTeamFilter(
+                        controller.teamFilter == team ? null : team,
+                      ),
+                    );
+                  }),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _SectionTitle(emoji: '↕️', label: l10n.clashSortLabel),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _EmojiChoiceChip(
+                    selected: controller.sortField == ClashCardSortField.power,
+                    label: '⚡',
+                    tooltip: l10n.clashSortPower,
+                    onTap: () =>
+                        controller.setSortField(ClashCardSortField.power),
+                  ),
+                  _EmojiChoiceChip(
+                    selected: controller.sortField == ClashCardSortField.level,
+                    label: '📶',
+                    tooltip: l10n.clashSortLevel,
+                    onTap: () =>
+                        controller.setSortField(ClashCardSortField.level),
+                  ),
+                  _EmojiChoiceChip(
+                    selected: controller.sortField == ClashCardSortField.rarity,
+                    label: '💎',
+                    tooltip: l10n.clashFilterRarity,
+                    onTap: () =>
+                        controller.setSortField(ClashCardSortField.rarity),
+                  ),
+                  _EmojiChoiceChip(
+                    selected: controller.sortField == ClashCardSortField.name,
+                    label: '🔤',
+                    tooltip: l10n.clashSortName,
+                    onTap: () =>
+                        controller.setSortField(ClashCardSortField.name),
+                  ),
+                  _EmojiChoiceChip(
+                    selected: false,
+                    label: controller.sortDescending ? '⬇️' : '⬆️',
+                    tooltip: l10n.clashSortDirection,
+                    onTap: controller.toggleSortDirection,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Listo'),
               ),
             ],
-            onChanged: controller.setRarityFilter,
           ),
-          const SizedBox(width: 8),
-          _FilterMenu<ClashPosition?>(
-            label: l10n.clashFilterPosition,
-            value: controller.positionFilter,
-            items: [
-              _FilterItem(null, l10n.clashFilterAll),
-              ...ClashPosition.values.map(
-                (p) => _FilterItem(p, p.displayNameEs),
-              ),
-            ],
-            onChanged: controller.setPositionFilter,
-          ),
-          const SizedBox(width: 8),
-          _FilterMenu<ClashPlayerStyle?>(
-            label: l10n.clashFilterStyle,
-            value: controller.styleFilter,
-            items: [
-              _FilterItem(null, l10n.clashFilterAll),
-              ...ClashPlayerStyle.values.map(
-                (s) => _FilterItem(s, s.displayNameEs),
-              ),
-            ],
-            onChanged: controller.setStyleFilter,
-          ),
-          const SizedBox(width: 8),
-          _FilterMenu<ClashCardSortField>(
-            label: l10n.clashSortLabel,
-            value: controller.sortField,
-            items: [
-              _FilterItem(ClashCardSortField.power, l10n.clashSortPower),
-              _FilterItem(ClashCardSortField.level, l10n.clashSortLevel),
-              _FilterItem(ClashCardSortField.name, l10n.clashSortName),
-            ],
-            onChanged: controller.setSortField,
-          ),
-          IconButton(
-            onPressed: controller.toggleSortDirection,
-            icon: Icon(
-              controller.sortDescending
-                  ? Icons.arrow_downward_rounded
-                  : Icons.arrow_upward_rounded,
-            ),
-            tooltip: l10n.clashSortDirection,
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class _FilterItem<T> {
-  const _FilterItem(this.value, this.label);
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.emoji, required this.label});
 
-  final T value;
+  final String emoji;
   final String label;
-}
-
-class _FilterMenu<T> extends StatelessWidget {
-  const _FilterMenu({
-    required this.label,
-    required this.value,
-    required this.items,
-    required this.onChanged,
-  });
-
-  final String label;
-  final T value;
-  final List<_FilterItem<T>> items;
-  final ValueChanged<T> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    final selected = items.firstWhere(
-      (item) => item.value == value,
-      orElse: () => items.first,
+    return Text(
+      '$emoji  $label',
+      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: XiColors.warmWhite.withValues(alpha: 0.9),
+          ),
     );
-    final isActive = selected.value != items.first.value;
+  }
+}
 
-    return PopupMenuButton<T>(
-      onSelected: onChanged,
-      itemBuilder: (context) => items
-          .map(
-            (item) =>
-                PopupMenuItem<T>(value: item.value, child: Text(item.label)),
-          )
-          .toList(),
-      child: Chip(
-        label: Text('$label: ${selected.label}'),
-        visualDensity: VisualDensity.compact,
-        backgroundColor: isActive
-            ? Theme.of(context).colorScheme.primaryContainer
-            : null,
+class _EmojiChoiceChip extends StatelessWidget {
+  const _EmojiChoiceChip({
+    required this.selected,
+    required this.label,
+    required this.onTap,
+    this.tooltip,
+  });
+
+  final bool selected;
+  final String label;
+  final VoidCallback onTap;
+  final String? tooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    final chip = InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        width: 44,
+        height: 44,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: selected
+              ? Theme.of(context).colorScheme.primaryContainer
+              : Colors.black.withValues(alpha: 0.28),
+          border: Border.all(
+            color: selected
+                ? XiColors.classicGold.withValues(alpha: 0.85)
+                : Colors.white24,
+          ),
+        ),
+        child: Text(label, style: const TextStyle(fontSize: 20)),
+      ),
+    );
+    if (tooltip == null) return chip;
+    return Tooltip(message: tooltip!, child: chip);
+  }
+}
+
+class _IconChoiceChip extends StatelessWidget {
+  const _IconChoiceChip({
+    required this.selected,
+    required this.asset,
+    required this.onTap,
+    this.tooltip,
+  });
+
+  final bool selected;
+  final String asset;
+  final VoidCallback onTap;
+  final String? tooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    final chip = InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        width: 44,
+        height: 44,
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: selected
+              ? Theme.of(context).colorScheme.primaryContainer
+              : Colors.black.withValues(alpha: 0.28),
+          border: Border.all(
+            color: selected
+                ? XiColors.classicGold.withValues(alpha: 0.85)
+                : Colors.white24,
+          ),
+        ),
+        child: Image.asset(
+          asset,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.medium,
+        ),
+      ),
+    );
+    if (tooltip == null) return chip;
+    return Tooltip(message: tooltip!, child: chip);
+  }
+}
+
+class _TextChoiceChip extends StatelessWidget {
+  const _TextChoiceChip({
+    required this.selected,
+    required this.label,
+    required this.onTap,
+  });
+
+  final bool selected;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: selected
+              ? Theme.of(context).colorScheme.primaryContainer
+              : Colors.black.withValues(alpha: 0.28),
+          border: Border.all(
+            color: selected
+                ? XiColors.classicGold.withValues(alpha: 0.85)
+                : Colors.white24,
+          ),
+        ),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+        ),
       ),
     );
   }
@@ -348,9 +623,9 @@ class _CollectionBody extends StatelessWidget {
           );
         }
         return GridView.builder(
-          padding: const EdgeInsets.fromLTRB(10, 18, 10, 16),
+          padding: const EdgeInsets.fromLTRB(10, 14, 10, 16),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 5,
+            crossAxisCount: 4,
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
             childAspectRatio: 0.72,

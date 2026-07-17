@@ -23,13 +23,16 @@ class ClashCardsController extends ChangeNotifier {
   String _searchQuery = '';
   ClashRarity? _rarityFilter;
   ClashPosition? _positionFilter;
+  ClashPositionGroup? _positionGroupFilter;
   ClashPlayerStyle? _styleFilter;
+  String? _teamFilter;
   ClashCardSortField _sortField = ClashCardSortField.power;
   bool _sortDescending = true;
 
   ClashCardsLoadState get state => _state;
   String? get errorMessage => _errorMessage;
   List<ClashCardCatalogEntry> get visibleCards => _visibleCards;
+  List<ClashCardCatalogEntry> get allCards => _allCards;
   int get ownedCount => _allCards.length;
   ClashCardCatalogEntry? get strongestOwned {
     if (_allCards.isEmpty) {
@@ -44,13 +47,22 @@ class ClashCardsController extends ChangeNotifier {
       _searchQuery.trim().isNotEmpty ||
       _rarityFilter != null ||
       _positionFilter != null ||
-      _styleFilter != null;
+      _positionGroupFilter != null ||
+      _styleFilter != null ||
+      (_teamFilter != null && _teamFilter!.trim().isNotEmpty);
   String get searchQuery => _searchQuery;
   ClashRarity? get rarityFilter => _rarityFilter;
   ClashPosition? get positionFilter => _positionFilter;
+  ClashPositionGroup? get positionGroupFilter => _positionGroupFilter;
   ClashPlayerStyle? get styleFilter => _styleFilter;
+  String? get teamFilter => _teamFilter;
   ClashCardSortField get sortField => _sortField;
   bool get sortDescending => _sortDescending;
+
+  List<String> get ownedTeams {
+    final teams = _allCards.map((e) => e.team).toSet().toList()..sort();
+    return teams;
+  }
 
   Future<void> load() async {
     if (_state == ClashCardsLoadState.loading) {
@@ -96,12 +108,29 @@ class ClashCardsController extends ChangeNotifier {
 
   void setPositionFilter(ClashPosition? position) {
     _positionFilter = position;
+    if (position != null) {
+      _positionGroupFilter = position.group;
+    }
+    _applyFilters();
+    notifyListeners();
+  }
+
+  void setPositionGroupFilter(ClashPositionGroup? group) {
+    _positionGroupFilter = group;
+    _positionFilter = null;
     _applyFilters();
     notifyListeners();
   }
 
   void setStyleFilter(ClashPlayerStyle? style) {
     _styleFilter = style;
+    _applyFilters();
+    notifyListeners();
+  }
+
+  void setTeamFilter(String? team) {
+    final trimmed = team?.trim();
+    _teamFilter = (trimmed == null || trimmed.isEmpty) ? null : trimmed;
     _applyFilters();
     notifyListeners();
   }
@@ -122,7 +151,9 @@ class ClashCardsController extends ChangeNotifier {
     _searchQuery = '';
     _rarityFilter = null;
     _positionFilter = null;
+    _positionGroupFilter = null;
     _styleFilter = null;
+    _teamFilter = null;
     _applyFilters();
     notifyListeners();
   }
@@ -137,7 +168,9 @@ class ClashCardsController extends ChangeNotifier {
       searchQuery: _searchQuery,
       rarity: _rarityFilter,
       position: _positionFilter,
+      positionGroup: _positionGroupFilter,
       style: _styleFilter,
+      team: _teamFilter,
       sortField: _sortField,
       descending: _sortDescending,
     );
