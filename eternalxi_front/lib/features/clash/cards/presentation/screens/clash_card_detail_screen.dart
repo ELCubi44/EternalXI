@@ -3,11 +3,14 @@ import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_evolution_materials_repository.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_evolution_resolver.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_material_inventory_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_result.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_inventory_entry.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_use_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_unlock_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_inventory_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_use_result.dart';
@@ -18,6 +21,7 @@ import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_skill_tree_section.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_stats_panel.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_technique_section.dart';
+import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_upgrade_section.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -39,11 +43,13 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
   ClashCardCatalogEntry? _entry;
   List<ClashTechniqueBookInventoryEntry> _techniqueBooks = const [];
   List<ClashEvolutionMaterialInventoryEntry> _evolutionMaterials = const [];
+  List<ClashExpMaterialInventoryEntry> _materials = const [];
   bool _loading = true;
   bool _notFound = false;
   bool _detailsOpen = false;
   bool _evolving = false;
   bool _unlockingSkillNode = false;
+  bool _usingMaterial = false;
   String? _usingTechniqueBookFor;
 
   late final TabController _tabController;
@@ -81,6 +87,7 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
     final techniqueBooksRepo = context.read<ClashTechniqueBooksRepository>();
     final evolutionMaterialsRepo = context
         .read<ClashEvolutionMaterialsRepository>();
+    final materialsRepo = context.read<ClashExpMaterialsRepository>();
     if (controller.state == ClashCardsLoadState.idle) {
       await controller.load();
     }
@@ -88,6 +95,7 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
     final techniqueBooks = await techniqueBooksRepo.fetchInventoryEntries();
     final evolutionMaterials = await evolutionMaterialsRepo
         .fetchInventoryEntries();
+    final materials = await materialsRepo.fetchInventoryEntries();
     if (!mounted) {
       return;
     }
@@ -95,9 +103,98 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
       _entry = entry == null ? null : collection.enrichEntry(entry);
       _techniqueBooks = techniqueBooks;
       _evolutionMaterials = evolutionMaterials;
+      _materials = materials;
       _notFound = entry == null;
       _loading = false;
     });
+  }
+
+  Future<void> _openLevelUpSheet() async {
+    if (_entry == null) {
+      return;
+    }
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: context.xiBackground,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            16,
+            16,
+            16,
+            20 + MediaQuery.paddingOf(context).bottom,
+          ),
+          child: SingleChildScrollView(
+            child: ClashCardUpgradeSection(
+              entry: _entry!,
+              materials: _materials,
+              isBusy: _usingMaterial,
+              onUseMaterial: _useMaterial,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _useMaterial(String materialId) async {
+    if (_usingMaterial || _entry == null || _entry!.isMaxLevel) {
+      return;
+    }
+
+    setState(() => _usingMaterial = true);
+    final collection = context.read<ClashPlayerCollectionRepository>();
+    final materialsRepo = context.read<ClashExpMaterialsRepository>();
+    final controller = context.read<ClashCardsController>();
+
+    final result = await collection.useExpMaterialOnCard(
+      cardId: widget.cardId,
+      materialId: materialId,
+      quantity: 1,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (result.succeeded) {
+      final entry = await controller.findCard(widget.cardId);
+      final inventory = await materialsRepo.fetchInventoryEntries();
+      setState(() {
+        _entry = entry == null ? null : collection.enrichEntry(entry);
+        _materials = inventory;
+        _usingMaterial = false;
+      });
+      await controller.reloadOwnedCards();
+      _showUseResultSnackBar(result);
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+    } else {
+      setState(() => _usingMaterial = false);
+    }
+  }
+
+  void _showUseResultSnackBar(ClashExpMaterialUseResult result) {
+    final l10n = context.l10n;
+    final message = StringBuffer(l10n.clashExpMaterialXp(result.xpGained));
+    if (result.didLevelUp) {
+      message
+        ..write('\n')
+        ..write(
+          l10n.clashExpMaterialLevelUp(result.previousLevel, result.newLevel),
+        );
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(message.toString()),
+      ),
+    );
   }
 
   Future<void> _useTechniqueBook(String techniqueId, String bookId) async {
@@ -268,18 +365,20 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
     final safeTop = media.padding.top;
     final safeBottom = media.padding.bottom;
     final panelHeight = screenHeight * _panelHeightFactor;
-    // Espacio para atrás + márgenes; la carta enmarcada empieza bajo el notch.
+    final sheetTop = screenHeight - panelHeight;
     final detailsButtonReserve = 72.0 + safeBottom;
-    final cardTopClosed = safeTop + 8;
+    // Margen claro bajo la flecha de volver (~44px + padding).
+    final cardTopClosed = safeTop + 62;
     final cardBottomClosed = detailsButtonReserve;
     final cardHeightClosed =
-        (screenHeight - cardTopClosed - cardBottomClosed).clamp(360.0, screenHeight);
+        (screenHeight - cardTopClosed - cardBottomClosed)
+            .clamp(280.0, screenHeight * 0.62);
 
-    // Abierta: carta compacta encima del panel, sin tapar tabs.
-    final cardHeightOpen = (screenHeight - panelHeight - safeTop - 12)
-        .clamp(220.0, screenHeight * 0.42);
-    final cardTopOpen = safeTop + 6;
-    final cardHorizontal = _detailsOpen ? 48.0 : 18.0;
+    // Abierta: carta compacta totalmente encima del panel (sin solape).
+    final cardTopOpen = safeTop + 62;
+    final cardHeightOpen =
+        (sheetTop - cardTopOpen - 22).clamp(220.0, screenHeight * 0.36);
+    final cardHorizontal = _detailsOpen ? 48.0 : 22.0;
 
     final cardTop = _detailsOpen ? cardTopOpen : cardTopClosed;
     final cardHeight = _detailsOpen ? cardHeightOpen : cardHeightClosed;
@@ -478,6 +577,7 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
               entry: entry,
               detailHero: true,
               height: cardHeight,
+              onLevelUpTap: _openLevelUpSheet,
             ),
           ),
         ),

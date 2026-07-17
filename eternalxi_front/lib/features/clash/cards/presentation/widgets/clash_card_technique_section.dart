@@ -38,8 +38,7 @@ class ClashCardTechniqueSection extends StatelessWidget {
     }
 
     compatible.sort((a, b) {
-      final byReq =
-          a.book.booksRequired.compareTo(b.book.booksRequired);
+      final byReq = a.book.booksRequired.compareTo(b.book.booksRequired);
       if (byReq != 0) {
         return byReq;
       }
@@ -90,6 +89,9 @@ class ClashCardTechniqueSection extends StatelessWidget {
     );
     final atMax = resolved.level.isMax;
     final book = _pickBook();
+    final need = book?.book.booksRequired ?? 0;
+    final have = book?.quantity ?? 0;
+    final missing = (need - have).clamp(0, need);
 
     return ClashCardDetailSectionCard(
       padding: const EdgeInsets.all(14),
@@ -116,19 +118,24 @@ class ClashCardTechniqueSection extends StatelessWidget {
             value: '${resolved.ptCost}',
           ),
           if (!atMax && book != null) ...[
-            ClashCardDetailMetaRow(
-              label: l10n.clashTechniqueUpgradeRequirements,
-              value: l10n.clashTechniqueUpgradeNeed(book.book.booksRequired),
-            ),
-            ClashCardDetailMetaRow(
-              label: l10n.clashItemHave(book.quantity),
-              value: l10n.clashItemMissing(
-                (book.book.booksRequired - book.quantity)
-                    .clamp(0, book.book.booksRequired),
+            const SizedBox(height: 10),
+            Text(
+              l10n.clashTechniqueUpgradeRequirements,
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: context.xiTextSecondary,
               ),
             ),
+            const SizedBox(height: 8),
+            ClashTechniqueBookRequirementTile(
+              bookEntry: book,
+              need: need,
+              have: have,
+              missing: missing,
+              compact: true,
+            ),
           ],
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Align(
             alignment: Alignment.centerRight,
             child: FilledButton(

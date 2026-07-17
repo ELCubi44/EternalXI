@@ -32,7 +32,7 @@ class ClashCardEpicShowcase extends StatelessWidget {
             ? 280.0
             : (MediaQuery.sizeOf(context).height * 0.68));
 
-    final clampedHeight = this.height != null
+    final clampedHeight = height != null
         ? resolvedHeight
         : resolvedHeight.clamp(
             compact ? 240.0 : 380.0,
@@ -150,44 +150,55 @@ class _FramedDetailCard extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(_radius - _borderWidth),
-        child: Column(
-          children: [
-            Expanded(
-              child: Stack(
-                clipBehavior: Clip.hardEdge,
-                fit: StackFit.expand,
-                children: [
-                  _EpicBackground(entry: entry),
-                  Positioned.fill(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.black.withValues(alpha: 0.14),
-                            Colors.transparent,
-                            Colors.black.withValues(alpha: 0.2),
-                          ],
-                          stops: const [0, 0.5, 1],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Panel de stats más bajo en cartas cortas (detalle abierto).
+            final statsH = (constraints.maxHeight * 0.42)
+                .clamp(148.0, 176.0);
+            return Column(
+              children: [
+                Expanded(
+                  child: Stack(
+                    clipBehavior: Clip.hardEdge,
+                    fit: StackFit.expand,
+                    children: [
+                      _EpicBackground(entry: entry),
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.black.withValues(alpha: 0.14),
+                                Colors.transparent,
+                                Colors.black.withValues(alpha: 0.2),
+                              ],
+                              stops: const [0, 0.5, 1],
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                      _PortraitLayer(
+                        entry: entry,
+                        compact: false,
+                        detailHero: true,
+                      ),
+                    ],
                   ),
-                  _PortraitLayer(
+                ),
+                SizedBox(
+                  height: statsH,
+                  child: _StatsPanel(
                     entry: entry,
-                    compact: false,
-                    detailHero: true,
+                    onLevelUpTap: onLevelUpTap,
+                    framedInsideCard: true,
+                    panelHeight: statsH,
                   ),
-                ],
-              ),
-            ),
-            _StatsPanel(
-              entry: entry,
-              onLevelUpTap: onLevelUpTap,
-              framedInsideCard: true,
-            ),
-          ],
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -240,51 +251,57 @@ class _PortraitLayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rarity = entry.effectiveRarity;
-    final badgeRowHeight = compact
-        ? 52.0
-        : (detailHero ? 72.0 : 64.0);
-    // En carta enmarcada, rareza/PWR van al borde superior del marco.
-    final top = compact
-        ? 28.0
-        : (detailHero ? 12.0 : 36.0);
-    final sideInset = compact ? 12.0 : 16.0;
+    // Badges grandes superpuestos sobre el arte (sin reservar hueco vacío).
+    final badgeSize = compact
+        ? 44.0
+        : (detailHero ? 72.0 : 56.0);
+    final top = compact ? 10.0 : (detailHero ? 6.0 : 12.0);
+    final sideInset = compact ? 10.0 : (detailHero ? 8.0 : 14.0);
 
     return Stack(
       clipBehavior: Clip.hardEdge,
       fit: StackFit.expand,
       children: [
+        // Retrato a pantalla completa del marco: la cabeza queda cerca de rareza/PWR.
+        Positioned.fill(
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: detailHero ? 4 : (compact ? 36 : 48),
+              left: compact ? 12 : (detailHero ? 4 : 16),
+              right: compact ? 12 : (detailHero ? 4 : 16),
+              bottom: compact ? 56 : 0,
+            ),
+            child: ClipRect(
+              child: Align(
+                alignment: detailHero
+                    ? const Alignment(0, -0.55)
+                    : Alignment.bottomCenter,
+                child: _PlayerPortrait(entry: entry, compact: compact),
+              ),
+            ),
+          ),
+        ),
         Positioned(
           top: top,
           left: sideInset,
           right: sideInset,
-          height: badgeRowHeight,
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _RarityFrameBadge(
                 rarity: rarity,
                 compact: compact,
                 detailHero: detailHero,
+                sizeOverride: badgeSize,
               ),
               const Spacer(),
               _PwrBadge(
                 power: entry.power,
                 compact: compact,
                 detailHero: detailHero,
+                sizeOverride: badgeSize + (detailHero ? 10 : 0),
               ),
             ],
-          ),
-        ),
-        Positioned(
-          top: top + badgeRowHeight + (compact ? 4.0 : 6.0),
-          left: compact ? 20 : 24,
-          right: compact ? 20 : 24,
-          bottom: compact ? 56 : 0,
-          child: ClipRect(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: _PlayerPortrait(entry: entry, compact: compact),
-            ),
           ),
         ),
       ],
@@ -297,17 +314,18 @@ class _RarityFrameBadge extends StatelessWidget {
     required this.rarity,
     required this.compact,
     this.detailHero = false,
+    this.sizeOverride,
   });
 
   final ClashRarity rarity;
   final bool compact;
   final bool detailHero;
+  final double? sizeOverride;
 
   @override
   Widget build(BuildContext context) {
-    final size = compact
-        ? 44.0
-        : (detailHero ? 76.0 : 56.0);
+    final size = sizeOverride ??
+        (compact ? 44.0 : (detailHero ? 72.0 : 56.0));
 
     final color = ClashRarityBadge.color(rarity);
 
@@ -333,7 +351,7 @@ class _RarityFrameBadge extends StatelessWidget {
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: color,
               fontWeight: FontWeight.w900,
-              fontSize: compact ? 10 : (detailHero ? 16 : 12),
+              fontSize: compact ? 10 : (detailHero ? 20 : 12),
             ),
           ),
         ],
@@ -347,17 +365,18 @@ class _PwrBadge extends StatelessWidget {
     required this.power,
     required this.compact,
     this.detailHero = false,
+    this.sizeOverride,
   });
 
   final int power;
   final bool compact;
   final bool detailHero;
+  final double? sizeOverride;
 
   @override
   Widget build(BuildContext context) {
-    final size = compact
-        ? 52.0
-        : (detailHero ? 88.0 : 64.0);
+    final size = sizeOverride ??
+        (compact ? 52.0 : (detailHero ? 82.0 : 64.0));
 
     return SizedBox(
       width: size,
@@ -384,7 +403,7 @@ class _PwrBadge extends StatelessWidget {
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   color: XiColors.warmWhite,
                   fontWeight: FontWeight.w900,
-                  fontSize: compact ? 11 : (detailHero ? 16 : 13),
+                  fontSize: compact ? 11 : (detailHero ? 18 : 13),
                   height: 1,
                 ),
               ),
@@ -393,7 +412,7 @@ class _PwrBadge extends StatelessWidget {
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: XiColors.classicGold,
                   fontWeight: FontWeight.w800,
-                  fontSize: compact ? 8 : (detailHero ? 11 : 9),
+                  fontSize: compact ? 8 : (detailHero ? 12 : 9),
                   height: 1.1,
                 ),
               ),
@@ -469,11 +488,13 @@ class _StatsPanel extends StatelessWidget {
     required this.entry,
     this.onLevelUpTap,
     this.framedInsideCard = false,
+    this.panelHeight,
   });
 
   final ClashCardCatalogEntry entry;
   final VoidCallback? onLevelUpTap;
   final bool framedInsideCard;
+  final double? panelHeight;
 
   static const _statSegment = 100;
 
@@ -495,9 +516,10 @@ class _StatsPanel extends StatelessWidget {
           entry.effectiveRarity,
         );
     final xpRatio = needed <= 0 ? 1.0 : (currentXp / needed).clamp(0.0, 1.0);
+    final height = panelHeight ?? (framedInsideCard ? 168.0 : 208.0);
 
     return Container(
-      height: framedInsideCard ? 196 : 208,
+      height: height,
       margin: framedInsideCard
           ? EdgeInsets.zero
           : const EdgeInsets.fromLTRB(10, 0, 10, 8),
@@ -518,7 +540,7 @@ class _StatsPanel extends StatelessWidget {
               ),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
         child: LayoutBuilder(
           builder: (context, constraints) {
             return FittedBox(
@@ -544,10 +566,10 @@ class _StatsPanel extends StatelessWidget {
                                 style: theme.textTheme.titleLarge?.copyWith(
                                   color: XiColors.warmWhite,
                                   fontWeight: FontWeight.w900,
-                                  fontSize: 20,
+                                  fontSize: 18,
                                 ),
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 2),
                               Text(
                                 card.position.displayNameEs,
                                 maxLines: 1,
@@ -620,7 +642,7 @@ class _StatsPanel extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Text(

@@ -1,7 +1,7 @@
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 import 'package:flutter/material.dart';
 
-/// Rutas de assets épicos Clash (fondos, marcos, auras, iconos).
+/// Rutas de assets epicos Clash (fondos, marcos, auras, iconos).
 abstract final class ClashEpicAssets {
   static const _base = 'assets/images/clash/epic';
 

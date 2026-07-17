@@ -65,14 +65,38 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
                 tooltip: l10n.clashBack,
               ),
               Expanded(
-                child: Text(
-                  l10n.clashCollectionTitle,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: context.xiTextPrimary,
+                child: Transform(
+                  transform: Matrix4.skewX(-0.12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Theme.of(context).colorScheme.primary,
+                          Theme.of(context).colorScheme.primary.withValues(
+                                alpha: 0.75,
+                              ),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Transform(
+                      transform: Matrix4.skewX(0.12),
+                      child: Text(
+                        l10n.clashCollectionTitle,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                            ),
+                      ),
+                    ),
                   ),
                 ),
               ),
+              const SizedBox(width: 8),
             ],
           ),
         ),
@@ -98,6 +122,18 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
           ),
         ),
         _FiltersBar(controller: controller),
+        if (controller.state == ClashCardsLoadState.ready)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 2, 16, 0),
+            child: Text(
+              '${controller.visibleCards.length}/${controller.ownedCount}',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: context.xiTextSecondary,
+                  ),
+            ),
+          ),
         Expanded(
           child: _CollectionBody(
             controller: controller,
@@ -267,12 +303,12 @@ class _CollectionBody extends StatelessWidget {
           );
         }
         return GridView.builder(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          padding: const EdgeInsets.fromLTRB(10, 8, 10, 16),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 0.68,
+            crossAxisCount: 5,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            childAspectRatio: 0.72,
           ),
           itemCount: cards.length,
           itemBuilder: (context, index) {
