@@ -178,47 +178,29 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             ),
                           ),
                         ),
-                        // XP: bajar un pelín (recursos ya OK).
+                        // XP: misma forma chaflanada que los huecos de recursos.
                         Positioned(
                           left: w * 0.365,
                           right: w * 0.04,
                           top: h * 0.46,
                           height: h * 0.135,
                           child: Center(
-                            child: Stack(
-                              alignment: const Alignment(0, 0.15),
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(999),
-                                  child: SizedBox(
-                                    height: (h * 0.075).clamp(7.0, 8.5),
-                                    width: double.infinity,
-                                    child: LinearProgressIndicator(
-                                      value: xpFraction,
-                                      backgroundColor: Colors.black.withValues(
-                                        alpha: 0.45,
-                                      ),
-                                      color: XiColors.techCyan,
-                                    ),
+                            child: _ChamferedXpBar(
+                              fraction: xpFraction,
+                              label: '$xpEn/$xpMax xp',
+                              height: (h * 0.095).clamp(10.0, 13.0),
+                              labelStyle: theme.textTheme.labelSmall?.copyWith(
+                                color: XiColors.warmWhite,
+                                fontWeight: FontWeight.w800,
+                                fontSize: (h * 0.055).clamp(9.0, 10.5),
+                                height: 1,
+                                shadows: const [
+                                  Shadow(
+                                    color: Colors.black87,
+                                    blurRadius: 3,
                                   ),
-                                ),
-                                Text(
-                                  '$xpEn/$xpMax xp',
-                                  textAlign: TextAlign.center,
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: XiColors.warmWhite,
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: (h * 0.055).clamp(9.0, 10.5),
-                                    height: 1,
-                                    shadows: const [
-                                      Shadow(
-                                        color: Colors.black87,
-                                        blurRadius: 3,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -378,4 +360,121 @@ class _ResourceSlot extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Barra XP en octógono alargado (esquinas a 45°), como los huecos de recursos.
+class _ChamferedXpBar extends StatelessWidget {
+  const _ChamferedXpBar({
+    required this.fraction,
+    required this.label,
+    required this.height,
+    this.labelStyle,
+  });
+
+  final double fraction;
+  final String label;
+  final double height;
+  final TextStyle? labelStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    final cut = height * 0.42;
+    return SizedBox(
+      height: height,
+      width: double.infinity,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _ChamferedRectPainter(
+                fill: Colors.black.withValues(alpha: 0.55),
+                stroke: XiColors.techCyan.withValues(alpha: 0.55),
+                strokeWidth: 1.1,
+                cut: cut,
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: ClipPath(
+              clipper: _ChamferedRectClipper(cut: cut),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: FractionallySizedBox(
+                  widthFactor: fraction.clamp(0.0, 1.0),
+                  heightFactor: 1,
+                  child: const ColoredBox(color: XiColors.techCyan),
+                ),
+              ),
+            ),
+          ),
+          Text(label, textAlign: TextAlign.center, style: labelStyle),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChamferedRectClipper extends CustomClipper<Path> {
+  const _ChamferedRectClipper({required this.cut});
+
+  final double cut;
+
+  @override
+  Path getClip(Size size) => _chamferedRectPath(size, cut);
+
+  @override
+  bool shouldReclip(covariant _ChamferedRectClipper oldClipper) =>
+      oldClipper.cut != cut;
+}
+
+class _ChamferedRectPainter extends CustomPainter {
+  const _ChamferedRectPainter({
+    required this.fill,
+    required this.stroke,
+    required this.strokeWidth,
+    required this.cut,
+  });
+
+  final Color fill;
+  final Color stroke;
+  final double strokeWidth;
+  final double cut;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = _chamferedRectPath(size, cut);
+    canvas.drawPath(path, Paint()..color = fill);
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = stroke
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth
+        ..strokeJoin = StrokeJoin.miter,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _ChamferedRectPainter oldDelegate) =>
+      oldDelegate.fill != fill ||
+      oldDelegate.stroke != stroke ||
+      oldDelegate.strokeWidth != strokeWidth ||
+      oldDelegate.cut != cut;
+}
+
+Path _chamferedRectPath(Size size, double cut) {
+  final w = size.width;
+  final h = size.height;
+  final c = cut.clamp(0.0, h / 2).toDouble();
+  return Path()
+    ..moveTo(c, 0)
+    ..lineTo(w - c, 0)
+    ..lineTo(w, c)
+    ..lineTo(w, h - c)
+    ..lineTo(w - c, h)
+    ..lineTo(c, h)
+    ..lineTo(0, h - c)
+    ..lineTo(0, c)
+    ..close();
 }
