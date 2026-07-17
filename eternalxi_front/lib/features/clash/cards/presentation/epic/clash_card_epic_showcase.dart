@@ -153,7 +153,7 @@ class _FramedDetailCard extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              flex: 58,
+              flex: 66,
               child: Stack(
                 clipBehavior: Clip.hardEdge,
                 fit: StackFit.expand,
@@ -184,7 +184,7 @@ class _FramedDetailCard extends StatelessWidget {
               ),
             ),
             Expanded(
-              flex: 42,
+              flex: 34,
               child: _StatsPanel(
                 entry: entry,
                 onLevelUpTap: onLevelUpTap,
@@ -255,23 +255,25 @@ class _PortraitLayer extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       fit: StackFit.expand,
       children: [
-        // Retrato: el tope del arte empieza bajo rareza/PWR (hueco sobre la cabeza).
+        // Retrato grande: badges encima del arte, sin hueco vacío.
         Positioned.fill(
           child: Padding(
             padding: EdgeInsets.only(
-              top: detailHero
-                  ? (top + badgeSize + 6)
-                  : (compact ? 36 : 48),
-              left: compact ? 12 : (detailHero ? 4 : 16),
-              right: compact ? 12 : (detailHero ? 4 : 16),
+              top: detailHero ? 4 : (compact ? 36 : 48),
+              left: compact ? 12 : (detailHero ? 2 : 16),
+              right: compact ? 12 : (detailHero ? 2 : 16),
               bottom: compact ? 56 : 0,
             ),
             child: ClipRect(
               child: Align(
                 alignment: detailHero
-                    ? Alignment.topCenter
+                    ? const Alignment(0, -0.35)
                     : Alignment.bottomCenter,
-                child: _PlayerPortrait(entry: entry, compact: compact),
+                child: Transform.scale(
+                  scale: detailHero ? 1.12 : 1.0,
+                  alignment: Alignment.topCenter,
+                  child: _PlayerPortrait(entry: entry, compact: compact),
+                ),
               ),
             ),
           ),

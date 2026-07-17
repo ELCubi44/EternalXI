@@ -2,6 +2,7 @@ import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_evolution_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
@@ -11,6 +12,7 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_material_
 import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_inventory_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_use_result.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_locked_technique_preview.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_unlock_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_inventory_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_use_result.dart';
@@ -44,6 +46,7 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
   List<ClashTechniqueBookInventoryEntry> _techniqueBooks = const [];
   List<ClashEvolutionMaterialInventoryEntry> _evolutionMaterials = const [];
   List<ClashExpMaterialInventoryEntry> _materials = const [];
+  List<ClashLockedTechniquePreview> _lockedTechniques = const [];
   bool _loading = true;
   bool _notFound = false;
   bool _detailsOpen = false;
@@ -83,6 +86,7 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
 
   Future<void> _loadCard() async {
     final controller = context.read<ClashCardsController>();
+    final cardsRepo = context.read<ClashCardsRepository>();
     final collection = context.read<ClashPlayerCollectionRepository>();
     final techniqueBooksRepo = context.read<ClashTechniqueBooksRepository>();
     final evolutionMaterialsRepo = context
@@ -96,6 +100,10 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
     final evolutionMaterials = await evolutionMaterialsRepo
         .fetchInventoryEntries();
     final materials = await materialsRepo.fetchInventoryEntries();
+    final catalog = await cardsRepo.fetchAllCards();
+    final locked = entry == null
+        ? const <ClashLockedTechniquePreview>[]
+        : resolveLockedTechniquePreviews(current: entry, catalog: catalog);
     if (!mounted) {
       return;
     }
@@ -104,6 +112,7 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
       _techniqueBooks = techniqueBooks;
       _evolutionMaterials = evolutionMaterials;
       _materials = materials;
+      _lockedTechniques = locked;
       _notFound = entry == null;
       _loading = false;
     });
@@ -373,11 +382,11 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
     final slotHeight = _detailsOpen
         ? (screenHeight - areaTop - areaBottomOpen).clamp(160.0, screenHeight)
         : (screenHeight - areaTop - areaBottomClosed).clamp(260.0, screenHeight);
-    final slotHorizontal = _detailsOpen ? 36.0 : 20.0;
+    final slotHorizontal = _detailsOpen ? 28.0 : 14.0;
 
-    // Proporciones fijas: al abrir detalles se escala la misma carta.
-    final designWidth = media.size.width - 40;
-    final designHeight = (designWidth * 1.45).clamp(380.0, 580.0);
+    // Carta un poco más grande, mismas proporciones al abrir detalles.
+    final designWidth = media.size.width - 24;
+    final designHeight = (designWidth * 1.55).clamp(420.0, 640.0);
 
     final bgPath = ClashEpicAssets.detailBackgroundForTeam(
       entry.team,
@@ -518,7 +527,10 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
                               onUseBook: (bookId) =>
                                   _useTechniqueBook(technique.id, bookId),
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 10),
+                          ],
+                          for (final locked in _lockedTechniques) ...[
+                            ClashLockedTechniqueTile(preview: locked),
                           ],
                         ],
                       ),

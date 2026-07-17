@@ -1,4 +1,5 @@
-import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
+﻿import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_type.dart';
 import 'package:flutter/material.dart';
 
 /// Rutas de assets epicos Clash (fondos, marcos, auras, iconos).
@@ -57,6 +58,21 @@ abstract final class ClashEpicAssets {
     ClashEpicStatKind.res => statRes,
   };
 
+  /// Iconos de tipo de supertcnica (mismos assets coloreados de stats).
+  static String techniqueTypeIcon(ClashTechniqueType type) => switch (type) {
+    ClashTechniqueType.save => statPar,
+    ClashTechniqueType.defense => statDef,
+    ClashTechniqueType.dribble => statReg,
+    ClashTechniqueType.shot => statTir,
+  };
+
+  static Color techniqueTypeColor(ClashTechniqueType type) => switch (type) {
+    ClashTechniqueType.save => const Color(0xFF41B978),
+    ClashTechniqueType.defense => const Color(0xFF2457C5),
+    ClashTechniqueType.dribble => const Color(0xFF9D6BFF),
+    ClashTechniqueType.shot => const Color(0xFFF47A24),
+  };
+
   static Color statColor(ClashEpicStatKind kind) => switch (kind) {
     ClashEpicStatKind.par => const Color(0xFF41B978),
     ClashEpicStatKind.def => const Color(0xFF2457C5),
@@ -69,3 +85,4 @@ abstract final class ClashEpicAssets {
 }
 
 enum ClashEpicStatKind { par, def, pas, reg, tir, pt, res }
+

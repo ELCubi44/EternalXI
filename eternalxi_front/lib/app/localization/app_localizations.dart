@@ -686,6 +686,12 @@ class AppLocalizations {
       'clashTechniqueUpgradeRequirements': 'Requisitos',
       'clashTechniqueBookEffect': '+{steps} nivel',
       'clashTechniqueUpgradeNeed': 'Necesitas {qty}',
+      'clashTechniqueUnlockByRarity':
+          'Desbloqueable mejorando a {rarity}',
+      'clashTechniqueUnlockByLevel':
+          'Desbloqueable subiendo a nivel {level}',
+      'clashTechniqueUnlockByLevelOrRarity':
+          'Desbloqueable subiendo a nivel {level} o mejorando a {rarity}',
       'clashTechniqueBookUse': 'Usar',
       'clashTechniqueLevelUpSnack': '{name}: {from} → {to}',
       'clashActionUpgrade': 'Mejorar',
@@ -1876,6 +1882,10 @@ class AppLocalizations {
       'clashTechniqueUpgradeRequirements': 'Requirements',
       'clashTechniqueBookEffect': '+{steps} level',
       'clashTechniqueUpgradeNeed': 'Need {qty}',
+      'clashTechniqueUnlockByRarity': 'Unlockable by evolving to {rarity}',
+      'clashTechniqueUnlockByLevel': 'Unlockable by reaching level {level}',
+      'clashTechniqueUnlockByLevelOrRarity':
+          'Unlockable by reaching level {level} or evolving to {rarity}',
       'clashTechniqueBookUse': 'Use',
       'clashTechniqueLevelUpSnack': '{name}: {from} → {to}',
       'clashActionUpgrade': 'Upgrade',
@@ -3372,6 +3382,15 @@ class AppLocalizations {
       _t('clashTechniqueBookEffect').replaceAll('{steps}', '$steps');
   String clashTechniqueUpgradeNeed(int qty) =>
       _t('clashTechniqueUpgradeNeed').replaceAll('{qty}', '$qty');
+  String clashTechniqueUnlockByRarity(String rarity) =>
+      _t('clashTechniqueUnlockByRarity').replaceAll('{rarity}', rarity);
+  String clashTechniqueUnlockByLevel(int level) =>
+      _t('clashTechniqueUnlockByLevel').replaceAll('{level}', '$level');
+  String clashTechniqueUnlockByLevelOrRarity(int level, String rarity) => _t(
+        'clashTechniqueUnlockByLevelOrRarity',
+      )
+          .replaceAll('{level}', '$level')
+          .replaceAll('{rarity}', rarity);
   String get clashTechniqueBookUse => _t('clashTechniqueBookUse');
   String clashTechniqueLevelUpSnack(String name, String from, String to) =>
       _t('clashTechniqueLevelUpSnack')
