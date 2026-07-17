@@ -218,21 +218,22 @@ class _ModeProfileButton extends StatelessWidget {
                 width: 1.5,
               ),
             ),
-            clipBehavior: Clip.hardEdge,
-            child: photoUrl != null
-                ? Image.network(photoUrl!, fit: BoxFit.cover)
-                : ColoredBox(
-                    color: XiColors.royalBlue.withValues(alpha: 0.15),
-                    child: Center(
-                      child: Text(
-                        initial,
-                        style: const TextStyle(
-                          fontFamily: 'Lumiare',
-                          color: XiColors.royalBlue,
+            child: ClipOval(
+              child: photoUrl != null
+                  ? Image.network(photoUrl!, fit: BoxFit.cover)
+                  : ColoredBox(
+                      color: XiColors.royalBlue.withValues(alpha: 0.15),
+                      child: Center(
+                        child: Text(
+                          initial,
+                          style: const TextStyle(
+                            fontFamily: 'Lumiare',
+                            color: XiColors.royalBlue,
+                          ),
                         ),
                       ),
                     ),
-                  ),
+            ),
           ),
           Positioned(
             right: -2,

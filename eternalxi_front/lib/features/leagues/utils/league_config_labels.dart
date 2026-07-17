@@ -97,7 +97,7 @@ abstract final class LeagueConfigLabels {
       minReward: minReward,
     );
     return ll?.rewardDistributionPreview('$first', '$second', minReward) ??
-        '$first, $second, …, $minReward fichas/jornada';
+        '$first, $second, …, $minReward fichas por jornada';
   }
 
   static String dineroPorPuntoLabel(int? amount, {AppLocalizations? l10n}) {

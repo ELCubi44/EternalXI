@@ -129,6 +129,7 @@ public class UserPublicProfileService {
             throw new IllegalArgumentException("Usuario no valido");
         }
         try (Connection conn = DBConnection.getConnection()) {
+            ensureAvatarUnlocksTable(conn);
             persistFantasyUnlocksFromPlayedRounds(conn, userId);
             return loadEligibleFavoritePlayers(conn, userId);
         }
@@ -146,7 +147,23 @@ public class UserPublicProfileService {
             throw new IllegalArgumentException("Origen de desbloqueo no valido");
         }
         try (Connection conn = DBConnection.getConnection()) {
+            ensureAvatarUnlocksTable(conn);
             registerAvatarUnlocks(conn, userId, playerIds, source);
+        }
+    }
+
+    private void ensureAvatarUnlocksTable(Connection conn) throws SQLException {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS usuario_avatar_desbloqueos (
+                    id_usuario BIGINT NOT NULL,
+                    id_jugador INT NOT NULL,
+                    origen VARCHAR(16) NOT NULL,
+                    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (id_usuario, id_jugador)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.execute();
         }
     }
 
@@ -305,9 +322,12 @@ public class UserPublicProfileService {
     private UserPublicStatsResponse loadStats(Connection conn, long userId) throws SQLException {
         String sql = """
                 SELECT
-                    COALESCE(SUM(jpj.goles), 0) AS goles,
-                    COALESCE(SUM(jpj.asistencias), 0) AS asistencias,
-                    COALESCE(SUM(jpj.porteria_cero), 0) AS porterias_cero,
+                    COALESCE(SUM(CASE WHEN ajp.id IS NOT NULL THEN jpj.goles ELSE 0 END), 0) AS goles,
+                    COALESCE(SUM(CASE WHEN ajp.id IS NOT NULL THEN jpj.asistencias ELSE 0 END), 0) AS asistencias,
+                    COALESCE(SUM(CASE
+                        WHEN UPPER(COALESCE(ju.posicion, '')) IN ('POR', 'GK', 'GOALKEEPER', 'PORTERO')
+                         AND jpj.porteria_cero = 1
+                        THEN 1 ELSE 0 END), 0) AS porterias_cero,
                     COALESCE(SUM(CASE WHEN jpj.lesionado_en_partido = 1 THEN 1 ELSE 0 END), 0) AS lesiones,
                     COALESCE(SUM(jpj.tarjetas_amarillas + jpj.tarjetas_rojas), 0) AS sanciones
                 FROM liga_participantes lp
@@ -315,7 +335,12 @@ public class UserPublicProfileService {
                 INNER JOIN liga_jugadores lj
                   ON lj.id_liga = lp.id_liga
                  AND lj.id_usuario_dueno = lp.id_usuario
+                INNER JOIN jugadores ju ON ju.id = lj.id_jugador
                 INNER JOIN jugadores_puntos_jornada jpj ON jpj.id_liga_jugador = lj.id
+                LEFT JOIN alineacion_jornada_participante ajp
+                  ON ajp.id_liga_participante = lp.id
+                 AND ajp.id_liga_jugador = lj.id
+                 AND ajp.id_jornada = jpj.id_jornada
                 WHERE lp.id_usuario = ?"""
                 + LeagueSeasonService.sqlAndLeagueEligibleForCareerStats("l");
         int goles = 0;

@@ -101,10 +101,17 @@ class ApiClient {
       }
 
       final responseData = error.response?.data;
-      if (responseData is Map<String, dynamic>) {
-        final mapped = _mapBackendError(responseData);
+      if (responseData is Map) {
+        final mapped = _mapBackendError(
+          Map<String, dynamic>.from(responseData),
+        );
         if (mapped != null) return mapped;
       }
+
+      final status = error.response?.statusCode;
+      if (status == 401) return l10n.apiForbidden;
+      if (status == 403) return l10n.apiForbidden;
+      if (status != null && status >= 500) return l10n.apiInternalError;
 
       if (error.error is SocketException) {
         return l10n.apiNetworkError;

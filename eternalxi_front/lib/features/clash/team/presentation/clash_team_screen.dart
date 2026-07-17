@@ -34,7 +34,7 @@ class ClashTeamScreen extends StatelessWidget {
   }
 }
 
-/// Icono solapado a la izquierda; texto centrado verticalmente en la barra.
+/// Barra ornamental a ancho completo; icono encajado en el hueco izquierdo.
 class _TeamSectionBar extends StatelessWidget {
   const _TeamSectionBar({
     required this.iconAsset,
@@ -48,76 +48,50 @@ class _TeamSectionBar extends StatelessWidget {
   final VoidCallback onTap;
   final TextStyle? titleStyle;
 
-  static const double _iconSize = 56;
-  static const double _barHeight = 52;
-  static const double _iconOverlap = 20;
+  static const double _barHeight = 56;
+  static const double _iconSize = 52;
+  static const double _iconLeft = 2;
 
   @override
   Widget build(BuildContext context) {
-    final rowHeight = _iconSize > _barHeight ? _iconSize : _barHeight;
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         child: SizedBox(
-          height: rowHeight,
+          height: _barHeight,
+          width: double.infinity,
           child: Stack(
             clipBehavior: Clip.none,
             alignment: Alignment.centerLeft,
             children: [
-              Positioned(
-                left: _iconOverlap,
-                right: 0,
-                top: (rowHeight - _barHeight) / 2,
-                height: _barHeight,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.35),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                    image: const DecorationImage(
-                      image: AssetImage(ClashEpicAssets.teamPersonajesBarBg),
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: _iconSize - _iconOverlap + 10,
-                      right: 12,
-                    ),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: titleStyle,
-                      ),
-                    ),
+              Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Image.asset(
+                    ClashEpicAssets.teamPersonajesBarBg,
+                    fit: BoxFit.fill,
+                    filterQuality: FilterQuality.high,
+                    alignment: Alignment.centerLeft,
                   ),
                 ),
               ),
               Positioned(
-                left: 0,
-                top: (rowHeight - _iconSize) / 2,
+                left: _iconLeft,
+                top: (_barHeight - _iconSize) / 2,
                 child: Container(
                   width: _iconSize,
                   height: _iconSize,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: XiColors.classicGold.withValues(alpha: 0.65),
-                      width: 1.4,
+                      color: XiColors.classicGold.withValues(alpha: 0.7),
+                      width: 1.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.4),
+                        color: Colors.black.withValues(alpha: 0.45),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -128,6 +102,21 @@ class _TeamSectionBar extends StatelessWidget {
                     iconAsset,
                     fit: BoxFit.cover,
                     filterQuality: FilterQuality.medium,
+                  ),
+                ),
+              ),
+              Positioned(
+                left: _iconSize + 14,
+                right: 18,
+                top: 0,
+                bottom: 0,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: titleStyle,
                   ),
                 ),
               ),

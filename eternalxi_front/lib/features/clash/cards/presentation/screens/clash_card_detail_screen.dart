@@ -14,6 +14,7 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_invent
 import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_use_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_locked_technique_preview.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_unlock_result.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_inventory_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_use_result.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
@@ -40,13 +41,13 @@ class ClashCardDetailScreen extends StatefulWidget {
 class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
     with SingleTickerProviderStateMixin {
   static const _panelHeightFactor = 0.62;
-  static const _tabCount = 4;
 
   ClashCardCatalogEntry? _entry;
   List<ClashTechniqueBookInventoryEntry> _techniqueBooks = const [];
   List<ClashEvolutionMaterialInventoryEntry> _evolutionMaterials = const [];
   List<ClashExpMaterialInventoryEntry> _materials = const [];
   List<ClashLockedTechniquePreview> _lockedTechniques = const [];
+  List<ClashSuperTechnique> _activeTechniques = const [];
   bool _loading = true;
   bool _notFound = false;
   bool _detailsOpen = false;
@@ -55,12 +56,12 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
   bool _usingMaterial = false;
   String? _usingTechniqueBookFor;
 
-  late final TabController _tabController;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _tabCount, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadCard());
   }
 
@@ -101,14 +102,32 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
         .fetchInventoryEntries();
     final materials = await materialsRepo.fetchInventoryEntries();
     final catalog = await cardsRepo.fetchAllCards();
-    final locked = entry == null
+    final enriched =
+        entry == null ? null : collection.enrichEntry(entry);
+    final locked = enriched == null
         ? const <ClashLockedTechniquePreview>[]
-        : resolveLockedTechniquePreviews(current: entry, catalog: catalog);
+        : resolveLockedTechniquePreviews(current: enriched, catalog: catalog);
+    final active = enriched == null
+        ? const <ClashSuperTechnique>[]
+        : resolveActiveTechniques(current: enriched, catalog: catalog);
     if (!mounted) {
       return;
     }
+    final canEvolve = enriched != null &&
+        ClashCardEvolutionResolver.canEvolve(enriched.effectiveRarity);
+    final tabCount = canEvolve ? 4 : 3;
+    if (_tabController.length != tabCount) {
+      final oldIndex = _tabController.index;
+      _tabController.dispose();
+      _tabController = TabController(
+        length: tabCount,
+        vsync: this,
+        initialIndex: oldIndex.clamp(0, tabCount - 1),
+      );
+    }
     setState(() {
-      _entry = entry == null ? null : collection.enrichEntry(entry);
+      _entry = enriched;
+      _activeTechniques = active;
       _techniqueBooks = techniqueBooks;
       _evolutionMaterials = evolutionMaterials;
       _materials = materials;
@@ -243,10 +262,17 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
 
   void _showTechniqueBookResultSnackBar(ClashTechniqueBookUseResult result) {
     final l10n = context.l10n;
-    final technique = _entry?.card.superTechniques.firstWhere(
-      (item) => item.id == result.techniqueId,
-      orElse: () => _entry!.card.superTechniques.first,
-    );
+    final pool = _activeTechniques.isNotEmpty
+        ? _activeTechniques
+        : (_entry?.card.superTechniques ?? const <ClashSuperTechnique>[]);
+    ClashSuperTechnique? technique;
+    for (final item in pool) {
+      if (item.id == result.techniqueId) {
+        technique = item;
+        break;
+      }
+    }
+    technique ??= pool.isEmpty ? null : pool.first;
     final name = technique?.name ?? result.techniqueId;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -482,7 +508,10 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
                             Tab(text: l10n.clashDetailsTabStats),
                             Tab(text: l10n.clashDetailsTabTechniques),
                             Tab(text: l10n.clashActionTree),
-                            Tab(text: l10n.clashActionEvolve),
+                            if (ClashCardEvolutionResolver.canEvolve(
+                              entry.effectiveRarity,
+                            ))
+                              Tab(text: l10n.clashActionEvolve),
                           ],
                         ),
                       ),
@@ -517,7 +546,7 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
                           20 + MediaQuery.paddingOf(context).bottom,
                         ),
                         children: [
-                          for (final technique in card.superTechniques) ...[
+                          for (final technique in _activeTechniques) ...[
                             ClashCardTechniqueSection(
                               baseTechnique: technique,
                               progress: entry.progress,
@@ -549,22 +578,25 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
                           ),
                         ],
                       ),
-                      ListView(
-                        padding: EdgeInsets.fromLTRB(
-                          16,
-                          12,
-                          16,
-                          20 + MediaQuery.paddingOf(context).bottom,
-                        ),
-                        children: [
-                          ClashCardEvolutionSection(
-                            entry: entry,
-                            evolutionMaterials: _evolutionMaterials,
-                            isBusy: _evolving,
-                            onEvolve: _evolveCard,
+                      if (ClashCardEvolutionResolver.canEvolve(
+                        entry.effectiveRarity,
+                      ))
+                        ListView(
+                          padding: EdgeInsets.fromLTRB(
+                            16,
+                            12,
+                            16,
+                            20 + MediaQuery.paddingOf(context).bottom,
                           ),
-                        ],
-                      ),
+                          children: [
+                            ClashCardEvolutionSection(
+                              entry: entry,
+                              evolutionMaterials: _evolutionMaterials,
+                              isBusy: _evolving,
+                              onEvolve: _evolveCard,
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ),

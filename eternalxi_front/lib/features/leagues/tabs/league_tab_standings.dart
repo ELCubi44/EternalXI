@@ -265,8 +265,8 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
                   if (_playedRounds.isNotEmpty) ...[
                     const SizedBox(height: 12),
                     DropdownButtonFormField<int?>(
-                      key: ValueKey('standings_view_${_selectedJornadaId ?? 'global'}'),
                       initialValue: _selectedJornadaId,
+                      isExpanded: true,
                       decoration: InputDecoration(
                         labelText: ll.viewLabel,
                         border: OutlineInputBorder(
@@ -277,6 +277,29 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
                           vertical: 12,
                         ),
                       ),
+                      selectedItemBuilder: (context) {
+                        final labels = <String>[
+                          ll.globalStandings,
+                          for (final round in _playedRounds)
+                            leagueJornadaIsInProgress(round.estado) ||
+                                    round.actual
+                                ? ll.roundInProgressMatchday
+                                : round.numero > 0
+                                ? ll.matchday(round.numero)
+                                : round.nombre,
+                        ];
+                        return [
+                          for (final label in labels)
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                label,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                        ];
+                      },
                       items: [
                         DropdownMenuItem<int?>(
                           value: null,

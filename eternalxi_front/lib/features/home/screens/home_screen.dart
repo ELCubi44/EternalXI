@@ -310,14 +310,16 @@ class _ProfileButton extends StatelessWidget {
                 ),
               ],
             ),
-            clipBehavior: Clip.hardEdge,
-            child: photoUrl != null
-                ? Image.network(
-                    photoUrl!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => _AvatarInitial(initial: initial),
-                  )
-                : _AvatarInitial(initial: initial),
+            clipBehavior: Clip.antiAlias,
+            child: ClipOval(
+              child: photoUrl != null
+                  ? Image.network(
+                      photoUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => _AvatarInitial(initial: initial),
+                    )
+                  : _AvatarInitial(initial: initial),
+            ),
           ),
           Positioned(
             right: -3,

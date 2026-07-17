@@ -89,8 +89,16 @@ public class LeagueRewardsService {
         try (Connection conn = DBConnection.getConnection()) {
             ensureUsuario(conn, idUsuario);
             ParticipantRow p = loadParticipantOrForbidden(conn, idLiga, idUsuario);
-            leagueLineupService.recalculateParticipantPoints(conn, idLiga);
-            cleanupExpired(conn, idLiga);
+            try {
+                leagueLineupService.recalculateParticipantPoints(conn, idLiga);
+            } catch (Exception e) {
+                // No bloquear la tienda si el recálculo falla.
+            }
+            try {
+                cleanupExpired(conn, idLiga);
+            } catch (Exception e) {
+                // Idempotente; seguir con el resumen.
+            }
 
             boolean ruletaUsada = loadRouletteUsed(conn, p.idLigaParticipante());
             LeagueCoachRouletteItemResponse coach = loadCoachSummaryForRewards(conn, p.idLigaParticipante());

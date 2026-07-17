@@ -190,7 +190,7 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: Text(
-                    'Jugadores de Eterno Campe\u00f3n que hayas alineado en una jornada ya iniciada.',
+                    'Desbloquea avatares jugando Fantasy (alineaci\u00f3n en jornada iniciada) o consiguiendo cartas Clash.',
                     style: TextStyle(
                       fontFamily: 'Lumiare',
                       fontSize: 13,
@@ -245,7 +245,7 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
                             padding: const EdgeInsets.all(24),
                             child: Text(
                               _players.isEmpty
-                                  ? 'A\u00fan no tienes jugadores elegibles en Eterno Campe\u00f3n. Alinea jugadores en una jornada que ya haya empezado.'
+                                  ? 'Juega partidas Fantasy o consigue cartas Clash para ir desbloqueando avatares.'
                                   : 'No hay jugadores o equipos que coincidan.',
                               textAlign: TextAlign.center,
                               style: TextStyle(

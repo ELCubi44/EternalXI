@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/data/models/user_public_profile.dart';
 import 'package:flutter/material.dart';
@@ -29,8 +30,10 @@ class FavoritePlayerSlot extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
+      customBorder: const CircleBorder(),
       child: SizedBox(
         height: size,
+        width: size,
         child: Center(
           child: loading
               ? const SizedBox(
@@ -41,12 +44,29 @@ class FavoritePlayerSlot extends StatelessWidget {
                   ),
                 )
               : hasPhoto
-              ? Image.network(
-                  favorite!.photoUrl!,
+              ? Container(
                   width: size,
                   height: size,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => _emptySlot(context),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: XiColors.classicGold.withValues(alpha: 0.55),
+                      width: 1.6,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.28),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Image.network(
+                    favorite!.photoUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => _emptySlot(context),
+                  ),
                 )
               : _emptySlot(context),
         ),
@@ -65,6 +85,10 @@ class FavoritePlayerSlot extends StatelessWidget {
             decoration: BoxDecoration(
               color: context.xiTextSecondary.withValues(alpha: 0.22),
               shape: BoxShape.circle,
+              border: Border.all(
+                color: XiColors.classicGold.withValues(alpha: 0.35),
+                width: 1.4,
+              ),
             ),
           ),
           Icon(

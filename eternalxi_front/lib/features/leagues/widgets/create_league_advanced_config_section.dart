@@ -64,23 +64,35 @@ class CreateLeagueAdvancedConfigSection extends StatelessWidget {
           subtitle: ll.leagueParticipantsSubtitle,
         ),
         const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final n in LeagueConfigLabels.maxParticipantesOptions)
-              FilterChip(
-                label: Text('$n'),
-                selected: maxParticipantes == n,
-                onSelected: enabled
-                    ? (selected) {
-                        if (selected) {
-                          onMaxParticipantesChanged(n);
-                        }
-                      }
-                    : null,
-              ),
-          ],
+        LayoutBuilder(
+          builder: (context, constraints) {
+            const columns = 3;
+            const spacing = 8.0;
+            final itemWidth =
+                (constraints.maxWidth - spacing * (columns - 1)) / columns;
+            return Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
+              children: [
+                for (final n in LeagueConfigLabels.maxParticipantesOptions)
+                  SizedBox(
+                    width: itemWidth,
+                    child: FilterChip(
+                      label: Center(child: Text('$n')),
+                      selected: maxParticipantes == n,
+                      showCheckmark: false,
+                      onSelected: enabled
+                          ? (selected) {
+                              if (selected) {
+                                onMaxParticipantesChanged(n);
+                              }
+                            }
+                          : null,
+                    ),
+                  ),
+              ],
+            );
+          },
         ),
         const SizedBox(height: 20),
         SwitchListTile(
@@ -174,7 +186,7 @@ class CreateLeagueAdvancedConfigSection extends StatelessWidget {
               participantCount: maxParticipantes,
               l10n: l10n,
             ),
-          ),
+          ).replaceAll('fichas/jornada', 'fichas por jornada'),
           style: theme.textTheme.bodySmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),
@@ -182,26 +194,95 @@ class CreateLeagueAdvancedConfigSection extends StatelessWidget {
         const SizedBox(height: 12),
         _FieldLabel(title: ll.moneyPerFantasyPoint),
         const SizedBox(height: 8),
-        SegmentedButton<int>(
-          segments: [
-            for (final amount in LeagueConfigLabels.dineroPorPuntoOptions)
-              ButtonSegment(
-                value: amount,
-                label: Text(
-                  LeagueConfigLabels.dineroPorPuntoOptionLabel(
-                    amount,
-                    l10n: l10n,
+        LayoutBuilder(
+          builder: (context, constraints) {
+            const spacing = 8.0;
+            final options = LeagueConfigLabels.dineroPorPuntoOptions;
+            return Row(
+              children: [
+                for (var i = 0; i < options.length; i++) ...[
+                  if (i > 0) const SizedBox(width: spacing),
+                  Expanded(
+                    child: _MoneyPointChip(
+                      amount: options[i],
+                      selected: dineroPorPuntoFantasy == options[i],
+                      enabled: enabled,
+                      onTap: () => onDineroPorPuntoChanged(options[i]),
+                    ),
                   ),
-                  style: theme.textTheme.labelSmall,
-                ),
-              ),
-          ],
-          selected: {dineroPorPuntoFantasy},
-          onSelectionChanged: enabled
-              ? (s) => onDineroPorPuntoChanged(s.first)
-              : null,
+                ],
+              ],
+            );
+          },
         ),
       ],
+    );
+  }
+}
+
+class _MoneyPointChip extends StatelessWidget {
+  const _MoneyPointChip({
+    required this.amount,
+    required this.selected,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  final int amount;
+  final bool selected;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  String get _shortLabel {
+    final k = amount ~/ 1000;
+    return '$k\u00A0k\u00A0€';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return Material(
+      color: selected ? scheme.primary : scheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: enabled ? onTap : null,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: selected ? scheme.primary : scheme.outlineVariant,
+              width: selected ? 1.6 : 1,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                _shortLabel,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: selected ? scheme.onPrimary : scheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                '/ punto',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: selected
+                      ? scheme.onPrimary.withValues(alpha: 0.85)
+                      : scheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

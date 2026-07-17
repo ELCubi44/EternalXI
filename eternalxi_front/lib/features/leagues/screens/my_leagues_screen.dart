@@ -211,14 +211,16 @@ class _HeaderProfileButton extends StatelessWidget {
                 width: 1.5,
               ),
             ),
-            clipBehavior: Clip.hardEdge,
-            child: photoUrl != null
-                ? Image.network(
-                    photoUrl!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => _Initial(initial: initial),
-                  )
-                : _Initial(initial: initial),
+            clipBehavior: Clip.antiAlias,
+            child: ClipOval(
+              child: photoUrl != null
+                  ? Image.network(
+                      photoUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => _Initial(initial: initial),
+                    )
+                  : _Initial(initial: initial),
+            ),
           ),
           Positioned(
             right: -2,
