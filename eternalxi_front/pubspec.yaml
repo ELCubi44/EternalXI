@@ -83,6 +83,7 @@ flutter:
     - assets/images/clash/epic/auras/
     - assets/images/clash/epic/banners/
     - assets/images/clash/epic/stats/
+    - assets/images/clash/items/
     - assets/data/clash/cards.json
     - assets/data/clash/cards_manifest.json
     - assets/data/clash/exp_materials.json

@@ -531,33 +531,35 @@ class _StatsPanel extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Material(
-                    color: XiColors.classicGold.withValues(alpha: 0.22),
-                    borderRadius: BorderRadius.circular(8),
-                    child: InkWell(
-                      onTap: entry.isMaxLevel ? null : onLevelUpTap,
+                  if (onLevelUpTap != null) ...[
+                    const SizedBox(width: 8),
+                    Material(
+                      color: XiColors.classicGold.withValues(alpha: 0.22),
                       borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: XiColors.classicGold.withValues(alpha: 0.8),
+                      child: InkWell(
+                        onTap: entry.isMaxLevel ? null : onLevelUpTap,
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: XiColors.classicGold.withValues(alpha: 0.8),
+                            ),
                           ),
-                        ),
-                        child: Icon(
-                          Icons.add_rounded,
-                          color: entry.isMaxLevel
-                              ? XiColors.warmWhite.withValues(alpha: 0.35)
-                              : XiColors.classicGold,
-                          size: 22,
+                          child: Icon(
+                            Icons.add_rounded,
+                            color: entry.isMaxLevel
+                                ? XiColors.warmWhite.withValues(alpha: 0.35)
+                                : XiColors.classicGold,
+                            size: 22,
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ],

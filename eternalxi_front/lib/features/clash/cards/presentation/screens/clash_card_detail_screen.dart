@@ -3,14 +3,11 @@ import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_evolution_materials_repository.dart';
-import 'package:eternal_xi/features/clash/cards/data/repositories/clash_exp_materials_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_player_collection_repository.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_technique_books_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_evolution_resolver.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_material_inventory_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_evolution_result.dart';
-import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_inventory_entry.dart';
-import 'package:eternal_xi/features/clash/cards/domain/clash_exp_material_use_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_skill_tree_unlock_result.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_inventory_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_use_result.dart';
@@ -19,8 +16,8 @@ import 'package:eternal_xi/features/clash/cards/presentation/epic/clash_card_epi
 import 'package:eternal_xi/features/clash/cards/presentation/epic/clash_epic_assets.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_evolution_section.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_skill_tree_section.dart';
+import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_stats_panel.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_technique_section.dart';
-import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_upgrade_section.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -34,104 +31,53 @@ class ClashCardDetailScreen extends StatefulWidget {
   State<ClashCardDetailScreen> createState() => _ClashCardDetailScreenState();
 }
 
-class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
-  static const _sheetMax = 0.78;
-  static const _sheetHandleHeight = 36.0;
+class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
+    with SingleTickerProviderStateMixin {
+  static const _panelHeightFactor = 0.62;
+  static const _tabCount = 4;
 
   ClashCardCatalogEntry? _entry;
-  List<ClashExpMaterialInventoryEntry> _materials = const [];
   List<ClashTechniqueBookInventoryEntry> _techniqueBooks = const [];
   List<ClashEvolutionMaterialInventoryEntry> _evolutionMaterials = const [];
   bool _loading = true;
   bool _notFound = false;
-  bool _usingMaterial = false;
+  bool _detailsOpen = false;
   bool _evolving = false;
   bool _unlockingSkillNode = false;
   String? _usingTechniqueBookFor;
 
-  final _sheetController = DraggableScrollableController();
-  final _techniqueSectionKey = GlobalKey();
-  final _upgradeSectionKey = GlobalKey();
-  final _evolutionSectionKey = GlobalKey();
-  final _skillTreeSectionKey = GlobalKey();
-  final _sheetExtentNotifier = ValueNotifier(0.05);
-  bool _sheetHeaderVisible = false;
-
-  double _sheetMinFor(double screenHeight) =>
-      (_sheetHandleHeight / screenHeight).clamp(0.045, 0.065);
-
-  double _sheetRevealThresholdFor(double screenHeight) =>
-      _sheetMinFor(screenHeight) + 0.08;
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _sheetController.addListener(_onSheetChanged);
+    _tabController = TabController(length: _tabCount, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadCard());
   }
 
   @override
   void dispose() {
-    _sheetController.removeListener(_onSheetChanged);
-    _sheetController.dispose();
-    _sheetExtentNotifier.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
-  void _onSheetChanged() {
-    if (!_sheetController.isAttached) {
+  void _openDetails() {
+    if (_detailsOpen) {
       return;
     }
-
-    final size = _sheetController.size;
-    _sheetExtentNotifier.value = size;
-
-    final threshold = _sheetRevealThresholdFor(
-      MediaQuery.sizeOf(context).height,
-    );
-    final headerVisible = size > threshold;
-    if (headerVisible != _sheetHeaderVisible) {
-      setState(() => _sheetHeaderVisible = headerVisible);
-    }
+    setState(() => _detailsOpen = true);
   }
 
-  Future<void> _expandSheet() async {
-    if (!_sheetController.isAttached) {
+  void _closeDetails() {
+    if (!_detailsOpen) {
       return;
     }
-
-    await _sheetController.animateTo(
-      _sheetMax,
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOutCubic,
-    );
+    setState(() => _detailsOpen = false);
   }
-
-  Future<void> _openSheetSection(GlobalKey sectionKey) async {
-    await _expandSheet();
-
-    await Future<void>.delayed(const Duration(milliseconds: 80));
-    if (!mounted) {
-      return;
-    }
-
-    final target = sectionKey.currentContext;
-    if (target != null) {
-      await Scrollable.ensureVisible(
-        target,
-        duration: const Duration(milliseconds: 280),
-        curve: Curves.easeOutCubic,
-        alignment: 0.05,
-      );
-    }
-  }
-
-  Future<void> _openUpgradeSheet() => _openSheetSection(_upgradeSectionKey);
 
   Future<void> _loadCard() async {
     final controller = context.read<ClashCardsController>();
     final collection = context.read<ClashPlayerCollectionRepository>();
-    final materialsRepo = context.read<ClashExpMaterialsRepository>();
     final techniqueBooksRepo = context.read<ClashTechniqueBooksRepository>();
     final evolutionMaterialsRepo = context
         .read<ClashEvolutionMaterialsRepository>();
@@ -139,7 +85,6 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
       await controller.load();
     }
     final entry = await controller.findCard(widget.cardId);
-    final inventory = await materialsRepo.fetchInventoryEntries();
     final techniqueBooks = await techniqueBooksRepo.fetchInventoryEntries();
     final evolutionMaterials = await evolutionMaterialsRepo
         .fetchInventoryEntries();
@@ -148,7 +93,6 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
     }
     setState(() {
       _entry = entry == null ? null : collection.enrichEntry(entry);
-      _materials = inventory;
       _techniqueBooks = techniqueBooks;
       _evolutionMaterials = evolutionMaterials;
       _notFound = entry == null;
@@ -302,59 +246,6 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
     );
   }
 
-  Future<void> _useMaterial(String materialId) async {
-    if (_usingMaterial || _entry == null || _entry!.isMaxLevel) {
-      return;
-    }
-
-    setState(() => _usingMaterial = true);
-    final collection = context.read<ClashPlayerCollectionRepository>();
-    final materialsRepo = context.read<ClashExpMaterialsRepository>();
-    final controller = context.read<ClashCardsController>();
-
-    final result = await collection.useExpMaterialOnCard(
-      cardId: widget.cardId,
-      materialId: materialId,
-      quantity: 1,
-    );
-
-    if (!mounted) {
-      return;
-    }
-
-    if (result.succeeded) {
-      final entry = await controller.findCard(widget.cardId);
-      final inventory = await materialsRepo.fetchInventoryEntries();
-      setState(() {
-        _entry = entry == null ? null : collection.enrichEntry(entry);
-        _materials = inventory;
-        _usingMaterial = false;
-      });
-      await controller.reloadOwnedCards();
-      _showUseResultSnackBar(result);
-    } else {
-      setState(() => _usingMaterial = false);
-    }
-  }
-
-  void _showUseResultSnackBar(ClashExpMaterialUseResult result) {
-    final l10n = context.l10n;
-    final message = StringBuffer(l10n.clashExpMaterialXp(result.xpGained));
-    if (result.didLevelUp) {
-      message
-        ..write('\n')
-        ..write(
-          l10n.clashExpMaterialLevelUp(result.previousLevel, result.newLevel),
-        );
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        content: Text(message.toString()),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -373,9 +264,19 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
     final entry = _entry!;
     final card = entry.displayCard;
     final screenHeight = MediaQuery.sizeOf(context).height;
-    final sheetMin = _sheetMinFor(screenHeight);
-    final peekHeight = screenHeight * sheetMin;
-    final baseCardHeight = screenHeight - peekHeight;
+    final panelHeight = screenHeight * _panelHeightFactor;
+    final baseCardHeight = screenHeight - 72;
+    final sheetTop = screenHeight - panelHeight;
+    final overlap = 56.0;
+    final availableHeight = (sheetTop + overlap).clamp(1.0, screenHeight);
+    final fitScale = (availableHeight / baseCardHeight).clamp(0.32, 1.0);
+    final easedScale = 0.52;
+    final resolvedScale =
+        _detailsOpen ? (easedScale < fitScale ? easedScale : fitScale) : 1.0;
+    final scaledCardHeight = baseCardHeight * resolvedScale;
+    final translateY =
+        _detailsOpen ? sheetTop + overlap - scaledCardHeight : 0.0;
+    final cardScale = resolvedScale;
     final bgPath = ClashEpicAssets.detailBackgroundForTeam(
       entry.team,
       entry.effectiveRarity,
@@ -409,221 +310,173 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
             ),
           ),
         ),
-        DraggableScrollableSheet(
-          controller: _sheetController,
-          initialChildSize: sheetMin,
-          minChildSize: sheetMin,
-          maxChildSize: _sheetMax,
-          snap: true,
-          snapSizes: [sheetMin, 0.28, _sheetMax],
-          snapAnimationDuration: const Duration(milliseconds: 220),
-          builder: (context, scrollController) {
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              curve: Curves.easeOut,
-              decoration: BoxDecoration(
-                color: _sheetHeaderVisible
-                    ? context.xiBackground
-                    : Colors.transparent,
-                borderRadius: _sheetHeaderVisible
-                    ? const BorderRadius.vertical(top: Radius.circular(22))
-                    : BorderRadius.zero,
-                boxShadow: _sheetHeaderVisible
-                    ? [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.32),
-                          blurRadius: 18,
-                          offset: const Offset(0, -4),
-                        ),
-                      ]
-                    : const [],
-              ),
-              child: ListView(
-                controller: scrollController,
-                physics: const AlwaysScrollableScrollPhysics(
-                  parent: ClampingScrollPhysics(),
-                ),
-                padding: EdgeInsets.fromLTRB(
-                  16,
-                  8,
-                  16,
-                  28 + MediaQuery.paddingOf(context).bottom,
-                ),
-                children: [
-                  GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTap: _expandSheet,
+        if (!_detailsOpen)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 18),
+                child: Material(
+                  color: context.xiBackground.withValues(alpha: 0.94),
+                  elevation: 6,
+                  borderRadius: BorderRadius.circular(999),
+                  child: InkWell(
+                    onTap: _openDetails,
+                    borderRadius: BorderRadius.circular(999),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Center(
-                        child: Container(
-                          width: 44,
-                          height: 5,
-                          decoration: BoxDecoration(
-                            color: context.xiTextSecondary.withValues(
-                              alpha: _sheetHeaderVisible ? 0.35 : 0.55,
-                            ),
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                        ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 22,
+                        vertical: 12,
                       ),
-                    ),
-                  ),
-                  if (_sheetHeaderVisible) const SizedBox(height: 48),
-                  AnimatedOpacity(
-                    duration: const Duration(milliseconds: 160),
-                    opacity: _sheetHeaderVisible ? 1 : 0,
-                    child: IgnorePointer(
-                      ignoring: !_sheetHeaderVisible,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            l10n.clashCardDetailTitle,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                  color: context.xiTextPrimary,
-                                ),
-                          ),
-                          const SizedBox(height: 10),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                _SheetActionChip(
-                                  label: l10n.clashTechniqueSection,
-                                  onTap: () => _openSheetSection(
-                                    _techniqueSectionKey,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                _SheetActionChip(
-                                  label: l10n.clashActionUpgrade,
-                                  onTap: _openUpgradeSheet,
-                                ),
-                                const SizedBox(width: 8),
-                                _SheetActionChip(
-                                  label: l10n.clashActionEvolve,
-                                  onTap: () => _openSheetSection(
-                                    _evolutionSectionKey,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                _SheetActionChip(
-                                  label: l10n.clashActionTree,
-                                  onTap: () => _openSheetSection(
-                                    _skillTreeSectionKey,
-                                  ),
-                                ),
-                              ],
+                      child: Text(
+                        l10n.clashDetailsOpen,
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              fontWeight: FontWeight.w800,
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                      ),
-                    ),
-                  ),
-                  KeyedSubtree(
-                    key: _techniqueSectionKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        for (final technique in card.superTechniques) ...[
-                          ClashCardTechniqueSection(
-                            baseTechnique: technique,
-                            progress: entry.progress,
-                            books: _techniqueBooks,
-                            isBusy: _usingTechniqueBookFor == technique.id,
-                            onUseBook: (bookId) =>
-                                _useTechniqueBook(technique.id, bookId),
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                      ],
-                    ),
-                  ),
-                  KeyedSubtree(
-                    key: _upgradeSectionKey,
-                    child: ClashCardUpgradeSection(
-                      entry: entry,
-                      materials: _materials,
-                      isBusy: _usingMaterial,
-                      onUseMaterial: _useMaterial,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  KeyedSubtree(
-                    key: _evolutionSectionKey,
-                    child: ClashCardEvolutionSection(
-                      entry: entry,
-                      evolutionMaterials: _evolutionMaterials,
-                      isBusy: _evolving,
-                      onEvolve: _evolveCard,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  KeyedSubtree(
-                    key: _skillTreeSectionKey,
-                    child: ClashCardSkillTreeSection(
-                      entry: entry,
-                      isBusy: _unlockingSkillNode,
-                      onUnlock: _unlockSkillTreeNode,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-        ValueListenableBuilder<double>(
-          valueListenable: _sheetExtentNotifier,
-          builder: (context, sheetExtent, _) {
-            final sheetMinLocal = _sheetMinFor(screenHeight);
-            final dragT =
-                ((sheetExtent - sheetMinLocal) / (_sheetMax - sheetMinLocal))
-                    .clamp(0.0, 1.0);
-            final sheetTop = screenHeight * (1.0 - sheetExtent);
-            // Solape ligero sobre el borde del panel; el título queda debajo.
-            final overlap = 56.0 * dragT;
-            final availableHeight =
-                (sheetTop + overlap).clamp(1.0, screenHeight);
-            final fitScale =
-                (availableHeight / baseCardHeight).clamp(0.32, 1.0);
-            final easedScale = 1.0 - (dragT * 0.48);
-            final cardScale =
-                dragT <= 0 ? 1.0 : (easedScale < fitScale ? easedScale : fitScale);
-            final scaledCardHeight = baseCardHeight * cardScale;
-            final translateY = sheetTop + overlap - scaledCardHeight;
-
-            return Positioned.fill(
-              child: IgnorePointer(
-                ignoring: _sheetHeaderVisible,
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Transform.translate(
-                    offset: Offset(0, translateY),
-                    child: Transform.scale(
-                      scale: cardScale,
-                      alignment: Alignment.topCenter,
-                      child: SizedBox(
-                        height: baseCardHeight,
-                        width: double.infinity,
-                        child: ClashCardEpicShowcase(
-                          entry: entry,
-                          detailHero: true,
-                          height: baseCardHeight,
-                          onLevelUpTap: _openUpgradeSheet,
-                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            );
-          },
+            ),
+          ),
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 260),
+          curve: Curves.easeOutCubic,
+          left: 0,
+          right: 0,
+          bottom: _detailsOpen ? 0 : -panelHeight,
+          height: panelHeight,
+          child: Material(
+            color: context.xiBackground,
+            elevation: 12,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TabBar(
+                          controller: _tabController,
+                          isScrollable: true,
+                          tabAlignment: TabAlignment.start,
+                          labelPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                          ),
+                          tabs: [
+                            Tab(text: l10n.clashDetailsTabStats),
+                            Tab(text: l10n.clashDetailsTabTechniques),
+                            Tab(text: l10n.clashActionTree),
+                            Tab(text: l10n.clashActionEvolve),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: l10n.clashDetailsCollapse,
+                        onPressed: _closeDetails,
+                        icon: const Icon(Icons.remove_rounded),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      ListView(
+                        padding: EdgeInsets.fromLTRB(
+                          16,
+                          12,
+                          16,
+                          20 + MediaQuery.paddingOf(context).bottom,
+                        ),
+                        children: [
+                          ClashCardStatsPanel(entry: entry),
+                        ],
+                      ),
+                      ListView(
+                        padding: EdgeInsets.fromLTRB(
+                          16,
+                          12,
+                          16,
+                          20 + MediaQuery.paddingOf(context).bottom,
+                        ),
+                        children: [
+                          for (final technique in card.superTechniques) ...[
+                            ClashCardTechniqueSection(
+                              baseTechnique: technique,
+                              progress: entry.progress,
+                              books: _techniqueBooks,
+                              isBusy:
+                                  _usingTechniqueBookFor == technique.id,
+                              onUseBook: (bookId) =>
+                                  _useTechniqueBook(technique.id, bookId),
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                        ],
+                      ),
+                      ListView(
+                        padding: EdgeInsets.fromLTRB(
+                          16,
+                          12,
+                          16,
+                          20 + MediaQuery.paddingOf(context).bottom,
+                        ),
+                        children: [
+                          ClashCardSkillTreeSection(
+                            entry: entry,
+                            isBusy: _unlockingSkillNode,
+                            onUnlock: _unlockSkillTreeNode,
+                          ),
+                        ],
+                      ),
+                      ListView(
+                        padding: EdgeInsets.fromLTRB(
+                          16,
+                          12,
+                          16,
+                          20 + MediaQuery.paddingOf(context).bottom,
+                        ),
+                        children: [
+                          ClashCardEvolutionSection(
+                            entry: entry,
+                            evolutionMaterials: _evolutionMaterials,
+                            isBusy: _evolving,
+                            onEvolve: _evolveCard,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 240),
+          curve: Curves.easeOutCubic,
+          left: 0,
+          right: 0,
+          top: translateY,
+          height: baseCardHeight,
+          child: IgnorePointer(
+            ignoring: _detailsOpen,
+            child: Transform.scale(
+              scale: cardScale,
+              alignment: Alignment.topCenter,
+              child: ClashCardEpicShowcase(
+                entry: entry,
+                detailHero: true,
+                height: baseCardHeight,
+              ),
+            ),
+          ),
         ),
         SafeArea(
           child: Align(
@@ -650,25 +503,6 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _SheetActionChip extends StatelessWidget {
-  const _SheetActionChip({required this.label, required this.onTap});
-
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return ActionChip(
-      label: Text(label),
-      onPressed: onTap,
-      visualDensity: VisualDensity.compact,
-      labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontWeight: FontWeight.w700,
-      ),
     );
   }
 }

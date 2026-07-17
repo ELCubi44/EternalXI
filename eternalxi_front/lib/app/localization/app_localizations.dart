@@ -657,6 +657,12 @@ class AppLocalizations {
       'clashCardBonusIncluded': 'Incluye bonus de nivel, evolución y árbol',
       'clashCardPortraitPlaceholder': 'Arte próximamente',
       'clashCardDetailTitle': 'Detalle de carta',
+      'clashDetailsOpen': 'Detalles',
+      'clashDetailsCollapse': 'Contraer',
+      'clashDetailsTabStats': 'Stats',
+      'clashDetailsTabTechniques': 'Técnicas',
+      'clashItemHave': 'Tienes {qty}',
+      'clashItemMissing': 'Faltan {qty}',
       'clashCardStats': 'Estadísticas',
       'clashStatSave': 'Parada',
       'clashStatDefense': 'Defensa',
@@ -1834,6 +1840,12 @@ class AppLocalizations {
       'clashCardBonusIncluded': 'Includes level, evolution and tree bonuses',
       'clashCardPortraitPlaceholder': 'Artwork coming soon',
       'clashCardDetailTitle': 'Card detail',
+      'clashDetailsOpen': 'Details',
+      'clashDetailsCollapse': 'Collapse',
+      'clashDetailsTabStats': 'Stats',
+      'clashDetailsTabTechniques': 'Techniques',
+      'clashItemHave': 'Have {qty}',
+      'clashItemMissing': 'Need {qty}',
       'clashCardStats': 'Stats',
       'clashStatSave': 'Save',
       'clashStatDefense': 'Defense',
@@ -3310,6 +3322,14 @@ class AppLocalizations {
   String get clashCardBonusIncluded => _t('clashCardBonusIncluded');
   String get clashCardPortraitPlaceholder => _t('clashCardPortraitPlaceholder');
   String get clashCardDetailTitle => _t('clashCardDetailTitle');
+  String get clashDetailsOpen => _t('clashDetailsOpen');
+  String get clashDetailsCollapse => _t('clashDetailsCollapse');
+  String get clashDetailsTabStats => _t('clashDetailsTabStats');
+  String get clashDetailsTabTechniques => _t('clashDetailsTabTechniques');
+  String clashItemHave(int qty) =>
+      _t('clashItemHave').replaceAll('{qty}', '$qty');
+  String clashItemMissing(int qty) =>
+      _t('clashItemMissing').replaceAll('{qty}', '$qty');
 
   String clashCardXpProgress(int current, int needed) => _t(
     'clashCardXpProgress',

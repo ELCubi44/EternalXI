@@ -4,12 +4,12 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_card_progress.dart'
 import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_inventory_entry.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_progress_resolver.dart';
-import 'package:eternal_xi/features/clash/cards/domain/clash_technique_type.dart';
+import 'package:eternal_xi/features/clash/cards/presentation/epic/clash_item_assets.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_detail_shared.dart';
 import 'package:flutter/material.dart';
 
-/// Sección de supertécnica en detalle de carta (Fase 36).
-class ClashCardTechniqueSection extends StatelessWidget {
+/// Lista simple de supertécnicas + mejorar con iconos de objeto.
+class ClashCardTechniqueSection extends StatefulWidget {
   const ClashCardTechniqueSection({
     required this.baseTechnique,
     required this.progress,
@@ -25,75 +25,39 @@ class ClashCardTechniqueSection extends StatelessWidget {
   final bool isBusy;
   final ValueChanged<String> onUseBook;
 
-  static String typeLabel(ClashTechniqueType type) => switch (type) {
-    ClashTechniqueType.save => 'Parada',
-    ClashTechniqueType.defense => 'Defensa',
-    ClashTechniqueType.dribble => 'Regate',
-    ClashTechniqueType.shot => 'Tiro',
-  };
+  @override
+  State<ClashCardTechniqueSection> createState() =>
+      _ClashCardTechniqueSectionState();
+}
+
+class _ClashCardTechniqueSectionState extends State<ClashCardTechniqueSection> {
+  bool _upgradeOpen = false;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final resolved = ClashTechniqueProgressResolver.withResolvedLevel(
-      technique: baseTechnique,
-      progress: progress,
+      technique: widget.baseTechnique,
+      progress: widget.progress,
     );
     final atMax = resolved.level.isMax;
+    final compatibleBooks = widget.books
+        .where((e) => e.book.isCompatibleWith(resolved.type))
+        .toList(growable: false);
 
     return ClashCardDetailSectionCard(
+      padding: const EdgeInsets.all(14),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              Icon(Icons.flash_on_rounded, color: theme.colorScheme.primary),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  l10n.clashTechniqueSection,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  typeLabel(resolved.type),
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
           Text(
             resolved.name,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w800,
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            resolved.description,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: context.xiTextSecondary,
-              height: 1.35,
-            ),
-          ),
-          const SizedBox(height: 10),
-          ClashCardDetailMetaRow(
-            label: l10n.clashCardStyle,
-            value: resolved.style.displayNameEs,
-          ),
+          const SizedBox(height: 8),
           ClashCardDetailMetaRow(
             label: l10n.clashTechniqueLevel,
             value: resolved.level.displayLabel,
@@ -106,15 +70,20 @@ class ClashCardTechniqueSection extends StatelessWidget {
             label: l10n.clashTechniquePtCost,
             value: '${resolved.ptCost}',
           ),
-          const SizedBox(height: 14),
-          Text(
-            l10n.clashTechniqueUpgradeTitle,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerRight,
+            child: FilledButton.tonal(
+              onPressed: atMax
+                  ? null
+                  : () => setState(() => _upgradeOpen = !_upgradeOpen),
+              child: Text(
+                _upgradeOpen ? l10n.clashBack : l10n.clashActionUpgrade,
+              ),
             ),
           ),
           if (atMax) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               l10n.clashCardMaxLevel,
               style: theme.textTheme.bodySmall?.copyWith(
@@ -122,14 +91,20 @@ class ClashCardTechniqueSection extends StatelessWidget {
               ),
             ),
           ],
-          const SizedBox(height: 10),
-          for (final item in books) ...[
-            _TechniqueBookRow(
-              entry: item,
-              disabled: atMax || item.quantity <= 0 || isBusy,
-              onUse: () => onUseBook(item.book.id),
+          if (_upgradeOpen && !atMax) ...[
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                for (final item in compatibleBooks)
+                  _TechniqueBookIconTile(
+                    entry: item,
+                    disabled: item.quantity <= 0 || widget.isBusy,
+                    onUse: () => widget.onUseBook(item.book.id),
+                  ),
+              ],
             ),
-            if (item != books.last) const SizedBox(height: 10),
           ],
         ],
       ),
@@ -137,8 +112,8 @@ class ClashCardTechniqueSection extends StatelessWidget {
   }
 }
 
-class _TechniqueBookRow extends StatelessWidget {
-  const _TechniqueBookRow({
+class _TechniqueBookIconTile extends StatelessWidget {
+  const _TechniqueBookIconTile({
     required this.entry,
     required this.disabled,
     required this.onUse,
@@ -148,63 +123,76 @@ class _TechniqueBookRow extends StatelessWidget {
   final bool disabled;
   final VoidCallback onUse;
 
+  static const _need = 1;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final book = entry.book;
+    final theme = Theme.of(context);
+    final have = entry.quantity;
+    final missing = (_need - have).clamp(0, _need);
+    final iconPath = ClashItemAssets.techniqueBookIcon(entry.book.id);
 
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: context.xiChipBackground.withValues(alpha: 0.35),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.xiDivider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
+    return Material(
+      color: context.xiChipBackground.withValues(alpha: 0.4),
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: disabled ? null : onUse,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          width: 108,
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: context.xiDivider),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                child: Text(
-                  book.name,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  iconPath,
+                  width: 64,
+                  height: 64,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    width: 64,
+                    height: 64,
+                    color: context.xiChipBackground,
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.menu_book_rounded,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
                 ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                l10n.clashTechniqueBookEffect(entry.book.levelUpSteps),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                l10n.clashItemHave(have),
+                style: theme.textTheme.labelSmall,
               ),
               Text(
-                l10n.clashTechniqueBookEffect(book.levelUpSteps),
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: Theme.of(context).colorScheme.primary,
+                l10n.clashItemMissing(missing),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: missing > 0
+                      ? theme.colorScheme.error
+                      : context.xiTextSecondary,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            book.description,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: context.xiTextSecondary),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  l10n.clashExpMaterialQuantity(entry.quantity),
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ),
-              FilledButton.tonal(
-                onPressed: disabled ? null : onUse,
-                child: Text(l10n.clashTechniqueBookUse),
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
