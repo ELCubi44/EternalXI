@@ -93,6 +93,8 @@ public class UserPublicProfileService {
         }
         try (Connection conn = DBConnection.getConnection()) {
             if (idJugador != null && idJugador > 0) {
+                // Persiste desbloqueos Fantasy ya jugados antes de validar.
+                persistFantasyUnlocksFromPlayedRounds(conn, userId);
                 if (!isEligibleFavoritePlayer(conn, userId, idJugador)) {
                     throw new IllegalArgumentException(
                             "Solo puedes elegir avatares desbloqueados: carta Clash o alineacion Fantasy"
@@ -109,12 +111,16 @@ public class UserPublicProfileService {
                 ps.setLong(2, userId);
                 ps.executeUpdate();
             }
-            accountProgressService.syncFavoriteRosterAchievements(
-                    conn,
-                    userId,
-                    countSignedPlayersInFinishedLeagues(conn, userId),
-                    countCatalogPlayers(conn)
-            );
+            try {
+                accountProgressService.syncFavoriteRosterAchievements(
+                        conn,
+                        userId,
+                        countSignedPlayersInFinishedLeagues(conn, userId),
+                        countCatalogPlayers(conn)
+                );
+            } catch (Exception ignored) {
+                // El favorito ya se guardó; no fallar por logros.
+            }
         }
     }
 
@@ -123,6 +129,7 @@ public class UserPublicProfileService {
             throw new IllegalArgumentException("Usuario no valido");
         }
         try (Connection conn = DBConnection.getConnection()) {
+            persistFantasyUnlocksFromPlayedRounds(conn, userId);
             return loadEligibleFavoritePlayers(conn, userId);
         }
     }
@@ -139,23 +146,105 @@ public class UserPublicProfileService {
             throw new IllegalArgumentException("Origen de desbloqueo no valido");
         }
         try (Connection conn = DBConnection.getConnection()) {
-            String sql = """
-                    INSERT IGNORE INTO usuario_avatar_desbloqueos (id_usuario, id_jugador, origen)
-                    VALUES (?, ?, ?)
-                    """;
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                for (Long playerId : playerIds) {
-                    if (playerId == null || playerId <= 0) {
-                        continue;
-                    }
-                    ps.setLong(1, userId);
-                    ps.setLong(2, playerId);
-                    ps.setString(3, source);
-                    ps.addBatch();
+            registerAvatarUnlocks(conn, userId, playerIds, source);
+        }
+    }
+
+    /**
+     * Desbloquea avatares Fantasy de los jugadores alineados en una jornada
+     * ya iniciada o finalizada.
+     */
+    public void unlockFantasyAvatarsForRound(Connection conn, long userId, long idJornada)
+            throws SQLException {
+        if (userId <= 0 || idJornada <= 0) {
+            return;
+        }
+        String sql = """
+                SELECT DISTINCT lj.id_jugador
+                FROM liga_participantes lp
+                INNER JOIN alineacion_jornada_participante ajp
+                  ON ajp.id_liga_participante = lp.id
+                 AND ajp.id_jornada = ?
+                INNER JOIN liga_jugadores lj ON lj.id = ajp.id_liga_jugador
+                WHERE lp.id_usuario = ?
+                """;
+        List<Long> playerIds = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idJornada);
+            ps.setLong(2, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    playerIds.add(rs.getLong("id_jugador"));
                 }
-                ps.executeBatch();
             }
         }
+        registerAvatarUnlocks(conn, userId, playerIds, "fantasy");
+    }
+
+    void registerAvatarUnlocks(
+            Connection conn,
+            long userId,
+            List<Long> playerIds,
+            String origen
+    ) throws SQLException {
+        if (playerIds == null || playerIds.isEmpty()) {
+            return;
+        }
+        String sql = """
+                INSERT IGNORE INTO usuario_avatar_desbloqueos (id_usuario, id_jugador, origen)
+                SELECT ?, j.id, ?
+                FROM jugadores j
+                WHERE j.id = ?
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (Long playerId : playerIds) {
+                if (playerId == null || playerId <= 0) {
+                    continue;
+                }
+                ps.setLong(1, userId);
+                ps.setString(2, origen);
+                ps.setLong(3, playerId);
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        }
+    }
+
+    /**
+     * Persiste desbloqueos Fantasy de jornadas ya jugadas (EN_CURSO / FINALIZADA
+     * o con partidos empezados).
+     */
+    void persistFantasyUnlocksFromPlayedRounds(Connection conn, long userId) throws SQLException {
+        Long seasonId = resolveEternoCampeonSeasonId(conn);
+        if (seasonId == null) {
+            return;
+        }
+        String sql = """
+                SELECT DISTINCT lj.id_jugador
+                FROM liga_participantes lp
+                INNER JOIN ligas l ON l.id = lp.id_liga
+                INNER JOIN liga_jugadores lj
+                  ON lj.id_liga = lp.id_liga
+                 AND lj.id_usuario_dueno = lp.id_usuario
+                INNER JOIN alineacion_jornada_participante ajp
+                  ON ajp.id_liga_participante = lp.id
+                 AND ajp.id_liga_jugador = lj.id
+                INNER JOIN jornadas jrn ON jrn.id = ajp.id_jornada
+                WHERE lp.id_usuario = ?
+                  AND l.id_temporada = ?
+                  AND"""
+                + sqlJornadaLineupFrozenOnAlias("jrn");
+        List<Long> playerIds = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            ps.setLong(2, seasonId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    playerIds.add(rs.getLong("id_jugador"));
+                }
+            }
+        }
+        registerAvatarUnlocks(conn, userId, playerIds, "fantasy");
     }
 
     public int countSignedPlayersInFinishedLeagues(Connection conn, long userId) throws SQLException {
@@ -432,36 +521,7 @@ public class UserPublicProfileService {
 
     private boolean isEligibleFavoritePlayer(Connection conn, long userId, long idJugador)
             throws SQLException {
-        if (hasAvatarUnlock(conn, userId, idJugador)) {
-            return true;
-        }
-        Long seasonId = resolveEternoCampeonSeasonId(conn);
-        if (seasonId == null) {
-            return false;
-        }
-        String sql = """
-                SELECT 1
-                FROM liga_participantes lp
-                INNER JOIN ligas l ON l.id = lp.id_liga
-                INNER JOIN liga_jugadores lj
-                  ON lj.id_liga = lp.id_liga
-                 AND lj.id_usuario_dueno = lp.id_usuario
-                INNER JOIN alineacion_jornada_participante ajp
-                  ON ajp.id_liga_participante = lp.id
-                 AND ajp.id_liga_jugador = lj.id
-                WHERE lp.id_usuario = ?
-                  AND lj.id_jugador = ?
-                  AND l.id_temporada = ?
-                LIMIT 1
-                """;
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, userId);
-            ps.setLong(2, idJugador);
-            ps.setLong(3, seasonId);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        }
+        return hasAvatarUnlock(conn, userId, idJugador);
     }
 
     private boolean hasAvatarUnlock(Connection conn, long userId, long idJugador) throws SQLException {
@@ -483,42 +543,6 @@ public class UserPublicProfileService {
     private List<EligibleFavoritePlayerResponse> loadEligibleFavoritePlayers(Connection conn, long userId)
             throws SQLException {
         Map<Long, EligibleFavoritePlayerResponse> byId = new LinkedHashMap<>();
-        Long seasonId = resolveEternoCampeonSeasonId(conn);
-        if (seasonId != null) {
-            String fantasySql = """
-                    SELECT DISTINCT j.id,
-                           COALESCE(NULLIF(TRIM(j.pila), ''), j.nombre) AS nombre,
-                           COALESCE(j.foto, '') AS foto,
-                           e.id AS id_equipo,
-                           COALESCE(e.nombre, '') AS equipo,
-                           COALESCE(e.foto, '') AS foto_equipo
-                    FROM liga_participantes lp
-                    INNER JOIN ligas l ON l.id = lp.id_liga
-                    INNER JOIN liga_jugadores lj
-                      ON lj.id_liga = lp.id_liga
-                     AND lj.id_usuario_dueno = lp.id_usuario
-                    INNER JOIN alineacion_jornada_participante ajp
-                      ON ajp.id_liga_participante = lp.id
-                     AND ajp.id_liga_jugador = lj.id
-                    INNER JOIN jugadores j ON j.id = lj.id_jugador
-                    INNER JOIN equipos e ON e.id = j.id_equipo
-                    WHERE lp.id_usuario = ?
-                      AND l.id_temporada = ?
-                      AND e.id_temporada = ?
-                    ORDER BY equipo ASC, nombre ASC
-                    """;
-            try (PreparedStatement ps = conn.prepareStatement(fantasySql)) {
-                ps.setLong(1, userId);
-                ps.setLong(2, seasonId);
-                ps.setLong(3, seasonId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        putEligibleRow(byId, rs);
-                    }
-                }
-            }
-        }
-
         String unlockSql = """
                 SELECT DISTINCT j.id,
                        COALESCE(NULLIF(TRIM(j.pila), ''), j.nombre) AS nombre,

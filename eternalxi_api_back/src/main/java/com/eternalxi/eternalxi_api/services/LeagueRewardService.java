@@ -41,19 +41,22 @@ public class LeagueRewardService {
     private final LeagueActivityService leagueActivityService;
     private final PushNotificationService pushNotificationService;
     private final AccountProgressService accountProgressService;
+    private final UserPublicProfileService userPublicProfileService;
 
     public LeagueRewardService(
             LeagueLineupService leagueLineupService,
             LeaguePlayerMarketValueService leaguePlayerMarketValueService,
             LeagueActivityService leagueActivityService,
             PushNotificationService pushNotificationService,
-            AccountProgressService accountProgressService
+            AccountProgressService accountProgressService,
+            UserPublicProfileService userPublicProfileService
     ) {
         this.leagueLineupService = leagueLineupService;
         this.leaguePlayerMarketValueService = leaguePlayerMarketValueService;
         this.leagueActivityService = leagueActivityService;
         this.pushNotificationService = pushNotificationService;
         this.accountProgressService = accountProgressService;
+        this.userPublicProfileService = userPublicProfileService;
     }
 
     /**
@@ -133,6 +136,16 @@ public class LeagueRewardService {
             );
             int xpGanada = accountProgressService.onRoundFinished(
                     conn, idLiga, idJornada, idUsuario, puntosJornada);
+            try {
+                userPublicProfileService.unlockFantasyAvatarsForRound(conn, idUsuario, idJornada);
+            } catch (Exception e) {
+                log.warn(
+                        "No se pudieron desbloquear avatares Fantasy user={} jornada={}: {}",
+                        idUsuario,
+                        idJornada,
+                        e.getMessage()
+                );
+            }
             xpByUser.put(idUsuario, xpGanada);
         }
 

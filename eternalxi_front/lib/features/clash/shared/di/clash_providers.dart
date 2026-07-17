@@ -16,7 +16,10 @@ import 'package:eternal_xi/features/clash/achievements/data/clash_achievement_ev
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_local_datasource.dart';
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_repository.dart';
 import 'package:eternal_xi/features/clash/achievements/data/clash_achievements_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/clash_avatar_unlock_sync.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
+import 'package:eternal_xi/data/services/user_api_service.dart';
+import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_evolution_material_inventory_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_evolution_materials_local_datasource.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_exp_material_inventory_storage.dart';
@@ -354,6 +357,12 @@ List<SingleChildWidget> buildClashProviders(ClashProviderDependencies deps) {
         evolutionMaterialsRepository: context
             .read<ClashEvolutionMaterialsRepository>(),
         progressEventHub: context.read<ClashMissionProgressEventHub>(),
+        avatarUnlockSync: ClashAvatarUnlockSync(
+          userApi: context.read<UserApiService>(),
+          cardsRepository: context.read<ClashCardsRepository>(),
+          currentUserId: () =>
+              context.read<AuthController>().currentUser?.id ?? 0,
+        ),
       ),
     ),
     ChangeNotifierProvider<ClashCardsController>(

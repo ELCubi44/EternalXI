@@ -156,12 +156,12 @@ class ClashCardTile extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  top: 3,
-                  right: 3,
+                  top: 2,
+                  right: 2,
                   child: Image.asset(
                     ClashEpicAssets.positionIcon(entry.card.position),
-                    width: 20,
-                    height: 20,
+                    width: 22,
+                    height: 22,
                     filterQuality: FilterQuality.medium,
                     errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                   ),

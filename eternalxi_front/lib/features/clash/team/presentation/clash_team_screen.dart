@@ -25,7 +25,7 @@ class ClashTeamScreen extends StatelessWidget {
             color: context.xiTextPrimary,
             fontWeight: FontWeight.w800,
             fontSize: 17,
-            height: 1.15,
+            height: 1.0,
           ),
           onTap: () => context.push(AppRoutes.clashCards),
         ),
@@ -34,7 +34,7 @@ class ClashTeamScreen extends StatelessWidget {
   }
 }
 
-/// Icono un poco mayor que la barra; la barra empieza bajo el icono.
+/// Icono solapado a la izquierda; texto centrado verticalmente en la barra.
 class _TeamSectionBar extends StatelessWidget {
   const _TeamSectionBar({
     required this.iconAsset,
@@ -48,19 +48,20 @@ class _TeamSectionBar extends StatelessWidget {
   final VoidCallback onTap;
   final TextStyle? titleStyle;
 
-  static const double _iconSize = 58;
-  static const double _barHeight = 48;
-  static const double _iconOverlap = 22;
+  static const double _iconSize = 56;
+  static const double _barHeight = 52;
+  static const double _iconOverlap = 20;
 
   @override
   Widget build(BuildContext context) {
+    final rowHeight = _iconSize > _barHeight ? _iconSize : _barHeight;
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: SizedBox(
-          height: _iconSize + 4,
+          height: rowHeight,
           child: Stack(
             clipBehavior: Clip.none,
             alignment: Alignment.centerLeft,
@@ -68,7 +69,7 @@ class _TeamSectionBar extends StatelessWidget {
               Positioned(
                 left: _iconOverlap,
                 right: 0,
-                top: (_iconSize + 4 - _barHeight) / 2,
+                top: (rowHeight - _barHeight) / 2,
                 height: _barHeight,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
@@ -86,7 +87,10 @@ class _TeamSectionBar extends StatelessWidget {
                     ),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.only(left: _iconSize - _iconOverlap + 8),
+                    padding: EdgeInsets.only(
+                      left: _iconSize - _iconOverlap + 10,
+                      right: 12,
+                    ),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -101,7 +105,7 @@ class _TeamSectionBar extends StatelessWidget {
               ),
               Positioned(
                 left: 0,
-                top: 2,
+                top: (rowHeight - _iconSize) / 2,
                 child: Container(
                   width: _iconSize,
                   height: _iconSize,

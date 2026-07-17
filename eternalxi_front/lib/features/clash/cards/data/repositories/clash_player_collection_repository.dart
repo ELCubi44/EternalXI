@@ -1,3 +1,4 @@
+import 'package:eternal_xi/features/clash/cards/data/clash_avatar_unlock_sync.dart';
 import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
 import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_entry.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
@@ -37,6 +38,7 @@ class ClashPlayerCollectionRepository {
     ClashMissionProgressEventHub? progressEventHub,
     ClashDailyMissionEventSink? missionEventSink,
     ClashAchievementEventSink? achievementEventSink,
+    ClashAvatarUnlockSync? avatarUnlockSync,
   }) : _storage = storage,
        _cardsRepository = cardsRepository,
        _expMaterialsRepository = expMaterialsRepository,
@@ -44,10 +46,12 @@ class ClashPlayerCollectionRepository {
        _evolutionMaterialsRepository = evolutionMaterialsRepository,
        _missionEventSink = missionEventSink,
        _achievementEventSink = achievementEventSink,
-       _progressEventHub = progressEventHub;
+       _progressEventHub = progressEventHub,
+       _avatarUnlockSync = avatarUnlockSync;
 
   final ClashPlayerCollectionStorageBackend _storage;
   final ClashCardsRepository _cardsRepository;
+  final ClashAvatarUnlockSync? _avatarUnlockSync;
   final ClashExpMaterialsRepository _expMaterialsRepository;
   final ClashTechniqueBooksRepository _techniqueBooksRepository;
   final ClashEvolutionMaterialsRepository _evolutionMaterialsRepository;
@@ -129,6 +133,7 @@ class ClashPlayerCollectionRepository {
         snapshot.copyWith(ownedCardIds: owned, cardProgress: progress),
       );
       await _syncCollectCardsAchievement();
+      await _avatarUnlockSync?.syncOwnedCardIds(cardIds);
     }
   }
 
@@ -148,6 +153,7 @@ class ClashPlayerCollectionRepository {
         _loadSnapshot().copyWith(ownedCardIds: owned, cardProgress: progress),
       );
       await _syncCollectCardsAchievement();
+      await _avatarUnlockSync?.syncOwnedCardIds(newlyGranted);
     }
     return newlyGranted;
   }
@@ -240,6 +246,7 @@ class ClashPlayerCollectionRepository {
         snapshot.copyWith(ownedCardIds: owned, cardProgress: progressMap),
       );
       await _syncCollectCardsAchievement();
+      await _avatarUnlockSync?.syncOwnedCardIds([cardId]);
       return ClashGachaGrantResult(
         cardId: cardId,
         grantedRarity: rarity,
