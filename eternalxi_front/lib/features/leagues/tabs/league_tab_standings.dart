@@ -1,5 +1,7 @@
 import 'package:eternal_xi/app/localization/league_l10n.dart';
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/theme/app_colors.dart';
+import 'package:eternal_xi/app/theme/xi_typography.dart';
 import 'package:eternal_xi/data/models/league_calendar_models.dart';
 import 'package:eternal_xi/data/models/league_round_standing_row.dart';
 import 'package:eternal_xi/data/models/league_standing_row.dart';
@@ -532,6 +534,8 @@ class _StandingsViewPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    // scheme.surface es transparente en Fantasy (fondo estadio); el sheet debe ser opaco.
+    const sheetBg = XiColors.surfaceElevated;
 
     return InkWell(
       onTap: !enabled
@@ -539,52 +543,81 @@ class _StandingsViewPicker extends StatelessWidget {
           : () async {
               await showModalBottomSheet<void>(
                 context: context,
-                backgroundColor: scheme.surface,
+                backgroundColor: sheetBg,
                 isScrollControlled: true,
+                useSafeArea: true,
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
                 ),
                 builder: (sheetContext) {
-                  return SafeArea(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                          child: Text(
-                            label,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
+                  final optionStyle = XiTypography.lumiare(
+                    fontSize: 16,
+                    height: 1.35,
+                    letterSpacing: 0.2,
+                    color: XiColors.warmWhite,
+                  );
+                  return Material(
+                    color: sheetBg,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(18),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: SafeArea(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                            child: Text(
+                              label,
+                              style: XiTypography.lumiare(
+                                fontSize: 18,
+                                letterSpacing: 0.3,
+                                color: XiColors.warmWhite,
+                              ),
                             ),
                           ),
-                        ),
-                        Flexible(
-                          child: ListView(
-                            shrinkWrap: true,
-                            children: [
-                              for (final option in options)
-                                ListTile(
-                                  selected: option.$1 == selectedId,
-                                  selectedTileColor: scheme.primaryContainer
-                                      .withValues(alpha: 0.45),
-                                  title: Text(option.$2),
-                                  trailing: option.$1 == selectedId
-                                      ? Icon(
-                                          Icons.check_rounded,
-                                          color: scheme.primary,
-                                        )
-                                      : null,
-                                  onTap: () {
-                                    Navigator.of(sheetContext).pop();
-                                    onSelected(option.$1);
-                                  },
-                                ),
-                            ],
+                          Flexible(
+                            child: ListView(
+                              shrinkWrap: true,
+                              children: [
+                                for (final option in options)
+                                  Builder(
+                                    builder: (_) {
+                                      final selected =
+                                          option.$1 == selectedId;
+                                      return ListTile(
+                                        selected: selected,
+                                        selectedTileColor: XiColors.royalBlue
+                                            .withValues(alpha: 0.28),
+                                        title: Text(
+                                          option.$2,
+                                          style: optionStyle.copyWith(
+                                            color: selected
+                                                ? XiColors.iceBlue
+                                                : XiColors.warmWhite,
+                                          ),
+                                        ),
+                                        trailing: selected
+                                            ? const Icon(
+                                                Icons.check_rounded,
+                                                color: XiColors.iceBlue,
+                                              )
+                                            : null,
+                                        onTap: () {
+                                          Navigator.of(sheetContext).pop();
+                                          onSelected(option.$1);
+                                        },
+                                      );
+                                    },
+                                  ),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                      ],
+                          const SizedBox(height: 8),
+                        ],
+                      ),
                     ),
                   );
                 },
