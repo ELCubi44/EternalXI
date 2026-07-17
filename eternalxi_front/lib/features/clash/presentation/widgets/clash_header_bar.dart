@@ -178,10 +178,10 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             ),
                           ),
                         ),
-                        // XP: misma forma chaflanada; más estrecha a los lados.
+                        // XP: misma forma chaflanada; un pelín a la izquierda.
                         Positioned(
-                          left: w * 0.395,
-                          right: w * 0.075,
+                          left: w * 0.38,
+                          right: w * 0.09,
                           top: h * 0.46,
                           height: h * 0.135,
                           child: Center(
