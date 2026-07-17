@@ -24,4 +24,12 @@ enum ClashTechniqueType {
     ClashTechniqueType.dribble => 'Regate',
     ClashTechniqueType.shot => 'Tiro',
   };
+
+  /// Emoticono corto para identificar el tipo de un vistazo.
+  String get emoji => switch (this) {
+    ClashTechniqueType.save => '🧤',
+    ClashTechniqueType.defense => '🛡️',
+    ClashTechniqueType.dribble => '🌀',
+    ClashTechniqueType.shot => '⚽',
+  };
 }

@@ -19,13 +19,33 @@ class AccountProgressController extends ChangeNotifier {
   String? errorMessage;
   bool isFromCache = false;
   bool isPlayingCelebration = false;
+  final Set<int> _locallySeenEventIds = <int>{};
 
-  bool get hasPendingCelebration =>
-      progress != null && progress!.eventosPendientes.isNotEmpty;
+  bool get hasPendingCelebration {
+    final pending = progress?.eventosPendientes;
+    if (pending == null || pending.isEmpty) {
+      return false;
+    }
+    return pending.any((e) => !_locallySeenEventIds.contains(e.id));
+  }
+
+  List<UserProgressEvent> get pendingUnseenEvents {
+    final pending = progress?.eventosPendientes ?? const [];
+    return pending
+        .where((e) => !_locallySeenEventIds.contains(e.id))
+        .toList(growable: false);
+  }
 
   void _setLoading(bool value) {
     isLoading = value;
     notifyListeners();
+  }
+
+  Future<void> _hydrateSeenIds(int userId) async {
+    final stored = await _secureStorageService.loadSeenProgressEventIds(userId);
+    _locallySeenEventIds
+      ..clear()
+      ..addAll(stored);
   }
 
   Future<UserProgressResponse?> loadProgress(int userId) async {
@@ -33,7 +53,9 @@ class AccountProgressController extends ChangeNotifier {
     errorMessage = null;
     isFromCache = false;
     try {
+      await _hydrateSeenIds(userId);
       progress = await _progressApiService.getProgress(userId);
+      progress = _withoutLocallySeen(progress!);
       await _secureStorageService.saveProgressCache(
         userId,
         progress!.toJsonString(),
@@ -46,7 +68,8 @@ class AccountProgressController extends ChangeNotifier {
           ? UserProgressResponse.fromJsonString(cachedRaw)
           : null;
       if (cached != null) {
-        progress = cached;
+        await _hydrateSeenIds(userId);
+        progress = _withoutLocallySeen(cached);
         isFromCache = true;
         errorMessage = null;
         notifyListeners();
@@ -60,15 +83,51 @@ class AccountProgressController extends ChangeNotifier {
     }
   }
 
+  UserProgressResponse _withoutLocallySeen(UserProgressResponse source) {
+    if (_locallySeenEventIds.isEmpty) {
+      return source;
+    }
+    final filtered = source.eventosPendientes
+        .where((e) => !_locallySeenEventIds.contains(e.id))
+        .toList(growable: false);
+    if (filtered.length == source.eventosPendientes.length) {
+      return source;
+    }
+    return source.copyWith(eventosPendientes: filtered);
+  }
+
+  /// Marca eventos como vistos en servidor y, si falla, igual en local/caché
+  /// para no repetir la animación al volver a entrar.
   Future<void> markEventsSeen(int userId, List<int> eventIds) async {
     if (eventIds.isEmpty) {
       return;
     }
+
+    _locallySeenEventIds.addAll(eventIds);
+    await _secureStorageService.saveSeenProgressEventIds(
+      userId,
+      _locallySeenEventIds,
+    );
+
+    if (progress != null) {
+      progress = progress!.copyWith(
+        eventosPendientes: progress!.eventosPendientes
+            .where((e) => !eventIds.contains(e.id))
+            .toList(growable: false),
+      );
+      await _secureStorageService.saveProgressCache(
+        userId,
+        progress!.toJsonString(),
+      );
+      notifyListeners();
+    }
+
     try {
       progress = await _progressApiService.markEventsSeen(
         userId: userId,
         eventIds: eventIds,
       );
+      progress = _withoutLocallySeen(progress!);
       isFromCache = false;
       await _secureStorageService.saveProgressCache(
         userId,
@@ -76,7 +135,7 @@ class AccountProgressController extends ChangeNotifier {
       );
       notifyListeners();
     } catch (_) {
-      // No bloquear la UI si falla el ack.
+      // Ya quedaron marcados en local: no volver a mostrar.
     }
   }
 

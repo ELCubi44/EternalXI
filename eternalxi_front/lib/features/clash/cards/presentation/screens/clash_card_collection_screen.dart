@@ -65,6 +65,27 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
     }
   }
 
+  void _showCollectionInfo() {
+    final l10n = context.l10n;
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(l10n.clashCollectionInfoTitle),
+          content: SingleChildScrollView(
+            child: Text(l10n.clashCollectionInfoBody),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(l10n.close),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -74,7 +95,7 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+          padding: const EdgeInsets.fromLTRB(8, 8, 4, 0),
           child: Row(
             children: [
               IconButton(
@@ -140,12 +161,18 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
                         ),
                       ),
               ),
-              if (!_searchOpen)
+              if (!_searchOpen) ...[
                 IconButton(
                   tooltip: l10n.clashSearchHint,
                   onPressed: _openSearch,
                   icon: const Icon(Icons.search_rounded),
                 ),
+                IconButton(
+                  tooltip: l10n.clashCollectionInfoTitle,
+                  onPressed: _showCollectionInfo,
+                  icon: const Icon(Icons.info_outline_rounded),
+                ),
+              ],
             ],
           ),
         ),
@@ -172,7 +199,7 @@ class _FiltersBar extends StatelessWidget {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
       child: Row(
         children: [
           _FilterMenu<ClashRarity?>(
@@ -319,7 +346,7 @@ class _CollectionBody extends StatelessWidget {
           );
         }
         return GridView.builder(
-          padding: const EdgeInsets.fromLTRB(10, 8, 10, 16),
+          padding: const EdgeInsets.fromLTRB(10, 12, 10, 16),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 5,
             mainAxisSpacing: 8,

@@ -53,6 +53,29 @@ class UserProgressResponse {
 
   String toJsonString() => jsonEncode(toJson());
 
+  UserProgressResponse copyWith({
+    int? idUsuario,
+    int? nivel,
+    int? experienciaTotal,
+    int? xpEnNivel,
+    int? xpParaSiguienteNivel,
+    String? rango,
+    List<UserAchievement>? logros,
+    List<UserProgressEvent>? eventosPendientes,
+  }) {
+    return UserProgressResponse(
+      idUsuario: idUsuario ?? this.idUsuario,
+      nivel: nivel ?? this.nivel,
+      experienciaTotal: experienciaTotal ?? this.experienciaTotal,
+      xpEnNivel: xpEnNivel ?? this.xpEnNivel,
+      xpParaSiguienteNivel:
+          xpParaSiguienteNivel ?? this.xpParaSiguienteNivel,
+      rango: rango ?? this.rango,
+      logros: logros ?? this.logros,
+      eventosPendientes: eventosPendientes ?? this.eventosPendientes,
+    );
+  }
+
   static UserProgressResponse? fromJsonString(String raw) {
     try {
       return UserProgressResponse.fromJson(

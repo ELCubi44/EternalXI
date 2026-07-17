@@ -255,11 +255,13 @@ class _PortraitLayer extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       fit: StackFit.expand,
       children: [
-        // Retrato a pantalla completa del marco: la cabeza queda cerca de rareza/PWR.
+        // Retrato: el tope del arte empieza bajo rareza/PWR (hueco sobre la cabeza).
         Positioned.fill(
           child: Padding(
             padding: EdgeInsets.only(
-              top: detailHero ? 4 : (compact ? 36 : 48),
+              top: detailHero
+                  ? (top + badgeSize + 6)
+                  : (compact ? 36 : 48),
               left: compact ? 12 : (detailHero ? 4 : 16),
               right: compact ? 12 : (detailHero ? 4 : 16),
               bottom: compact ? 56 : 0,
@@ -267,7 +269,7 @@ class _PortraitLayer extends StatelessWidget {
             child: ClipRect(
               child: Align(
                 alignment: detailHero
-                    ? const Alignment(0, -0.55)
+                    ? Alignment.topCenter
                     : Alignment.bottomCenter,
                 child: _PlayerPortrait(entry: entry, compact: compact),
               ),
@@ -544,43 +546,48 @@ class _StatsPanel extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                entry.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  color: XiColors.warmWhite,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                card.position.displayNameEs,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: XiColors.warmWhite.withValues(
-                                    alpha: 0.72,
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                card.style.displayNameEs,
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: XiColors.classicGold,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
+                          flex: 5,
+                          child: Text(
+                            entry.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              color: XiColors.warmWhite,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 17,
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 6),
-                        SizedBox(
-                          width: 116,
+                        const SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              card.position.displayNameEs,
+                              maxLines: 1,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: XiColors.warmWhite.withValues(
+                                  alpha: 0.72,
+                                ),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              card.style.displayNameEs,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: XiColors.classicGold,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
                           child: Column(
                             children: [
                               _EpicStatRow(
@@ -607,6 +614,13 @@ class _StatsPanel extends StatelessWidget {
                                 value: stats.dribble,
                                 segment: _statSegment,
                               ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            children: [
                               _EpicStatRow(
                                 kind: ClashEpicStatKind.tir,
                                 label: 'TIR',

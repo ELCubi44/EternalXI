@@ -1,14 +1,15 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
+import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_card_progress.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_super_technique.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_inventory_entry.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_technique_level.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_progress_resolver.dart';
-import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_detail_shared.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_technique_upgrade_dialog.dart';
 import 'package:flutter/material.dart';
 
-/// Lista simple de supertécnicas; Mejorar abre modal de confirmación.
+/// Fila compacta de supertécnica: emoticono, nombre, potencia, PT, nivel, Mejorar.
 class ClashCardTechniqueSection extends StatelessWidget {
   const ClashCardTechniqueSection({
     required this.baseTechnique,
@@ -88,71 +89,76 @@ class ClashCardTechniqueSection extends StatelessWidget {
       progress: progress,
     );
     final atMax = resolved.level.isMax;
-    final book = _pickBook();
-    final need = book?.book.booksRequired ?? 0;
-    final have = book?.quantity ?? 0;
-    final missing = (need - have).clamp(0, need);
+    final showLevelBadge = resolved.level != ClashTechniqueLevel.normal;
 
-    return ClashCardDetailSectionCard(
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            resolved.name,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 8),
-          ClashCardDetailMetaRow(
-            label: l10n.clashTechniqueLevel,
-            value: resolved.level.displayLabel,
-          ),
-          ClashCardDetailMetaRow(
-            label: l10n.clashTechniquePower,
-            value: '${resolved.effectivePower}',
-          ),
-          ClashCardDetailMetaRow(
-            label: l10n.clashTechniquePtCost,
-            value: '${resolved.ptCost}',
-          ),
-          if (!atMax && book != null) ...[
-            const SizedBox(height: 10),
-            Text(
-              l10n.clashTechniqueUpgradeRequirements,
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: context.xiTextSecondary,
+    return Material(
+      color: context.xiChipBackground.withValues(alpha: 0.35),
+      borderRadius: BorderRadius.circular(14),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 8, 8, 8),
+        child: Row(
+          children: [
+            Text(resolved.type.emoji, style: const TextStyle(fontSize: 22)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                resolved.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
-            const SizedBox(height: 8),
-            ClashTechniqueBookRequirementTile(
-              bookEntry: book,
-              need: need,
-              have: have,
-              missing: missing,
-              compact: true,
+            const SizedBox(width: 6),
+            Text(
+              '${resolved.effectivePower}',
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: theme.colorScheme.primary,
+              ),
             ),
-          ],
-          const SizedBox(height: 12),
-          Align(
-            alignment: Alignment.centerRight,
-            child: FilledButton(
+            const SizedBox(width: 8),
+            Text(
+              '${resolved.ptCost} PT',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: context.xiTextSecondary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            if (showLevelBadge) ...[
+              const SizedBox(width: 8),
+              Container(
+                width: 28,
+                height: 28,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: XiColors.classicGold.withValues(alpha: 0.2),
+                  border: Border.all(color: XiColors.classicGold, width: 1.4),
+                ),
+                child: Text(
+                  resolved.level.displayLabel,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: XiColors.classicGold,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(width: 6),
+            FilledButton(
               onPressed: atMax || isBusy ? null : () => _openUpgrade(context),
+              style: FilledButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                minimumSize: const Size(0, 34),
+              ),
               child: Text(l10n.clashActionUpgrade),
             ),
-          ),
-          if (atMax) ...[
-            const SizedBox(height: 6),
-            Text(
-              l10n.clashCardMaxLevel,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: context.xiTextSecondary,
-              ),
-            ),
           ],
-        ],
+        ),
       ),
     );
   }

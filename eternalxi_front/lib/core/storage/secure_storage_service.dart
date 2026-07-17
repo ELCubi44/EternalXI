@@ -13,6 +13,8 @@ class SecureStorageService {
   static const _themeModeKey = 'themeMode';
   static const _languageCodeKey = 'languageCode';
   static String _progressCacheKey(int userId) => 'progressCache_$userId';
+  static String _seenProgressEventsKey(int userId) =>
+      'seenProgressEvents_$userId';
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
@@ -98,5 +100,22 @@ class SecureStorageService {
 
   Future<String?> loadProgressCache(int userId) {
     return _storage.read(key: _progressCacheKey(userId));
+  }
+
+  Future<void> saveSeenProgressEventIds(int userId, Set<int> ids) {
+    final raw = ids.map((e) => e.toString()).join(',');
+    return _storage.write(key: _seenProgressEventsKey(userId), value: raw);
+  }
+
+  Future<Set<int>> loadSeenProgressEventIds(int userId) async {
+    final raw = await _storage.read(key: _seenProgressEventsKey(userId));
+    if (raw == null || raw.trim().isEmpty) {
+      return <int>{};
+    }
+    return raw
+        .split(',')
+        .map((e) => int.tryParse(e.trim()))
+        .whereType<int>()
+        .toSet();
   }
 }

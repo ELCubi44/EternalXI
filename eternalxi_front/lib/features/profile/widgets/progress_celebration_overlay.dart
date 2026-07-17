@@ -66,7 +66,8 @@ class _ProgressCelebrationOverlayState extends State<ProgressCelebrationOverlay>
 
     final progressCtrl = context.read<AccountProgressController>();
     final progress = progressCtrl.progress;
-    if (progress == null || progress.eventosPendientes.isEmpty) return;
+    final pendingEvents = progressCtrl.pendingUnseenEvents;
+    if (progress == null || pendingEvents.isEmpty) return;
 
     _queueRunning = true;
     progressCtrl.setCelebrating(true);
@@ -76,8 +77,8 @@ class _ProgressCelebrationOverlayState extends State<ProgressCelebrationOverlay>
     var runningLevel = progress.nivel;
     var runningRank = progress.rango;
 
-    for (var i = progress.eventosPendientes.length - 1; i >= 0; i--) {
-      final event = progress.eventosPendientes[i];
+    for (var i = pendingEvents.length - 1; i >= 0; i--) {
+      final event = pendingEvents[i];
       if (event.tipo == 'LEVEL_UP') {
         runningLevel = event.nivelAnterior ?? runningLevel;
         runningRank = _rankForLevel(runningLevel);
@@ -103,7 +104,7 @@ class _ProgressCelebrationOverlayState extends State<ProgressCelebrationOverlay>
     final seenIds = <int>[];
     var prevRatio = _barProgress;
 
-    for (final event in progress.eventosPendientes) {
+    for (final event in pendingEvents) {
       if (!mounted) break;
 
       final chip = _labelForEvent(event, locale);
@@ -168,6 +169,10 @@ class _ProgressCelebrationOverlayState extends State<ProgressCelebrationOverlay>
 
     if (seenIds.isNotEmpty) {
       await progressCtrl.markEventsSeen(userId, seenIds);
+      if (!mounted) {
+        _queueRunning = false;
+        return;
+      }
       final auth = context.read<AuthController>();
       final user = auth.currentUser;
       if (user != null) {
@@ -198,7 +203,10 @@ class _ProgressCelebrationOverlayState extends State<ProgressCelebrationOverlay>
     );
     setState(() => _floatingLabels.add(label));
     controller.forward().whenComplete(() {
-      if (!mounted) return;
+      if (!mounted) {
+        controller.dispose();
+        return;
+      }
       setState(() => _floatingLabels.remove(label));
       controller.dispose();
     });

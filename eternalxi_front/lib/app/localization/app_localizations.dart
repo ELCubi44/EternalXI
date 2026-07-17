@@ -642,6 +642,11 @@ class AppLocalizations {
       'clashCollectionGoSummon': 'Ir a Invocar',
       'clashCollectionClearFilters': 'Limpiar filtros',
       'clashCollectionLoadError': 'No se pudo cargar la colección.',
+      'clashCollectionInfoTitle': 'Listado de personajes',
+      'clashCollectionInfoBody':
+          'Desde aquí puedes buscar y filtrar tus cartas, y entrar en cada una para subir nivel, mejorar técnicas, árbol y evolución.\n\n'
+          'Si obtienes un personaje repetido, te da almas para potenciar el que ya tienes.\n\n'
+          'Puedes tener el mismo jugador en varias cartas: todos tienen línea N → R → SR (solo una carta en esa cadena, que mejora de rareza). Las LR y XI son únicas y no suben de categoría entre ellas.',
       'clashCardNotFound': 'Carta no encontrada.',
       'clashCardTeam': 'Equipo',
       'clashCardPosition': 'Posición',
@@ -1827,6 +1832,11 @@ class AppLocalizations {
       'clashCollectionGoSummon': 'Go to Summon',
       'clashCollectionClearFilters': 'Clear filters',
       'clashCollectionLoadError': 'Could not load the collection.',
+      'clashCollectionInfoTitle': 'Character list',
+      'clashCollectionInfoBody':
+          'From here you can search and filter your cards, and open each one to level up, upgrade techniques, skill tree and evolution.\n\n'
+          'Duplicate characters give you souls to power up the copy you already own.\n\n'
+          'You can own the same player on different cards: everyone has an N → R → SR line (only one card in that chain, which upgrades rarity). LR and XI are unique and do not upgrade category between them.',
       'clashCardNotFound': 'Card not found.',
       'clashCardTeam': 'Team',
       'clashCardPosition': 'Position',
@@ -3311,6 +3321,8 @@ class AppLocalizations {
   String get clashCollectionGoSummon => _t('clashCollectionGoSummon');
   String get clashCollectionClearFilters => _t('clashCollectionClearFilters');
   String get clashCollectionLoadError => _t('clashCollectionLoadError');
+  String get clashCollectionInfoTitle => _t('clashCollectionInfoTitle');
+  String get clashCollectionInfoBody => _t('clashCollectionInfoBody');
   String get clashCardNotFound => _t('clashCardNotFound');
   String get clashCardTeam => _t('clashCardTeam');
   String get clashCardPosition => _t('clashCardPosition');
