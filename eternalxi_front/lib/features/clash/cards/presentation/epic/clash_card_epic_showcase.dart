@@ -270,7 +270,7 @@ class _PortraitLayer extends StatelessWidget {
                     ? const Alignment(0, -0.35)
                     : Alignment.bottomCenter,
                 child: Transform.scale(
-                  scale: detailHero ? 1.12 : 1.0,
+                  scale: detailHero ? 1.02 : 1.0,
                   alignment: Alignment.topCenter,
                   child: _PlayerPortrait(entry: entry, compact: compact),
                 ),
