@@ -147,16 +147,17 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                           height: h * 0.27,
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: w * 0.02),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
+                                Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.baseline,
+                                  textBaseline: TextBaseline.alphabetic,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
                                         displayName,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -171,36 +172,37 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                                           height: 1.0,
                                         ),
                                       ),
-                                      if (rango.isNotEmpty) ...[
-                                        SizedBox(height: h * 0.025),
-                                        Text(
-                                          rango,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: theme.textTheme.labelSmall
-                                              ?.copyWith(
-                                            color: XiColors.warmWhite
-                                                .withValues(alpha: 0.8),
-                                            fontSize: (h * 0.055).clamp(
-                                              8.5,
-                                              10.0,
-                                            ),
-                                            height: 1.0,
-                                          ),
+                                    ),
+                                    Text(
+                                      'Nv. $nivel',
+                                      style: theme.textTheme.labelMedium
+                                          ?.copyWith(
+                                        color: XiColors.classicGold,
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: (h * 0.078).clamp(
+                                          11.0,
+                                          12.5,
                                         ),
-                                      ],
-                                    ],
-                                  ),
+                                        height: 1.0,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  'Nv. $nivel',
-                                  style: theme.textTheme.labelMedium?.copyWith(
-                                    color: XiColors.classicGold,
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: (h * 0.078).clamp(11.0, 12.5),
-                                    height: 1.0,
+                                if (rango.isNotEmpty) ...[
+                                  SizedBox(height: h * 0.025),
+                                  Text(
+                                    rango,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: XiColors.warmWhite.withValues(
+                                        alpha: 0.8,
+                                      ),
+                                      fontSize: (h * 0.055).clamp(8.5, 10.0),
+                                      height: 1.0,
+                                    ),
                                   ),
-                                ),
+                                ],
                               ],
                             ),
                           ),
