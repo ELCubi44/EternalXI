@@ -679,6 +679,7 @@ class AppLocalizations {
       'clashTechniqueLevel': 'Nivel',
       'clashTechniqueUpgradeTitle': 'Mejorar técnica',
       'clashTechniqueBookEffect': '+{steps} nivel',
+      'clashTechniqueUpgradeNeed': 'Necesitas {qty}',
       'clashTechniqueBookUse': 'Usar',
       'clashTechniqueLevelUpSnack': '{name}: {from} → {to}',
       'clashActionUpgrade': 'Mejorar',
@@ -1862,6 +1863,7 @@ class AppLocalizations {
       'clashTechniqueLevel': 'Level',
       'clashTechniqueUpgradeTitle': 'Upgrade technique',
       'clashTechniqueBookEffect': '+{steps} level',
+      'clashTechniqueUpgradeNeed': 'Need {qty}',
       'clashTechniqueBookUse': 'Use',
       'clashTechniqueLevelUpSnack': '{name}: {from} → {to}',
       'clashActionUpgrade': 'Upgrade',
@@ -3352,6 +3354,8 @@ class AppLocalizations {
   String get clashTechniqueUpgradeTitle => _t('clashTechniqueUpgradeTitle');
   String clashTechniqueBookEffect(int steps) =>
       _t('clashTechniqueBookEffect').replaceAll('{steps}', '$steps');
+  String clashTechniqueUpgradeNeed(int qty) =>
+      _t('clashTechniqueUpgradeNeed').replaceAll('{qty}', '$qty');
   String get clashTechniqueBookUse => _t('clashTechniqueBookUse');
   String clashTechniqueLevelUpSnack(String name, String from, String to) =>
       _t('clashTechniqueLevelUpSnack')

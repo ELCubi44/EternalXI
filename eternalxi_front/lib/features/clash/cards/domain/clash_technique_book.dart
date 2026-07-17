@@ -1,13 +1,13 @@
 import 'package:eternal_xi/features/clash/cards/domain/clash_json_helpers.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_type.dart';
 
-/// Libro consumible que sube el nivel de una supertécnica (Fase 19).
+/// Libro consumible: hace falta [booksRequired] unidades para +1 nivel.
 class ClashTechniqueBook {
   const ClashTechniqueBook({
     required this.id,
     required this.name,
     required this.description,
-    required this.levelUpSteps,
+    required this.booksRequired,
     this.compatibleType,
     this.rarity,
   });
@@ -15,17 +15,20 @@ class ClashTechniqueBook {
   final String id;
   final String name;
   final String description;
-  final int levelUpSteps;
+  final int booksRequired;
   final ClashTechniqueType? compatibleType;
   final String? rarity;
 
   factory ClashTechniqueBook.fromJson(Map<String, dynamic> json) {
     final typeRaw = clashOptionalString(json['compatibleType']);
+    final required = clashOptionalInt(json['booksRequired']) ??
+        clashOptionalInt(json['levelUpSteps']) ??
+        1;
     return ClashTechniqueBook(
       id: clashRequireString(json['id'], 'id'),
       name: clashRequireString(json['name'], 'name'),
       description: clashRequireString(json['description'], 'description'),
-      levelUpSteps: clashRequireInt(json['levelUpSteps'], 'levelUpSteps'),
+      booksRequired: required < 1 ? 1 : required,
       compatibleType: typeRaw == null
           ? null
           : ClashTechniqueType.fromJson(typeRaw),
@@ -37,7 +40,7 @@ class ClashTechniqueBook {
     'id': id,
     'name': name,
     'description': description,
-    'levelUpSteps': levelUpSteps,
+    'booksRequired': booksRequired,
     if (compatibleType != null) 'compatibleType': compatibleType!.toJson(),
     if (rarity != null) 'rarity': rarity,
   };

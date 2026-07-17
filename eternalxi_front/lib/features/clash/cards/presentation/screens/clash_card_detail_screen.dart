@@ -467,13 +467,45 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
           height: baseCardHeight,
           child: IgnorePointer(
             ignoring: _detailsOpen,
-            child: Transform.scale(
-              scale: cardScale,
-              alignment: Alignment.topCenter,
-              child: ClashCardEpicShowcase(
-                entry: entry,
-                detailHero: true,
-                height: baseCardHeight,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: _detailsOpen ? 56 : 14,
+                vertical: _detailsOpen ? 4 : 0,
+              ),
+              child: Transform.scale(
+                scale: cardScale,
+                alignment: Alignment.topCenter,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: XiColors.classicGold,
+                      width: _detailsOpen ? 2.8 : 2.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: XiColors.classicGold.withValues(
+                          alpha: _detailsOpen ? 0.35 : 0.22,
+                        ),
+                        blurRadius: _detailsOpen ? 16 : 10,
+                        spreadRadius: 0.5,
+                      ),
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.35),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(17.5),
+                    child: ClashCardEpicShowcase(
+                      entry: entry,
+                      detailHero: true,
+                      height: baseCardHeight,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

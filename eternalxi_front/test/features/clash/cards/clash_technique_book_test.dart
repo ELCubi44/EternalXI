@@ -139,7 +139,7 @@ void main() {
         clashTestTechniqueBooksJson,
       );
       expect(parsed, hasLength(3));
-      expect(parsed.first.levelUpSteps, 1);
+      expect(parsed.first.booksRequired, 1);
     });
   });
 
@@ -174,17 +174,20 @@ void main() {
       expect(result.newLevel, ClashTechniqueLevel.i);
     });
 
-    test('usar avanzado sube dos pasos', () async {
+    test('usar avanzado gasta 2 y sube un solo nivel', () async {
       final setup = await _setup();
+      await setup.books.grantBooks({'advanced-technique-book': 2});
       final result = await setup.collection.useTechniqueBookOnCard(
         cardId: _card.id,
         techniqueId: _technique.id,
         bookId: 'advanced-technique-book',
       );
-      expect(result.newLevel, ClashTechniqueLevel.v);
+      expect(result.succeeded, isTrue);
+      expect(result.quantityUsed, 2);
+      expect(result.newLevel, ClashTechniqueLevel.i);
     });
 
-    test('maestro no supera XI', () async {
+    test('maestro sube un nivel y puede llegar a XI', () async {
       final storage = InMemoryClashPlayerCollectionBackend();
       await storage.writeSnapshot(
         ClashPlayerCollectionSnapshot(
@@ -194,13 +197,13 @@ void main() {
               cardId: _card.id,
               currentLevel: 1,
               currentExperience: 0,
-              techniqueLevels: {_technique.id: ClashTechniqueLevel.v},
+              techniqueLevels: {_technique.id: ClashTechniqueLevel.x},
             ),
           },
         ),
       );
       final booksRepo = createTestTechniqueBooksRepository();
-      await booksRepo.grantBooks({'master-technique-book': 1});
+      await booksRepo.grantBooks({'master-technique-book': 3});
       final collectionRepo = createTestCollectionRepository(
         cardsRepository: ClashCardsRepository(_FakeCardsDataSource()),
         storage: storage,
@@ -211,6 +214,8 @@ void main() {
         techniqueId: _technique.id,
         bookId: 'master-technique-book',
       );
+      expect(result.succeeded, isTrue);
+      expect(result.quantityUsed, 3);
       expect(result.newLevel, ClashTechniqueLevel.xi);
     });
 
@@ -412,12 +417,12 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await scrollClashDetailUntilVisible(tester, find.text('Mejorar técnica'));
-      expect(find.text('Normal'), findsOneWidget);
-      expect(find.text('Mejorar técnica'), findsOneWidget);
+      await openClashCardDetailsTechniquesTab(tester);
+      expect(find.text('Normal'), findsWidgets);
+      expect(find.widgetWithText(FilledButton, 'Mejorar'), findsWidgets);
     });
 
-    testWidgets('detalle muestra libros disponibles', (tester) async {
+    testWidgets('Mejorar abre modal con coste de libros', (tester) async {
       configureClashDetailViewport(tester);
       final setup = await _setup();
       await tester.pumpWidget(
@@ -429,21 +434,26 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await scrollClashDetailUntilVisible(
-        tester,
-        find.text('Libro técnico básico'),
-      );
-      expect(find.text('Libro técnico básico'), findsOneWidget);
-      expect(find.text('Cantidad: 3'), findsOneWidget);
+      await openClashCardDetailsTechniquesTab(tester);
+      await tester.tap(find.widgetWithText(FilledButton, 'Mejorar').first);
+      await tester.pumpAndSettle();
+      expect(find.text('Mejorar técnica'), findsOneWidget);
+      expect(find.text('Necesitas 1'), findsOneWidget);
+      expect(find.text('Tienes 3'), findsOneWidget);
+      expect(find.text('Cancelar'), findsOneWidget);
     });
 
-    testWidgets('botón deshabilitado con cantidad 0', (tester) async {
+    testWidgets('modal deshabilita mejorar sin libros', (tester) async {
       configureClashDetailViewport(tester);
       final inventory = InMemoryClashTechniqueBookInventoryBackend();
       final booksRepo = createTestTechniqueBooksRepository(
         inventoryStorage: inventory,
       );
       await booksRepo.consumeBook(bookId: 'basic-technique-book', quantity: 3);
+      await booksRepo.consumeBook(
+        bookId: 'advanced-technique-book',
+        quantity: 1,
+      );
       final cardsRepo = ClashCardsRepository(_FakeCardsDataSource());
       final collectionRepo = createTestCollectionRepository(
         cardsRepository: cardsRepo,
@@ -462,20 +472,14 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await openClashCardDetailsTechniquesTab(tester);
+      await tester.tap(find.widgetWithText(FilledButton, 'Mejorar').first);
+      await tester.pumpAndSettle();
 
-      await scrollClashDetailUntilVisible(
-        tester,
-        find.text('Libro técnico básico'),
+      final confirm = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Mejorar').last,
       );
-      expect(find.text('Libro técnico básico'), findsOneWidget);
-      expect(find.text('Cantidad: 0'), findsNWidgets(2));
-
-      final usarButtons = tester.widgetList<FilledButton>(
-        find.widgetWithText(FilledButton, 'Usar'),
-      );
-      expect(usarButtons.length, 3);
-      expect(usarButtons.where((button) => button.onPressed == null).length, 2);
-      expect(usarButtons.where((button) => button.onPressed != null).length, 1);
+      expect(confirm.onPressed, isNull);
     });
 
     testWidgets('usar libro actualiza nivel visible', (tester) async {
@@ -499,9 +503,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await scrollClashDetailUntilVisible(tester, find.text('I'));
-      expect(find.text('I'), findsOneWidget);
-      expect(find.text('Cantidad: 2'), findsWidgets);
+      await openClashCardDetailsTechniquesTab(tester);
+      expect(find.text('I'), findsWidgets);
     });
 
     testWidgets('usar libro actualiza potencia efectiva', (tester) async {
@@ -524,7 +527,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await scrollClashDetailUntilVisible(tester, find.text('42'));
+      await openClashCardDetailsTechniquesTab(tester);
       expect(find.text('42'), findsOneWidget);
     });
 
@@ -562,8 +565,12 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await scrollClashDetailUntilVisible(tester, find.text('Mejorar técnica'));
+      await openClashCardDetailsTechniquesTab(tester);
       expect(find.text('Nivel máximo'), findsWidgets);
+      final improve = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Mejorar').first,
+      );
+      expect(improve.onPressed, isNull);
     });
 
     testWidgets('SnackBar muestra cambio de nivel', (tester) async {

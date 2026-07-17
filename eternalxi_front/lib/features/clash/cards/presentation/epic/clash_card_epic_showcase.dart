@@ -416,156 +416,176 @@ class _StatsPanel extends StatelessWidget {
           width: 1.5,
         ),
       ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.topCenter,
+              child: SizedBox(
+                width: constraints.maxWidth,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          entry.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: XiColors.warmWhite,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 20,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                entry.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  color: XiColors.warmWhite,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                card.position.displayNameEs,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: XiColors.warmWhite.withValues(
+                                    alpha: 0.72,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                card.style.displayNameEs,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: XiColors.classicGold,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          card.position.displayNameEs,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: XiColors.warmWhite.withValues(alpha: 0.72),
-                          ),
-                        ),
-                        Text(
-                          card.style.displayNameEs,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: XiColors.classicGold,
-                            fontWeight: FontWeight.w700,
+                        const SizedBox(width: 6),
+                        SizedBox(
+                          width: 116,
+                          child: Column(
+                            children: [
+                              _EpicStatRow(
+                                kind: ClashEpicStatKind.par,
+                                label: 'PAR',
+                                value: stats.save,
+                                segment: _statSegment,
+                              ),
+                              _EpicStatRow(
+                                kind: ClashEpicStatKind.def,
+                                label: 'DEF',
+                                value: stats.defense,
+                                segment: _statSegment,
+                              ),
+                              _EpicStatRow(
+                                kind: ClashEpicStatKind.pas,
+                                label: 'PAS',
+                                value: stats.pass,
+                                segment: _statSegment,
+                              ),
+                              _EpicStatRow(
+                                kind: ClashEpicStatKind.reg,
+                                label: 'REG',
+                                value: stats.dribble,
+                                segment: _statSegment,
+                              ),
+                              _EpicStatRow(
+                                kind: ClashEpicStatKind.tir,
+                                label: 'TIR',
+                                value: stats.shot,
+                                segment: _statSegment,
+                              ),
+                              _EpicStatRow(
+                                kind: ClashEpicStatKind.pt,
+                                label: 'PT',
+                                value: stats.techniquePoints,
+                                segment: _statSegment,
+                              ),
+                              _EpicStatRow(
+                                kind: ClashEpicStatKind.res,
+                                label: 'RES',
+                                value: stats.stamina,
+                                segment: _statSegment,
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(width: 6),
-                  SizedBox(
-                    width: 116,
-                    child: Column(
+                    const SizedBox(height: 10),
+                    Row(
                       children: [
-                        _EpicStatRow(
-                          kind: ClashEpicStatKind.par,
-                          label: 'PAR',
-                          value: stats.save,
-                          segment: _statSegment,
+                        Text(
+                          levelLabel,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: XiColors.warmWhite,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
-                        _EpicStatRow(
-                          kind: ClashEpicStatKind.def,
-                          label: 'DEF',
-                          value: stats.defense,
-                          segment: _statSegment,
-                        ),
-                        _EpicStatRow(
-                          kind: ClashEpicStatKind.pas,
-                          label: 'PAS',
-                          value: stats.pass,
-                          segment: _statSegment,
-                        ),
-                        _EpicStatRow(
-                          kind: ClashEpicStatKind.reg,
-                          label: 'REG',
-                          value: stats.dribble,
-                          segment: _statSegment,
-                        ),
-                        _EpicStatRow(
-                          kind: ClashEpicStatKind.tir,
-                          label: 'TIR',
-                          value: stats.shot,
-                          segment: _statSegment,
-                        ),
-                        _EpicStatRow(
-                          kind: ClashEpicStatKind.pt,
-                          label: 'PT',
-                          value: stats.techniquePoints,
-                          segment: _statSegment,
-                        ),
-                        _EpicStatRow(
-                          kind: ClashEpicStatKind.res,
-                          label: 'RES',
-                          value: stats.stamina,
-                          segment: _statSegment,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  Text(
-                    levelLabel,
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: XiColors.warmWhite,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(999),
-                      child: LinearProgressIndicator(
-                        value: entry.isMaxLevel ? 1.0 : xpRatio,
-                        minHeight: 7,
-                        backgroundColor: Colors.black.withValues(alpha: 0.35),
-                        color: XiColors.classicGold,
-                      ),
-                    ),
-                  ),
-                  if (onLevelUpTap != null) ...[
-                    const SizedBox(width: 8),
-                    Material(
-                      color: XiColors.classicGold.withValues(alpha: 0.22),
-                      borderRadius: BorderRadius.circular(8),
-                      child: InkWell(
-                        onTap: entry.isMaxLevel ? null : onLevelUpTap,
-                        borderRadius: BorderRadius.circular(8),
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: XiColors.classicGold.withValues(alpha: 0.8),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(999),
+                            child: LinearProgressIndicator(
+                              value: entry.isMaxLevel ? 1.0 : xpRatio,
+                              minHeight: 7,
+                              backgroundColor: Colors.black.withValues(
+                                alpha: 0.35,
+                              ),
+                              color: XiColors.classicGold,
                             ),
                           ),
-                          child: Icon(
-                            Icons.add_rounded,
-                            color: entry.isMaxLevel
-                                ? XiColors.warmWhite.withValues(alpha: 0.35)
-                                : XiColors.classicGold,
-                            size: 22,
-                          ),
                         ),
-                      ),
+                        if (onLevelUpTap != null) ...[
+                          const SizedBox(width: 8),
+                          Material(
+                            color: XiColors.classicGold.withValues(alpha: 0.22),
+                            borderRadius: BorderRadius.circular(8),
+                            child: InkWell(
+                              onTap: entry.isMaxLevel ? null : onLevelUpTap,
+                              borderRadius: BorderRadius.circular(8),
+                              child: Container(
+                                width: 36,
+                                height: 36,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: XiColors.classicGold.withValues(
+                                      alpha: 0.8,
+                                    ),
+                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.add_rounded,
+                                  color: entry.isMaxLevel
+                                      ? XiColors.warmWhite.withValues(
+                                          alpha: 0.35,
+                                        )
+                                      : XiColors.classicGold,
+                                  size: 22,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ],
-                ],
+                ),
               ),
-            ],
-          ),
+            );
+          },
         ),
-      );
+      ),
+    );
   }
 }
 

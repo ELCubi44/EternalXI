@@ -5,7 +5,7 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_technique_book_use_
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_level.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_progress_resolver.dart';
 
-/// Aplica libros de técnica a supertécnicas (Fase 19).
+/// Aplica libros de técnica: [ClashTechniqueBook.booksRequired] unidades → +1 nivel.
 class ClashTechniqueBookService {
   const ClashTechniqueBookService._();
 
@@ -14,7 +14,7 @@ class ClashTechniqueBookService {
     required ClashSuperTechnique technique,
     required ClashTechniqueBook book,
     required ClashCardProgress progress,
-    int quantity = 1,
+    int levelUps = 1,
   }) {
     final previousLevel = ClashTechniqueProgressResolver.resolvedLevel(
       technique: technique,
@@ -48,8 +48,8 @@ class ClashTechniqueBookService {
       );
     }
 
-    final totalSteps = book.levelUpSteps * quantity;
-    final newLevel = previousLevel.advancedBy(totalSteps);
+    final ups = levelUps < 1 ? 1 : levelUps;
+    final newLevel = previousLevel.advancedBy(ups);
     final didLevelUp = newLevel.stepIndex > previousLevel.stepIndex;
 
     if (!didLevelUp) {
@@ -66,12 +66,13 @@ class ClashTechniqueBookService {
 
     final upgraded = technique.withLevel(newLevel);
     final newPower = upgraded.effectivePower;
+    final quantityUsed = book.booksRequired * ups;
 
     return ClashTechniqueBookUseResult(
       cardId: cardId,
       techniqueId: technique.id,
       bookId: book.id,
-      quantityUsed: quantity,
+      quantityUsed: quantityUsed,
       previousLevel: previousLevel,
       newLevel: newLevel,
       previousEffectivePower: previousPower,

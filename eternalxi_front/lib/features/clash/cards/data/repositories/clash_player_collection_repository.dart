@@ -618,9 +618,9 @@ class ClashPlayerCollectionRepository {
     required String cardId,
     required String techniqueId,
     required String bookId,
-    int quantity = 1,
+    int levelUps = 1,
   }) async {
-    if (quantity <= 0) {
+    if (levelUps <= 0) {
       return _failedTechniqueBookUse(
         cardId: cardId,
         techniqueId: techniqueId,
@@ -689,8 +689,9 @@ class ClashPlayerCollectionRepository {
       );
     }
 
+    final cost = book.booksRequired * levelUps;
     final available = _techniqueBooksRepository.quantityFor(bookId);
-    if (available <= 0 || available < quantity) {
+    if (available < cost) {
       final progress =
           snapshot.cardProgress[cardId] ??
           ClashCardXpService.initialProgress(cardId);
@@ -727,7 +728,7 @@ class ClashPlayerCollectionRepository {
       technique: technique,
       book: book,
       progress: current,
-      quantity: quantity,
+      levelUps: levelUps,
     );
 
     if (!preview.succeeded) {
@@ -736,7 +737,7 @@ class ClashPlayerCollectionRepository {
 
     final consumed = await _techniqueBooksRepository.consumeBook(
       bookId: bookId,
-      quantity: quantity,
+      quantity: preview.quantityUsed,
     );
     if (!consumed) {
       return preview.withError(ClashTechniqueBookUseError.insufficientQuantity);
@@ -753,7 +754,7 @@ class ClashPlayerCollectionRepository {
 
     await _recordUpgradeTechnique(preview.didLevelUp);
 
-    return preview.withQuantityUsed(quantity);
+    return preview;
   }
 
   ClashSuperTechnique? _findTechnique(

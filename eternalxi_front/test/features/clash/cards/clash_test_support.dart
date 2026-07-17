@@ -113,20 +113,20 @@ const clashTestTechniqueBooksJson = '''
     {
       "id": "basic-technique-book",
       "name": "Libro técnico básico",
-      "description": "Sube una supertécnica un paso.",
-      "levelUpSteps": 1
+      "description": "Se necesitan ejemplares para subir un nivel.",
+      "booksRequired": 1
     },
     {
       "id": "advanced-technique-book",
       "name": "Libro técnico avanzado",
-      "description": "Sube una supertécnica dos pasos.",
-      "levelUpSteps": 2
+      "description": "Requiere 2 ejemplares por nivel.",
+      "booksRequired": 2
     },
     {
       "id": "master-technique-book",
       "name": "Libro técnico maestro",
-      "description": "Sube una supertécnica cuatro pasos.",
-      "levelUpSteps": 4
+      "description": "Requiere 3 ejemplares por nivel.",
+      "booksRequired": 3
     }
   ]
 }
@@ -1369,15 +1369,30 @@ void configureClashDetailViewport(WidgetTester tester) {
   addTearDown(tester.view.reset);
 }
 
+/// Abre el panel Detalles y la pestaña Técnicas.
+Future<void> openClashCardDetailsTechniquesTab(WidgetTester tester) async {
+  final details = find.text('Detalles');
+  if (details.evaluate().isNotEmpty) {
+    await tester.tap(details);
+    await tester.pumpAndSettle();
+  }
+  final techniquesTab = find.text('Técnicas');
+  if (techniquesTab.evaluate().isNotEmpty) {
+    await tester.tap(techniquesTab);
+    await tester.pumpAndSettle();
+  }
+}
+
 /// Desplaza el scroll principal del detalle hasta que [matcher] sea visible.
 Future<void> scrollClashDetailUntilVisible(
   WidgetTester tester,
   Finder matcher, {
   double delta = 120,
 }) async {
+  await openClashCardDetailsTechniquesTab(tester);
   await tester.scrollUntilVisible(
     matcher,
     delta,
-    scrollable: find.byType(Scrollable).first,
+    scrollable: find.byType(Scrollable).last,
   );
 }
