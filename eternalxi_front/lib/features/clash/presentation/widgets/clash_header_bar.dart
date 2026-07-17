@@ -108,12 +108,13 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                     final h = constraints.maxHeight;
 
                     final avatarSize = w * 0.21;
-                    final avatarLeft = w * 0.06;
-                    final avatarTop = (h - avatarSize) / 2;
+                    // Subir un pelín y mover a la derecha.
+                    final avatarLeft = w * 0.078;
+                    final avatarTop = h * 0.155;
 
-                    // Columna del panel derecho (nombre / XP / recursos).
-                    final panelLeft = w * 0.335;
-                    final panelRight = w * 0.05;
+                    // Panel derecho: nombre un pelín abajo e izquierda.
+                    final nameLeft = w * 0.32;
+                    final nameRight = w * 0.055;
 
                     return Stack(
                       clipBehavior: Clip.none,
@@ -125,7 +126,6 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             filterQuality: FilterQuality.high,
                           ),
                         ),
-                        // Avatar centrado en el círculo.
                         Positioned(
                           left: avatarLeft,
                           top: avatarTop,
@@ -140,14 +140,14 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             ),
                           ),
                         ),
-                        // Solo nombre + nivel, centrados en el panel superior.
+                        // Nombre + nivel: bajar y un pelín a la izquierda.
                         Positioned(
-                          left: panelLeft,
-                          right: panelRight,
-                          top: h * 0.155,
-                          height: h * 0.22,
+                          left: nameLeft,
+                          right: nameRight,
+                          top: h * 0.185,
+                          height: h * 0.20,
                           child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: w * 0.02),
+                            padding: EdgeInsets.symmetric(horizontal: w * 0.015),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
@@ -177,15 +177,15 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             ),
                           ),
                         ),
-                        // XP centrado en la ranura media.
+                        // XP: bajar (más) y un pelín a la derecha.
                         Positioned(
-                          left: panelLeft + w * 0.015,
-                          right: panelRight + w * 0.01,
-                          top: h * 0.425,
-                          height: h * 0.145,
+                          left: w * 0.355,
+                          right: w * 0.045,
+                          top: h * 0.475,
+                          height: h * 0.135,
                           child: Center(
                             child: Stack(
-                              alignment: const Alignment(0, 0.2),
+                              alignment: const Alignment(0, 0.15),
                               children: [
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(999),
@@ -221,12 +221,12 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             ),
                           ),
                         ),
-                        // Recursos: más abajo y a la izquierda.
+                        // Recursos: subir y mover a la derecha (corrigiendo exceso).
                         Positioned(
-                          left: w * 0.28,
-                          right: w * 0.07,
-                          top: h * 0.75,
-                          height: h * 0.16,
+                          left: w * 0.33,
+                          right: w * 0.05,
+                          top: h * 0.675,
+                          height: h * 0.185,
                           child: Row(
                             children: [
                               Expanded(
@@ -346,8 +346,7 @@ class _ResourceSlot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Align(
-      alignment: const Alignment(0, 0.25),
+    return Center(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
