@@ -61,6 +61,12 @@ class OAuthSignInService {
 
   Future<String?> signInWithApple() async {
     try {
+      final available = await SignInWithApple.isAvailable();
+      if (!available) {
+        throw StateError(
+          'Iniciar sesion con Apple no esta disponible en este dispositivo.',
+        );
+      }
       final rawNonce = _generateNonce();
       final nonce = _sha256ofString(rawNonce);
       final credential = await SignInWithApple.getAppleIDCredential(
@@ -78,6 +84,9 @@ class OAuthSignInService {
     } on SignInWithAppleAuthorizationException catch (e) {
       if (e.code == AuthorizationErrorCode.canceled) {
         return null;
+      }
+      if (kDebugMode) {
+        debugPrint('[oauth] Apple authorization error: ${e.code} ${e.message}');
       }
       rethrow;
     } catch (e) {

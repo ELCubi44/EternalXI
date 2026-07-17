@@ -121,9 +121,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 18),
                 OAuthLoginBubbles(
                   isLoading: auth.isLoading,
-                  showApple:
-                      Theme.of(context).platform == TargetPlatform.iOS ||
-                      defaultTargetPlatform == TargetPlatform.android,
+                  showApple: Theme.of(context).platform == TargetPlatform.iOS ||
+                      defaultTargetPlatform == TargetPlatform.iOS ||
+                      defaultTargetPlatform == TargetPlatform.macOS,
                   onGoogle: () async {
                     final ok = await auth.loginWithGoogle();
                     if (!context.mounted) return;

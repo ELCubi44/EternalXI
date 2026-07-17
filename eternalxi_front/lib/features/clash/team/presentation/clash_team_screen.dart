@@ -24,7 +24,7 @@ class ClashTeamScreen extends StatelessWidget {
           titleStyle: theme.textTheme.titleMedium?.copyWith(
             color: context.xiTextPrimary,
             fontWeight: FontWeight.w800,
-            fontSize: 17,
+            fontSize: 16,
             height: 1.0,
           ),
           onTap: () => context.push(AppRoutes.clashCards),
@@ -34,7 +34,7 @@ class ClashTeamScreen extends StatelessWidget {
   }
 }
 
-/// Barra ornamental a ancho completo; icono encajado en el hueco izquierdo.
+/// Barra más compacta; el icono tapa el borde izquierdo del asset (sin doble marco).
 class _TeamSectionBar extends StatelessWidget {
   const _TeamSectionBar({
     required this.iconAsset,
@@ -48,9 +48,10 @@ class _TeamSectionBar extends StatelessWidget {
   final VoidCallback onTap;
   final TextStyle? titleStyle;
 
-  static const double _barHeight = 56;
-  static const double _iconSize = 52;
-  static const double _iconLeft = 2;
+  static const double _barHeight = 46;
+  static const double _iconSize = 44;
+  /// Empieza bajo el icono para ocultar el borde vertical del hueco.
+  static const double _barLeftInset = 18;
 
   @override
   Widget build(BuildContext context) {
@@ -58,27 +59,31 @@ class _TeamSectionBar extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         child: SizedBox(
           height: _barHeight,
           width: double.infinity,
           child: Stack(
-            clipBehavior: Clip.none,
+            clipBehavior: Clip.hardEdge,
             alignment: Alignment.centerLeft,
             children: [
-              Positioned.fill(
+              Positioned(
+                left: _barLeftInset,
+                right: 0,
+                top: 0,
+                bottom: 0,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
                     ClashEpicAssets.teamPersonajesBarBg,
                     fit: BoxFit.fill,
                     filterQuality: FilterQuality.high,
-                    alignment: Alignment.centerLeft,
+                    alignment: const Alignment(-0.15, 0),
                   ),
                 ),
               ),
               Positioned(
-                left: _iconLeft,
+                left: 0,
                 top: (_barHeight - _iconSize) / 2,
                 child: Container(
                   width: _iconSize,
@@ -87,12 +92,12 @@ class _TeamSectionBar extends StatelessWidget {
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: XiColors.classicGold.withValues(alpha: 0.7),
-                      width: 1.5,
+                      width: 1.4,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.45),
-                        blurRadius: 8,
+                        color: Colors.black.withValues(alpha: 0.4),
+                        blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
                     ],
@@ -106,8 +111,8 @@ class _TeamSectionBar extends StatelessWidget {
                 ),
               ),
               Positioned(
-                left: _iconSize + 14,
-                right: 18,
+                left: _iconSize + 10,
+                right: 16,
                 top: 0,
                 bottom: 0,
                 child: Align(

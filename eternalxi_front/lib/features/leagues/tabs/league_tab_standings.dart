@@ -182,6 +182,22 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
     }
   }
 
+  String _standingsViewLabel(LeagueL10n ll) {
+    if (_selectedJornadaId == null) {
+      return ll.globalStandings;
+    }
+    for (final round in _playedRounds) {
+      if (round.id != _selectedJornadaId) {
+        continue;
+      }
+      if (leagueJornadaIsInProgress(round.estado) || round.actual) {
+        return ll.roundInProgressMatchday;
+      }
+      return round.numero > 0 ? ll.matchday(round.numero) : round.nombre;
+    }
+    return ll.globalStandings;
+  }
+
   void _openPeer({
     required LeagueShellData shell,
     required int idUsuario,
@@ -264,61 +280,25 @@ class _LeagueTabStandingsState extends State<LeagueTabStandings>
                   ),
                   if (_playedRounds.isNotEmpty) ...[
                     const SizedBox(height: 12),
-                    DropdownButtonFormField<int?>(
-                      initialValue: _selectedJornadaId,
-                      isExpanded: true,
-                      decoration: InputDecoration(
-                        labelText: ll.viewLabel,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 12,
-                        ),
-                      ),
-                      selectedItemBuilder: (context) {
-                        final labels = <String>[
-                          ll.globalStandings,
-                          for (final round in _playedRounds)
+                    _StandingsViewPicker(
+                      label: ll.viewLabel,
+                      enabled: !_loading,
+                      selectedId: _selectedJornadaId,
+                      selectedLabel: _standingsViewLabel(ll),
+                      options: [
+                        (null, ll.globalStandings),
+                        for (final round in _playedRounds)
+                          (
+                            round.id,
                             leagueJornadaIsInProgress(round.estado) ||
                                     round.actual
                                 ? ll.roundInProgressMatchday
                                 : round.numero > 0
                                 ? ll.matchday(round.numero)
                                 : round.nombre,
-                        ];
-                        return [
-                          for (final label in labels)
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                label,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                        ];
-                      },
-                      items: [
-                        DropdownMenuItem<int?>(
-                          value: null,
-                          child: Text(ll.globalStandings),
-                        ),
-                        for (final round in _playedRounds)
-                          DropdownMenuItem<int?>(
-                            value: round.id,
-                            child: Text(
-                              leagueJornadaIsInProgress(round.estado) ||
-                                      round.actual
-                                  ? ll.roundInProgressMatchday
-                                  : round.numero > 0
-                                  ? ll.matchday(round.numero)
-                                  : round.nombre,
-                            ),
                           ),
                       ],
-                      onChanged: _loading ? null : _onJornadaChanged,
+                      onSelected: _onJornadaChanged,
                     ),
                     if (viewingRound)
                       Padding(
@@ -529,3 +509,109 @@ class _StandingsEmpty extends StatelessWidget {
     );
   }
 }
+
+/// Selector de vista (global / jornada) con menú opaco (sin IndexedStack transparente).
+class _StandingsViewPicker extends StatelessWidget {
+  const _StandingsViewPicker({
+    required this.label,
+    required this.selectedLabel,
+    required this.selectedId,
+    required this.options,
+    required this.onSelected,
+    required this.enabled,
+  });
+
+  final String label;
+  final String selectedLabel;
+  final int? selectedId;
+  final List<(int?, String)> options;
+  final ValueChanged<int?> onSelected;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+
+    return InkWell(
+      onTap: !enabled
+          ? null
+          : () async {
+              await showModalBottomSheet<void>(
+                context: context,
+                backgroundColor: scheme.surface,
+                isScrollControlled: true,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+                ),
+                builder: (sheetContext) {
+                  return SafeArea(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                          child: Text(
+                            label,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          child: ListView(
+                            shrinkWrap: true,
+                            children: [
+                              for (final option in options)
+                                ListTile(
+                                  selected: option.$1 == selectedId,
+                                  selectedTileColor: scheme.primaryContainer
+                                      .withValues(alpha: 0.45),
+                                  title: Text(option.$2),
+                                  trailing: option.$1 == selectedId
+                                      ? Icon(
+                                          Icons.check_rounded,
+                                          color: scheme.primary,
+                                        )
+                                      : null,
+                                  onTap: () {
+                                    Navigator.of(sheetContext).pop();
+                                    onSelected(option.$1);
+                                  },
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+      borderRadius: BorderRadius.circular(14),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 12,
+          ),
+          suffixIcon: Icon(
+            Icons.expand_more_rounded,
+            color: scheme.onSurfaceVariant,
+          ),
+        ),
+        child: Text(
+          selectedLabel,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.bodyLarge,
+        ),
+      ),
+    );
+  }
+}
+

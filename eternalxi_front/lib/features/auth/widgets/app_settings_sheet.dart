@@ -8,6 +8,7 @@ import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/auth/widgets/oauth_social_button.dart';
 import 'package:eternal_xi/features/legal/screens/legal_document_screen.dart';
 import 'package:eternal_xi/features/profile/controller/user_preferences_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -298,15 +299,19 @@ class _AppSettingsSheetState extends State<AppSettingsSheet> {
                     isLoading: _linkingGoogle || auth.isLoading,
                     onPressed: providers?.google == true ? null : _linkGoogle,
                   ),
-                  const SizedBox(height: 8),
-                  OAuthLinkButton(
-                    variant: OAuthSocialVariant.apple,
-                    label: l10n.oauthLinkApple,
-                    linkedLabel: l10n.oauthLinkedApple,
-                    linked: providers?.apple == true,
-                    isLoading: _linkingApple || auth.isLoading,
-                    onPressed: providers?.apple == true ? null : _linkApple,
-                  ),
+                  if (Theme.of(context).platform == TargetPlatform.iOS ||
+                      defaultTargetPlatform == TargetPlatform.iOS ||
+                      defaultTargetPlatform == TargetPlatform.macOS) ...[
+                    const SizedBox(height: 8),
+                    OAuthLinkButton(
+                      variant: OAuthSocialVariant.apple,
+                      label: l10n.oauthLinkApple,
+                      linkedLabel: l10n.oauthLinkedApple,
+                      linked: providers?.apple == true,
+                      isLoading: _linkingApple || auth.isLoading,
+                      onPressed: providers?.apple == true ? null : _linkApple,
+                    ),
+                  ],
                 ],
                 const SizedBox(height: 16),
                 OutlinedButton.icon(
