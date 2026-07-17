@@ -357,32 +357,73 @@ class _CollectionFilterSheet extends StatelessWidget {
                               controller.positionGroupFilter!.positions
                                       .length >
                                   1) ...[
-                            const SizedBox(height: 8),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
+                            const SizedBox(height: 12),
+                            Row(
                               children: [
-                                _XiTextChip(
-                                  label: 'Todas',
-                                  selected: controller.positionFilter == null,
-                                  onTap: () =>
-                                      controller.setPositionFilter(null),
+                                Expanded(
+                                  child: Divider(
+                                    color: XiColors.classicGold
+                                        .withValues(alpha: 0.35),
+                                    thickness: 1,
+                                  ),
                                 ),
-                                ...controller.positionGroupFilter!.positions
-                                    .map((pos) {
-                                  return _XiTextChip(
-                                    label: pos.displayNameEs,
-                                    selected:
-                                        controller.positionFilter == pos,
-                                    onTap: () =>
-                                        controller.setPositionFilter(
-                                      controller.positionFilter == pos
-                                          ? null
-                                          : pos,
-                                    ),
-                                  );
-                                }),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                  ),
+                                  child: Text(
+                                    controller
+                                        .positionGroupFilter!.displayNameEs,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium
+                                        ?.copyWith(
+                                          color: XiColors.classicGold
+                                              .withValues(alpha: 0.9),
+                                          letterSpacing: 0.3,
+                                        ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Divider(
+                                    color: XiColors.classicGold
+                                        .withValues(alpha: 0.35),
+                                    thickness: 1,
+                                  ),
+                                ),
                               ],
+                            ),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 6),
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  _XiTextChip(
+                                    label: 'Todas',
+                                    selected:
+                                        controller.positionFilter == null,
+                                    onTap: () =>
+                                        controller.setPositionFilter(null),
+                                  ),
+                                  ...controller
+                                      .positionGroupFilter!.positions
+                                      .map((pos) {
+                                    return _XiTextChip(
+                                      label: pos.displayNameEs,
+                                      selected:
+                                          controller.positionFilter == pos,
+                                      onTap: () =>
+                                          controller.setPositionFilter(
+                                        controller.positionFilter == pos
+                                            ? null
+                                            : pos,
+                                      ),
+                                    );
+                                  }),
+                                ],
+                              ),
                             ),
                           ],
                           const SizedBox(height: 14),
