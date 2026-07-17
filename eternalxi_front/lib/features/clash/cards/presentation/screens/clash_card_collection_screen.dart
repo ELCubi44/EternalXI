@@ -201,7 +201,7 @@ class _FiltersBar extends StatelessWidget {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
       child: Row(
         children: [
           _FilterMenu<ClashRarity?>(
@@ -348,7 +348,7 @@ class _CollectionBody extends StatelessWidget {
           );
         }
         return GridView.builder(
-          padding: const EdgeInsets.fromLTRB(10, 12, 10, 16),
+          padding: const EdgeInsets.fromLTRB(10, 18, 10, 16),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 5,
             mainAxisSpacing: 8,

@@ -1,4 +1,5 @@
-﻿import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
+import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_technique_type.dart';
 import 'package:flutter/material.dart';
 
@@ -27,6 +28,24 @@ abstract final class ClashEpicAssets {
     ClashRarity.sr => '$_base/frames/badge_frame_sr.png',
     ClashRarity.lr => '$_base/frames/badge_frame_lr.png',
     ClashRarity.xi => '$_base/frames/badge_frame_xi.png',
+  };
+
+  static String rarityIcon(ClashRarity rarity) => switch (rarity) {
+    ClashRarity.n => '$_base/rarities/icon_rarity_n.png',
+    ClashRarity.r => '$_base/rarities/icon_rarity_r.png',
+    ClashRarity.sr => '$_base/rarities/icon_rarity_sr.png',
+    ClashRarity.lr => '$_base/rarities/icon_rarity_lr.png',
+    ClashRarity.xi => '$_base/rarities/icon_rarity_xi.png',
+  };
+
+  static String positionIcon(ClashPosition position) => switch (position) {
+    ClashPosition.goalkeeper => '$_base/positions/icon_pos_gk.png',
+    ClashPosition.centreBack => '$_base/positions/icon_pos_cb.png',
+    ClashPosition.fullBack => '$_base/positions/icon_pos_fb.png',
+    ClashPosition.defensiveMidfielder => '$_base/positions/icon_pos_dm.png',
+    ClashPosition.attackingMidfielder => '$_base/positions/icon_pos_am.png',
+    ClashPosition.winger => '$_base/positions/icon_pos_wg.png',
+    ClashPosition.striker => '$_base/positions/icon_pos_st.png',
   };
 
   static String auraGlow(ClashRarity rarity) =>
@@ -58,7 +77,7 @@ abstract final class ClashEpicAssets {
     ClashEpicStatKind.res => statRes,
   };
 
-  /// Iconos de tipo de supertcnica (mismos assets coloreados de stats).
+  /// Iconos de tipo de supertecnica (mismos assets coloreados de stats).
   static String techniqueTypeIcon(ClashTechniqueType type) => switch (type) {
     ClashTechniqueType.save => statPar,
     ClashTechniqueType.defense => statDef,
@@ -85,4 +104,3 @@ abstract final class ClashEpicAssets {
 }
 
 enum ClashEpicStatKind { par, def, pas, reg, tir, pt, res }
-
