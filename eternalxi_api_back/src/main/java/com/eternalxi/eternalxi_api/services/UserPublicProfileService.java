@@ -1,4 +1,4 @@
-package com.eternalxi.eternalxi_api.services;
+﻿package com.eternalxi.eternalxi_api.services;
 
 import com.eternalxi.eternalxi_api.config.DBConnection;
 import com.eternalxi.eternalxi_api.dto.user.EligibleFavoritePlayerResponse;
@@ -15,7 +15,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserPublicProfileService {
@@ -93,7 +95,7 @@ public class UserPublicProfileService {
             if (idJugador != null && idJugador > 0) {
                 if (!isEligibleFavoritePlayer(conn, userId, idJugador)) {
                     throw new IllegalArgumentException(
-                            "Solo puedes elegir jugadores de Eterno Campeon que hayas alineado en una jornada ya iniciada"
+                            "Solo puedes elegir avatares desbloqueados: carta Clash o alineacion Fantasy"
                     );
                 }
             }
@@ -122,6 +124,37 @@ public class UserPublicProfileService {
         }
         try (Connection conn = DBConnection.getConnection()) {
             return loadEligibleFavoritePlayers(conn, userId);
+        }
+    }
+
+    public void registerAvatarUnlocks(Long userId, List<Long> playerIds, String origen) throws SQLException {
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("Usuario no valido");
+        }
+        if (playerIds == null || playerIds.isEmpty()) {
+            return;
+        }
+        String source = origen == null ? "clash" : origen.trim().toLowerCase();
+        if (!source.equals("clash") && !source.equals("fantasy")) {
+            throw new IllegalArgumentException("Origen de desbloqueo no valido");
+        }
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = """
+                    INSERT IGNORE INTO usuario_avatar_desbloqueos (id_usuario, id_jugador, origen)
+                    VALUES (?, ?, ?)
+                    """;
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                for (Long playerId : playerIds) {
+                    if (playerId == null || playerId <= 0) {
+                        continue;
+                    }
+                    ps.setLong(1, userId);
+                    ps.setLong(2, playerId);
+                    ps.setString(3, source);
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            }
         }
     }
 
@@ -371,7 +404,7 @@ public class UserPublicProfileService {
     private record FriendshipRelation(String estado, Long idAmistad, boolean soySolicitante) {}
 
     /**
-     * Jornada con alineación fantasy congelada (ya empezó por hora o estado de partidos).
+     * Jornada con alineaciÃ³n fantasy congelada (ya empezÃ³ por hora o estado de partidos).
      * Espacio inicial por stripping de text blocks Java.
      */
     static String sqlJornadaLineupFrozenOnAlias(String jornadaAlias) {
@@ -399,6 +432,9 @@ public class UserPublicProfileService {
 
     private boolean isEligibleFavoritePlayer(Connection conn, long userId, long idJugador)
             throws SQLException {
+        if (hasAvatarUnlock(conn, userId, idJugador)) {
+            return true;
+        }
         Long seasonId = resolveEternoCampeonSeasonId(conn);
         if (seasonId == null) {
             return false;
@@ -413,15 +449,9 @@ public class UserPublicProfileService {
                 INNER JOIN alineacion_jornada_participante ajp
                   ON ajp.id_liga_participante = lp.id
                  AND ajp.id_liga_jugador = lj.id
-                INNER JOIN jornadas jrn
-                  ON jrn.id = ajp.id_jornada
-                 AND jrn.id_liga = lp.id_liga
                 WHERE lp.id_usuario = ?
                   AND lj.id_jugador = ?
                   AND l.id_temporada = ?
-                  AND """
-                + sqlJornadaLineupFrozenOnAlias("jrn")
-                + """
                 LIMIT 1
                 """;
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -434,67 +464,109 @@ public class UserPublicProfileService {
         }
     }
 
+    private boolean hasAvatarUnlock(Connection conn, long userId, long idJugador) throws SQLException {
+        String sql = """
+                SELECT 1
+                FROM usuario_avatar_desbloqueos
+                WHERE id_usuario = ? AND id_jugador = ?
+                LIMIT 1
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            ps.setLong(2, idJugador);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
     private List<EligibleFavoritePlayerResponse> loadEligibleFavoritePlayers(Connection conn, long userId)
             throws SQLException {
+        Map<Long, EligibleFavoritePlayerResponse> byId = new LinkedHashMap<>();
         Long seasonId = resolveEternoCampeonSeasonId(conn);
-        if (seasonId == null) {
-            return List.of();
+        if (seasonId != null) {
+            String fantasySql = """
+                    SELECT DISTINCT j.id,
+                           COALESCE(NULLIF(TRIM(j.pila), ''), j.nombre) AS nombre,
+                           COALESCE(j.foto, '') AS foto,
+                           e.id AS id_equipo,
+                           COALESCE(e.nombre, '') AS equipo,
+                           COALESCE(e.foto, '') AS foto_equipo
+                    FROM liga_participantes lp
+                    INNER JOIN ligas l ON l.id = lp.id_liga
+                    INNER JOIN liga_jugadores lj
+                      ON lj.id_liga = lp.id_liga
+                     AND lj.id_usuario_dueno = lp.id_usuario
+                    INNER JOIN alineacion_jornada_participante ajp
+                      ON ajp.id_liga_participante = lp.id
+                     AND ajp.id_liga_jugador = lj.id
+                    INNER JOIN jugadores j ON j.id = lj.id_jugador
+                    INNER JOIN equipos e ON e.id = j.id_equipo
+                    WHERE lp.id_usuario = ?
+                      AND l.id_temporada = ?
+                      AND e.id_temporada = ?
+                    ORDER BY equipo ASC, nombre ASC
+                    """;
+            try (PreparedStatement ps = conn.prepareStatement(fantasySql)) {
+                ps.setLong(1, userId);
+                ps.setLong(2, seasonId);
+                ps.setLong(3, seasonId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        putEligibleRow(byId, rs);
+                    }
+                }
+            }
         }
-        String sql = """
+
+        String unlockSql = """
                 SELECT DISTINCT j.id,
                        COALESCE(NULLIF(TRIM(j.pila), ''), j.nombre) AS nombre,
                        COALESCE(j.foto, '') AS foto,
                        e.id AS id_equipo,
                        COALESCE(e.nombre, '') AS equipo,
                        COALESCE(e.foto, '') AS foto_equipo
-                FROM liga_participantes lp
-                INNER JOIN ligas l ON l.id = lp.id_liga
-                INNER JOIN liga_jugadores lj
-                  ON lj.id_liga = lp.id_liga
-                 AND lj.id_usuario_dueno = lp.id_usuario
-                INNER JOIN alineacion_jornada_participante ajp
-                  ON ajp.id_liga_participante = lp.id
-                 AND ajp.id_liga_jugador = lj.id
-                INNER JOIN jornadas jrn
-                  ON jrn.id = ajp.id_jornada
-                 AND jrn.id_liga = lp.id_liga
-                INNER JOIN jugadores j ON j.id = lj.id_jugador
+                FROM usuario_avatar_desbloqueos u
+                INNER JOIN jugadores j ON j.id = u.id_jugador
                 INNER JOIN equipos e ON e.id = j.id_equipo
-                WHERE lp.id_usuario = ?
-                  AND l.id_temporada = ?
-                  AND e.id_temporada = ?
-                  AND """
-                + sqlJornadaLineupFrozenOnAlias("jrn")
-                + """
+                WHERE u.id_usuario = ?
                 ORDER BY equipo ASC, nombre ASC
                 """;
-        List<EligibleFavoritePlayerResponse> rows = new ArrayList<>();
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = conn.prepareStatement(unlockSql)) {
             ps.setLong(1, userId);
-            ps.setLong(2, seasonId);
-            ps.setLong(3, seasonId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    long id = rs.getLong("id");
-                    String fotoRaw = rs.getString("foto");
-                    String foto = LeagueAssetUrls.coercePublicAsset(fotoRaw, LeagueAssetUrls.player(id));
-                    long idEquipo = rs.getLong("id_equipo");
-                    String fotoEquipoRaw = rs.getString("foto_equipo");
-                    String fotoEquipo = LeagueAssetUrls.coercePublicAsset(
-                            fotoEquipoRaw,
-                            LeagueAssetUrls.team(idEquipo)
-                    );
-                    rows.add(new EligibleFavoritePlayerResponse(
-                            id,
-                            rs.getString("nombre"),
-                            foto,
-                            idEquipo,
-                            rs.getString("equipo"),
-                            fotoEquipo
-                    ));
+                    putEligibleRow(byId, rs);
                 }
             }
         }
-        return rows;
+        return new ArrayList<>(byId.values());
+    }
+
+    private void putEligibleRow(Map<Long, EligibleFavoritePlayerResponse> byId, ResultSet rs)
+            throws SQLException {
+        long id = rs.getLong("id");
+        if (byId.containsKey(id)) {
+            return;
+        }
+        String fotoRaw = rs.getString("foto");
+        String foto = LeagueAssetUrls.coercePublicAsset(fotoRaw, LeagueAssetUrls.player(id));
+        long idEquipo = rs.getLong("id_equipo");
+        String fotoEquipoRaw = rs.getString("foto_equipo");
+        String fotoEquipo = LeagueAssetUrls.coercePublicAsset(
+                fotoEquipoRaw,
+                LeagueAssetUrls.team(idEquipo)
+        );
+        byId.put(
+                id,
+                new EligibleFavoritePlayerResponse(
+                        id,
+                        rs.getString("nombre"),
+                        foto,
+                        idEquipo,
+                        rs.getString("equipo"),
+                        fotoEquipo
+                )
+        );
     }
 }

@@ -250,6 +250,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final user = profile.user ?? auth.currentUser;
     final userId = auth.currentUser?.id;
     final initial = _initials(user?.nickname);
+    final fromClash =
+        GoRouterState.of(context).uri.queryParameters['from'] == 'clash';
 
     return WithFantasyAtmosphere(
       child: AppLoadingOverlay(
@@ -374,9 +376,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: _ProfileActionCard(
-                          icon: Icons.home_rounded,
-                          label: l10n.profileBackToTitle,
-                          onTap: () => context.go(AppRoutes.splash),
+                          icon: fromClash
+                              ? Icons.swap_horiz_rounded
+                              : Icons.home_rounded,
+                          label: fromClash
+                              ? l10n.backToModeSelection
+                              : l10n.profileBackToTitle,
+                          onTap: () => context.go(
+                            fromClash ? AppRoutes.mode : AppRoutes.splash,
+                          ),
                         ),
                       ),
                     ],

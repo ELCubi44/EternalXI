@@ -3,11 +3,14 @@ import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/core/network/api_exception.dart';
 import 'package:eternal_xi/data/models/eligible_favorite_player.dart';
 import 'package:eternal_xi/data/services/user_api_service.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_cards_local_datasource.dart';
+import 'package:eternal_xi/features/clash/cards/data/datasources/clash_player_collection_storage.dart';
+import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/profile/widgets/favorite_picker_team_expand_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// Selector de jugador favorito (Eterno Campe\u00f3n, alineaciones congeladas).
+/// Selector de jugador favorito (Clash carta o alineacion Fantasy).
 class FavoritePlayerPickerScreen extends StatefulWidget {
   const FavoritePlayerPickerScreen({
     required this.userId,
@@ -50,9 +53,35 @@ class _FavoritePlayerPickerScreenState extends State<FavoritePlayerPickerScreen>
       _error = null;
     });
     try {
-      final rows = await context.read<UserApiService>().getFavoritePlayerOptions(
-        userId: widget.userId,
-      );
+      final api = context.read<UserApiService>();
+      // Desbloquea avatares de cartas Clash poseídas antes de listar opciones.
+      try {
+        final collectionBackend =
+            await SharedPreferencesClashPlayerCollectionBackend.create();
+        final ownedIds = collectionBackend.readSnapshot().ownedCardIds;
+        if (ownedIds.isNotEmpty) {
+          final cardsRepo = ClashCardsRepository(ClashCardsLocalDataSource());
+          final playerIds = <int>{};
+          for (final cardId in ownedIds) {
+            final entry = await cardsRepo.findById(cardId);
+            final pid = entry?.card.playerId;
+            if (pid != null && pid > 0) {
+              playerIds.add(pid);
+            }
+          }
+          if (playerIds.isNotEmpty) {
+            await api.registerAvatarUnlocks(
+              userId: widget.userId,
+              playerIds: playerIds.toList(growable: false),
+              origen: 'clash',
+            );
+          }
+        }
+      } catch (_) {
+        // Colección Clash ausente o API no disponible: seguimos con Fantasy.
+      }
+
+      final rows = await api.getFavoritePlayerOptions(userId: widget.userId);
       if (!mounted) return;
       setState(() {
         _players = rows;

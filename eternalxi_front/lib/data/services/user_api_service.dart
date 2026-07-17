@@ -334,6 +334,25 @@ class UserApiService {
     }
   }
 
+  Future<void> registerAvatarUnlocks({
+    required int userId,
+    required List<int> playerIds,
+    String origen = 'clash',
+  }) async {
+    if (playerIds.isEmpty) return;
+    try {
+      await _apiClient.dio.post(
+        '${ApiConstants.users}/$userId/avatar-unlocks',
+        data: {
+          'playerIds': playerIds,
+          'origen': origen,
+        },
+      );
+    } catch (e) {
+      throw ApiException(_apiClient.extractErrorMessage(e));
+    }
+  }
+
   Future<List<EligibleFavoritePlayer>> getFavoritePlayerOptions({
     required int userId,
   }) async {
