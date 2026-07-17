@@ -59,9 +59,10 @@ abstract final class ClashEpicAssets {
   static const gachaBannerEternalXi =
       '$_base/banners/banner_gacha_eternal_xi.png';
   static const teamPersonajesIcon = '$_base/ui/icon_team_personajes.png';
+  static const teamSectionBarBg = '$_base/ui/bg_team_section_bar.png';
   static const clashEnergyIcon = '$_base/ui/icon_clash_energy.png';
-  /// Provisional hasta que elijas gemas (A Estela / B Orbe / C Prisma / D Sello).
-  static const clashGachaGemIcon = '$_base/ui/icon_gacha_gem_a_estela.png';
+  /// Gema premium: Orbe / balón de cristal.
+  static const clashGachaGemIcon = '$_base/ui/icon_gacha_gem_b_orbe.png';
 
   static const statPar = '$_base/stats/icon_stat_par.png';
   static const statDef = '$_base/stats/icon_stat_def.png';

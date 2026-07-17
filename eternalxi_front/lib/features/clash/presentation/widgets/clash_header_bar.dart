@@ -163,6 +163,7 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                         primary: energy?.fractionLabel ?? '—/—',
                         secondary: energy?.countdownLabel,
                         accent: XiColors.techCyan,
+                        iconGap: 10,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -179,6 +180,7 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                         iconAsset: ClashEpicAssets.clashGachaGemIcon,
                         primary: _formatAmount(gems),
                         accent: const Color(0xFF6EE7FF),
+                        iconGap: 8,
                       ),
                     ),
                   ],
@@ -266,6 +268,7 @@ class _ResourcePill extends StatelessWidget {
     this.secondary,
     this.iconAsset,
     this.iconWidget,
+    this.iconGap = 6,
   });
 
   final String primary;
@@ -273,6 +276,7 @@ class _ResourcePill extends StatelessWidget {
   final Color accent;
   final String? iconAsset;
   final Widget? iconWidget;
+  final double iconGap;
 
   @override
   Widget build(BuildContext context) {
@@ -310,7 +314,7 @@ class _ResourcePill extends StatelessWidget {
               fit: BoxFit.contain,
               filterQuality: FilterQuality.medium,
             ),
-          const SizedBox(width: 6),
+          SizedBox(width: iconGap),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
