@@ -107,13 +107,13 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                     final w = constraints.maxWidth;
                     final h = constraints.maxHeight;
 
-                    final avatarSize = w * 0.21;
-                    // Subir un pelín y mover a la derecha.
-                    final avatarLeft = w * 0.078;
-                    final avatarTop = h * 0.155;
+                    final avatarSize = w * 0.245;
+                    // Más grande y un pelín más abajo.
+                    final avatarLeft = w * 0.065;
+                    final avatarTop = h * 0.185;
 
-                    // Panel derecho: nombre un pelín abajo e izquierda.
-                    final nameLeft = w * 0.32;
+                    // Nombre: bajar y acercar al nivel.
+                    final nameLeft = w * 0.325;
                     final nameRight = w * 0.055;
 
                     return Stack(
@@ -140,18 +140,18 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             ),
                           ),
                         ),
-                        // Nombre + nivel: bajar y un pelín a la izquierda.
+                        // Nombre + nivel: más abajo y menos hueco entre ellos.
                         Positioned(
                           left: nameLeft,
                           right: nameRight,
-                          top: h * 0.185,
-                          height: h * 0.20,
+                          top: h * 0.21,
+                          height: h * 0.175,
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: w * 0.015),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Expanded(
+                                Flexible(
                                   child: Text(
                                     displayName,
                                     maxLines: 1,
@@ -164,6 +164,7 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                                     ),
                                   ),
                                 ),
+                                const SizedBox(width: 8),
                                 Text(
                                   'Nv. $nivel',
                                   style: theme.textTheme.labelMedium?.copyWith(
@@ -177,11 +178,11 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             ),
                           ),
                         ),
-                        // XP: bajar (más) y un pelín a la derecha.
+                        // XP: un pelín arriba y a la derecha.
                         Positioned(
-                          left: w * 0.355,
-                          right: w * 0.045,
-                          top: h * 0.475,
+                          left: w * 0.365,
+                          right: w * 0.04,
+                          top: h * 0.445,
                           height: h * 0.135,
                           child: Center(
                             child: Stack(
@@ -221,12 +222,12 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                             ),
                           ),
                         ),
-                        // Recursos: subir y mover a la derecha (corrigiendo exceso).
+                        // Recursos: un pelín abajo a la izquierda.
                         Positioned(
-                          left: w * 0.33,
-                          right: w * 0.05,
-                          top: h * 0.675,
-                          height: h * 0.185,
+                          left: w * 0.315,
+                          right: w * 0.055,
+                          top: h * 0.695,
+                          height: h * 0.18,
                           child: Row(
                             children: [
                               Expanded(
