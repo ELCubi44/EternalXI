@@ -39,7 +39,7 @@ class ClashCardDetailScreen extends StatefulWidget {
 }
 
 class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   static const _panelHeightFactor = 0.62;
 
   ClashCardCatalogEntry? _entry;
@@ -86,55 +86,65 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
   }
 
   Future<void> _loadCard() async {
-    final controller = context.read<ClashCardsController>();
-    final cardsRepo = context.read<ClashCardsRepository>();
-    final collection = context.read<ClashPlayerCollectionRepository>();
-    final techniqueBooksRepo = context.read<ClashTechniqueBooksRepository>();
-    final evolutionMaterialsRepo = context
-        .read<ClashEvolutionMaterialsRepository>();
-    final materialsRepo = context.read<ClashExpMaterialsRepository>();
-    if (controller.state == ClashCardsLoadState.idle) {
-      await controller.load();
+    try {
+      final controller = context.read<ClashCardsController>();
+      final cardsRepo = context.read<ClashCardsRepository>();
+      final collection = context.read<ClashPlayerCollectionRepository>();
+      final techniqueBooksRepo = context.read<ClashTechniqueBooksRepository>();
+      final evolutionMaterialsRepo = context
+          .read<ClashEvolutionMaterialsRepository>();
+      final materialsRepo = context.read<ClashExpMaterialsRepository>();
+      if (controller.state == ClashCardsLoadState.idle) {
+        await controller.load();
+      }
+      final entry = await controller.findCard(widget.cardId);
+      final techniqueBooks = await techniqueBooksRepo.fetchInventoryEntries();
+      final evolutionMaterials = await evolutionMaterialsRepo
+          .fetchInventoryEntries();
+      final materials = await materialsRepo.fetchInventoryEntries();
+      final catalog = await cardsRepo.fetchAllCards();
+      final enriched =
+          entry == null ? null : collection.enrichEntry(entry);
+      final locked = enriched == null
+          ? const <ClashLockedTechniquePreview>[]
+          : resolveLockedTechniquePreviews(current: enriched, catalog: catalog);
+      final active = enriched == null
+          ? const <ClashSuperTechnique>[]
+          : resolveActiveTechniques(current: enriched, catalog: catalog);
+      if (!mounted) {
+        return;
+      }
+      final canEvolve = enriched != null &&
+          ClashCardEvolutionResolver.canEvolve(enriched.effectiveRarity);
+      final tabCount = canEvolve ? 4 : 3;
+      if (_tabController.length != tabCount) {
+        final oldIndex = _tabController.index;
+        _tabController.dispose();
+        _tabController = TabController(
+          length: tabCount,
+          vsync: this,
+          initialIndex: oldIndex.clamp(0, tabCount - 1),
+        );
+      }
+      setState(() {
+        _entry = enriched;
+        _activeTechniques = active;
+        _techniqueBooks = techniqueBooks;
+        _evolutionMaterials = evolutionMaterials;
+        _materials = materials;
+        _lockedTechniques = locked;
+        _notFound = entry == null;
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _notFound = true;
+        _loading = false;
+      });
     }
-    final entry = await controller.findCard(widget.cardId);
-    final techniqueBooks = await techniqueBooksRepo.fetchInventoryEntries();
-    final evolutionMaterials = await evolutionMaterialsRepo
-        .fetchInventoryEntries();
-    final materials = await materialsRepo.fetchInventoryEntries();
-    final catalog = await cardsRepo.fetchAllCards();
-    final enriched =
-        entry == null ? null : collection.enrichEntry(entry);
-    final locked = enriched == null
-        ? const <ClashLockedTechniquePreview>[]
-        : resolveLockedTechniquePreviews(current: enriched, catalog: catalog);
-    final active = enriched == null
-        ? const <ClashSuperTechnique>[]
-        : resolveActiveTechniques(current: enriched, catalog: catalog);
-    if (!mounted) {
-      return;
-    }
-    final canEvolve = enriched != null &&
-        ClashCardEvolutionResolver.canEvolve(enriched.effectiveRarity);
-    final tabCount = canEvolve ? 4 : 3;
-    if (_tabController.length != tabCount) {
-      final oldIndex = _tabController.index;
-      _tabController.dispose();
-      _tabController = TabController(
-        length: tabCount,
-        vsync: this,
-        initialIndex: oldIndex.clamp(0, tabCount - 1),
-      );
-    }
-    setState(() {
-      _entry = enriched;
-      _activeTechniques = active;
-      _techniqueBooks = techniqueBooks;
-      _evolutionMaterials = evolutionMaterials;
-      _materials = materials;
-      _lockedTechniques = locked;
-      _notFound = entry == null;
-      _loading = false;
-    });
   }
 
   Future<void> _openLevelUpSheet() async {
