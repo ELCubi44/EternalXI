@@ -5,6 +5,7 @@ import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_rarity_badge.dart';
+import 'package:eternal_xi/shared/widgets/xi_player_photo_image.dart';
 import 'package:flutter/material.dart';
 
 /// Retrato básico o placeholder con iniciales cuando no hay imagen real.
@@ -95,8 +96,9 @@ class ClashCardPortrait extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             if (useNetwork)
-              Image.network(
-                networkUrl,
+              XiPlayerPhotoImage(
+                playerId: playerId ?? 0,
+                networkUrl: networkUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) =>
                     _PlaceholderContent(

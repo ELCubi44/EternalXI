@@ -1,8 +1,9 @@
 import 'package:eternal_xi/data/models/league_squad_player.dart';
 import 'package:eternal_xi/features/leagues/utils/league_player_photo.dart';
+import 'package:eternal_xi/shared/widgets/xi_player_photo_image.dart';
 import 'package:flutter/material.dart';
 
-/// Avatar de jugador: foto desde asset por id; si falla la red, placeholder elegante.
+/// Avatar de jugador: foto local (pack Clash) o red; si falla, placeholder.
 class LeaguePlayerAvatar extends StatelessWidget {
   const LeaguePlayerAvatar({
     super.key,
@@ -26,14 +27,15 @@ class LeaguePlayerAvatar extends StatelessWidget {
       colorScheme: colorScheme,
     );
 
-    if (uri == null) {
+    if (uri == null && player.idJugador <= 0) {
       return placeholder;
     }
 
     final imgAlignment = circular ? Alignment.center : Alignment.topCenter;
 
-    final img = Image.network(
-      uri.toString(),
+    final img = XiPlayerPhotoImage(
+      playerId: player.idJugador,
+      networkUrl: uri?.toString(),
       width: size,
       height: size,
       fit: BoxFit.cover,

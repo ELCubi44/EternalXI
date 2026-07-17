@@ -163,7 +163,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
                               title: l10n.modeClashTitle,
                               description: l10n.modeClashDescription,
                               actionLabel: l10n.modeEnter,
-                              onTap: () => context.go(AppRoutes.clash),
+                              onTap: () => context.go(AppRoutes.clashPrepare),
                             ),
                           ],
                         ),

@@ -6,6 +6,7 @@ import 'package:eternal_xi/features/clash/cards/data/models/clash_card_catalog_e
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/epic/clash_epic_assets.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_rarity_badge.dart';
+import 'package:eternal_xi/shared/widgets/xi_player_photo_image.dart';
 import 'package:flutter/material.dart';
 
 /// Tile compacto estilo roster (grid denso, rareza + nivel + posicion).
@@ -83,8 +84,9 @@ class ClashCardTile extends StatelessWidget {
                 if (photoUrl != null)
                   Opacity(
                     opacity: 0.88,
-                    child: Image.network(
-                      photoUrl,
+                    child: XiPlayerPhotoImage(
+                      playerId: entry.playerId,
+                      networkUrl: photoUrl,
                       fit: BoxFit.cover,
                       alignment: Alignment.topCenter,
                       errorBuilder: (_, __, ___) => _InitialsFallback(

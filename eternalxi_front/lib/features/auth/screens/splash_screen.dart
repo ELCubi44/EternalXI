@@ -8,6 +8,7 @@ import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/auth/widgets/app_settings_sheet.dart';
 import 'package:eternal_xi/features/clash/content/clash_content_download_service.dart';
 import 'package:eternal_xi/features/clash/content/clash_content_manifest.dart';
+import 'package:eternal_xi/features/clash/content/player_image_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -69,6 +70,8 @@ class _SplashScreenState extends State<SplashScreen>
         _hasSession = hasSession;
       });
       await _downloadClashContent();
+      // Precalienta la ruta de caché de fotos por si Fantasy/Clash ya tienen pack.
+      await PlayerImageCache.instance.playersDirectory();
     });
   }
 

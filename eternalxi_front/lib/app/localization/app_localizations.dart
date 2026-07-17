@@ -110,6 +110,10 @@ class AppLocalizations {
       'modeClashDescription':
           'Historia, cartas y batallas. Colecciona jugadores y compite en partidos 7vs7.',
       'modeClashEnter': 'Entrar a Clash',
+      'clashMediaDownloadTitle': 'Preparando Clash',
+      'clashMediaDownloadSubtitle':
+          'Para jugar Clash hay que descargar las cartas y las fotos de los jugadores. Fantasy sigue funcionando online; si ya tienes estas fotos, también cargarán más rápido allí.',
+      'clashMediaDownloadRetry': 'Reintentar',
       'clashPlaceholderTitle': 'Eternal XI Clash',
       'clashPlaceholderBody':
           'Próximamente: modo de historia, colección de cartas y batallas. Estamos preparando la experiencia.',
@@ -1312,6 +1316,10 @@ class AppLocalizations {
       'modeClashDescription':
           'Story, cards and battles. Collect players and compete in 7v7 matches.',
       'modeClashEnter': 'Enter Clash',
+      'clashMediaDownloadTitle': 'Preparing Clash',
+      'clashMediaDownloadSubtitle':
+          'To play Clash you need to download the cards and player photos. Fantasy still works online; once these photos are saved they will also load faster there.',
+      'clashMediaDownloadRetry': 'Retry',
       'clashPlaceholderTitle': 'Eternal XI Clash',
       'clashPlaceholderBody':
           'Coming soon: story mode, card collection and battles. We are building the experience.',
@@ -2584,6 +2592,9 @@ class AppLocalizations {
   String get modeClashTitle => _t('modeClashTitle');
   String get modeClashDescription => _t('modeClashDescription');
   String get modeClashEnter => _t('modeClashEnter');
+  String get clashMediaDownloadTitle => _t('clashMediaDownloadTitle');
+  String get clashMediaDownloadSubtitle => _t('clashMediaDownloadSubtitle');
+  String get clashMediaDownloadRetry => _t('clashMediaDownloadRetry');
   String get clashPlaceholderTitle => _t('clashPlaceholderTitle');
   String get clashPlaceholderBody => _t('clashPlaceholderBody');
   String get backToModeSelection => _t('backToModeSelection');

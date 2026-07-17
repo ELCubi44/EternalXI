@@ -12,6 +12,8 @@ class ClashContentManifest {
     required this.playerCount,
     required this.cardCount,
     this.portraitsBaseUrl,
+    this.portraitsBytesEstimate = 0,
+    this.portraitsVersion = 1,
   });
 
   final int schemaVersion;
@@ -21,6 +23,8 @@ class ClashContentManifest {
   final int playerCount;
   final int cardCount;
   final String? portraitsBaseUrl;
+  final int portraitsBytesEstimate;
+  final int portraitsVersion;
 
   static const assetPath = 'assets/data/clash/cards_manifest.json';
 
@@ -38,6 +42,8 @@ class ClashContentManifest {
       playerCount: json['playerCount'] as int? ?? 0,
       cardCount: json['cardCount'] as int? ?? 0,
       portraitsBaseUrl: json['portraitsBaseUrl'] as String?,
+      portraitsBytesEstimate: json['portraitsBytesEstimate'] as int? ?? 0,
+      portraitsVersion: json['portraitsVersion'] as int? ?? 1,
     );
   }
 }

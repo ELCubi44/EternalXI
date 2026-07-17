@@ -32,7 +32,7 @@ void main() {
 
     for (final rarity in ['n', 'r', 'sr']) {
       final cardId = '$teamSlug-$rarity-$pcode-${seq.toString().padLeft(3, '0')}';
-      final stats = _buildStats(pos, player.valoracion, rarity);
+      final stats = _buildStats(position, player.valoracion, rarity);
       cards.add({
         'id': cardId,
         'playerId': pid,
@@ -64,13 +64,15 @@ void main() {
 
   manifestFile.writeAsStringSync(
     const JsonEncoder.withIndent('  ').convert({
-      'schemaVersion': 1,
-      'cardsVersion': 1,
+      'cardsVersion': 2,
       'cardsUrl': 'https://api.eternalxi.com/api/v1/assets/clash/cards.json',
       'cardsBytes': sizeBytes,
       'playerCount': players.length,
       'cardCount': cards.length,
-      'portraitsBaseUrl': 'https://api.eternalxi.com/assets/players',
+      'portraitsBaseUrl':
+          'https://api.eternalxi.com/api/v1/assets/players',
+      'portraitsBytesEstimate': players.length * 1650000,
+      'portraitsVersion': 1,
     }),
   );
 
@@ -95,7 +97,7 @@ const _stTypeMap = {
 };
 
 const _posProfile = {
-  'POR': {
+  'goalkeeper': {
     'save': [30, 14],
     'defense': [16, 8],
     'pass': [12, 6],
@@ -104,30 +106,57 @@ const _posProfile = {
     'techniquePoints': [16, 8],
     'stamina': [100, 8],
   },
-  'DEF': {
+  'centreBack': {
     'save': [4, 2],
-    'defense': [28, 12],
-    'pass': [14, 6],
-    'dribble': [10, 5],
-    'shot': [8, 4],
+    'defense': [31, 12],
+    'pass': [13, 6],
+    'dribble': [8, 4],
+    'shot': [7, 3],
     'techniquePoints': [16, 8],
     'stamina': [102, 8],
   },
-  'MED': {
+  'fullBack': {
+    'save': [4, 2],
+    'defense': [25, 11],
+    'pass': [16, 7],
+    'dribble': [13, 6],
+    'shot': [9, 4],
+    'techniquePoints': [16, 8],
+    'stamina': [103, 8],
+  },
+  'defensiveMidfielder': {
     'save': [3, 1],
-    'defense': [16, 8],
+    'defense': [21, 9],
     'pass': [22, 10],
-    'dribble': [18, 8],
-    'shot': [14, 6],
+    'dribble': [15, 7],
+    'shot': [12, 5],
     'techniquePoints': [18, 8],
     'stamina': [104, 8],
   },
-  'DEL': {
+  'attackingMidfielder': {
+    'save': [3, 1],
+    'defense': [13, 7],
+    'pass': [23, 10],
+    'dribble': [20, 9],
+    'shot': [17, 7],
+    'techniquePoints': [18, 8],
+    'stamina': [104, 8],
+  },
+  'winger': {
+    'save': [3, 1],
+    'defense': [11, 5],
+    'pass': [16, 7],
+    'dribble': [24, 11],
+    'shot': [22, 10],
+    'techniquePoints': [18, 8],
+    'stamina': [106, 10],
+  },
+  'striker': {
     'save': [3, 1],
     'defense': [12, 6],
-    'pass': [14, 6],
-    'dribble': [20, 10],
-    'shot': [26, 12],
+    'pass': [12, 5],
+    'dribble': [18, 8],
+    'shot': [28, 13],
     'techniquePoints': [18, 8],
     'stamina': [105, 10],
   },

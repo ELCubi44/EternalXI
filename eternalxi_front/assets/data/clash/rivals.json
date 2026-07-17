@@ -47,10 +47,10 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 34,
-            "pass": 17,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 37,
+            "pass": 16,
+            "dribble": 10,
+            "shot": 9,
             "techniquePoints": 20,
             "stamina": 106
           },
@@ -77,12 +77,12 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 35,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 32,
+            "pass": 20,
+            "dribble": 17,
+            "shot": 11,
             "techniquePoints": 21,
-            "stamina": 107
+            "stamina": 108
           },
           "superTechniques": [
             {
@@ -107,10 +107,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 23,
+            "defense": 29,
             "pass": 31,
-            "dribble": 25,
-            "shot": 19,
+            "dribble": 21,
+            "shot": 16,
             "techniquePoints": 25,
             "stamina": 111
           },
@@ -131,16 +131,16 @@
           "id": "rival-academia-tianlong-n-am-017",
           "playerId": 656,
           "name": "Qiao Meilin",
-          "position": "attackingMidfielder",
+          "position": "defensiveMidfielder",
           "style": "picaro",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 20,
+            "defense": 26,
             "pass": 27,
-            "dribble": 22,
-            "shot": 17,
+            "dribble": 19,
+            "shot": 15,
             "techniquePoints": 22,
             "stamina": 108
           },
@@ -167,12 +167,12 @@
           "level": 5,
           "stats": {
             "save": 3,
-            "defense": 15,
-            "pass": 17,
-            "dribble": 25,
-            "shot": 31,
+            "defense": 13,
+            "pass": 19,
+            "dribble": 29,
+            "shot": 27,
             "techniquePoints": 22,
-            "stamina": 110
+            "stamina": 111
           },
           "superTechniques": [
             {
@@ -198,9 +198,9 @@
           "stats": {
             "save": 4,
             "defense": 16,
-            "pass": 18,
-            "dribble": 27,
-            "shot": 34,
+            "pass": 15,
+            "dribble": 23,
+            "shot": 37,
             "techniquePoints": 23,
             "stamina": 112
           },
@@ -266,10 +266,10 @@
           "level": 5,
           "stats": {
             "save": 6,
-            "defense": 38,
-            "pass": 19,
-            "dribble": 14,
-            "shot": 11,
+            "defense": 41,
+            "pass": 18,
+            "dribble": 11,
+            "shot": 10,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -296,12 +296,12 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 35,
-            "pass": 17,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 31,
+            "pass": 20,
+            "dribble": 16,
+            "shot": 11,
             "techniquePoints": 20,
-            "stamina": 106
+            "stamina": 107
           },
           "superTechniques": [
             {
@@ -326,10 +326,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 22,
+            "defense": 28,
             "pass": 29,
-            "dribble": 24,
-            "shot": 18,
+            "dribble": 20,
+            "shot": 16,
             "techniquePoints": 24,
             "stamina": 110
           },
@@ -356,10 +356,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 20,
-            "pass": 27,
-            "dribble": 22,
-            "shot": 17,
+            "defense": 17,
+            "pass": 28,
+            "dribble": 25,
+            "shot": 21,
             "techniquePoints": 22,
             "stamina": 108
           },
@@ -386,12 +386,12 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 15,
-            "pass": 17,
-            "dribble": 25,
-            "shot": 32,
+            "defense": 14,
+            "pass": 20,
+            "dribble": 30,
+            "shot": 27,
             "techniquePoints": 22,
-            "stamina": 110
+            "stamina": 111
           },
           "superTechniques": [
             {
@@ -417,9 +417,9 @@
           "stats": {
             "save": 4,
             "defense": 16,
-            "pass": 18,
-            "dribble": 26,
-            "shot": 34,
+            "pass": 15,
+            "dribble": 23,
+            "shot": 36,
             "techniquePoints": 23,
             "stamina": 111
           },
@@ -485,10 +485,10 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 34,
-            "pass": 17,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 37,
+            "pass": 16,
+            "dribble": 10,
+            "shot": 9,
             "techniquePoints": 20,
             "stamina": 106
           },
@@ -515,12 +515,12 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 34,
-            "pass": 17,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 31,
+            "pass": 20,
+            "dribble": 16,
+            "shot": 11,
             "techniquePoints": 20,
-            "stamina": 106
+            "stamina": 107
           },
           "superTechniques": [
             {
@@ -545,10 +545,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 21,
+            "defense": 26,
             "pass": 28,
-            "dribble": 23,
-            "shot": 18,
+            "dribble": 19,
+            "shot": 15,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -575,10 +575,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 21,
-            "pass": 28,
-            "dribble": 23,
-            "shot": 18,
+            "defense": 17,
+            "pass": 29,
+            "dribble": 26,
+            "shot": 21,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -605,12 +605,12 @@
           "level": 5,
           "stats": {
             "save": 3,
-            "defense": 12,
-            "pass": 14,
-            "dribble": 20,
-            "shot": 26,
+            "defense": 11,
+            "pass": 16,
+            "dribble": 24,
+            "shot": 22,
             "techniquePoints": 18,
-            "stamina": 105
+            "stamina": 106
           },
           "superTechniques": [
             {
@@ -636,9 +636,9 @@
           "stats": {
             "save": 4,
             "defense": 17,
-            "pass": 19,
-            "dribble": 29,
-            "shot": 36,
+            "pass": 16,
+            "dribble": 25,
+            "shot": 39,
             "techniquePoints": 25,
             "stamina": 114
           },
@@ -704,10 +704,10 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 36,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 11,
+            "defense": 39,
+            "pass": 17,
+            "dribble": 11,
+            "shot": 9,
             "techniquePoints": 21,
             "stamina": 107
           },
@@ -734,12 +734,12 @@
           "level": 5,
           "stats": {
             "save": 6,
-            "defense": 37,
-            "pass": 19,
-            "dribble": 14,
-            "shot": 11,
+            "defense": 34,
+            "pass": 21,
+            "dribble": 18,
+            "shot": 12,
             "techniquePoints": 22,
-            "stamina": 108
+            "stamina": 109
           },
           "superTechniques": [
             {
@@ -764,10 +764,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 21,
+            "defense": 27,
             "pass": 29,
-            "dribble": 23,
-            "shot": 18,
+            "dribble": 20,
+            "shot": 15,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -794,10 +794,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 23,
-            "pass": 31,
-            "dribble": 25,
-            "shot": 19,
+            "defense": 19,
+            "pass": 32,
+            "dribble": 28,
+            "shot": 23,
             "techniquePoints": 25,
             "stamina": 111
           },
@@ -824,12 +824,12 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 15,
-            "pass": 17,
-            "dribble": 25,
-            "shot": 33,
+            "defense": 14,
+            "pass": 20,
+            "dribble": 30,
+            "shot": 27,
             "techniquePoints": 22,
-            "stamina": 110
+            "stamina": 111
           },
           "superTechniques": [
             {
@@ -855,9 +855,9 @@
           "stats": {
             "save": 4,
             "defense": 18,
-            "pass": 20,
-            "dribble": 30,
-            "shot": 38,
+            "pass": 17,
+            "dribble": 26,
+            "shot": 41,
             "techniquePoints": 26,
             "stamina": 115
           },
@@ -923,10 +923,10 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 35,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 38,
+            "pass": 17,
+            "dribble": 10,
+            "shot": 9,
             "techniquePoints": 21,
             "stamina": 107
           },
@@ -953,12 +953,12 @@
           "level": 5,
           "stats": {
             "save": 6,
-            "defense": 38,
-            "pass": 19,
-            "dribble": 14,
-            "shot": 11,
+            "defense": 35,
+            "pass": 22,
+            "dribble": 18,
+            "shot": 12,
             "techniquePoints": 23,
-            "stamina": 109
+            "stamina": 110
           },
           "superTechniques": [
             {
@@ -983,10 +983,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 21,
+            "defense": 26,
             "pass": 28,
-            "dribble": 23,
-            "shot": 18,
+            "dribble": 19,
+            "shot": 15,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -1013,10 +1013,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 20,
-            "pass": 27,
-            "dribble": 22,
-            "shot": 17,
+            "defense": 17,
+            "pass": 28,
+            "dribble": 25,
+            "shot": 21,
             "techniquePoints": 22,
             "stamina": 108
           },
@@ -1037,16 +1037,16 @@
           "id": "rival-colegio-runaria-n-st-009",
           "playerId": 679,
           "name": "Brooks Ironmere",
-          "position": "winger",
+          "position": "striker",
           "style": "potente",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
             "defense": 17,
-            "pass": 19,
-            "dribble": 28,
-            "shot": 35,
+            "pass": 16,
+            "dribble": 24,
+            "shot": 38,
             "techniquePoints": 24,
             "stamina": 113
           },
@@ -1067,18 +1067,18 @@
           "id": "rival-colegio-runaria-n-st-007",
           "playerId": 676,
           "name": "Archie Redwick",
-          "position": "striker",
+          "position": "winger",
           "style": "agil",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 16,
-            "pass": 18,
-            "dribble": 27,
-            "shot": 34,
+            "defense": 14,
+            "pass": 21,
+            "dribble": 32,
+            "shot": 29,
             "techniquePoints": 23,
-            "stamina": 112
+            "stamina": 113
           },
           "superTechniques": [
             {
@@ -1142,10 +1142,10 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 35,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 38,
+            "pass": 17,
+            "dribble": 10,
+            "shot": 9,
             "techniquePoints": 21,
             "stamina": 107
           },
@@ -1172,12 +1172,12 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 36,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 11,
+            "defense": 32,
+            "pass": 20,
+            "dribble": 17,
+            "shot": 12,
             "techniquePoints": 21,
-            "stamina": 107
+            "stamina": 108
           },
           "superTechniques": [
             {
@@ -1202,10 +1202,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 21,
+            "defense": 27,
             "pass": 29,
-            "dribble": 23,
-            "shot": 18,
+            "dribble": 20,
+            "shot": 15,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -1232,10 +1232,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 22,
-            "pass": 30,
-            "dribble": 24,
-            "shot": 19,
+            "defense": 18,
+            "pass": 31,
+            "dribble": 27,
+            "shot": 22,
             "techniquePoints": 24,
             "stamina": 110
           },
@@ -1262,12 +1262,12 @@
           "level": 5,
           "stats": {
             "save": 3,
-            "defense": 14,
-            "pass": 16,
-            "dribble": 24,
-            "shot": 30,
+            "defense": 13,
+            "pass": 19,
+            "dribble": 28,
+            "shot": 26,
             "techniquePoints": 21,
-            "stamina": 109
+            "stamina": 110
           },
           "superTechniques": [
             {
@@ -1293,9 +1293,9 @@
           "stats": {
             "save": 4,
             "defense": 17,
-            "pass": 19,
-            "dribble": 28,
-            "shot": 36,
+            "pass": 16,
+            "dribble": 25,
+            "shot": 39,
             "techniquePoints": 25,
             "stamina": 113
           },
@@ -1361,10 +1361,10 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 35,
-            "pass": 17,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 38,
+            "pass": 16,
+            "dribble": 10,
+            "shot": 9,
             "techniquePoints": 20,
             "stamina": 106
           },
@@ -1391,12 +1391,12 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 34,
-            "pass": 17,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 31,
+            "pass": 20,
+            "dribble": 16,
+            "shot": 11,
             "techniquePoints": 20,
-            "stamina": 106
+            "stamina": 107
           },
           "superTechniques": [
             {
@@ -1421,10 +1421,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 20,
+            "defense": 26,
             "pass": 27,
-            "dribble": 22,
-            "shot": 17,
+            "dribble": 19,
+            "shot": 15,
             "techniquePoints": 22,
             "stamina": 108
           },
@@ -1451,10 +1451,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 22,
-            "pass": 30,
-            "dribble": 24,
-            "shot": 19,
+            "defense": 18,
+            "pass": 31,
+            "dribble": 27,
+            "shot": 22,
             "techniquePoints": 24,
             "stamina": 110
           },
@@ -1481,12 +1481,12 @@
           "level": 5,
           "stats": {
             "save": 3,
-            "defense": 12,
-            "pass": 14,
-            "dribble": 20,
-            "shot": 26,
+            "defense": 11,
+            "pass": 16,
+            "dribble": 24,
+            "shot": 22,
             "techniquePoints": 18,
-            "stamina": 105
+            "stamina": 106
           },
           "superTechniques": [
             {
@@ -1512,9 +1512,9 @@
           "stats": {
             "save": 4,
             "defense": 16,
-            "pass": 18,
-            "dribble": 27,
-            "shot": 35,
+            "pass": 16,
+            "dribble": 24,
+            "shot": 37,
             "techniquePoints": 24,
             "stamina": 112
           },
@@ -1580,10 +1580,10 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 36,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 11,
+            "defense": 39,
+            "pass": 17,
+            "dribble": 11,
+            "shot": 9,
             "techniquePoints": 21,
             "stamina": 107
           },
@@ -1610,12 +1610,12 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 36,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 11,
+            "defense": 33,
+            "pass": 21,
+            "dribble": 17,
+            "shot": 12,
             "techniquePoints": 21,
-            "stamina": 107
+            "stamina": 108
           },
           "superTechniques": [
             {
@@ -1640,10 +1640,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 21,
+            "defense": 26,
             "pass": 28,
-            "dribble": 23,
-            "shot": 18,
+            "dribble": 19,
+            "shot": 15,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -1670,10 +1670,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 22,
-            "pass": 29,
-            "dribble": 24,
-            "shot": 18,
+            "defense": 18,
+            "pass": 30,
+            "dribble": 27,
+            "shot": 22,
             "techniquePoints": 24,
             "stamina": 110
           },
@@ -1694,16 +1694,16 @@
           "id": "rival-favela-estrela-n-st-009",
           "playerId": 736,
           "name": "Gael Barbosa Freire",
-          "position": "winger",
+          "position": "striker",
           "style": "potente",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
             "defense": 16,
-            "pass": 18,
-            "dribble": 27,
-            "shot": 35,
+            "pass": 16,
+            "dribble": 24,
+            "shot": 37,
             "techniquePoints": 24,
             "stamina": 112
           },
@@ -1724,18 +1724,18 @@
           "id": "rival-favela-estrela-n-st-007",
           "playerId": 733,
           "name": "Davi Santana Cruz",
-          "position": "striker",
+          "position": "winger",
           "style": "picaro",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 16,
-            "pass": 18,
-            "dribble": 26,
-            "shot": 33,
+            "defense": 14,
+            "pass": 20,
+            "dribble": 31,
+            "shot": 28,
             "techniquePoints": 23,
-            "stamina": 111
+            "stamina": 112
           },
           "superTechniques": [
             {
@@ -1799,10 +1799,10 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 35,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 38,
+            "pass": 17,
+            "dribble": 10,
+            "shot": 9,
             "techniquePoints": 21,
             "stamina": 107
           },
@@ -1829,12 +1829,12 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 35,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 32,
+            "pass": 20,
+            "dribble": 17,
+            "shot": 11,
             "techniquePoints": 21,
-            "stamina": 107
+            "stamina": 108
           },
           "superTechniques": [
             {
@@ -1859,10 +1859,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 21,
+            "defense": 26,
             "pass": 28,
-            "dribble": 23,
-            "shot": 18,
+            "dribble": 19,
+            "shot": 15,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -1889,10 +1889,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 20,
-            "pass": 27,
-            "dribble": 22,
-            "shot": 17,
+            "defense": 17,
+            "pass": 28,
+            "dribble": 25,
+            "shot": 21,
             "techniquePoints": 22,
             "stamina": 108
           },
@@ -1919,12 +1919,12 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 15,
-            "pass": 17,
-            "dribble": 25,
-            "shot": 32,
+            "defense": 14,
+            "pass": 20,
+            "dribble": 30,
+            "shot": 27,
             "techniquePoints": 22,
-            "stamina": 110
+            "stamina": 111
           },
           "superTechniques": [
             {
@@ -1950,9 +1950,9 @@
           "stats": {
             "save": 4,
             "defense": 16,
-            "pass": 18,
-            "dribble": 27,
-            "shot": 34,
+            "pass": 15,
+            "dribble": 23,
+            "shot": 37,
             "techniquePoints": 23,
             "stamina": 112
           },
@@ -2018,10 +2018,10 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 34,
-            "pass": 17,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 37,
+            "pass": 16,
+            "dribble": 10,
+            "shot": 9,
             "techniquePoints": 20,
             "stamina": 106
           },
@@ -2048,12 +2048,12 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 36,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 11,
+            "defense": 32,
+            "pass": 20,
+            "dribble": 17,
+            "shot": 12,
             "techniquePoints": 21,
-            "stamina": 107
+            "stamina": 108
           },
           "superTechniques": [
             {
@@ -2078,10 +2078,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 21,
+            "defense": 27,
             "pass": 29,
-            "dribble": 23,
-            "shot": 18,
+            "dribble": 20,
+            "shot": 15,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -2108,10 +2108,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 21,
-            "pass": 28,
-            "dribble": 23,
-            "shot": 18,
+            "defense": 17,
+            "pass": 29,
+            "dribble": 26,
+            "shot": 21,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -2132,16 +2132,16 @@
           "id": "rival-instinto-real-n-st-009",
           "playerId": 543,
           "name": "Marmo Keane",
-          "position": "winger",
+          "position": "striker",
           "style": "picaro",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
             "defense": 17,
-            "pass": 19,
-            "dribble": 28,
-            "shot": 36,
+            "pass": 16,
+            "dribble": 25,
+            "shot": 39,
             "techniquePoints": 25,
             "stamina": 113
           },
@@ -2162,18 +2162,18 @@
           "id": "rival-instinto-real-n-st-007",
           "playerId": 545,
           "name": "Bilby Kerr",
-          "position": "striker",
+          "position": "winger",
           "style": "agil",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 15,
-            "pass": 17,
-            "dribble": 25,
-            "shot": 33,
+            "defense": 14,
+            "pass": 20,
+            "dribble": 30,
+            "shot": 27,
             "techniquePoints": 22,
-            "stamina": 110
+            "stamina": 111
           },
           "superTechniques": [
             {
@@ -2237,10 +2237,10 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 36,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 11,
+            "defense": 39,
+            "pass": 17,
+            "dribble": 11,
+            "shot": 9,
             "techniquePoints": 21,
             "stamina": 107
           },
@@ -2267,12 +2267,12 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 36,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 11,
+            "defense": 32,
+            "pass": 20,
+            "dribble": 17,
+            "shot": 12,
             "techniquePoints": 21,
-            "stamina": 107
+            "stamina": 108
           },
           "superTechniques": [
             {
@@ -2297,10 +2297,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 23,
+            "defense": 29,
             "pass": 31,
-            "dribble": 25,
-            "shot": 19,
+            "dribble": 21,
+            "shot": 16,
             "techniquePoints": 25,
             "stamina": 111
           },
@@ -2327,10 +2327,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 24,
-            "pass": 32,
-            "dribble": 26,
-            "shot": 20,
+            "defense": 20,
+            "pass": 33,
+            "dribble": 29,
+            "shot": 24,
             "techniquePoints": 26,
             "stamina": 112
           },
@@ -2351,16 +2351,16 @@
           "id": "rival-legado-unido-n-st-005",
           "playerId": 565,
           "name": "Logan Cardinal Brooks",
-          "position": "winger",
+          "position": "striker",
           "style": "agil",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
             "defense": 17,
-            "pass": 19,
-            "dribble": 28,
-            "shot": 35,
+            "pass": 16,
+            "dribble": 24,
+            "shot": 38,
             "techniquePoints": 24,
             "stamina": 113
           },
@@ -2381,18 +2381,18 @@
           "id": "rival-legado-unido-n-st-006",
           "playerId": 562,
           "name": "Caleb Lionhart Brooks",
-          "position": "striker",
+          "position": "winger",
           "style": "potente",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 17,
-            "pass": 19,
-            "dribble": 28,
-            "shot": 35,
+            "defense": 15,
+            "pass": 21,
+            "dribble": 33,
+            "shot": 30,
             "techniquePoints": 24,
-            "stamina": 113
+            "stamina": 114
           },
           "superTechniques": [
             {
@@ -2456,10 +2456,10 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 36,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 11,
+            "defense": 39,
+            "pass": 17,
+            "dribble": 11,
+            "shot": 9,
             "techniquePoints": 21,
             "stamina": 107
           },
@@ -2486,12 +2486,12 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 36,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 11,
+            "defense": 32,
+            "pass": 20,
+            "dribble": 17,
+            "shot": 12,
             "techniquePoints": 21,
-            "stamina": 107
+            "stamina": 108
           },
           "superTechniques": [
             {
@@ -2516,10 +2516,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 20,
+            "defense": 26,
             "pass": 27,
-            "dribble": 22,
-            "shot": 17,
+            "dribble": 19,
+            "shot": 15,
             "techniquePoints": 22,
             "stamina": 108
           },
@@ -2546,10 +2546,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 21,
-            "pass": 28,
-            "dribble": 23,
-            "shot": 18,
+            "defense": 17,
+            "pass": 29,
+            "dribble": 26,
+            "shot": 21,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -2570,16 +2570,16 @@
           "id": "rival-ojo-vigilante-n-st-006",
           "playerId": 526,
           "name": "Tiberiu Lupu",
-          "position": "winger",
+          "position": "striker",
           "style": "picaro",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
             "defense": 16,
-            "pass": 18,
-            "dribble": 27,
-            "shot": 34,
+            "pass": 15,
+            "dribble": 23,
+            "shot": 37,
             "techniquePoints": 23,
             "stamina": 112
           },
@@ -2600,18 +2600,18 @@
           "id": "rival-ojo-vigilante-n-st-008",
           "playerId": 523,
           "name": "Dragoș Velicu",
-          "position": "striker",
+          "position": "winger",
           "style": "picaro",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 16,
-            "pass": 18,
-            "dribble": 27,
-            "shot": 34,
+            "defense": 14,
+            "pass": 21,
+            "dribble": 32,
+            "shot": 29,
             "techniquePoints": 23,
-            "stamina": 112
+            "stamina": 113
           },
           "superTechniques": [
             {
@@ -2675,10 +2675,10 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 35,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 38,
+            "pass": 17,
+            "dribble": 10,
+            "shot": 9,
             "techniquePoints": 21,
             "stamina": 107
           },
@@ -2705,12 +2705,12 @@
           "level": 5,
           "stats": {
             "save": 6,
-            "defense": 38,
-            "pass": 19,
-            "dribble": 14,
-            "shot": 11,
+            "defense": 34,
+            "pass": 22,
+            "dribble": 18,
+            "shot": 12,
             "techniquePoints": 23,
-            "stamina": 109
+            "stamina": 110
           },
           "superTechniques": [
             {
@@ -2735,10 +2735,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 21,
+            "defense": 26,
             "pass": 28,
-            "dribble": 23,
-            "shot": 18,
+            "dribble": 19,
+            "shot": 15,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -2765,10 +2765,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 20,
-            "pass": 27,
-            "dribble": 22,
-            "shot": 17,
+            "defense": 17,
+            "pass": 28,
+            "dribble": 25,
+            "shot": 21,
             "techniquePoints": 22,
             "stamina": 108
           },
@@ -2789,16 +2789,16 @@
           "id": "rival-panteon-caido-n-st-008",
           "playerId": 584,
           "name": "Dorian Mavridis",
-          "position": "winger",
+          "position": "striker",
           "style": "potente",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
             "defense": 17,
-            "pass": 19,
-            "dribble": 28,
-            "shot": 35,
+            "pass": 16,
+            "dribble": 24,
+            "shot": 38,
             "techniquePoints": 24,
             "stamina": 113
           },
@@ -2819,18 +2819,18 @@
           "id": "rival-panteon-caido-n-st-010",
           "playerId": 581,
           "name": "Ilias Dikaros",
-          "position": "striker",
+          "position": "winger",
           "style": "picaro",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 16,
-            "pass": 18,
-            "dribble": 27,
-            "shot": 35,
+            "defense": 15,
+            "pass": 21,
+            "dribble": 32,
+            "shot": 29,
             "techniquePoints": 24,
-            "stamina": 112
+            "stamina": 113
           },
           "superTechniques": [
             {
@@ -2894,10 +2894,10 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 35,
-            "pass": 18,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 38,
+            "pass": 17,
+            "dribble": 10,
+            "shot": 9,
             "techniquePoints": 21,
             "stamina": 107
           },
@@ -2924,12 +2924,12 @@
           "level": 5,
           "stats": {
             "save": 6,
-            "defense": 39,
-            "pass": 19,
-            "dribble": 15,
-            "shot": 12,
+            "defense": 35,
+            "pass": 22,
+            "dribble": 18,
+            "shot": 13,
             "techniquePoints": 23,
-            "stamina": 109
+            "stamina": 110
           },
           "superTechniques": [
             {
@@ -2954,10 +2954,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 20,
+            "defense": 26,
             "pass": 27,
-            "dribble": 22,
-            "shot": 17,
+            "dribble": 19,
+            "shot": 15,
             "techniquePoints": 22,
             "stamina": 108
           },
@@ -2984,10 +2984,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 21,
-            "pass": 29,
-            "dribble": 23,
-            "shot": 18,
+            "defense": 18,
+            "pass": 30,
+            "dribble": 26,
+            "shot": 22,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -3014,12 +3014,12 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 15,
-            "pass": 17,
-            "dribble": 25,
-            "shot": 33,
+            "defense": 14,
+            "pass": 20,
+            "dribble": 30,
+            "shot": 27,
             "techniquePoints": 22,
-            "stamina": 110
+            "stamina": 111
           },
           "superTechniques": [
             {
@@ -3045,9 +3045,9 @@
           "stats": {
             "save": 4,
             "defense": 16,
-            "pass": 18,
-            "dribble": 26,
-            "shot": 34,
+            "pass": 15,
+            "dribble": 23,
+            "shot": 36,
             "techniquePoints": 23,
             "stamina": 111
           },
@@ -3113,10 +3113,10 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 33,
-            "pass": 17,
-            "dribble": 12,
-            "shot": 10,
+            "defense": 36,
+            "pass": 16,
+            "dribble": 10,
+            "shot": 8,
             "techniquePoints": 20,
             "stamina": 106
           },
@@ -3143,12 +3143,12 @@
           "level": 5,
           "stats": {
             "save": 5,
-            "defense": 35,
-            "pass": 17,
-            "dribble": 13,
-            "shot": 10,
+            "defense": 31,
+            "pass": 20,
+            "dribble": 16,
+            "shot": 11,
             "techniquePoints": 20,
-            "stamina": 106
+            "stamina": 107
           },
           "superTechniques": [
             {
@@ -3173,10 +3173,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 21,
+            "defense": 26,
             "pass": 28,
-            "dribble": 23,
-            "shot": 18,
+            "dribble": 19,
+            "shot": 15,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -3203,10 +3203,10 @@
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 21,
-            "pass": 28,
-            "dribble": 23,
-            "shot": 18,
+            "defense": 17,
+            "pass": 29,
+            "dribble": 26,
+            "shot": 21,
             "techniquePoints": 23,
             "stamina": 109
           },
@@ -3227,16 +3227,16 @@
           "id": "rival-sistema-cero-n-st-008",
           "playerId": 622,
           "name": "Minseok Koo",
-          "position": "winger",
+          "position": "striker",
           "style": "potente",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
             "defense": 17,
-            "pass": 19,
-            "dribble": 28,
-            "shot": 36,
+            "pass": 16,
+            "dribble": 25,
+            "shot": 39,
             "techniquePoints": 25,
             "stamina": 113
           },
@@ -3257,18 +3257,18 @@
           "id": "rival-sistema-cero-n-st-010",
           "playerId": 619,
           "name": "Harin Moon",
-          "position": "striker",
+          "position": "winger",
           "style": "agil",
           "rarity": "n",
           "level": 5,
           "stats": {
             "save": 4,
-            "defense": 16,
-            "pass": 18,
-            "dribble": 27,
-            "shot": 34,
+            "defense": 14,
+            "pass": 21,
+            "dribble": 32,
+            "shot": 29,
             "techniquePoints": 23,
-            "stamina": 112
+            "stamina": 113
           },
           "superTechniques": [
             {

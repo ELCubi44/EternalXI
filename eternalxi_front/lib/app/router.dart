@@ -45,6 +45,7 @@ import 'package:eternal_xi/features/leagues/screens/create_league_screen.dart';
 import 'package:eternal_xi/features/leagues/screens/join_league_screen.dart';
 import 'package:eternal_xi/features/leagues/shell/league_shell_screen.dart';
 import 'package:eternal_xi/features/leagues/screens/my_leagues_screen.dart';
+import 'package:eternal_xi/features/clash/content/clash_media_download_screen.dart';
 import 'package:eternal_xi/features/mode/screens/mode_selection_screen.dart';
 import 'package:eternal_xi/features/profile/screens/confirm_change_email_screen.dart';
 import 'package:eternal_xi/features/profile/screens/confirm_account_deletion_screen.dart';
@@ -122,6 +123,11 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.mode,
       redirect: redirectIfUnauthenticated,
       builder: (context, state) => const ModeSelectionScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.clashPrepare,
+      redirect: redirectIfUnauthenticated,
+      builder: (context, state) => const ClashMediaDownloadScreen(),
     ),
     ShellRoute(
       builder: (context, state, child) {

@@ -6,6 +6,7 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_card_xp_table.dart'
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/epic/clash_epic_assets.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_rarity_badge.dart';
+import 'package:eternal_xi/shared/widgets/xi_player_photo_image.dart';
 import 'package:flutter/material.dart';
 
 /// Presentacion epica de carta Clash (detalle o tile compacto).
@@ -438,16 +439,17 @@ class _PlayerPortrait extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final url = _photoUrl;
+    final id = entry.playerId;
 
-    if (url == null) {
+    if (url == null && id <= 0) {
       return _InitialsFallback(name: entry.name);
     }
 
-    return Image.network(
-      url,
+    return XiPlayerPhotoImage(
+      playerId: id,
+      networkUrl: url,
       fit: BoxFit.contain,
       alignment: Alignment.bottomCenter,
-      filterQuality: FilterQuality.high,
       errorBuilder: (_, __, ___) => _InitialsFallback(name: entry.name),
     );
   }

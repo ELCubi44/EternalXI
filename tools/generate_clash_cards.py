@@ -30,8 +30,9 @@ ST_TYPE_MAP = {
     "TIRO": "shot",
 }
 
+# Perfiles finos por subposición Clash (base, spread) a valoración 70→92.
 POS_PROFILE = {
-    "POR": {
+    "goalkeeper": {
         "save": (30, 14),
         "defense": (16, 8),
         "pass": (12, 6),
@@ -40,30 +41,57 @@ POS_PROFILE = {
         "techniquePoints": (16, 8),
         "stamina": (100, 8),
     },
-    "DEF": {
+    "centreBack": {
         "save": (4, 2),
-        "defense": (28, 12),
-        "pass": (14, 6),
-        "dribble": (10, 5),
-        "shot": (8, 4),
+        "defense": (31, 12),
+        "pass": (13, 6),
+        "dribble": (8, 4),
+        "shot": (7, 3),
         "techniquePoints": (16, 8),
         "stamina": (102, 8),
     },
-    "MED": {
+    "fullBack": {
+        "save": (4, 2),
+        "defense": (25, 11),
+        "pass": (16, 7),
+        "dribble": (13, 6),
+        "shot": (9, 4),
+        "techniquePoints": (16, 8),
+        "stamina": (103, 8),
+    },
+    "defensiveMidfielder": {
         "save": (3, 1),
-        "defense": (16, 8),
+        "defense": (21, 9),
         "pass": (22, 10),
-        "dribble": (18, 8),
-        "shot": (14, 6),
+        "dribble": (15, 7),
+        "shot": (12, 5),
         "techniquePoints": (18, 8),
         "stamina": (104, 8),
     },
-    "DEL": {
+    "attackingMidfielder": {
+        "save": (3, 1),
+        "defense": (13, 7),
+        "pass": (23, 10),
+        "dribble": (20, 9),
+        "shot": (17, 7),
+        "techniquePoints": (18, 8),
+        "stamina": (104, 8),
+    },
+    "winger": {
+        "save": (3, 1),
+        "defense": (11, 5),
+        "pass": (16, 7),
+        "dribble": (24, 11),
+        "shot": (22, 10),
+        "techniquePoints": (18, 8),
+        "stamina": (106, 10),
+    },
+    "striker": {
         "save": (3, 1),
         "defense": (12, 6),
-        "pass": (14, 6),
-        "dribble": (20, 10),
-        "shot": (26, 12),
+        "pass": (12, 5),
+        "dribble": (18, 8),
+        "shot": (28, 13),
         "techniquePoints": (18, 8),
         "stamina": (105, 10),
     },
@@ -107,8 +135,8 @@ def stat_value(base: float, spread: float, scale: float, mult: float) -> int:
     return max(1, int(round((base + spread * scale) * mult)))
 
 
-def build_stats(pos: str, valoracion: int, rarity: str) -> dict:
-    profile = POS_PROFILE[pos]
+def build_stats(clash_pos: str, valoracion: int, rarity: str) -> dict:
+    profile = POS_PROFILE[clash_pos]
     scale = max(0.0, min(1.0, (valoracion - 70) / 22.0))
     mult = RARITY_MULT[rarity]
     return {
@@ -215,7 +243,7 @@ def main() -> None:
 
         for rarity in ("n", "r", "sr"):
             card_id = f"{team_slug}-{rarity}-{pcode}-{seq:03d}"
-            stats = build_stats(pos, player["valoracion"], rarity)
+            stats = build_stats(position, player["valoracion"], rarity)
             card = {
                 "id": card_id,
                 "playerId": pid,
@@ -242,12 +270,14 @@ def main() -> None:
     manifest = {
         "schemaVersion": 1,
         "cardsVersion": 1,
-        "cardsUrl": "https://api.eternalxi.com/assets/clash/cards.json",
+        "cardsUrl": "https://api.eternalxi.com/api/v1/assets/clash/cards.json",
         "cardsBytes": size_bytes,
         "cardsSha256": None,
         "playerCount": len(players),
         "cardCount": len(cards),
-        "portraitsBaseUrl": "https://api.eternalxi.com/assets/players",
+        "portraitsBaseUrl": "https://api.eternalxi.com/api/v1/assets/players",
+        "portraitsBytesEstimate": len(players) * 1650000,
+        "portraitsVersion": 1,
     }
     MANIFEST_JSON.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 

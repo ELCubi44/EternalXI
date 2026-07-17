@@ -8,6 +8,7 @@ class AppRoutes {
   static const passwordResetConfirm = '/password-reset/confirm';
   static const home = '/home';
   static const mode = '/mode';
+  static const clashPrepare = '/clash/prepare';
   static const clash = '/clash';
   static const clashCards = '/clash/cards';
   static const clashTeam7v7 = '/clash/team/7v7';
