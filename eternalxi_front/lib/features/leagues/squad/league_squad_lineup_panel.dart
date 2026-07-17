@@ -9,6 +9,7 @@ import 'package:eternal_xi/data/models/league_squad_player.dart';
 import 'package:eternal_xi/data/services/leagues_api_service.dart';
 import 'package:eternal_xi/features/leagues/squad/league_squad_position_bucket.dart';
 import 'package:eternal_xi/features/leagues/utils/league_display_strings.dart';
+import 'package:eternal_xi/features/leagues/utils/league_lineup_autofill_rank.dart';
 import 'package:eternal_xi/features/leagues/utils/league_player_estado_titularidad.dart';
 import 'package:eternal_xi/features/leagues/utils/league_player_availability_icons.dart';
 import 'package:eternal_xi/features/leagues/utils/league_player_visible_estado.dart';
@@ -394,13 +395,26 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
 
   bool _isPlayerEligibleForLineup(LeagueSquadPlayer player) => true;
 
-  int _compareByPlayProbability(LeagueSquadPlayer a, LeagueSquadPlayer b) {
-    final pa = a.probabilidadTitular ?? -1;
-    final pb = b.probabilidadTitular ?? -1;
-    if (pa != pb) {
-      return pb.compareTo(pa);
+  bool get _autofillCoachActive => widget.entrenadorActivo;
+
+  int? get _autofillCoachTeamId {
+    if (!_autofillCoachActive) {
+      return null;
     }
-    return b.valor.compareTo(a.valor);
+    final id = widget.entrenadorAsignado?.idEquipo;
+    if (id == null || id <= 0) {
+      return null;
+    }
+    return id;
+  }
+
+  int _compareByPlayProbability(LeagueSquadPlayer a, LeagueSquadPlayer b) {
+    return LeagueLineupAutofillRank.compare(
+      a,
+      b,
+      coachActive: _autofillCoachActive,
+      coachTeamId: _autofillCoachTeamId,
+    );
   }
 
   void _optimizeLineupByPlayProbability() {
@@ -427,29 +441,38 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
     Set<int> assignedStarterIds,
   ) {
     final lineType = _lineForState(line);
-    final pool = _squadPoolForUserLineup()
-        .where(
-          (p) =>
-              _isPlayerEligibleForLineup(p) &&
-              LeagueSquadPositionBucket.forPosition(p.posicion) == lineType,
-        )
-        .toList()
-      ..sort(_compareByPlayProbability);
+    final pool = _squadPoolForUserLineup().where(
+      (p) =>
+          _isPlayerEligibleForLineup(p) &&
+          LeagueSquadPositionBucket.forPosition(p.posicion) == lineType,
+    );
 
-    final picked = <LeagueSquadPlayer>[];
-    for (final player in pool) {
-      if (assignedStarterIds.contains(player.idLigaJugador)) {
-        continue;
-      }
-      picked.add(player);
-      if (picked.length >= line.slotCount + 1) {
-        break;
-      }
-    }
+    // Titulares: activos primero; lesionados/sancionados solo si faltan huecos.
+    final starters = LeagueLineupAutofillRank.pickBest(
+      pool: pool,
+      needed: line.slotCount,
+      coachActive: _autofillCoachActive,
+      coachTeamId: _autofillCoachTeamId,
+      excludeIds: assignedStarterIds,
+      allowUnavailable: true,
+    );
+    final usedIds = <int>{
+      ...assignedStarterIds,
+      for (final p in starters) p.idLigaJugador,
+    };
+    // Reserva: solo si hay activo/duda libre. Nunca forzar lesionado aquí.
+    final reservePick = LeagueLineupAutofillRank.pickBest(
+      pool: pool,
+      needed: 1,
+      coachActive: _autofillCoachActive,
+      coachTeamId: _autofillCoachTeamId,
+      excludeIds: usedIds,
+      allowUnavailable: false,
+    );
 
     var changed = false;
     for (var i = 0; i < line.slotCount; i++) {
-      final next = i < picked.length ? picked[i] : null;
+      final next = i < starters.length ? starters[i] : null;
       if (line.slots[i]?.idLigaJugador != next?.idLigaJugador) {
         line.slots[i] = next;
         changed = true;
@@ -459,8 +482,7 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       }
     }
 
-    final nextReserve =
-        picked.length > line.slotCount ? picked[line.slotCount] : null;
+    final nextReserve = reservePick.isEmpty ? null : reservePick.first;
     if (line.reserve?.idLigaJugador != nextReserve?.idLigaJugador) {
       line.reserve = nextReserve;
       changed = true;
@@ -623,10 +645,14 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
         continue;
       }
       final candidates = _candidatesForSlot(line: line, slotIndex: i);
-      if (candidates.isEmpty) {
+      final next = _pickAutofillCandidate(
+        candidates,
+        allowUnavailable: true,
+      );
+      if (next == null) {
         continue;
       }
-      line.slots[i] = candidates.first;
+      line.slots[i] = next;
       changed = true;
     }
     return changed;
@@ -637,11 +663,31 @@ class LeagueSquadLineupPanelState extends State<LeagueSquadLineupPanel> {
       return false;
     }
     final candidates = _candidatesForReserve(line);
-    if (candidates.isEmpty) {
+    // Reserva: solo activos/duda. Mejor hueco vacío que lesionado/sancionado.
+    final next = _pickAutofillCandidate(
+      candidates,
+      allowUnavailable: false,
+    );
+    if (next == null) {
       return false;
     }
-    line.reserve = candidates.first;
+    line.reserve = next;
     return true;
+  }
+
+  LeagueSquadPlayer? _pickAutofillCandidate(
+    List<LeagueSquadPlayer> candidates, {
+    required bool allowUnavailable,
+  }) {
+    for (final c in candidates) {
+      if (!LeagueLineupAutofillRank.isUnavailable(c)) {
+        return c;
+      }
+    }
+    if (allowUnavailable && candidates.isNotEmpty) {
+      return candidates.first;
+    }
+    return null;
   }
 
   void _autofillLineupSlots() {
