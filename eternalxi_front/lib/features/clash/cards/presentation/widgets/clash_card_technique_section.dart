@@ -89,6 +89,7 @@ class ClashCardTechniqueSection extends StatelessWidget {
       progress: progress,
     );
     final atMax = resolved.level.isMax;
+    final book = _pickBook();
 
     return ClashCardDetailSectionCard(
       padding: const EdgeInsets.all(14),
@@ -114,6 +115,19 @@ class ClashCardTechniqueSection extends StatelessWidget {
             label: l10n.clashTechniquePtCost,
             value: '${resolved.ptCost}',
           ),
+          if (!atMax && book != null) ...[
+            ClashCardDetailMetaRow(
+              label: l10n.clashTechniqueUpgradeRequirements,
+              value: l10n.clashTechniqueUpgradeNeed(book.book.booksRequired),
+            ),
+            ClashCardDetailMetaRow(
+              label: l10n.clashItemHave(book.quantity),
+              value: l10n.clashItemMissing(
+                (book.book.booksRequired - book.quantity)
+                    .clamp(0, book.book.booksRequired),
+              ),
+            ),
+          ],
           const SizedBox(height: 10),
           Align(
             alignment: Alignment.centerRight,

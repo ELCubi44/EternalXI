@@ -64,7 +64,92 @@ class ClashCardEpicShowcase extends StatelessWidget {
     return SizedBox(
       height: clampedHeight,
       width: double.infinity,
+      child: detailHero
+          ? _FramedDetailCard(
+              entry: entry,
+              onLevelUpTap: onLevelUpTap,
+            )
+          : ClipRRect(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Stack(
+                      clipBehavior: Clip.hardEdge,
+                      fit: StackFit.expand,
+                      children: [
+                        _EpicBackground(entry: entry),
+                        Positioned.fill(
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.black.withValues(alpha: 0.12),
+                                  Colors.transparent,
+                                  Colors.black.withValues(alpha: 0.18),
+                                ],
+                                stops: const [0, 0.55, 1],
+                              ),
+                            ),
+                          ),
+                        ),
+                        _PortraitLayer(
+                          entry: entry,
+                          compact: false,
+                          detailHero: false,
+                        ),
+                      ],
+                    ),
+                  ),
+                  _StatsPanel(
+                    entry: entry,
+                    onLevelUpTap: onLevelUpTap,
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+}
+
+/// Carta completa con borde dorado desde rareza/PWR hasta el panel de stats.
+class _FramedDetailCard extends StatelessWidget {
+  const _FramedDetailCard({
+    required this.entry,
+    this.onLevelUpTap,
+  });
+
+  final ClashCardCatalogEntry entry;
+  final VoidCallback? onLevelUpTap;
+
+  static const _radius = 18.0;
+  static const _borderWidth = 2.4;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(_radius),
+        border: Border.all(
+          color: XiColors.classicGold,
+          width: _borderWidth,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: XiColors.classicGold.withValues(alpha: 0.28),
+            blurRadius: 14,
+            spreadRadius: 0.5,
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: ClipRRect(
+        borderRadius: BorderRadius.circular(_radius - _borderWidth),
         child: Column(
           children: [
             Expanded(
@@ -80,11 +165,11 @@ class ClashCardEpicShowcase extends StatelessWidget {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            Colors.black.withValues(alpha: 0.12),
+                            Colors.black.withValues(alpha: 0.14),
                             Colors.transparent,
-                            Colors.black.withValues(alpha: 0.18),
+                            Colors.black.withValues(alpha: 0.2),
                           ],
-                          stops: const [0, 0.55, 1],
+                          stops: const [0, 0.5, 1],
                         ),
                       ),
                     ),
@@ -92,7 +177,7 @@ class ClashCardEpicShowcase extends StatelessWidget {
                   _PortraitLayer(
                     entry: entry,
                     compact: false,
-                    detailHero: detailHero,
+                    detailHero: true,
                   ),
                 ],
               ),
@@ -100,6 +185,7 @@ class ClashCardEpicShowcase extends StatelessWidget {
             _StatsPanel(
               entry: entry,
               onLevelUpTap: onLevelUpTap,
+              framedInsideCard: true,
             ),
           ],
         ),
@@ -154,13 +240,13 @@ class _PortraitLayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rarity = entry.effectiveRarity;
-    final safeTop = MediaQuery.paddingOf(context).top;
     final badgeRowHeight = compact
         ? 52.0
-        : (detailHero ? 84.0 : 64.0);
+        : (detailHero ? 72.0 : 64.0);
+    // En carta enmarcada, rareza/PWR van al borde superior del marco.
     final top = compact
         ? 28.0
-        : (detailHero ? safeTop + 54.0 : 36.0);
+        : (detailHero ? 12.0 : 36.0);
     final sideInset = compact ? 12.0 : 16.0;
 
     return Stack(
@@ -379,10 +465,15 @@ class _InitialsFallback extends StatelessWidget {
 }
 
 class _StatsPanel extends StatelessWidget {
-  const _StatsPanel({required this.entry, this.onLevelUpTap});
+  const _StatsPanel({
+    required this.entry,
+    this.onLevelUpTap,
+    this.framedInsideCard = false,
+  });
 
   final ClashCardCatalogEntry entry;
   final VoidCallback? onLevelUpTap;
+  final bool framedInsideCard;
 
   static const _statSegment = 100;
 
@@ -406,15 +497,25 @@ class _StatsPanel extends StatelessWidget {
     final xpRatio = needed <= 0 ? 1.0 : (currentXp / needed).clamp(0.0, 1.0);
 
     return Container(
-      height: 208,
-      margin: const EdgeInsets.fromLTRB(10, 0, 10, 8),
+      height: framedInsideCard ? 196 : 208,
+      margin: framedInsideCard
+          ? EdgeInsets.zero
+          : const EdgeInsets.fromLTRB(10, 0, 10, 8),
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+        borderRadius: framedInsideCard
+            ? BorderRadius.zero
+            : const BorderRadius.vertical(top: Radius.circular(18)),
         color: XiColors.navyBlue.withValues(alpha: 0.98),
-        border: Border.all(
-          color: XiColors.classicGold.withValues(alpha: 0.65),
-          width: 1.5,
-        ),
+        border: framedInsideCard
+            ? Border(
+                top: BorderSide(
+                  color: XiColors.classicGold.withValues(alpha: 0.55),
+                ),
+              )
+            : Border.all(
+                color: XiColors.classicGold.withValues(alpha: 0.65),
+                width: 1.5,
+              ),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),

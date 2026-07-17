@@ -438,9 +438,11 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'Mejorar').first);
       await tester.pumpAndSettle();
       expect(find.text('Mejorar técnica'), findsOneWidget);
-      expect(find.text('Necesitas 1'), findsOneWidget);
-      expect(find.text('Tienes 3'), findsOneWidget);
+      expect(find.text('Requisitos'), findsWidgets);
+      expect(find.text('Necesitas 1'), findsWidgets);
+      expect(find.text('Tienes 3'), findsWidgets);
       expect(find.text('Cancelar'), findsOneWidget);
+      expect(find.text('x1'), findsOneWidget);
     });
 
     testWidgets('modal deshabilita mejorar sin libros', (tester) async {

@@ -263,20 +263,26 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
 
     final entry = _entry!;
     final card = entry.displayCard;
-    final screenHeight = MediaQuery.sizeOf(context).height;
+    final media = MediaQuery.of(context);
+    final screenHeight = media.size.height;
+    final safeTop = media.padding.top;
+    final safeBottom = media.padding.bottom;
     final panelHeight = screenHeight * _panelHeightFactor;
-    final baseCardHeight = screenHeight - 72;
-    final sheetTop = screenHeight - panelHeight;
-    final overlap = 56.0;
-    final availableHeight = (sheetTop + overlap).clamp(1.0, screenHeight);
-    final fitScale = (availableHeight / baseCardHeight).clamp(0.32, 1.0);
-    final easedScale = 0.52;
-    final resolvedScale =
-        _detailsOpen ? (easedScale < fitScale ? easedScale : fitScale) : 1.0;
-    final scaledCardHeight = baseCardHeight * resolvedScale;
-    final translateY =
-        _detailsOpen ? sheetTop + overlap - scaledCardHeight : 0.0;
-    final cardScale = resolvedScale;
+    // Espacio para atrás + márgenes; la carta enmarcada empieza bajo el notch.
+    final detailsButtonReserve = 72.0 + safeBottom;
+    final cardTopClosed = safeTop + 8;
+    final cardBottomClosed = detailsButtonReserve;
+    final cardHeightClosed =
+        (screenHeight - cardTopClosed - cardBottomClosed).clamp(360.0, screenHeight);
+
+    // Abierta: carta compacta encima del panel, sin tapar tabs.
+    final cardHeightOpen = (screenHeight - panelHeight - safeTop - 12)
+        .clamp(220.0, screenHeight * 0.42);
+    final cardTopOpen = safeTop + 6;
+    final cardHorizontal = _detailsOpen ? 48.0 : 18.0;
+
+    final cardTop = _detailsOpen ? cardTopOpen : cardTopClosed;
+    final cardHeight = _detailsOpen ? cardHeightOpen : cardHeightClosed;
     final bgPath = ClashEpicAssets.detailBackgroundForTeam(
       entry.team,
       entry.effectiveRarity,
@@ -458,55 +464,20 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
             ),
           ),
         ),
+        // Carta por encima del panel de detalles.
         AnimatedPositioned(
           duration: const Duration(milliseconds: 240),
           curve: Curves.easeOutCubic,
-          left: 0,
-          right: 0,
-          top: translateY,
-          height: baseCardHeight,
+          left: cardHorizontal,
+          right: cardHorizontal,
+          top: cardTop,
+          height: cardHeight,
           child: IgnorePointer(
             ignoring: _detailsOpen,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: _detailsOpen ? 56 : 14,
-                vertical: _detailsOpen ? 4 : 0,
-              ),
-              child: Transform.scale(
-                scale: cardScale,
-                alignment: Alignment.topCenter,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: XiColors.classicGold,
-                      width: _detailsOpen ? 2.8 : 2.2,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: XiColors.classicGold.withValues(
-                          alpha: _detailsOpen ? 0.35 : 0.22,
-                        ),
-                        blurRadius: _detailsOpen ? 16 : 10,
-                        spreadRadius: 0.5,
-                      ),
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.35),
-                        blurRadius: 18,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(17.5),
-                    child: ClashCardEpicShowcase(
-                      entry: entry,
-                      detailHero: true,
-                      height: baseCardHeight,
-                    ),
-                  ),
-                ),
-              ),
+            child: ClashCardEpicShowcase(
+              entry: entry,
+              detailHero: true,
+              height: cardHeight,
             ),
           ),
         ),
