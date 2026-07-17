@@ -38,6 +38,55 @@ abstract final class ClashEpicAssets {
     ClashRarity.xi => '$_base/rarities/icon_rarity_xi.png',
   };
 
+  /// Escudos locales de equipos Clash (filtro coleccion).
+  static const teamCrestDir = 'assets/images/clash/epic/teams';
+
+  static String? teamCrestAsset(String teamName) {
+    final slug = switch (teamName.trim()) {
+      'Eternal XI' => 'eternal_xi',
+      'Furia Menuda' => 'furia_menuda',
+      'Academia Zenith' => 'academia_zenith',
+      'Asfalto Sur' => 'asfalto_sur',
+      'Ojo Vigilante' => 'ojo_vigilante',
+      'Instinto Real' => 'instinto_real',
+      'Legado Unido' => 'legado_unido',
+      'Panteon Caido' => 'panteon_caido',
+      'Pico Artico' => 'pico_artico',
+      'Sistema Cero' => 'sistema_cero',
+      'Bastion Adler' => 'bastion_adler',
+      'Academia Tianlong' => 'academia_tianlong',
+      'Colegio Runaria' => 'colegio_runaria',
+      'Dunas Movedizas' => 'dunas_movedizas',
+      'Faro del Alba' => 'faro_del_alba',
+      'Favela Estrela' => 'favela_estrela',
+      _ => null,
+    };
+    if (slug == null) {
+      return null;
+    }
+    return '$teamCrestDir/$slug.png';
+  }
+
+  /// Catalogo fijo de equipos Clash (orden A-Z).
+  static const clashTeamNames = <String>[
+    'Academia Tianlong',
+    'Academia Zenith',
+    'Asfalto Sur',
+    'Bastion Adler',
+    'Colegio Runaria',
+    'Dunas Movedizas',
+    'Eternal XI',
+    'Faro del Alba',
+    'Favela Estrela',
+    'Furia Menuda',
+    'Instinto Real',
+    'Legado Unido',
+    'Ojo Vigilante',
+    'Panteon Caido',
+    'Pico Artico',
+    'Sistema Cero',
+  ];
+
   static String positionIcon(ClashPosition position) => switch (position) {
     ClashPosition.goalkeeper => '$_base/positions/icon_pos_gk.png',
     ClashPosition.centreBack => '$_base/positions/icon_pos_cb.png',
@@ -62,7 +111,7 @@ abstract final class ClashEpicAssets {
   static const teamPersonajesBarBg = '$_base/ui/bg_team_personajes_bar.png';
   static const clashHeaderPlateBg = '$_base/ui/bg_clash_header_ornate.png';
   static const clashEnergyIcon = '$_base/ui/icon_clash_energy.png';
-  /// Gema premium: Orbe / balón de cristal.
+  /// Gema premium: Orbe / balon de cristal.
   static const clashGachaGemIcon = '$_base/ui/icon_gacha_gem_b_orbe.png';
 
   static const statPar = '$_base/stats/icon_stat_par.png';

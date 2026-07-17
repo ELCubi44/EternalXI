@@ -92,7 +92,11 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      showDragHandle: true,
+      backgroundColor: const Color(0xFF1A1C22),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+        side: BorderSide(color: Colors.white70, width: 1.2),
+      ),
       builder: (context) {
         return ChangeNotifierProvider<ClashCardsController>.value(
           value: controller,
@@ -221,216 +225,336 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
 class _CollectionFilterSheet extends StatelessWidget {
   const _CollectionFilterSheet();
 
+  static const _labelOrange = Color(0xFFF0A020);
+  static const _selectedGreen = Color(0xFF3CB43C);
+  static const _okOrange = Color(0xFFF47A24);
+  static const _metal = Color(0xFF3A3F4A);
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final controller = context.watch<ClashCardsController>();
     final bottom = MediaQuery.paddingOf(context).bottom;
+    final maxH = MediaQuery.sizeOf(context).height * 0.88;
 
     return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(16, 0, 16, bottom + 12),
-        child: SingleChildScrollView(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxH),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(14, 10, 14, bottom + 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // —— ORDEN (arriba, texto) ——
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              l10n.clashSortLabel,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    fontStyle: FontStyle.italic,
+                                    letterSpacing: 0.6,
+                                  ),
+                            ),
+                          ),
+                          _DokkanTextChip(
+                            label: controller.sortDescending
+                                ? '⬇️ Descendente'
+                                : '⬆️ Ascendente',
+                            selected: true,
+                            selectedColor: const Color(0xFF4A6FA5),
+                            onTap: controller.toggleSortDirection,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      _DokkanTextGrid(
+                        children: [
+                          _DokkanTextChip(
+                            label: l10n.clashSortPower,
+                            selected:
+                                controller.sortField == ClashCardSortField.power,
+                            selectedColor: _selectedGreen,
+                            onTap: () => controller.setSortField(
+                              ClashCardSortField.power,
+                            ),
+                          ),
+                          _DokkanTextChip(
+                            label: l10n.clashSortLevel,
+                            selected:
+                                controller.sortField == ClashCardSortField.level,
+                            selectedColor: _selectedGreen,
+                            onTap: () => controller.setSortField(
+                              ClashCardSortField.level,
+                            ),
+                          ),
+                          _DokkanTextChip(
+                            label: l10n.clashFilterRarity,
+                            selected: controller.sortField ==
+                                ClashCardSortField.rarity,
+                            selectedColor: _selectedGreen,
+                            onTap: () => controller.setSortField(
+                              ClashCardSortField.rarity,
+                            ),
+                          ),
+                          _DokkanTextChip(
+                            label: l10n.clashSortName,
+                            selected:
+                                controller.sortField == ClashCardSortField.name,
+                            selectedColor: _selectedGreen,
+                            onTap: () => controller.setSortField(
+                              ClashCardSortField.name,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      const Divider(color: Colors.white54, height: 1),
+                      const SizedBox(height: 10),
+
+                      // —— FILTROS ——
+                      Text(
+                        'Filtros',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              fontStyle: FontStyle.italic,
+                              letterSpacing: 0.6,
+                            ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      _DokkanSectionLabel(
+                        label: l10n.clashFilterPosition,
+                        color: _labelOrange,
+                      ),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          _DokkanTextChip(
+                            label: l10n.clashFilterAll,
+                            selected: controller.positionGroupFilter == null &&
+                                controller.positionFilter == null,
+                            onTap: () {
+                              controller.setPositionGroupFilter(null);
+                              controller.setPositionFilter(null);
+                            },
+                          ),
+                          ...ClashPositionGroup.values.map((group) {
+                            final selected =
+                                controller.positionGroupFilter == group &&
+                                    controller.positionFilter == null;
+                            final groupActive = selected ||
+                                (controller.positionFilter != null &&
+                                    controller.positionFilter!.group == group);
+                            return _DokkanTextChip(
+                              label: group.displayNameEs,
+                              selected: groupActive,
+                              onTap: () => controller.setPositionGroupFilter(
+                                selected ? null : group,
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                      if (controller.positionGroupFilter != null &&
+                          controller
+                                  .positionGroupFilter!.positions.length >
+                              1) ...[
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: [
+                            _DokkanTextChip(
+                              label: 'Todas',
+                              selected: controller.positionFilter == null,
+                              onTap: () =>
+                                  controller.setPositionFilter(null),
+                            ),
+                            ...controller.positionGroupFilter!.positions
+                                .map((pos) {
+                              return _DokkanTextChip(
+                                label: pos.displayNameEs,
+                                selected: controller.positionFilter == pos,
+                                onTap: () => controller.setPositionFilter(
+                                  controller.positionFilter == pos
+                                      ? null
+                                      : pos,
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                      ],
+
+                      const SizedBox(height: 14),
+                      _DokkanSectionLabel(
+                        label: l10n.clashFilterStyle,
+                        color: _labelOrange,
+                      ),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          _DokkanTextChip(
+                            label: l10n.clashFilterAll,
+                            selected: controller.styleFilter == null,
+                            onTap: () => controller.setStyleFilter(null),
+                          ),
+                          ...ClashPlayerStyle.values.map((style) {
+                            return _DokkanTextChip(
+                              label: style.displayNameEs,
+                              selected: controller.styleFilter == style,
+                              onTap: () => controller.setStyleFilter(
+                                controller.styleFilter == style
+                                    ? null
+                                    : style,
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+
+                      const SizedBox(height: 14),
+                      _DokkanSectionLabel(
+                        label: l10n.clashFilterRarity,
+                        color: _labelOrange,
+                      ),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          _DokkanTextChip(
+                            label: l10n.clashFilterAll,
+                            selected: controller.rarityFilter == null,
+                            onTap: () => controller.setRarityFilter(null),
+                          ),
+                          ...ClashRarity.values.map((rarity) {
+                            return _DokkanIconChip(
+                              selected: controller.rarityFilter == rarity,
+                              asset: ClashEpicAssets.rarityIcon(rarity),
+                              tooltip: rarity.name.toUpperCase(),
+                              onTap: () => controller.setRarityFilter(
+                                controller.rarityFilter == rarity
+                                    ? null
+                                    : rarity,
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+
+                      const SizedBox(height: 14),
+                      _DokkanSectionLabel(
+                        label: 'Equipo',
+                        color: _labelOrange,
+                      ),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          _DokkanTextChip(
+                            label: l10n.clashFilterAll,
+                            selected: controller.teamFilter == null,
+                            onTap: () => controller.setTeamFilter(null),
+                          ),
+                          ...ClashEpicAssets.clashTeamNames.map((team) {
+                            final crest =
+                                ClashEpicAssets.teamCrestAsset(team);
+                            if (crest == null) {
+                              return _DokkanTextChip(
+                                label: team,
+                                selected: controller.teamFilter == team,
+                                onTap: () => controller.setTeamFilter(
+                                  controller.teamFilter == team
+                                      ? null
+                                      : team,
+                                ),
+                              );
+                            }
+                            return _DokkanIconChip(
+                              selected: controller.teamFilter == team,
+                              asset: crest,
+                              tooltip: team,
+                              size: 48,
+                              onTap: () => controller.setTeamFilter(
+                                controller.teamFilter == team ? null : team,
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
               Row(
                 children: [
-                  Text(
-                    'Filtros',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
+                  Expanded(
+                    flex: 3,
+                    child: Material(
+                      color: _okOrange,
+                      borderRadius: BorderRadius.circular(10),
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).pop(),
+                        borderRadius: BorderRadius.circular(10),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 14),
+                          child: Text(
+                            'OK',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
+                              color: Colors.white,
+                              letterSpacing: 1,
+                            ),
+                          ),
                         ),
-                  ),
-                  const Spacer(),
-                  TextButton(
-                    onPressed: () {
-                      controller.clearFilters();
-                    },
-                    child: Text(l10n.clashFilterAll),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              _SectionTitle(emoji: '📍', label: l10n.clashFilterPosition),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _EmojiChoiceChip(
-                    selected: controller.positionGroupFilter == null &&
-                        controller.positionFilter == null,
-                    label: '✨',
-                    tooltip: l10n.clashFilterAll,
-                    onTap: () {
-                      controller.setPositionGroupFilter(null);
-                      controller.setPositionFilter(null);
-                    },
-                  ),
-                  ...ClashPositionGroup.values.map((group) {
-                    final selected = controller.positionGroupFilter == group &&
-                        controller.positionFilter == null;
-                    return _EmojiChoiceChip(
-                      selected: selected ||
-                          (controller.positionFilter != null &&
-                              controller.positionFilter!.group == group),
-                      label: group.emoji,
-                      tooltip: group.displayNameEs,
-                      onTap: () => controller.setPositionGroupFilter(
-                        selected ? null : group,
                       ),
-                    );
-                  }),
-                ],
-              ),
-              if (controller.positionGroupFilter != null &&
-                  controller.positionGroupFilter!.positions.length > 1) ...[
-                const SizedBox(height: 10),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _EmojiChoiceChip(
-                      selected: controller.positionFilter == null,
-                      label: '✨',
-                      tooltip: controller.positionGroupFilter!.displayNameEs,
-                      onTap: () => controller.setPositionFilter(null),
                     ),
-                    ...controller.positionGroupFilter!.positions.map((pos) {
-                      return _IconChoiceChip(
-                        selected: controller.positionFilter == pos,
-                        asset: ClashEpicAssets.positionIcon(pos),
-                        tooltip: pos.displayNameEs,
-                        onTap: () => controller.setPositionFilter(
-                          controller.positionFilter == pos ? null : pos,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 2,
+                    child: Material(
+                      color: _metal,
+                      borderRadius: BorderRadius.circular(10),
+                      child: InkWell(
+                        onTap: controller.clearFilters,
+                        borderRadius: BorderRadius.circular(10),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 14),
+                          child: Text(
+                            'Quitar todo',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
-                      );
-                    }),
-                  ],
-                ),
-              ],
-              const SizedBox(height: 16),
-              _SectionTitle(emoji: '🎭', label: l10n.clashFilterStyle),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _EmojiChoiceChip(
-                    selected: controller.styleFilter == null,
-                    label: '✨',
-                    tooltip: l10n.clashFilterAll,
-                    onTap: () => controller.setStyleFilter(null),
-                  ),
-                  ...ClashPlayerStyle.values.map((style) {
-                    return _EmojiChoiceChip(
-                      selected: controller.styleFilter == style,
-                      label: style.emoji,
-                      tooltip: style.displayNameEs,
-                      onTap: () => controller.setStyleFilter(
-                        controller.styleFilter == style ? null : style,
                       ),
-                    );
-                  }),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _SectionTitle(emoji: '💎', label: l10n.clashFilterRarity),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _EmojiChoiceChip(
-                    selected: controller.rarityFilter == null,
-                    label: '✨',
-                    tooltip: l10n.clashFilterAll,
-                    onTap: () => controller.setRarityFilter(null),
-                  ),
-                  ...ClashRarity.values.map((rarity) {
-                    return _IconChoiceChip(
-                      selected: controller.rarityFilter == rarity,
-                      asset: ClashEpicAssets.rarityIcon(rarity),
-                      tooltip: rarity.name.toUpperCase(),
-                      onTap: () => controller.setRarityFilter(
-                        controller.rarityFilter == rarity ? null : rarity,
-                      ),
-                    );
-                  }),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _SectionTitle(emoji: '🏟️', label: 'Equipo'),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _EmojiChoiceChip(
-                    selected: controller.teamFilter == null,
-                    label: '✨',
-                    tooltip: l10n.clashFilterAll,
-                    onTap: () => controller.setTeamFilter(null),
-                  ),
-                  ...controller.ownedTeams.map((team) {
-                    return _TextChoiceChip(
-                      selected: controller.teamFilter == team,
-                      label: team,
-                      onTap: () => controller.setTeamFilter(
-                        controller.teamFilter == team ? null : team,
-                      ),
-                    );
-                  }),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _SectionTitle(emoji: '↕️', label: l10n.clashSortLabel),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _EmojiChoiceChip(
-                    selected: controller.sortField == ClashCardSortField.power,
-                    label: '⚡',
-                    tooltip: l10n.clashSortPower,
-                    onTap: () =>
-                        controller.setSortField(ClashCardSortField.power),
-                  ),
-                  _EmojiChoiceChip(
-                    selected: controller.sortField == ClashCardSortField.level,
-                    label: '📶',
-                    tooltip: l10n.clashSortLevel,
-                    onTap: () =>
-                        controller.setSortField(ClashCardSortField.level),
-                  ),
-                  _EmojiChoiceChip(
-                    selected: controller.sortField == ClashCardSortField.rarity,
-                    label: '💎',
-                    tooltip: l10n.clashFilterRarity,
-                    onTap: () =>
-                        controller.setSortField(ClashCardSortField.rarity),
-                  ),
-                  _EmojiChoiceChip(
-                    selected: controller.sortField == ClashCardSortField.name,
-                    label: '🔤',
-                    tooltip: l10n.clashSortName,
-                    onTap: () =>
-                        controller.setSortField(ClashCardSortField.name),
-                  ),
-                  _EmojiChoiceChip(
-                    selected: false,
-                    label: controller.sortDescending ? '⬇️' : '⬆️',
-                    tooltip: l10n.clashSortDirection,
-                    onTap: controller.toggleSortDirection,
+                    ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Listo'),
               ),
             ],
           ),
@@ -440,150 +564,155 @@ class _CollectionFilterSheet extends StatelessWidget {
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle({required this.emoji, required this.label});
+class _DokkanSectionLabel extends StatelessWidget {
+  const _DokkanSectionLabel({required this.label, required this.color});
 
-  final String emoji;
   final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      '$emoji  $label',
-      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w800,
-            color: XiColors.warmWhite.withValues(alpha: 0.9),
-          ),
+      label,
+      style: TextStyle(
+        color: color,
+        fontWeight: FontWeight.w900,
+        fontSize: 13,
+        letterSpacing: 0.4,
+      ),
     );
   }
 }
 
-class _EmojiChoiceChip extends StatelessWidget {
-  const _EmojiChoiceChip({
-    required this.selected,
-    required this.label,
-    required this.onTap,
-    this.tooltip,
-  });
+class _DokkanTextGrid extends StatelessWidget {
+  const _DokkanTextGrid({required this.children});
 
-  final bool selected;
-  final String label;
-  final VoidCallback onTap;
-  final String? tooltip;
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
-    final chip = InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
-        width: 44,
-        height: 44,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: selected
-              ? Theme.of(context).colorScheme.primaryContainer
-              : Colors.black.withValues(alpha: 0.28),
-          border: Border.all(
-            color: selected
-                ? XiColors.classicGold.withValues(alpha: 0.85)
-                : Colors.white24,
-          ),
-        ),
-        child: Text(label, style: const TextStyle(fontSize: 20)),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const cols = 3;
+        const gap = 6.0;
+        final w = (constraints.maxWidth - gap * (cols - 1)) / cols;
+        return Wrap(
+          spacing: gap,
+          runSpacing: gap,
+          children: [
+            for (final child in children)
+              SizedBox(width: w, child: child),
+          ],
+        );
+      },
     );
-    if (tooltip == null) return chip;
-    return Tooltip(message: tooltip!, child: chip);
   }
 }
 
-class _IconChoiceChip extends StatelessWidget {
-  const _IconChoiceChip({
+class _DokkanTextChip extends StatelessWidget {
+  const _DokkanTextChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    this.selectedColor = XiColors.royalBlue,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  final Color selectedColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: selected ? selectedColor : const Color(0xFF3A3F4A),
+      shape: BeveledRectangleBorder(
+        borderRadius: BorderRadius.circular(7),
+        side: BorderSide(
+          color: selected
+              ? Colors.white.withValues(alpha: 0.55)
+              : Colors.white24,
+          width: 1,
+        ),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        customBorder: BeveledRectangleBorder(
+          borderRadius: BorderRadius.circular(7),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 11),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 12,
+              color: Colors.white,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DokkanIconChip extends StatelessWidget {
+  const _DokkanIconChip({
     required this.selected,
     required this.asset,
     required this.onTap,
     this.tooltip,
+    this.size = 44,
   });
 
   final bool selected;
   final String asset;
   final VoidCallback onTap;
   final String? tooltip;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
-    final chip = InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
-        width: 44,
-        height: 44,
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+    final chip = Material(
+      color: selected
+          ? XiColors.royalBlue.withValues(alpha: 0.55)
+          : const Color(0xFF3A3F4A),
+      shape: BeveledRectangleBorder(
+        borderRadius: BorderRadius.circular(7),
+        side: BorderSide(
           color: selected
-              ? Theme.of(context).colorScheme.primaryContainer
-              : Colors.black.withValues(alpha: 0.28),
-          border: Border.all(
-            color: selected
-                ? XiColors.classicGold.withValues(alpha: 0.85)
-                : Colors.white24,
-          ),
+              ? XiColors.classicGold.withValues(alpha: 0.9)
+              : Colors.white24,
+          width: selected ? 1.4 : 1,
         ),
-        child: Image.asset(
-          asset,
-          fit: BoxFit.contain,
-          filterQuality: FilterQuality.medium,
+      ),
+      child: InkWell(
+        onTap: onTap,
+        customBorder: BeveledRectangleBorder(
+          borderRadius: BorderRadius.circular(7),
+        ),
+        child: SizedBox(
+          width: size,
+          height: size,
+          child: Padding(
+            padding: const EdgeInsets.all(5),
+            child: Image.asset(
+              asset,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.medium,
+            ),
+          ),
         ),
       ),
     );
-    if (tooltip == null) return chip;
+    if (tooltip == null) {
+      return chip;
+    }
     return Tooltip(message: tooltip!, child: chip);
-  }
-}
-
-class _TextChoiceChip extends StatelessWidget {
-  const _TextChoiceChip({
-    required this.selected,
-    required this.label,
-    required this.onTap,
-  });
-
-  final bool selected;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: selected
-              ? Theme.of(context).colorScheme.primaryContainer
-              : Colors.black.withValues(alpha: 0.28),
-          border: Border.all(
-            color: selected
-                ? XiColors.classicGold.withValues(alpha: 0.85)
-                : Colors.white24,
-          ),
-        ),
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-        ),
-      ),
-    );
   }
 }
 
