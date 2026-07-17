@@ -100,3 +100,16 @@ enum ClashPositionGroup {
     ],
   };
 }
+
+extension ClashPositionLineupOrder on ClashPosition {
+  /// Orden táctico de colección: POR → LAT → DEF → MCD → MCO → EXT → DC.
+  int get lineupSortRank => switch (this) {
+    ClashPosition.goalkeeper => 0,
+    ClashPosition.fullBack => 1,
+    ClashPosition.centreBack => 2,
+    ClashPosition.defensiveMidfielder => 3,
+    ClashPosition.attackingMidfielder => 4,
+    ClashPosition.winger => 5,
+    ClashPosition.striker => 6,
+  };
+}

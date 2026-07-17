@@ -301,6 +301,14 @@ class _CollectionFilterSheet extends StatelessWidget {
                               ClashCardSortField.name,
                             ),
                           ),
+                          _XiTextChip(
+                            label: l10n.clashFilterPosition,
+                            selected: controller.sortField ==
+                                ClashCardSortField.position,
+                            onTap: () => controller.setSortField(
+                              ClashCardSortField.position,
+                            ),
+                          ),
                         ],
                       ),
                     ),

@@ -4,7 +4,7 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_player_style.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 
-enum ClashCardSortField { power, level, name, rarity }
+enum ClashCardSortField { power, level, name, rarity, position }
 
 /// Repositorio local de cartas Clash (sin backend ni Fantasy).
 class ClashCardsRepository {
@@ -78,6 +78,8 @@ class ClashCardsRepository {
           a.name.toLowerCase().compareTo(b.name.toLowerCase()),
         ClashCardSortField.rarity =>
           a.effectiveRarity.index.compareTo(b.effectiveRarity.index),
+        ClashCardSortField.position => a.card.position.lineupSortRank
+            .compareTo(b.card.position.lineupSortRank),
       };
       return descending ? -cmp : cmp;
     });
