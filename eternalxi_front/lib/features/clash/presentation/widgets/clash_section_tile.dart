@@ -5,13 +5,15 @@ import 'package:flutter/material.dart';
 class ClashSectionTile extends StatelessWidget {
   const ClashSectionTile({
     super.key,
-    required this.icon,
+    this.icon,
+    this.iconAsset,
     required this.title,
     this.subtitle,
     this.onTap,
-  });
+  }) : assert(icon != null || iconAsset != null);
 
-  final IconData icon;
+  final IconData? icon;
+  final String? iconAsset;
   final String title;
   final String? subtitle;
   final VoidCallback? onTap;
@@ -44,7 +46,23 @@ class ClashSectionTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
-              Icon(icon, color: theme.colorScheme.primary),
+              if (iconAsset != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.asset(
+                    iconAsset!,
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.medium,
+                    errorBuilder: (_, __, ___) => Icon(
+                      icon ?? Icons.image_rounded,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                )
+              else
+                Icon(icon, color: theme.colorScheme.primary),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(

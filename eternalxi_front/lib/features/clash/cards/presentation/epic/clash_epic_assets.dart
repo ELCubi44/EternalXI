@@ -58,6 +58,7 @@ abstract final class ClashEpicAssets {
   static const pwrBadge = '$_base/frames/frame_pwr_badge.png';
   static const gachaBannerEternalXi =
       '$_base/banners/banner_gacha_eternal_xi.png';
+  static const teamPersonajesIcon = '$_base/ui/icon_team_personajes.png';
 
   static const statPar = '$_base/stats/icon_stat_par.png';
   static const statDef = '$_base/stats/icon_stat_def.png';
