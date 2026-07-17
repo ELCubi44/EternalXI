@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-/// Cabecera Clash unificada: perfil + XP + recursos en un solo panel.
+/// Cabecera Clash sobre marco ornamental unificado (avatar + XP + recursos).
 class ClashHeaderBar extends StatefulWidget {
   const ClashHeaderBar({super.key});
 
@@ -27,7 +27,8 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
   ClashEnergyWallet? _energy;
   Timer? _ticker;
 
-  static const double _avatarSize = 64;
+  /// Ratio del asset `bg_clash_header_ornate.jpg`.
+  static const double _frameAspect = 900 / 336;
 
   @override
   void initState() {
@@ -96,151 +97,157 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 6, 10, 10),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: XiColors.techCyan.withValues(alpha: 0.18),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.45),
-                  blurRadius: 12,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-              image: const DecorationImage(
-                image: AssetImage(ClashEpicAssets.clashHeaderPlateBg),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(18),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 10, 12, 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+          padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+          child: AspectRatio(
+            aspectRatio: _frameAspect,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final w = constraints.maxWidth;
+                final h = constraints.maxHeight;
+                return Stack(
+                  clipBehavior: Clip.none,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        InkWell(
-                          onTap: _openProfile,
-                          customBorder: const CircleBorder(),
-                          child: _HeaderAvatar(
-                            photoUrl: photoUrl,
-                            nickname: displayName,
-                            size: _avatarSize,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      displayName,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: theme.textTheme.titleMedium
-                                          ?.copyWith(
-                                        color: XiColors.warmWhite,
-                                        fontWeight: FontWeight.w800,
-                                        letterSpacing: 0.2,
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    'Nivel $nivel',
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      color: XiColors.warmWhite,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '$xpEn/$xpMax xp',
-                                style: theme.textTheme.labelLarge?.copyWith(
-                                  color: XiColors.warmWhite.withValues(
-                                    alpha: 0.8,
-                                  ),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(999),
-                                child: LinearProgressIndicator(
-                                  value: xpFraction,
-                                  minHeight: 8,
-                                  backgroundColor: Colors.white.withValues(
-                                    alpha: 0.12,
-                                  ),
-                                  color: XiColors.techCyan,
-                                ),
-                              ),
-                              if (rango.isNotEmpty) ...[
-                                const SizedBox(height: 4),
-                                Text(
-                                  rango,
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: XiColors.warmWhite.withValues(
-                                      alpha: 0.7,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ],
+                    Positioned.fill(
+                      child: Image.asset(
+                        ClashEpicAssets.clashHeaderPlateBg,
+                        fit: BoxFit.fill,
+                        filterQuality: FilterQuality.high,
+                      ),
                     ),
-                    const SizedBox(height: 10),
-                    Container(
-                      height: 1,
-                      margin: const EdgeInsets.symmetric(horizontal: 2),
-                      color: XiColors.techCyan.withValues(alpha: 0.28),
+                    // Avatar en el círculo izquierdo.
+                    Positioned(
+                      left: w * 0.055,
+                      top: h * 0.15,
+                      width: w * 0.255,
+                      height: w * 0.255,
+                      child: InkWell(
+                        onTap: _openProfile,
+                        customBorder: const CircleBorder(),
+                        child: _HeaderAvatar(
+                          photoUrl: photoUrl,
+                          nickname: displayName,
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _ResourceSlot(
-                            iconAsset: ClashEpicAssets.clashEnergyIcon,
-                            primary: energy?.fractionLabel ?? '—/—',
-                            secondary: energy?.countdownLabel,
-                            accent: XiColors.techCyan,
+                    // Nombre + nivel en el panel superior.
+                    Positioned(
+                      left: w * 0.34,
+                      right: w * 0.05,
+                      top: h * 0.12,
+                      height: h * 0.26,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              displayName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: XiColors.warmWhite,
+                                fontWeight: FontWeight.w800,
+                                fontSize: (h * 0.12).clamp(14.0, 18.0),
+                                height: 1.1,
+                              ),
+                            ),
                           ),
-                        ),
-                        _ResourceDivider(),
-                        Expanded(
-                          child: _ResourceSlot(
-                            iconWidget: const MoneyCoinsIcon(size: 18),
-                            primary: _formatAmount(coins),
-                            accent: XiColors.classicGold,
+                          const SizedBox(width: 6),
+                          Text(
+                            'Nv. $nivel',
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: XiColors.classicGold,
+                              fontWeight: FontWeight.w800,
+                              fontSize: (h * 0.095).clamp(12.0, 15.0),
+                            ),
                           ),
-                        ),
-                        _ResourceDivider(),
-                        Expanded(
-                          child: _ResourceSlot(
-                            iconAsset: ClashEpicAssets.clashGachaGemIcon,
-                            primary: _formatAmount(gems),
-                            accent: const Color(0xFF6EE7FF),
+                        ],
+                      ),
+                    ),
+                    // XP en la barra hexagonal central.
+                    Positioned(
+                      left: w * 0.36,
+                      right: w * 0.06,
+                      top: h * 0.42,
+                      height: h * 0.14,
+                      child: Row(
+                        children: [
+                          Text(
+                            '$xpEn/$xpMax xp',
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: XiColors.warmWhite.withValues(alpha: 0.9),
+                              fontWeight: FontWeight.w700,
+                              fontSize: (h * 0.085).clamp(11.0, 13.0),
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(999),
+                              child: LinearProgressIndicator(
+                                value: xpFraction,
+                                minHeight: (h * 0.07).clamp(6.0, 9.0),
+                                backgroundColor: Colors.black.withValues(
+                                  alpha: 0.35,
+                                ),
+                                color: XiColors.techCyan,
+                              ),
+                            ),
+                          ),
+                          if (rango.isNotEmpty) ...[
+                            const SizedBox(width: 8),
+                            Text(
+                              rango,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: XiColors.warmWhite.withValues(
+                                  alpha: 0.75,
+                                ),
+                                fontSize: (h * 0.075).clamp(10.0, 12.0),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    // Recursos en los 3 huecos inferiores.
+                    Positioned(
+                      left: w * 0.345,
+                      right: w * 0.045,
+                      top: h * 0.62,
+                      height: h * 0.26,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _ResourceSlot(
+                              iconAsset: ClashEpicAssets.clashEnergyIcon,
+                              primary: energy?.fractionLabel ?? '—/—',
+                              secondary: energy?.countdownLabel,
+                              accent: XiColors.techCyan,
+                              compact: true,
+                            ),
+                          ),
+                          Expanded(
+                            child: _ResourceSlot(
+                              iconWidget: const MoneyCoinsIcon(size: 16),
+                              primary: _formatAmount(coins),
+                              accent: XiColors.classicGold,
+                              compact: true,
+                            ),
+                          ),
+                          Expanded(
+                            child: _ResourceSlot(
+                              iconAsset: ClashEpicAssets.clashGachaGemIcon,
+                              primary: _formatAmount(gems),
+                              accent: const Color(0xFF6EE7FF),
+                              compact: true,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
-                ),
-              ),
+                );
+              },
             ),
           ),
         ),
@@ -262,27 +269,10 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
   }
 }
 
-class _ResourceDivider extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 1,
-      height: 28,
-      margin: const EdgeInsets.symmetric(horizontal: 2),
-      color: XiColors.techCyan.withValues(alpha: 0.3),
-    );
-  }
-}
-
 class _HeaderAvatar extends StatelessWidget {
-  const _HeaderAvatar({
-    required this.nickname,
-    required this.size,
-    this.photoUrl,
-  });
+  const _HeaderAvatar({required this.nickname, this.photoUrl});
 
   final String nickname;
-  final double size;
   final String? photoUrl;
 
   @override
@@ -291,34 +281,19 @@ class _HeaderAvatar extends StatelessWidget {
         ? '?'
         : nickname.trim().characters.first.toUpperCase();
     return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: XiColors.classicGold.withValues(alpha: 0.8),
-          width: 1.8,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.35),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      decoration: const BoxDecoration(shape: BoxShape.circle),
       clipBehavior: Clip.antiAlias,
       child: photoUrl == null
           ? ColoredBox(
-              color: XiColors.royalBlue.withValues(alpha: 0.25),
+              color: XiColors.royalBlue.withValues(alpha: 0.35),
               child: Center(
                 child: Text(
                   initial,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Lumiare',
                     color: XiColors.warmWhite,
                     fontWeight: FontWeight.w700,
-                    fontSize: size * 0.34,
+                    fontSize: 22,
                   ),
                 ),
               ),
@@ -327,15 +302,15 @@ class _HeaderAvatar extends StatelessWidget {
               photoUrl!,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => ColoredBox(
-                color: XiColors.royalBlue.withValues(alpha: 0.25),
+                color: XiColors.royalBlue.withValues(alpha: 0.35),
                 child: Center(
                   child: Text(
                     initial,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Lumiare',
                       color: XiColors.warmWhite,
                       fontWeight: FontWeight.w700,
-                      fontSize: size * 0.34,
+                      fontSize: 22,
                     ),
                   ),
                 ),
@@ -352,6 +327,7 @@ class _ResourceSlot extends StatelessWidget {
     this.secondary,
     this.iconAsset,
     this.iconWidget,
+    this.compact = false,
   });
 
   final String primary;
@@ -359,54 +335,59 @@ class _ResourceSlot extends StatelessWidget {
   final Color accent;
   final String? iconAsset;
   final Widget? iconWidget;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Row(
-      children: [
-        if (iconWidget != null)
-          iconWidget!
-        else if (iconAsset != null)
-          Image.asset(
-            iconAsset!,
-            width: 20,
-            height: 20,
-            fit: BoxFit.contain,
-            filterQuality: FilterQuality.medium,
-          ),
-        const SizedBox(width: 7),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                primary,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: context.xiTextPrimary,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 13,
-                  height: 1.05,
-                ),
-              ),
-              if (secondary != null && secondary!.isNotEmpty)
+    final iconSize = compact ? 16.0 : 20.0;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Row(
+        children: [
+          if (iconWidget != null)
+            iconWidget!
+          else if (iconAsset != null)
+            Image.asset(
+              iconAsset!,
+              width: iconSize,
+              height: iconSize,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.medium,
+            ),
+          SizedBox(width: compact ? 5 : 7),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 Text(
-                  secondary!,
+                  primary,
                   maxLines: 1,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: accent.withValues(alpha: 0.95),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 10,
-                    height: 1.1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: context.xiTextPrimary,
+                    fontWeight: FontWeight.w800,
+                    fontSize: compact ? 11.5 : 13,
+                    height: 1.05,
                   ),
                 ),
-            ],
+                if (secondary != null && secondary!.isNotEmpty)
+                  Text(
+                    secondary!,
+                    maxLines: 1,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: accent.withValues(alpha: 0.95),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 9,
+                      height: 1.05,
+                    ),
+                  ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
