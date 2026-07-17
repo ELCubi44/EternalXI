@@ -150,55 +150,48 @@ class _FramedDetailCard extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(_radius - _borderWidth),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            // Panel de stats más bajo en cartas cortas (detalle abierto).
-            final statsH = (constraints.maxHeight * 0.42)
-                .clamp(148.0, 176.0);
-            return Column(
-              children: [
-                Expanded(
-                  child: Stack(
-                    clipBehavior: Clip.hardEdge,
-                    fit: StackFit.expand,
-                    children: [
-                      _EpicBackground(entry: entry),
-                      Positioned.fill(
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.black.withValues(alpha: 0.14),
-                                Colors.transparent,
-                                Colors.black.withValues(alpha: 0.2),
-                              ],
-                              stops: const [0, 0.5, 1],
-                            ),
-                          ),
+        child: Column(
+          children: [
+            Expanded(
+              flex: 58,
+              child: Stack(
+                clipBehavior: Clip.hardEdge,
+                fit: StackFit.expand,
+                children: [
+                  _EpicBackground(entry: entry),
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withValues(alpha: 0.14),
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.2),
+                          ],
+                          stops: const [0, 0.5, 1],
                         ),
                       ),
-                      _PortraitLayer(
-                        entry: entry,
-                        compact: false,
-                        detailHero: true,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: statsH,
-                  child: _StatsPanel(
+                  _PortraitLayer(
                     entry: entry,
-                    onLevelUpTap: onLevelUpTap,
-                    framedInsideCard: true,
-                    panelHeight: statsH,
+                    compact: false,
+                    detailHero: true,
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 42,
+              child: _StatsPanel(
+                entry: entry,
+                onLevelUpTap: onLevelUpTap,
+                framedInsideCard: true,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -488,13 +481,11 @@ class _StatsPanel extends StatelessWidget {
     required this.entry,
     this.onLevelUpTap,
     this.framedInsideCard = false,
-    this.panelHeight,
   });
 
   final ClashCardCatalogEntry entry;
   final VoidCallback? onLevelUpTap;
   final bool framedInsideCard;
-  final double? panelHeight;
 
   static const _statSegment = 100;
 
@@ -516,22 +507,19 @@ class _StatsPanel extends StatelessWidget {
           entry.effectiveRarity,
         );
     final xpRatio = needed <= 0 ? 1.0 : (currentXp / needed).clamp(0.0, 1.0);
-    final height = panelHeight ?? (framedInsideCard ? 168.0 : 208.0);
 
-    return Container(
-      height: height,
-      margin: framedInsideCard
-          ? EdgeInsets.zero
-          : const EdgeInsets.fromLTRB(10, 0, 10, 8),
+    final panel = DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: framedInsideCard
             ? BorderRadius.zero
             : const BorderRadius.vertical(top: Radius.circular(18)),
         color: XiColors.navyBlue.withValues(alpha: 0.98),
+        // Solo borde propio si NO va dentro del marco dorado de la carta.
         border: framedInsideCard
             ? Border(
                 top: BorderSide(
-                  color: XiColors.classicGold.withValues(alpha: 0.55),
+                  color: XiColors.classicGold.withValues(alpha: 0.35),
+                  width: 1,
                 ),
               )
             : Border.all(
@@ -708,6 +696,16 @@ class _StatsPanel extends StatelessWidget {
           },
         ),
       ),
+    );
+
+    if (framedInsideCard) {
+      return SizedBox.expand(child: panel);
+    }
+
+    return Container(
+      height: 208,
+      margin: const EdgeInsets.fromLTRB(10, 0, 10, 8),
+      child: panel,
     );
   }
 }

@@ -367,21 +367,18 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
     final panelHeight = screenHeight * _panelHeightFactor;
     final sheetTop = screenHeight - panelHeight;
     final detailsButtonReserve = 72.0 + safeBottom;
-    // Margen claro bajo la flecha de volver (~44px + padding).
-    final cardTopClosed = safeTop + 62;
-    final cardBottomClosed = detailsButtonReserve;
-    final cardHeightClosed =
-        (screenHeight - cardTopClosed - cardBottomClosed)
-            .clamp(280.0, screenHeight * 0.62);
+    final areaTop = safeTop + 56;
+    final areaBottomClosed = detailsButtonReserve;
+    final areaBottomOpen = screenHeight - sheetTop + 12;
+    final slotHeight = _detailsOpen
+        ? (screenHeight - areaTop - areaBottomOpen).clamp(160.0, screenHeight)
+        : (screenHeight - areaTop - areaBottomClosed).clamp(260.0, screenHeight);
+    final slotHorizontal = _detailsOpen ? 36.0 : 20.0;
 
-    // Abierta: carta compacta totalmente encima del panel (sin solape).
-    final cardTopOpen = safeTop + 62;
-    final cardHeightOpen =
-        (sheetTop - cardTopOpen - 22).clamp(220.0, screenHeight * 0.36);
-    final cardHorizontal = _detailsOpen ? 48.0 : 22.0;
+    // Proporciones fijas: al abrir detalles se escala la misma carta.
+    final designWidth = media.size.width - 40;
+    final designHeight = (designWidth * 1.45).clamp(380.0, 580.0);
 
-    final cardTop = _detailsOpen ? cardTopOpen : cardTopClosed;
-    final cardHeight = _detailsOpen ? cardHeightOpen : cardHeightClosed;
     final bgPath = ClashEpicAssets.detailBackgroundForTeam(
       entry.team,
       entry.effectiveRarity,
@@ -563,21 +560,29 @@ class _ClashCardDetailScreenState extends State<ClashCardDetailScreen>
             ),
           ),
         ),
-        // Carta por encima del panel de detalles.
         AnimatedPositioned(
           duration: const Duration(milliseconds: 240),
           curve: Curves.easeOutCubic,
-          left: cardHorizontal,
-          right: cardHorizontal,
-          top: cardTop,
-          height: cardHeight,
+          left: slotHorizontal,
+          right: slotHorizontal,
+          top: areaTop,
+          height: slotHeight,
           child: IgnorePointer(
             ignoring: _detailsOpen,
-            child: ClashCardEpicShowcase(
-              entry: entry,
-              detailHero: true,
-              height: cardHeight,
-              onLevelUpTap: _openLevelUpSheet,
+            child: Center(
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: SizedBox(
+                  width: designWidth,
+                  height: designHeight,
+                  child: ClashCardEpicShowcase(
+                    entry: entry,
+                    detailHero: true,
+                    height: designHeight,
+                    onLevelUpTap: _openLevelUpSheet,
+                  ),
+                ),
+              ),
             ),
           ),
         ),

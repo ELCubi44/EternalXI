@@ -42,13 +42,16 @@ class ClashShellScreen extends StatelessWidget {
     final selectedIndex = _selectedTabIndex(context);
     final path = GoRouterState.of(context).uri.path;
     final isCardDetail = RegExp(r'^/clash/cards/[^/]+$').hasMatch(path);
+    final isCardCollection = path == AppRoutes.clashCards ||
+        path == '${AppRoutes.clashCards}/';
+    final hideClashHeader = isCardDetail || isCardCollection;
 
     return Scaffold(
       backgroundColor: context.xiBackground,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (!isCardDetail) const ClashHeaderBar(),
+          if (!hideClashHeader) const ClashHeaderBar(),
           Expanded(child: body),
         ],
       ),

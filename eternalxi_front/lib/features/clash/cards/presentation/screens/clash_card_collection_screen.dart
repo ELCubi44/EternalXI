@@ -1,6 +1,5 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
-import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_player_style.dart';
 import 'package:eternal_xi/features/clash/cards/domain/clash_position.dart';
@@ -8,7 +7,6 @@ import 'package:eternal_xi/features/clash/cards/domain/clash_rarity.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_card_tile.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_collection_empty_state.dart';
-import 'package:eternal_xi/features/clash/cards/presentation/widgets/clash_collection_header.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -23,11 +21,14 @@ class ClashCardCollectionScreen extends StatefulWidget {
 
 class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
   late final TextEditingController _searchController;
+  late final FocusNode _searchFocus;
+  bool _searchOpen = false;
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
+    _searchFocus = FocusNode();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final controller = context.read<ClashCardsController>();
       if (controller.state == ClashCardsLoadState.idle) {
@@ -39,12 +40,29 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocus.dispose();
     super.dispose();
   }
 
   void _clearFilters(ClashCardsController controller) {
     _searchController.clear();
     controller.clearFilters();
+  }
+
+  void _openSearch() {
+    setState(() => _searchOpen = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _searchFocus.requestFocus();
+      }
+    });
+  }
+
+  void _closeSearch(ClashCardsController controller) {
+    setState(() => _searchOpen = false);
+    if (_searchController.text.trim().isEmpty) {
+      controller.setSearchQuery('');
+    }
   }
 
   @override
@@ -56,7 +74,7 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 8, 0),
+          padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
           child: Row(
             children: [
               IconButton(
@@ -65,75 +83,73 @@ class _ClashCardCollectionScreenState extends State<ClashCardCollectionScreen> {
                 tooltip: l10n.clashBack,
               ),
               Expanded(
-                child: Transform(
-                  transform: Matrix4.skewX(-0.12),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).colorScheme.primary,
-                          Theme.of(context).colorScheme.primary.withValues(
-                                alpha: 0.75,
-                              ),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Transform(
-                      transform: Matrix4.skewX(0.12),
-                      child: Text(
-                        l10n.clashCollectionTitle,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
+                child: _searchOpen
+                    ? TextField(
+                        controller: _searchController,
+                        focusNode: _searchFocus,
+                        onChanged: controller.setSearchQuery,
+                        textInputAction: TextInputAction.search,
+                        decoration: InputDecoration(
+                          hintText: l10n.clashSearchHint,
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          suffixIcon: IconButton(
+                            tooltip: l10n.cancel,
+                            onPressed: () {
+                              _clearFilters(controller);
+                              _closeSearch(controller);
+                            },
+                            icon: const Icon(Icons.close_rounded),
+                          ),
+                        ),
+                      )
+                    : Transform(
+                        transform: Matrix4.skewX(-0.12),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.primary,
+                                Theme.of(context).colorScheme.primary.withValues(
+                                      alpha: 0.75,
+                                    ),
+                              ],
                             ),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Transform(
+                            transform: Matrix4.skewX(0.12),
+                            child: Text(
+                              l10n.clashCollectionTitle,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                  ),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
               ),
-              const SizedBox(width: 8),
+              if (!_searchOpen)
+                IconButton(
+                  tooltip: l10n.clashSearchHint,
+                  onPressed: _openSearch,
+                  icon: const Icon(Icons.search_rounded),
+                ),
             ],
           ),
         ),
-        if (controller.state == ClashCardsLoadState.ready &&
-            controller.ownedCount > 0)
-          ClashCollectionHeader(controller: controller),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-          child: TextField(
-            controller: _searchController,
-            onChanged: controller.setSearchQuery,
-            decoration: InputDecoration(
-              hintText: l10n.clashSearchHint,
-              prefixIcon: const Icon(Icons.search_rounded),
-              suffixIcon: controller.searchQuery.trim().isNotEmpty
-                  ? IconButton(
-                      onPressed: () => _clearFilters(controller),
-                      icon: const Icon(Icons.clear_rounded),
-                    )
-                  : null,
-              isDense: true,
-            ),
-          ),
-        ),
         _FiltersBar(controller: controller),
-        if (controller.state == ClashCardsLoadState.ready)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 2, 16, 0),
-            child: Text(
-              '${controller.visibleCards.length}/${controller.ownedCount}',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: context.xiTextSecondary,
-                  ),
-            ),
-          ),
         Expanded(
           child: _CollectionBody(
             controller: controller,
