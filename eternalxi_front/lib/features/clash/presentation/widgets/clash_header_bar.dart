@@ -143,8 +143,8 @@ class _ClashHeaderBarState extends State<ClashHeaderBar> {
                         Positioned(
                           left: contentLeft,
                           right: contentRight,
-                          top: h * 0.11,
-                          height: h * 0.30,
+                          top: h * 0.145,
+                          height: h * 0.27,
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: w * 0.02),
                             child: Row(
