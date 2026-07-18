@@ -272,28 +272,8 @@ void main() {
   });
 
   group('ClashStoryMapScreen Fase 49', () {
-    testWidgets('muestra progreso y capítulo', (tester) async {
+    testWidgets('muestra título y primera misión visible', (tester) async {
       final setup = await _setup();
-
-      await tester.pumpWidget(
-        _storyApp(
-          controller: setup.controller,
-          child: const ClashStoryMapScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Progreso'), findsOneWidget);
-      expect(find.text('0/4 niveles'), findsWidgets);
-      expect(find.text('Capítulo actual'), findsOneWidget);
-      expect(find.text('Capítulo test'), findsWidgets);
-    });
-
-    testWidgets('muestra tipos story y match con estados', (tester) async {
-      final setup = await _setup();
-      tester.view.physicalSize = const Size(400, 2000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.reset);
 
       await tester.pumpWidget(
         _storyApp(
@@ -304,20 +284,16 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Historia'), findsWidgets);
-      expect(find.text('Partido'), findsOneWidget);
-      expect(find.text('Disponible'), findsOneWidget);
-      expect(find.text('Bloqueado'), findsWidgets);
-      expect(find.text('Leer'), findsOneWidget);
-      expect(find.text('Completa el nivel anterior'), findsWidgets);
+      expect(find.text('Capítulo test'), findsOneWidget);
+      expect(find.textContaining('1.'), findsOneWidget);
+      expect(find.textContaining('Nivel 1'), findsOneWidget);
+      // Las bloqueadas aún no aparecen.
+      expect(find.textContaining('Nivel 2'), findsNothing);
+      expect(find.textContaining('Nivel match'), findsNothing);
     });
 
-    testWidgets('muestra recompensas first clear y objetivos match', (
-      tester,
-    ) async {
+    testWidgets('icono libro en misión story; sin recompensas', (tester) async {
       final setup = await _setup();
-      tester.view.physicalSize = const Size(400, 2000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.reset);
 
       await tester.pumpWidget(
         _storyApp(
@@ -327,13 +303,13 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Primera vez'), findsWidgets);
-      expect(find.text('Gemas'), findsWidgets);
-      expect(find.text('×2'), findsWidgets);
-      expect(find.text('Ganar el partido'), findsOneWidget);
+      expect(find.byIcon(Icons.menu_book_rounded), findsOneWidget);
+      expect(find.text('Primera vez'), findsNothing);
+      expect(find.text('Gemas'), findsNothing);
+      expect(find.text('Leer'), findsNothing);
     });
 
-    testWidgets('nivel completado muestra Repetir', (tester) async {
+    testWidgets('al completar aparece la siguiente misión', (tester) async {
       final setup = await _setup();
       await setup.storyRepo.completeStoryLevel('prologue-lvl-01');
       await setup.controller.load();
@@ -346,8 +322,28 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Completado'), findsOneWidget);
-      expect(find.text('Leer de nuevo'), findsOneWidget);
+      expect(find.textContaining('Nivel 1'), findsOneWidget);
+      expect(find.textContaining('Nivel 2'), findsOneWidget);
+      expect(find.textContaining('Nivel 3'), findsNothing);
+    });
+
+    testWidgets('misión match muestra icono de batalla', (tester) async {
+      final setup = await _setup();
+      await setup.storyRepo.completeStoryLevel('prologue-lvl-01');
+      await setup.storyRepo.completeStoryLevel('prologue-lvl-02');
+      await setup.storyRepo.completeStoryLevel('prologue-lvl-03');
+      await setup.controller.load();
+
+      await tester.pumpWidget(
+        _storyApp(
+          controller: setup.controller,
+          child: const ClashStoryMapScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Nivel match'), findsOneWidget);
+      expect(find.byIcon(Icons.sports_martial_arts_rounded), findsOneWidget);
     });
 
     testWidgets('no overflow en viewport móvil', (tester) async {

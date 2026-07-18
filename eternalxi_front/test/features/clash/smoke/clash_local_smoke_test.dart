@@ -218,7 +218,7 @@ void main() {
 
       expect(find.byType(ClashStoryMapScreen), findsOneWidget);
       expect(find.text('Historia'), findsWidgets);
-      expect(find.text('Torneo Eterno Campeón!'), findsOneWidget);
+      expect(find.textContaining('Torneo Eterno Campeón!'), findsOneWidget);
       expect(find.byIcon(Icons.menu_book_rounded), findsWidgets);
       _expectNoFlutterErrors(tester);
     });

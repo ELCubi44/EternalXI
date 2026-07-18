@@ -369,7 +369,7 @@ void main() {
       );
     }
 
-    testWidgets('mapa muestra niveles del prólogo incluido match bloqueado', (
+    testWidgets('mapa muestra solo la primera misión disponible', (
       tester,
     ) async {
       final setup = await _setup();
@@ -385,9 +385,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Nivel 1'), findsOneWidget);
-      expect(find.text('Nivel 2'), findsOneWidget);
-      expect(find.text('Nivel 3'), findsOneWidget);
-      expect(find.text('Nivel match'), findsOneWidget);
+      expect(find.text('Nivel 2'), findsNothing);
+      expect(find.text('Nivel 3'), findsNothing);
+      expect(find.text('Nivel match'), findsNothing);
     });
 
     test('mapa abre prepare para nivel match', () {

@@ -19,7 +19,7 @@ IconData clashStoryLevelTypeIcon(ClashStoryLevelType type) {
   return switch (type) {
     ClashStoryLevelType.story => Icons.menu_book_rounded,
     ClashStoryLevelType.match ||
-    ClashStoryLevelType.mixed => Icons.stadium_rounded,
+    ClashStoryLevelType.mixed => Icons.sports_martial_arts_rounded,
   };
 }
 
