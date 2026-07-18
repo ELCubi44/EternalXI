@@ -1,5 +1,6 @@
 import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/clash/home/presentation/clash_home_screen.dart';
+import 'package:eternal_xi/features/clash/home/presentation/widgets/clash_home_story_map_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,7 +14,7 @@ void main() {
   }
 
   group('ClashHome hub UI', () {
-    testWidgets('muestra el fondo del instituto a pantalla completa', (
+    testWidgets('muestra fondo del instituto y botón de Historia', (
       tester,
     ) async {
       configureViewport(tester);
@@ -28,17 +29,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(ClashHomeScreen), findsOneWidget);
-      expect(
-        find.byWidgetPredicate(
-          (w) =>
-              w is Image &&
-              w.image is AssetImage &&
-              (w.image as AssetImage).assetName ==
-                  ClashHomeScreen.backgroundAsset,
-        ),
-        findsOneWidget,
-      );
-      expect(find.text('Historia'), findsNothing);
+      expect(find.byType(ClashHomeStoryMapButton), findsOneWidget);
+      expect(find.text('HISTORIA'), findsOneWidget);
       expect(find.text('Eventos'), findsNothing);
     });
   });

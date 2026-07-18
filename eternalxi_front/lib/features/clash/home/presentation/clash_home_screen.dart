@@ -1,3 +1,4 @@
+import 'package:eternal_xi/features/clash/home/presentation/widgets/clash_home_story_map_button.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_auto_check_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -41,6 +42,8 @@ class _ClashHomeScreenState extends State<ClashHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -67,6 +70,14 @@ class _ClashHomeScreenState extends State<ClashHomeScreen> {
                 Color(0x99000000),
               ],
             ),
+          ),
+        ),
+        // Botón Historia sobre el banco (mapa de historia).
+        Align(
+          alignment: const Alignment(0, 0.42),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(36, 0, 36, 56 + bottomInset * 0.2),
+            child: const ClashHomeStoryMapButton(),
           ),
         ),
       ],
