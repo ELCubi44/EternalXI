@@ -129,7 +129,10 @@ final GoRouter appRouter = GoRouter(
       redirect: redirectIfUnauthenticated,
       builder: (context, state) => const ClashMediaDownloadScreen(),
     ),
+    // Subrutas Clash son hermanas de `/clash` (no hijas): si el hub vive en el
+    // pageBuilder del padre, go_router nunca muestra story/inventory/etc.
     ShellRoute(
+      redirect: redirectIfUnauthenticated,
       builder: (context, state, child) {
         return ChangeNotifierProvider(
           create: (_) => ClashNavigationController(),
@@ -139,177 +142,167 @@ final GoRouter appRouter = GoRouter(
       routes: [
         GoRoute(
           path: AppRoutes.clash,
-          redirect: redirectIfUnauthenticated,
-          // TabHost solo en `/clash`. Las subrutas (story, cards, …) deben
-          // ser el `child` del ShellRoute; si el pageBuilder vive aquí,
-          // siempre se muestra el hub y push('/clash/story') no hace nada visible.
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: ClashTabHost()),
+        ),
+        GoRoute(
+          path: AppRoutes.clashStory,
+          builder: (context, state) => const ClashStoryMapScreen(),
           routes: [
             GoRoute(
-              path: '',
-              pageBuilder: (context, state) =>
-                  const NoTransitionPage(child: ClashTabHost()),
-            ),
-            GoRoute(
-              path: 'story',
-              builder: (context, state) => const ClashStoryMapScreen(),
+              path: 'level/:levelId',
+              builder: (context, state) => ClashStoryLevelReaderScreen(
+                levelId: state.pathParameters['levelId'] ?? '',
+              ),
               routes: [
                 GoRoute(
-                  path: 'level/:levelId',
-                  builder: (context, state) => ClashStoryLevelReaderScreen(
+                  path: 'prepare',
+                  builder: (context, state) => ClashMatchPrepareScreen(
                     levelId: state.pathParameters['levelId'] ?? '',
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        GoRoute(
+          path: '/clash/match/:levelId',
+          builder: (context, state) => ClashMatchScreen(
+            levelId: state.pathParameters['levelId'] ?? '',
+          ),
+        ),
+        GoRoute(
+          path: '/clash/decisive/:levelId',
+          builder: (context, state) => ClashDecisiveMomentsScreen(
+            levelId: state.pathParameters['levelId'] ?? '',
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.clashTeam7v7,
+          builder: (context, state) => const ClashLineup7v7Screen(),
+        ),
+        GoRoute(
+          path: AppRoutes.clashInventory,
+          builder: (context, state) => const ClashInventoryScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.clashMissions,
+          builder: (context, state) => const ClashDailyMissionsScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.clashWeeklyMissions,
+          builder: (context, state) => const ClashWeeklyMissionsScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.clashAchievements,
+          builder: (context, state) => const ClashAchievementsScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.clashNews,
+          builder: (context, state) => const ClashNewsScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.clashGifts,
+          builder: (context, state) => const ClashGiftsScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.clashTrials,
+          builder: (context, state) => const ClashTrialsScreen(),
+          routes: [
+            GoRoute(
+              path: ':trialId',
+              builder: (context, state) => ClashTrialDetailScreen(
+                trialId: state.pathParameters['trialId'] ?? '',
+              ),
+              routes: [
+                GoRoute(
+                  path: 'floor/:floorId/prepare',
+                  builder: (context, state) => ClashTrialPrepareScreen(
+                    trialId: state.pathParameters['trialId'] ?? '',
+                    floorId: state.pathParameters['floorId'] ?? '',
+                  ),
+                ),
+                GoRoute(
+                  path: 'floor/:floorId/match',
+                  builder: (context, state) => ClashChainMatchScreen(
+                    trialId: state.pathParameters['trialId'] ?? '',
+                    floorId: state.pathParameters['floorId'] ?? '',
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        GoRoute(
+          path: AppRoutes.clashEvents,
+          builder: (context, state) => const ClashEventsScreen(),
+          routes: [
+            GoRoute(
+              path: ':eventId',
+              builder: (context, state) => ClashEventDetailScreen(
+                eventId: state.pathParameters['eventId'] ?? '',
+              ),
+              routes: [
+                GoRoute(
+                  path: 'stage/:stageId',
+                  builder: (context, state) => ClashEventStoryStageScreen(
+                    eventId: state.pathParameters['eventId'] ?? '',
+                    stageId: state.pathParameters['stageId'] ?? '',
                   ),
                   routes: [
                     GoRoute(
                       path: 'prepare',
-                      builder: (context, state) => ClashMatchPrepareScreen(
-                        levelId: state.pathParameters['levelId'] ?? '',
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            GoRoute(
-              path: 'match/:levelId',
-              builder: (context, state) => ClashMatchScreen(
-                levelId: state.pathParameters['levelId'] ?? '',
-              ),
-            ),
-            GoRoute(
-              path: 'decisive/:levelId',
-              builder: (context, state) => ClashDecisiveMomentsScreen(
-                levelId: state.pathParameters['levelId'] ?? '',
-              ),
-            ),
-            GoRoute(
-              path: 'team/7v7',
-              builder: (context, state) => const ClashLineup7v7Screen(),
-            ),
-            GoRoute(
-              path: 'inventory',
-              builder: (context, state) => const ClashInventoryScreen(),
-            ),
-            GoRoute(
-              path: 'missions',
-              builder: (context, state) => const ClashDailyMissionsScreen(),
-            ),
-            GoRoute(
-              path: 'weekly-missions',
-              builder: (context, state) => const ClashWeeklyMissionsScreen(),
-            ),
-            GoRoute(
-              path: 'achievements',
-              builder: (context, state) => const ClashAchievementsScreen(),
-            ),
-            GoRoute(
-              path: 'news',
-              builder: (context, state) => const ClashNewsScreen(),
-            ),
-            GoRoute(
-              path: 'gifts',
-              builder: (context, state) => const ClashGiftsScreen(),
-            ),
-            GoRoute(
-              path: 'trials',
-              builder: (context, state) => const ClashTrialsScreen(),
-              routes: [
-                GoRoute(
-                  path: ':trialId',
-                  builder: (context, state) => ClashTrialDetailScreen(
-                    trialId: state.pathParameters['trialId'] ?? '',
-                  ),
-                  routes: [
-                    GoRoute(
-                      path: 'floor/:floorId/prepare',
-                      builder: (context, state) => ClashTrialPrepareScreen(
-                        trialId: state.pathParameters['trialId'] ?? '',
-                        floorId: state.pathParameters['floorId'] ?? '',
-                      ),
-                    ),
-                    GoRoute(
-                      path: 'floor/:floorId/match',
-                      builder: (context, state) => ClashChainMatchScreen(
-                        trialId: state.pathParameters['trialId'] ?? '',
-                        floorId: state.pathParameters['floorId'] ?? '',
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            GoRoute(
-              path: 'events',
-              builder: (context, state) => const ClashEventsScreen(),
-              routes: [
-                GoRoute(
-                  path: ':eventId',
-                  builder: (context, state) => ClashEventDetailScreen(
-                    eventId: state.pathParameters['eventId'] ?? '',
-                  ),
-                  routes: [
-                    GoRoute(
-                      path: 'stage/:stageId',
-                      builder: (context, state) => ClashEventStoryStageScreen(
+                      builder: (context, state) => ClashEventMatchPrepareScreen(
                         eventId: state.pathParameters['eventId'] ?? '',
                         stageId: state.pathParameters['stageId'] ?? '',
                       ),
-                      routes: [
-                        GoRoute(
-                          path: 'prepare',
-                          builder: (context, state) =>
-                              ClashEventMatchPrepareScreen(
-                                eventId: state.pathParameters['eventId'] ?? '',
-                                stageId: state.pathParameters['stageId'] ?? '',
-                              ),
-                        ),
-                        GoRoute(
-                          path: 'match',
-                          builder: (context, state) => ClashEventMatchScreen(
-                            eventId: state.pathParameters['eventId'] ?? '',
-                            stageId: state.pathParameters['stageId'] ?? '',
-                          ),
-                        ),
-                      ],
+                    ),
+                    GoRoute(
+                      path: 'match',
+                      builder: (context, state) => ClashEventMatchScreen(
+                        eventId: state.pathParameters['eventId'] ?? '',
+                        stageId: state.pathParameters['stageId'] ?? '',
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
+          ],
+        ),
+        GoRoute(
+          path: AppRoutes.clashHelp,
+          builder: (context, state) => const ClashHelpScreen(),
+          routes: [
             GoRoute(
-              path: 'help',
-              builder: (context, state) => const ClashHelpScreen(),
-              routes: [
-                GoRoute(
-                  path: ':topicId',
-                  builder: (context, state) => ClashHelpTopicScreen(
-                    topicId: state.pathParameters['topicId'] ?? '',
-                  ),
-                ),
-              ],
+              path: ':topicId',
+              builder: (context, state) => ClashHelpTopicScreen(
+                topicId: state.pathParameters['topicId'] ?? '',
+              ),
             ),
+          ],
+        ),
+        GoRoute(
+          path: AppRoutes.clashSummonHistory,
+          builder: (context, state) => const ClashGachaHistoryScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.clashRewardHistory,
+          builder: (context, state) => const ClashRewardHistoryScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.clashDebug,
+          builder: (context, state) => const ClashDebugScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.clashCards,
+          builder: (context, state) => const ClashCardCollectionScreen(),
+          routes: [
             GoRoute(
-              path: 'summon/history',
-              builder: (context, state) => const ClashGachaHistoryScreen(),
-            ),
-            GoRoute(
-              path: 'rewards/history',
-              builder: (context, state) => const ClashRewardHistoryScreen(),
-            ),
-            GoRoute(
-              path: 'debug',
-              builder: (context, state) => const ClashDebugScreen(),
-            ),
-            GoRoute(
-              path: 'cards',
-              builder: (context, state) => const ClashCardCollectionScreen(),
-              routes: [
-                GoRoute(
-                  path: ':cardId',
-                  builder: (context, state) => ClashCardDetailScreen(
-                    cardId: state.pathParameters['cardId'] ?? '',
-                  ),
-                ),
-              ],
+              path: ':cardId',
+              builder: (context, state) => ClashCardDetailScreen(
+                cardId: state.pathParameters['cardId'] ?? '',
+              ),
             ),
           ],
         ),
