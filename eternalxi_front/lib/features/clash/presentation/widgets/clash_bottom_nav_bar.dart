@@ -112,122 +112,131 @@ class _ClashBottomNavBarState extends State<ClashBottomNavBar>
       type: MaterialType.transparency,
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-          8,
+          2,
           0,
-          8,
-          bottomPad > 0 ? (bottomPad * 0.4).clamp(4.0, 14.0) : 6,
+          2,
+          bottomPad > 0 ? (bottomPad * 0.35).clamp(4.0, 12.0) : 4,
         ),
-        child: AspectRatio(
-          aspectRatio: _plateAspect,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Image.asset(
-                ClashEpicAssets.clashBottomNavBg,
-                fit: BoxFit.fill,
-                filterQuality: FilterQuality.high,
-                gaplessPlayback: true,
-                errorBuilder: (_, __, ___) => DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: const Color(0xE608101C),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: XiColors.classicGold.withValues(alpha: 0.55),
-                      width: 1.2,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(22, 3, 22, 4),
-                child: Row(
-                  children: List.generate(widget.items.length, (i) {
-                    return Expanded(
-                      child: GestureDetector(
-                        onTapDown: (_) => _onTapDown(i),
-                        onTapUp: (_) => _onTapUp(i),
-                        onTapCancel: () => _onTapCancel(i),
-                        behavior: HitTestBehavior.opaque,
-                        child: AnimatedBuilder(
-                          animation: Listenable.merge([
-                            _selectAnim[i],
-                            _pressAnim[i],
-                          ]),
-                          builder: (context, _) {
-                            final sel = _selectAnim[i].value;
-                            final selected = widget.selectedIndex == i;
-                            final labelColor = Color.lerp(
-                              XiColors.steelGray,
-                              XiColors.techCyan,
-                              sel,
-                            )!;
-                            return Transform.scale(
-                              scale: _pressAnim[i].value,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: (18 * sel).clamp(0.0, 18.0),
-                                    height: 2.5,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(2),
-                                      gradient: sel > 0.05
-                                          ? const LinearGradient(
-                                              colors: [
-                                                XiColors.classicGold,
-                                                XiColors.techCyan,
-                                              ],
-                                            )
-                                          : null,
-                                      boxShadow: sel > 0.05
-                                          ? [
-                                              BoxShadow(
-                                                color: XiColors.techCyan
-                                                    .withValues(
-                                                      alpha: 0.5 * sel,
-                                                    ),
-                                                blurRadius: 5 * sel,
-                                              ),
-                                            ]
-                                          : null,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 1),
-                                  Opacity(
-                                    opacity: selected ? 1.0 : 0.58,
-                                    child: Image.asset(
-                                      widget.items[i].iconAsset,
-                                      width: 34,
-                                      height: 34,
-                                      fit: BoxFit.contain,
-                                      filterQuality: FilterQuality.medium,
-                                      gaplessPlayback: true,
-                                    ),
-                                  ),
-                                  Text(
-                                    widget.items[i].label,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontFamily: 'Lumiare',
-                                      fontSize: 10.5,
-                                      letterSpacing: 0.2,
-                                      height: 1.0,
-                                      color: labelColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Un pelín más alta que el aspect del asset; iconos siguen fijos.
+            final plateW = constraints.maxWidth;
+            final plateH = (plateW / _plateAspect) * 1.1;
+            return SizedBox(
+              width: plateW,
+              height: plateH,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    ClashEpicAssets.clashBottomNavBg,
+                    fit: BoxFit.fill,
+                    filterQuality: FilterQuality.high,
+                    gaplessPlayback: true,
+                    errorBuilder: (_, __, ___) => DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: const Color(0xE608101C),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: XiColors.classicGold.withValues(alpha: 0.55),
+                          width: 1.2,
                         ),
                       ),
-                    );
-                  }),
-                ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(26, 6, 26, 8),
+                    child: Row(
+                      children: List.generate(widget.items.length, (i) {
+                        return Expanded(
+                          child: GestureDetector(
+                            onTapDown: (_) => _onTapDown(i),
+                            onTapUp: (_) => _onTapUp(i),
+                            onTapCancel: () => _onTapCancel(i),
+                            behavior: HitTestBehavior.opaque,
+                            child: AnimatedBuilder(
+                              animation: Listenable.merge([
+                                _selectAnim[i],
+                                _pressAnim[i],
+                              ]),
+                              builder: (context, _) {
+                                final sel = _selectAnim[i].value;
+                                final selected = widget.selectedIndex == i;
+                                final labelColor = Color.lerp(
+                                  XiColors.steelGray,
+                                  XiColors.techCyan,
+                                  sel,
+                                )!;
+                                return Transform.scale(
+                                  scale: _pressAnim[i].value,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: (18 * sel).clamp(0.0, 18.0),
+                                        height: 2.5,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(2),
+                                          gradient: sel > 0.05
+                                              ? const LinearGradient(
+                                                  colors: [
+                                                    XiColors.classicGold,
+                                                    XiColors.techCyan,
+                                                  ],
+                                                )
+                                              : null,
+                                          boxShadow: sel > 0.05
+                                              ? [
+                                                  BoxShadow(
+                                                    color: XiColors.techCyan
+                                                        .withValues(
+                                                          alpha: 0.5 * sel,
+                                                        ),
+                                                    blurRadius: 5 * sel,
+                                                  ),
+                                                ]
+                                              : null,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 1),
+                                      Opacity(
+                                        opacity: selected ? 1.0 : 0.58,
+                                        child: Image.asset(
+                                          widget.items[i].iconAsset,
+                                          width: 34,
+                                          height: 34,
+                                          fit: BoxFit.contain,
+                                          filterQuality: FilterQuality.medium,
+                                          gaplessPlayback: true,
+                                        ),
+                                      ),
+                                      Text(
+                                        widget.items[i].label,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontFamily: 'Lumiare',
+                                          fontSize: 10.5,
+                                          letterSpacing: 0.2,
+                                          height: 1.0,
+                                          color: labelColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
