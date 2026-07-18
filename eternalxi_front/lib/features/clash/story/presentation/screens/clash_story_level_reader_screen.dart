@@ -232,12 +232,16 @@ class _ClashStoryLevelReaderScreenState
                   ? () => controller.previousScene()
                   : null,
               onNext: () => _onNext(controller),
+              onSkip: isCompleted && scene.isSkippable
+                  ? () => controller.skipScene()
+                  : null,
               nextLabel: controller.hasNextScene
                   ? l10n.clashStoryNextScene
                   : isCompleted
                       ? l10n.clashStoryReadAgain
                       : l10n.clashStoryFinishLevel,
               previousLabel: l10n.clashStoryPreviousScene,
+              skipLabel: l10n.clashStorySkipScene,
             )
           : _LegacyTextSceneView(
               scene: scene,
@@ -251,12 +255,16 @@ class _ClashStoryLevelReaderScreenState
                   ? () => controller.previousScene()
                   : null,
               onNext: () => _onNext(controller),
+              onSkip: isCompleted && scene.isSkippable
+                  ? () => controller.skipScene()
+                  : null,
               nextLabel: controller.hasNextScene
                   ? l10n.clashStoryNextScene
                   : isCompleted
                       ? l10n.clashStoryReadAgain
                       : l10n.clashStoryFinishLevel,
               previousLabel: l10n.clashStoryPreviousScene,
+              skipLabel: l10n.clashStorySkipScene,
             ),
     );
   }
@@ -272,7 +280,9 @@ class _MangaSceneView extends StatelessWidget {
     required this.onNext,
     required this.nextLabel,
     required this.previousLabel,
+    required this.skipLabel,
     this.onPrevious,
+    this.onSkip,
   });
 
   final ClashStoryScene scene;
@@ -283,7 +293,9 @@ class _MangaSceneView extends StatelessWidget {
   final VoidCallback onNext;
   final String nextLabel;
   final String previousLabel;
+  final String skipLabel;
   final VoidCallback? onPrevious;
+  final VoidCallback? onSkip;
 
   @override
   Widget build(BuildContext context) {
@@ -345,6 +357,14 @@ class _MangaSceneView extends StatelessWidget {
                         fontSize: 12,
                       ),
                     ),
+                    if (onSkip != null)
+                      TextButton(
+                        onPressed: onSkip,
+                        child: Text(
+                          skipLabel,
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -492,7 +512,9 @@ class _LegacyTextSceneView extends StatelessWidget {
     required this.onNext,
     required this.nextLabel,
     required this.previousLabel,
+    required this.skipLabel,
     this.onPrevious,
+    this.onSkip,
   });
 
   final ClashStoryScene scene;
@@ -504,7 +526,9 @@ class _LegacyTextSceneView extends StatelessWidget {
   final VoidCallback onNext;
   final String nextLabel;
   final String previousLabel;
+  final String skipLabel;
   final VoidCallback? onPrevious;
+  final VoidCallback? onSkip;
 
   @override
   Widget build(BuildContext context) {
@@ -529,6 +553,11 @@ class _LegacyTextSceneView extends StatelessWidget {
                   ),
                 ),
               ),
+              if (onSkip != null)
+                TextButton(
+                  onPressed: onSkip,
+                  child: Text(skipLabel),
+                ),
               Text(
                 progressLabel,
                 style: const TextStyle(color: Colors.white70),

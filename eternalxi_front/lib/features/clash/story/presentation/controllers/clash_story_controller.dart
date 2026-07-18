@@ -154,6 +154,10 @@ class ClashStoryController extends ChangeNotifier {
     if (level == null) {
       return;
     }
+    // Solo en repetición: si nunca se ha completado, no se puede omitir.
+    if (!_progress.isLevelCompleted(level.id)) {
+      return;
+    }
     final scene = level.scenes[_sceneIndex];
     if (scene.isSkippable) {
       nextScene();
