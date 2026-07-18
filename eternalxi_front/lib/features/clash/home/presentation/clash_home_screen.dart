@@ -1,14 +1,15 @@
-import 'package:eternal_xi/app/localization/l10n_extension.dart';
-import 'package:eternal_xi/features/clash/presentation/widgets/clash_section_tile.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_auto_check_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// Hub principal Clash (contenido pendiente; se irá añadiendo poco a poco).
+/// Hub principal Clash — fondo instituto (Thiago + Miguel de espaldas).
 class ClashHomeScreen extends StatefulWidget {
   const ClashHomeScreen({super.key, this.autoCheckService});
 
   final ClashSyncAutoCheckService? autoCheckService;
+
+  static const backgroundAsset =
+      'assets/images/clash/home/clash_home_bg_institute.png';
 
   @override
   State<ClashHomeScreen> createState() => _ClashHomeScreenState();
@@ -40,9 +41,35 @@ class _ClashHomeScreenState extends State<ClashHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ClashScreenScaffold(
-      title: context.l10n.clashTabHome,
-      children: const [],
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.asset(
+          ClashHomeScreen.backgroundAsset,
+          fit: BoxFit.cover,
+          alignment: const Alignment(0, -0.08),
+          filterQuality: FilterQuality.high,
+          errorBuilder: (_, __, ___) => const ColoredBox(
+            color: Color(0xFF0A1020),
+          ),
+        ),
+        // Velo suave: la escena se lee y deja sitio a UI futura.
+        const DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: [0.0, 0.35, 0.72, 1.0],
+              colors: [
+                Color(0x4D000000),
+                Color(0x14000000),
+                Color(0x33000000),
+                Color(0x99000000),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

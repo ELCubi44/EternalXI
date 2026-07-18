@@ -44,9 +44,11 @@ class ClashShellScreen extends StatelessWidget {
     final isCardDetail = RegExp(r'^/clash/cards/[^/]+$').hasMatch(path);
     final isCardCollection = path == AppRoutes.clashCards ||
         path == '${AppRoutes.clashCards}/';
-    final hideClashHeader = isCardDetail || isCardCollection;
+    final hideClashHeader = isCardDetail ||
+        isCardCollection ||
+        selectedIndex == 0; // Inicio: fondo a pantalla completa
 
-    // Mismo fondo atmosférico Clash/Fantasy en toda la sección Clash.
+    // Fondo estadio en tabs; el Inicio pinta su propio arte encima.
     return WithFantasyAtmosphere(
       child: Theme(
         data: Theme.of(context).copyWith(
