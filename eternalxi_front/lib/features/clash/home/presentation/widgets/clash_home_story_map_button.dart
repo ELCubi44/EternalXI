@@ -27,12 +27,11 @@ class _ClashHomeStoryMapButtonState extends State<ClashHomeStoryMapButton> {
       button: true,
       label: l10n.clashHomeStory,
       child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTapDown: (_) => setState(() => _scale = 0.96),
-        onTapUp: (_) {
-          setState(() => _scale = 1);
-          _goStory();
-        },
+        onTapUp: (_) => setState(() => _scale = 1),
         onTapCancel: () => setState(() => _scale = 1),
+        onTap: _goStory,
         child: AnimatedScale(
           scale: _scale,
           duration: const Duration(milliseconds: 110),

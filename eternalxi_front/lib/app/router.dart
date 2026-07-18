@@ -140,9 +140,15 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: AppRoutes.clash,
           redirect: redirectIfUnauthenticated,
-          pageBuilder: (context, state) =>
-              const NoTransitionPage(child: ClashTabHost()),
+          // TabHost solo en `/clash`. Las subrutas (story, cards, …) deben
+          // ser el `child` del ShellRoute; si el pageBuilder vive aquí,
+          // siempre se muestra el hub y push('/clash/story') no hace nada visible.
           routes: [
+            GoRoute(
+              path: '',
+              pageBuilder: (context, state) =>
+                  const NoTransitionPage(child: ClashTabHost()),
+            ),
             GoRoute(
               path: 'story',
               builder: (context, state) => const ClashStoryMapScreen(),
