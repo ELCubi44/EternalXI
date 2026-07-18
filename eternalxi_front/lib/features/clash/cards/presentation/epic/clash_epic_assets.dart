@@ -110,6 +110,11 @@ abstract final class ClashEpicAssets {
   static const teamPersonajesIcon = '$_base/ui/icon_team_personajes.png';
   static const teamPersonajesBarBg = '$_base/ui/bg_team_personajes_bar.png';
   static const clashHeaderPlateBg = '$_base/ui/bg_clash_header_ornate.png';
+  static const clashBottomNavBg = '$_base/ui/bg_clash_bottom_nav.png';
+  static const clashNavHomeIcon = '$_base/ui/icon_nav_home.png';
+  static const clashNavTeamIcon = '$_base/ui/icon_nav_team.png';
+  static const clashNavSummonIcon = '$_base/ui/icon_nav_summon.png';
+  static const clashNavShopIcon = '$_base/ui/icon_nav_shop.png';
   static const clashEnergyIcon = '$_base/ui/icon_clash_energy.png';
   /// Gema premium: Orbe / balon de cristal.
   static const clashGachaGemIcon = '$_base/ui/icon_gacha_gem_b_orbe.png';
