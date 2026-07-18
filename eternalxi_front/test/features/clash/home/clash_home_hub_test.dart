@@ -13,7 +13,9 @@ void main() {
   }
 
   group('ClashHome hub UI', () {
-    testWidgets('por ahora solo muestra el título Inicio', (tester) async {
+    testWidgets('muestra el fondo del instituto a pantalla completa', (
+      tester,
+    ) async {
       configureViewport(tester);
       await tester.pumpWidget(
         MaterialApp(
@@ -25,10 +27,19 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Inicio'), findsOneWidget);
+      expect(find.byType(ClashHomeScreen), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (w) =>
+              w is Image &&
+              w.image is AssetImage &&
+              (w.image as AssetImage).assetName ==
+                  ClashHomeScreen.backgroundAsset,
+        ),
+        findsOneWidget,
+      );
       expect(find.text('Historia'), findsNothing);
       expect(find.text('Eventos'), findsNothing);
-      expect(find.text('Cadena XI'), findsNothing);
     });
   });
 }
