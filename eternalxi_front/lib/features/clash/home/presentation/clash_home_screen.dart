@@ -1,10 +1,11 @@
-import 'package:eternal_xi/features/clash/home/presentation/widgets/clash_home_events_button.dart';
-import 'package:eternal_xi/features/clash/home/presentation/widgets/clash_home_story_map_button.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_auto_check_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 /// Hub principal Clash — fondo instituto (Thiago + Miguel de espaldas).
+///
+/// Historia / Eventos viven en [ClashShellScreen] (overlay encima de la nav),
+/// porque con `extendBody` la barra inferior interceptaba los toques.
 class ClashHomeScreen extends StatefulWidget {
   const ClashHomeScreen({super.key, this.autoCheckService});
 
@@ -43,8 +44,6 @@ class _ClashHomeScreenState extends State<ClashHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.paddingOf(context).bottom;
-
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -68,20 +67,6 @@ class _ClashHomeScreenState extends State<ClashHomeScreen> {
                 Color(0x14000000),
                 Color(0x28000000),
                 Color(0x99000000),
-              ],
-            ),
-          ),
-        ),
-        // Historia (izq) + Eventos bloqueados (der), encima de la barra.
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(10, 0, 10, 88 + bottomInset * 0.35),
-            child: Row(
-              children: [
-                const Expanded(child: ClashHomeStoryMapButton()),
-                SizedBox(width: MediaQuery.sizeOf(context).width * 0.04),
-                const Expanded(child: ClashHomeEventsButton()),
               ],
             ),
           ),

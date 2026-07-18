@@ -31,7 +31,7 @@ class _ClashHomeEventsButtonState extends State<ClashHomeEventsButton> {
       );
       return;
     }
-    context.push(AppRoutes.clashEvents);
+    context.go(AppRoutes.clashEvents);
   }
 
   @override

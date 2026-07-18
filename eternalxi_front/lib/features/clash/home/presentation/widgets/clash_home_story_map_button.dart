@@ -17,7 +17,7 @@ class ClashHomeStoryMapButton extends StatefulWidget {
 class _ClashHomeStoryMapButtonState extends State<ClashHomeStoryMapButton> {
   double _scale = 1;
 
-  void _goStory() => context.push(AppRoutes.clashStory);
+  void _goStory() => context.go(AppRoutes.clashStory);
 
   @override
   Widget build(BuildContext context) {
