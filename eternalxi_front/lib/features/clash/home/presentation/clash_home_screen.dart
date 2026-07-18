@@ -72,12 +72,15 @@ class _ClashHomeScreenState extends State<ClashHomeScreen> {
             ),
           ),
         ),
-        // Botón Historia sobre el banco (mapa de historia).
+        // Historia abajo-izquierda; a la derecha quedará Eventos.
         Align(
-          alignment: const Alignment(0, 0.42),
+          alignment: Alignment.bottomLeft,
           child: Padding(
-            padding: EdgeInsets.fromLTRB(36, 0, 36, 56 + bottomInset * 0.2),
-            child: const ClashHomeStoryMapButton(),
+            padding: EdgeInsets.fromLTRB(12, 0, 12, 88 + bottomInset * 0.35),
+            child: SizedBox(
+              width: MediaQuery.sizeOf(context).width * 0.44,
+              child: const ClashHomeStoryMapButton(),
+            ),
           ),
         ),
       ],
