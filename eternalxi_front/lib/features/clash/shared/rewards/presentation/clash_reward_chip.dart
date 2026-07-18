@@ -38,7 +38,21 @@ class ClashRewardChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(item.icon, size: 16, color: iconColor),
+          if (item.iconAsset != null)
+            Image.asset(
+              item.iconAsset!,
+              width: 18,
+              height: 18,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.medium,
+              errorBuilder: (_, __, ___) => Icon(
+                item.icon ?? Icons.diamond_outlined,
+                size: 16,
+                color: iconColor,
+              ),
+            )
+          else
+            Icon(item.icon, size: 16, color: iconColor),
           const SizedBox(width: 6),
           Flexible(
             child: Column(

@@ -1,4 +1,5 @@
 import 'package:eternal_xi/features/clash/match/domain/match_state.dart';
+import 'package:eternal_xi/features/clash/shared/energy/clash_energy_service.dart';
 import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_repository.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_chapter.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level.dart';
@@ -100,11 +101,31 @@ class ClashStoryController extends ChangeNotifier {
     if (!canOpen(level)) {
       return false;
     }
+    // Replay no vuelve a cobrar si ya está completado.
+    final alreadyDone = _progress.isLevelCompleted(levelId);
+    if (!alreadyDone && level.energyCost > 0) {
+      final spent = await ClashEnergyService().trySpend(level.energyCost);
+      if (spent == null) {
+        _errorMessage = 'energy';
+        notifyListeners();
+        return false;
+      }
+    }
     _activeLevel = level;
     _sceneIndex = 0;
     _lastCompletion = null;
+    _errorMessage = null;
     notifyListeners();
     return true;
+  }
+
+  bool get hasPreviousScene => _activeLevel != null && _sceneIndex > 0;
+
+  void previousScene() {
+    if (hasPreviousScene) {
+      _sceneIndex -= 1;
+      notifyListeners();
+    }
   }
 
   void clearActiveLevel() {

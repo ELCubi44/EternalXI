@@ -100,7 +100,7 @@ class ClashShellScreen extends StatelessWidget {
                         Expanded(child: body),
                       ],
                     ),
-              bottomNavigationBar: isCardDetail
+              bottomNavigationBar: (isCardDetail || isStoryPath)
                   ? null
                   : Theme(
                       data: Theme.of(context).copyWith(

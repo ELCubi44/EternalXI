@@ -10,12 +10,13 @@
         "id": "prologue-lvl-01",
         "chapterId": "chapter-01",
         "title": "Torneo Eterno Campeón!",
-        "description": "En clase anuncian el torneo mundial de institutos. Zaragoza clasifica por primera vez… y necesita 19 jugadores.",
+        "description": "En clase hablan del Torneo Eterno Campeón. Zaragoza clasifica por primera vez… y necesita 19 jugadores.",
         "order": 1,
         "type": "story",
-        "energyCost": 0,
+        "energyCost": 5,
         "rewards": {
           "gems": 2,
+          "accountXp": 25,
           "items": []
         },
         "scenes": [
@@ -24,7 +25,7 @@
             "order": 1,
             "type": "comic",
             "speaker": "Narrador",
-            "text": "Zaragoza. Instituto Eternal. Otro amanecer… y una noticia que lo va a cambiar todo.",
+            "text": "Zaragoza. Instituto Eternal. Otro amanecer en el patio… y en las aulas, una noticia que todo el mundo ya esperaba.",
             "imagePath": "assets/images/clash/story/ep01/ep01_01_arrival.png",
             "isSkippable": true
           },
@@ -33,7 +34,7 @@
             "order": 2,
             "type": "comic",
             "speaker": "Narrador",
-            "text": "En el aula, el profesor reúne a la clase. Entre las siluetas, se distinguen caras que pronto importarán más de lo que imaginan.",
+            "text": "En clase, el profesor no necesita presentaciones largas. El logo del Torneo Eterno Campeón ya está en la pizarra. Todos saben lo que significa.",
             "imagePath": "assets/images/clash/story/ep01/ep01_02_classroom.png",
             "isSkippable": true
           },
@@ -42,7 +43,7 @@
             "order": 3,
             "type": "comic",
             "speaker": "Profesor",
-            "text": "Este año se celebra de nuevo el Torneo Eterno Campeón. Clasifican los institutos con mejor IQ del mundo… y compiten en fútbol para decidir quién es el mejor instituto.",
+            "text": "Como sabéis, el Torneo Eterno Campeón vuelve un año más. Los institutos con mejor IQ del planeta clasifican… y luego se juegan el orgullo en el campo de fútbol.",
             "imagePath": "assets/images/clash/story/ep01/ep01_03_announce.png",
             "isSkippable": true
           },
@@ -51,7 +52,7 @@
             "order": 4,
             "type": "comic",
             "speaker": "Profesor",
-            "text": "El vigente campeón es Bastion Adler, el instituto alemán. Y… es la primera vez que Eternal Zaragoza se clasifica por nivel de IQ. El problema: no tenemos equipo de fútbol.",
+            "text": "El vigente campeón es Bastion Adler. Eso también lo sabéis. Lo nuevo es esto: Eternal Zaragoza clasifica por primera vez por nivel de IQ… y no tenemos equipo de fútbol.",
             "imagePath": "assets/images/clash/story/ep01/ep01_03_announce.png",
             "isSkippable": true
           },
@@ -60,7 +61,7 @@
             "order": 5,
             "type": "comic",
             "speaker": "Profesor",
-            "text": "Si no reunimos exactamente 19 jugadores, no podremos participar. Estamos informando a todos los cursos. ¿Quién quiere apuntarse?",
+            "text": "Hacen falta exactamente diecinueve jugadores. Si no los reunimos, nos quedamos fuera. Estamos pasando por todos los cursos. ¿Quién se apunta?",
             "imagePath": "assets/images/clash/story/ep01/ep01_04_thiago_react.png",
             "isSkippable": true
           },
@@ -69,7 +70,7 @@
             "order": 6,
             "type": "comic",
             "speaker": "Thiago Solari",
-            "text": "¡Yo! …Yo juego. Si hace falta un equipo… cuenten conmigo.",
+            "text": "¡Yo! …Yo juego. Si Eternal necesita un equipo… cuenten conmigo.",
             "imagePath": "assets/images/clash/story/ep01/ep01_05_volunteer.png",
             "isSkippable": true
           },
@@ -78,7 +79,7 @@
             "order": 7,
             "type": "comic",
             "speaker": "Narrador",
-            "text": "Una mano alzada. Una chispa. Faltan dieciocho… y el Torneo Eterno Campeón ya no es solo un anuncio en la pizarra.",
+            "text": "Una mano alzada. Una chispa. Faltan dieciocho… y el Torneo Eterno Campeón deja de ser solo el logo de siempre en la pizarra.",
             "imagePath": "assets/images/clash/story/ep01/ep01_06_hook.png",
             "isSkippable": true
           }

@@ -5,6 +5,7 @@ class ClashStoryReward {
   const ClashStoryReward({
     this.gems = 0,
     this.coins = 0,
+    this.accountXp = 0,
     this.items = const [],
     this.cardIds = const [],
     this.materials = const [],
@@ -16,6 +17,8 @@ class ClashStoryReward {
 
   final int gems;
   final int coins;
+  /// XP de cuenta de usuario (barra de nivel).
+  final int accountXp;
   final List<ClashStoryItemReward> items;
   final List<String> cardIds;
   final List<ClashStoryMaterialReward> materials;
@@ -26,6 +29,7 @@ class ClashStoryReward {
   bool get isEmpty =>
       gems <= 0 &&
       coins <= 0 &&
+      accountXp <= 0 &&
       items.isEmpty &&
       cardIds.isEmpty &&
       materials.isEmpty &&
@@ -39,6 +43,7 @@ class ClashStoryReward {
     return ClashStoryReward(
       gems: clashAsInt(json['gems']),
       coins: clashAsInt(json['coins']),
+      accountXp: clashAsInt(json['accountXp']),
       items: itemsRaw
           .map(
             (item) => ClashStoryItemReward.fromJson(
@@ -61,6 +66,7 @@ class ClashStoryReward {
   Map<String, dynamic> toJson() => {
     'gems': gems,
     'coins': coins,
+    'accountXp': accountXp,
     'items': items.map((item) => item.toJson()).toList(),
     'cards': cardIds,
     'materials': materials.map((item) => item.toJson()).toList(),

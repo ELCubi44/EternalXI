@@ -25,6 +25,7 @@ class _ClashStoryLevelReaderScreenState
   var _initialized = false;
   var _loading = true;
   var _blocked = false;
+  var _noEnergy = false;
 
   @override
   void initState() {
@@ -44,7 +45,8 @@ class _ClashStoryLevelReaderScreenState
     setState(() {
       _initialized = true;
       _loading = false;
-      _blocked = !ok;
+      _noEnergy = !ok && controller.errorMessage == 'energy';
+      _blocked = !ok && !_noEnergy;
     });
   }
 
@@ -84,6 +86,66 @@ class _ClashStoryLevelReaderScreenState
     }
   }
 
+  void _exitWithoutReward(ClashStoryController controller) {
+    controller.clearActiveLevel();
+    controller.clearLastCompletion();
+    context.go(AppRoutes.clashStory);
+  }
+
+  Future<void> _openMenu(ClashStoryController controller) async {
+    final l10n = context.l10n;
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: const Color(0xFF121A2A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l10n.clashStoryMenuTitle,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Lumiare',
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.clashStoryMenuExitHint,
+                  style: const TextStyle(color: Colors.white70, height: 1.35),
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () => Navigator.pop(sheetContext),
+                  child: Text(l10n.clashStoryMenuResume),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  onPressed: () {
+                    Navigator.pop(sheetContext);
+                    _exitWithoutReward(controller);
+                  },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.white24),
+                  ),
+                  child: Text(l10n.clashStoryMenuExit),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -91,6 +153,37 @@ class _ClashStoryLevelReaderScreenState
 
     if (_loading || !_initialized) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (_noEnergy) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(l10n.clashHomeStory),
+          leading: IconButton(
+            onPressed: () => context.go(AppRoutes.clashStory),
+            icon: const Icon(Icons.arrow_back_rounded),
+          ),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  l10n.clashStoryNotEnoughEnergy,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () => context.go(AppRoutes.clashStory),
+                  child: Text(l10n.clashStoryBackToMap),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     }
 
     if (_blocked || controller.activeLevel == null) {
@@ -132,35 +225,38 @@ class _ClashStoryLevelReaderScreenState
               scene: scene,
               progressLabel:
                   '${controller.sceneIndex + 1}/${level.scenes.length}',
-              progress:
-                  (controller.sceneIndex + 1) / level.scenes.length,
-              onBack: () => context.go(AppRoutes.clashStory),
-              onSkip: scene.isSkippable ? () => controller.skipScene() : null,
+              progress: (controller.sceneIndex + 1) / level.scenes.length,
+              canGoBack: controller.hasPreviousScene,
+              onMenu: () => _openMenu(controller),
+              onPrevious: controller.hasPreviousScene
+                  ? () => controller.previousScene()
+                  : null,
               onNext: () => _onNext(controller),
               nextLabel: controller.hasNextScene
                   ? l10n.clashStoryNextScene
                   : isCompleted
                       ? l10n.clashStoryReadAgain
                       : l10n.clashStoryFinishLevel,
-              skipLabel: l10n.clashStorySkipScene,
+              previousLabel: l10n.clashStoryPreviousScene,
             )
           : _LegacyTextSceneView(
               scene: scene,
               levelTitle: level.title,
               progressLabel:
                   '${controller.sceneIndex + 1}/${level.scenes.length}',
-              progress:
-                  (controller.sceneIndex + 1) / level.scenes.length,
-              onBack: () => context.go(AppRoutes.clashStory),
-              onSkip: scene.isSkippable ? () => controller.skipScene() : null,
+              progress: (controller.sceneIndex + 1) / level.scenes.length,
+              canGoBack: controller.hasPreviousScene,
+              onMenu: () => _openMenu(controller),
+              onPrevious: controller.hasPreviousScene
+                  ? () => controller.previousScene()
+                  : null,
               onNext: () => _onNext(controller),
               nextLabel: controller.hasNextScene
                   ? l10n.clashStoryNextScene
                   : isCompleted
                       ? l10n.clashStoryReadAgain
                       : l10n.clashStoryFinishLevel,
-              skipLabel: l10n.clashStorySkipScene,
-              backLabel: l10n.clashStoryBackToMap,
+              previousLabel: l10n.clashStoryPreviousScene,
             ),
     );
   }
@@ -171,21 +267,23 @@ class _MangaSceneView extends StatelessWidget {
     required this.scene,
     required this.progressLabel,
     required this.progress,
-    required this.onBack,
+    required this.canGoBack,
+    required this.onMenu,
     required this.onNext,
     required this.nextLabel,
-    required this.skipLabel,
-    this.onSkip,
+    required this.previousLabel,
+    this.onPrevious,
   });
 
   final ClashStoryScene scene;
   final String progressLabel;
   final double progress;
-  final VoidCallback onBack;
+  final bool canGoBack;
+  final VoidCallback onMenu;
   final VoidCallback onNext;
   final String nextLabel;
-  final String skipLabel;
-  final VoidCallback? onSkip;
+  final String previousLabel;
+  final VoidCallback? onPrevious;
 
   @override
   Widget build(BuildContext context) {
@@ -226,9 +324,10 @@ class _MangaSceneView extends StatelessWidget {
                 child: Row(
                   children: [
                     IconButton(
-                      onPressed: onBack,
-                      icon: const Icon(Icons.arrow_back_rounded),
+                      onPressed: onMenu,
+                      icon: const Icon(Icons.menu_rounded),
                       color: Colors.white,
+                      tooltip: context.l10n.clashStoryMenuTitle,
                     ),
                     Expanded(
                       child: LinearProgressIndicator(
@@ -246,14 +345,6 @@ class _MangaSceneView extends StatelessWidget {
                         fontSize: 12,
                       ),
                     ),
-                    if (onSkip != null)
-                      TextButton(
-                        onPressed: onSkip,
-                        child: Text(
-                          skipLabel,
-                          style: const TextStyle(color: Colors.white70),
-                        ),
-                      ),
                   ],
                 ),
               ),
@@ -264,7 +355,10 @@ class _MangaSceneView extends StatelessWidget {
                   speaker: scene.speaker,
                   text: scene.text,
                   onNext: onNext,
+                  onPrevious: onPrevious,
                   nextLabel: nextLabel,
+                  previousLabel: previousLabel,
+                  canGoBack: canGoBack,
                 ),
               ),
             ],
@@ -280,60 +374,66 @@ class _DialoguePlate extends StatelessWidget {
     required this.text,
     required this.onNext,
     required this.nextLabel,
+    required this.previousLabel,
+    required this.canGoBack,
     this.speaker,
+    this.onPrevious,
   });
 
   final String? speaker;
   final String text;
   final VoidCallback onNext;
+  final VoidCallback? onPrevious;
   final String nextLabel;
+  final String previousLabel;
+  final bool canGoBack;
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        onTap: onNext,
-        borderRadius: BorderRadius.circular(16),
-        child: Ink(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: XiColors.classicGold.withValues(alpha: 0.55),
-            ),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xF0141C2C),
-                XiColors.royalBlue.withValues(alpha: 0.35),
-              ],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: XiColors.techCyan.withValues(alpha: 0.18),
-                blurRadius: 16,
-              ),
+      child: Ink(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: XiColors.classicGold.withValues(alpha: 0.55),
+          ),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xF0141C2C),
+              XiColors.royalBlue.withValues(alpha: 0.35),
             ],
           ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (speaker != null && speaker!.trim().isNotEmpty) ...[
-                  Text(
-                    speaker!,
-                    style: const TextStyle(
-                      fontFamily: 'Lumiare',
-                      color: XiColors.techCyan,
-                      fontSize: 14,
-                      letterSpacing: 0.6,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                ],
+          boxShadow: [
+            BoxShadow(
+              color: XiColors.techCyan.withValues(alpha: 0.18),
+              blurRadius: 16,
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (speaker != null && speaker!.trim().isNotEmpty) ...[
                 Text(
+                  speaker!,
+                  style: const TextStyle(
+                    fontFamily: 'Lumiare',
+                    color: XiColors.techCyan,
+                    fontSize: 14,
+                    letterSpacing: 0.6,
+                  ),
+                ),
+                const SizedBox(height: 6),
+              ],
+              GestureDetector(
+                onTap: onNext,
+                behavior: HitTestBehavior.opaque,
+                child: Text(
                   text,
                   style: const TextStyle(
                     color: Colors.white,
@@ -341,20 +441,39 @@ class _DialoguePlate extends StatelessWidget {
                     fontSize: 15.5,
                   ),
                 ),
-                const SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    nextLabel,
-                    style: TextStyle(
-                      color: XiColors.classicGold.withValues(alpha: 0.9),
-                      fontSize: 12,
-                      letterSpacing: 0.4,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  if (canGoBack && onPrevious != null)
+                    TextButton.icon(
+                      onPressed: onPrevious,
+                      icon: const Icon(Icons.chevron_left_rounded, size: 18),
+                      label: Text(previousLabel),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white70,
+                      ),
+                    ),
+                  const Spacer(),
+                  TextButton.icon(
+                    onPressed: onNext,
+                    icon: Text(
+                      nextLabel,
+                      style: TextStyle(
+                        color: XiColors.classicGold.withValues(alpha: 0.95),
+                        fontSize: 13,
+                        letterSpacing: 0.4,
+                      ),
+                    ),
+                    label: Icon(
+                      Icons.chevron_right_rounded,
+                      color: XiColors.classicGold.withValues(alpha: 0.95),
+                      size: 18,
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -368,24 +487,24 @@ class _LegacyTextSceneView extends StatelessWidget {
     required this.levelTitle,
     required this.progressLabel,
     required this.progress,
-    required this.onBack,
+    required this.canGoBack,
+    required this.onMenu,
     required this.onNext,
     required this.nextLabel,
-    required this.skipLabel,
-    required this.backLabel,
-    this.onSkip,
+    required this.previousLabel,
+    this.onPrevious,
   });
 
   final ClashStoryScene scene;
   final String levelTitle;
   final String progressLabel;
   final double progress;
-  final VoidCallback onBack;
+  final bool canGoBack;
+  final VoidCallback onMenu;
   final VoidCallback onNext;
   final String nextLabel;
-  final String skipLabel;
-  final String backLabel;
-  final VoidCallback? onSkip;
+  final String previousLabel;
+  final VoidCallback? onPrevious;
 
   @override
   Widget build(BuildContext context) {
@@ -396,8 +515,8 @@ class _LegacyTextSceneView extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                onPressed: onBack,
-                icon: const Icon(Icons.arrow_back_rounded),
+                onPressed: onMenu,
+                icon: const Icon(Icons.menu_rounded),
                 color: Colors.white,
               ),
               Expanded(
@@ -410,22 +529,16 @@ class _LegacyTextSceneView extends StatelessWidget {
                   ),
                 ),
               ),
-              if (onSkip != null)
-                TextButton(
-                  onPressed: onSkip,
-                  child: Text(skipLabel),
-                ),
+              Text(
+                progressLabel,
+                style: const TextStyle(color: Colors.white70),
+              ),
             ],
           ),
           LinearProgressIndicator(
             value: progress,
             backgroundColor: Colors.white12,
             color: XiColors.techCyan,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            progressLabel,
-            style: const TextStyle(color: Colors.white70),
           ),
           const SizedBox(height: 20),
           if (scene.speaker != null) ...[
@@ -452,15 +565,24 @@ class _LegacyTextSceneView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          FilledButton(onPressed: onNext, child: Text(nextLabel)),
-          const SizedBox(height: 8),
-          OutlinedButton(
-            onPressed: onBack,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.white,
-              side: const BorderSide(color: Colors.white24),
-            ),
-            child: Text(backLabel),
+          Row(
+            children: [
+              if (canGoBack && onPrevious != null)
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: onPrevious,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Colors.white24),
+                    ),
+                    child: Text(previousLabel),
+                  ),
+                ),
+              if (canGoBack && onPrevious != null) const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton(onPressed: onNext, child: Text(nextLabel)),
+              ),
+            ],
           ),
         ],
       ),

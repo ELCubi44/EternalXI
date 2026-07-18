@@ -1,6 +1,7 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/app/theme/xi_theme_extension.dart';
+import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/clash/cards/data/repositories/clash_cards_repository.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/domain/clash_reward.dart';
 import 'package:eternal_xi/features/clash/shared/rewards/history/domain/clash_reward_history_entry.dart';
@@ -12,6 +13,8 @@ import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_rewa
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level_type.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_reward.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
+import 'package:eternal_xi/features/profile/controller/account_progress_controller.dart';
+import 'package:eternal_xi/features/profile/widgets/account_level_display.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -27,11 +30,16 @@ class ClashStoryRewardScreen extends StatefulWidget {
 
 class _ClashStoryRewardScreenState extends State<ClashStoryRewardScreen> {
   var _historyRecorded = false;
+  var _xpApplied = false;
+  double? _xpProgressFrom;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _recordHistoryOnce());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _recordHistoryOnce();
+      _applyAccountXpOnce();
+    });
   }
 
   void _recordHistoryOnce() {
@@ -56,6 +64,26 @@ class _ClashStoryRewardScreenState extends State<ClashStoryRewardScreen> {
     );
   }
 
+  void _applyAccountXpOnce() {
+    if (_xpApplied || !mounted) {
+      return;
+    }
+    final completion = context.read<ClashStoryController>().lastCompletion;
+    final xp = completion?.rewardsGranted.accountXp ?? 0;
+    if (xp <= 0) {
+      return;
+    }
+    final progressCtrl = context.read<AccountProgressController>();
+    final before = progressCtrl.progress;
+    if (before != null && before.xpParaSiguienteNivel > 0) {
+      _xpProgressFrom =
+          (before.xpEnNivel / before.xpParaSiguienteNivel).clamp(0.0, 1.0);
+    }
+    progressCtrl.applyOptimisticXp(xp);
+    _xpApplied = true;
+    if (mounted) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -68,6 +96,9 @@ class _ClashStoryRewardScreenState extends State<ClashStoryRewardScreen> {
         rewards.starterRosterKey != null &&
         (completion?.newlyGrantedCardIds.isNotEmpty == true ||
             controller.progress.eternalXiCardsGranted);
+    final progressCtrl = context.watch<AccountProgressController>();
+    final progress = progressCtrl.progress;
+    final user = context.watch<AuthController>().currentUser;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.clashStoryRewardTitle)),
@@ -76,11 +107,56 @@ class _ClashStoryRewardScreenState extends State<ClashStoryRewardScreen> {
         children: [
           Text(
             l10n.clashStoryRewardTitle,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
+          Text(
+            l10n.clashStoryRewardSubtitle,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: context.xiTextSecondary,
+              height: 1.35,
+            ),
+          ),
+          if (progress != null) ...[
+            const SizedBox(height: 16),
+            Text(
+              l10n.clashStoryRewardXpSection,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 8),
+            AccountLevelDisplay(
+              nivel: progress.nivel,
+              rango: progress.rango,
+              xpEnNivel: progress.xpEnNivel,
+              xpParaSiguiente: progress.xpParaSiguienteNivel,
+              compact: true,
+              showXpUnit: true,
+              animateProgress: true,
+              progressFrom: _xpProgressFrom,
+              progressAnimationDuration: const Duration(milliseconds: 1100),
+            ),
+            if (rewards.accountXp > 0) ...[
+              const SizedBox(height: 6),
+              Text(
+                l10n.clashStoryRewardXpGain(rewards.accountXp),
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ],
+          ] else if (user != null) ...[
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => progressCtrl.loadProgress(user.id),
+              child: Text(l10n.clashStoryRewardLoadXp),
+            ),
+          ],
+          const SizedBox(height: 20),
+          Text(
+            l10n.clashStoryFirstClearRewardsTitle,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          const SizedBox(height: 10),
           _StoryGrantedRewards(
             rewards: rewards,
             newlyGrantedCardIds: completion?.newlyGrantedCardIds ?? const [],

@@ -77,5 +77,33 @@ class ClashEnergyService {
       nextRegenAt: nextAt,
     );
   }
+
+  /// Intenta gastar [amount]. Devuelve la wallet resultante o `null` si no hay suficiente.
+  Future<ClashEnergyWallet?> trySpend(int amount) async {
+    if (amount <= 0) {
+      return load();
+    }
+    final prefs = await _ensurePrefs();
+    final wallet = await load();
+    if (wallet.current < amount) {
+      return null;
+    }
+    final nextCurrent = wallet.current - amount;
+    var nextAt = wallet.nextRegenAt;
+    if (nextCurrent < ClashEnergyWallet.maxEnergy && nextAt == null) {
+      nextAt = DateTime.now().add(ClashEnergyWallet.regenInterval);
+    }
+    await prefs.setInt(_keyCurrent, nextCurrent);
+    if (nextAt == null) {
+      await prefs.remove(_keyNextAt);
+    } else {
+      await prefs.setInt(_keyNextAt, nextAt.millisecondsSinceEpoch);
+    }
+    return ClashEnergyWallet(
+      current: nextCurrent,
+      max: ClashEnergyWallet.maxEnergy,
+      nextRegenAt: nextAt,
+    );
+  }
 }
 

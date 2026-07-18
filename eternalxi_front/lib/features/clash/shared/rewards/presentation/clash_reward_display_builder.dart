@@ -1,5 +1,6 @@
 import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/clash/achievements/domain/clash_achievement_reward.dart';
+import 'package:eternal_xi/features/clash/cards/presentation/epic/clash_epic_assets.dart';
 import 'package:eternal_xi/features/clash/events/domain/clash_character_event_reward.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_daily_mission_reward.dart';
 import 'package:eternal_xi/features/clash/missions/domain/clash_weekly_mission_reward.dart';
@@ -12,6 +13,7 @@ import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_rewa
 import 'package:eternal_xi/features/clash/shared/rewards/presentation/clash_reward_label.dart';
 import 'package:eternal_xi/features/clash/shop/domain/clash_shop_product.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_reward.dart';
+import 'package:flutter/material.dart';
 
 /// Construye items de presentación desde recompensas de dominio (Fase 58).
 abstract final class ClashRewardDisplayBuilder {
@@ -164,7 +166,8 @@ abstract final class ClashRewardDisplayBuilder {
       items.add(
         ClashRewardDisplayItem(
           icon: ClashRewardIcon.forKind(ClashRewardKind.gems),
-          label: l10n.clashRewardLabelGems,
+          iconAsset: ClashEpicAssets.clashGachaGemIcon,
+          label: l10n.clashRewardLabelCrystalBall,
           quantity: reward.gems,
           status: status,
         ),
@@ -176,6 +179,16 @@ abstract final class ClashRewardDisplayBuilder {
           icon: ClashRewardIcon.forKind(ClashRewardKind.coins),
           label: l10n.clashRewardLabelCoins,
           quantity: reward.coins,
+          status: status,
+        ),
+      );
+    }
+    if (reward.accountXp > 0) {
+      items.add(
+        ClashRewardDisplayItem(
+          icon: Icons.trending_up_rounded,
+          label: l10n.clashRewardLabelAccountXp,
+          quantity: reward.accountXp,
           status: status,
         ),
       );
@@ -244,7 +257,8 @@ abstract final class ClashRewardDisplayBuilder {
       ),
       ClashRewardKind.gems => ClashRewardDisplayItem(
         icon: ClashRewardIcon.forKind(reward.kind),
-        label: l10n.clashRewardLabelGems,
+        iconAsset: ClashEpicAssets.clashGachaGemIcon,
+        label: l10n.clashRewardLabelCrystalBall,
         quantity: reward.amount,
         status: status,
       ),

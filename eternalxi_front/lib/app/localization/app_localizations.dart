@@ -228,6 +228,8 @@ class AppLocalizations {
       'clashEngagementRewardsLabel': 'Recompensa',
       'clashRewardLabelCoins': 'Monedas',
       'clashRewardLabelGems': 'Gemas',
+      'clashRewardLabelCrystalBall': 'Balón de cristal',
+      'clashRewardLabelAccountXp': 'Experiencia',
       'clashRewardLabelBasicTrainingManual': 'Manual básico',
       'clashRewardLabelAdvancedTrainingManual': 'Manual avanzado',
       'clashRewardLabelMasterTrainingManual': 'Manual maestro',
@@ -798,9 +800,22 @@ class AppLocalizations {
       'clashStoryReadAgain': 'Leer de nuevo',
       'clashStorySkipScene': 'Omitir',
       'clashStoryNextScene': 'Siguiente',
+      'clashStoryPreviousScene': 'Anterior',
       'clashStoryFinishLevel': 'Finalizar nivel',
       'clashStoryRewardTitle': 'Nivel completado',
-      'clashStoryBackToMap': 'Volver al mapa',
+      'clashStoryRewardSubtitle':
+          'Primera vez completada. Estas recompensas solo se otorgan al terminar el nivel.',
+      'clashStoryRewardXpSection': 'Progreso de cuenta',
+      'clashStoryRewardXpGain': '+{xp} XP',
+      'clashStoryRewardLoadXp': 'Cargar barra de nivel',
+      'clashStoryMenuTitle': 'Menú del nivel',
+      'clashStoryMenuResume': 'Reanudar',
+      'clashStoryMenuExit': 'Salir del nivel',
+      'clashStoryMenuExitHint':
+          'Si sales ahora no recibirás recompensas. Puedes volver a jugarlo más tarde.',
+      'clashStoryNotEnoughEnergy':
+          'No tienes suficiente energía para este nivel.',
+      'clashStoryBackToMap': 'Volver a Historia',
       'clashStoryNextLevel': 'Siguiente nivel',
       'clashStoryTeamFormed': 'Equipo Eternal XI formado',
       'clashStoryCardsReceived': 'Cartas N recibidas',
@@ -1443,6 +1458,8 @@ class AppLocalizations {
       'clashEngagementRewardsLabel': 'Reward',
       'clashRewardLabelCoins': 'Coins',
       'clashRewardLabelGems': 'Gems',
+      'clashRewardLabelCrystalBall': 'Crystal ball',
+      'clashRewardLabelAccountXp': 'Experience',
       'clashRewardLabelBasicTrainingManual': 'Basic manual',
       'clashRewardLabelAdvancedTrainingManual': 'Advanced manual',
       'clashRewardLabelMasterTrainingManual': 'Master manual',
@@ -2005,9 +2022,21 @@ class AppLocalizations {
       'clashStoryReadAgain': 'Read again',
       'clashStorySkipScene': 'Skip',
       'clashStoryNextScene': 'Next',
+      'clashStoryPreviousScene': 'Back',
       'clashStoryFinishLevel': 'Finish level',
       'clashStoryRewardTitle': 'Level complete',
-      'clashStoryBackToMap': 'Back to map',
+      'clashStoryRewardSubtitle':
+          'First clear done. These rewards are only granted when you finish the level.',
+      'clashStoryRewardXpSection': 'Account progress',
+      'clashStoryRewardXpGain': '+{xp} XP',
+      'clashStoryRewardLoadXp': 'Load level bar',
+      'clashStoryMenuTitle': 'Level menu',
+      'clashStoryMenuResume': 'Resume',
+      'clashStoryMenuExit': 'Exit level',
+      'clashStoryMenuExitHint':
+          'Leaving now grants no rewards. You can replay later.',
+      'clashStoryNotEnoughEnergy': 'Not enough energy for this level.',
+      'clashStoryBackToMap': 'Back to Story',
       'clashStoryNextLevel': 'Next level',
       'clashStoryTeamFormed': 'Eternal XI team formed',
       'clashStoryCardsReceived': 'N cards received',
@@ -2753,6 +2782,8 @@ class AppLocalizations {
   String get clashRewardLabelCoins => _t('clashRewardLabelCoins');
 
   String get clashRewardLabelGems => _t('clashRewardLabelGems');
+  String get clashRewardLabelCrystalBall => _t('clashRewardLabelCrystalBall');
+  String get clashRewardLabelAccountXp => _t('clashRewardLabelAccountXp');
 
   String get clashRewardLabelBasicTrainingManual =>
       _t('clashRewardLabelBasicTrainingManual');
@@ -3563,8 +3594,19 @@ class AppLocalizations {
   String get clashStoryReadAgain => _t('clashStoryReadAgain');
   String get clashStorySkipScene => _t('clashStorySkipScene');
   String get clashStoryNextScene => _t('clashStoryNextScene');
+  String get clashStoryPreviousScene => _t('clashStoryPreviousScene');
   String get clashStoryFinishLevel => _t('clashStoryFinishLevel');
   String get clashStoryRewardTitle => _t('clashStoryRewardTitle');
+  String get clashStoryRewardSubtitle => _t('clashStoryRewardSubtitle');
+  String get clashStoryRewardXpSection => _t('clashStoryRewardXpSection');
+  String clashStoryRewardXpGain(int xp) =>
+      _t('clashStoryRewardXpGain').replaceAll('{xp}', '$xp');
+  String get clashStoryRewardLoadXp => _t('clashStoryRewardLoadXp');
+  String get clashStoryMenuTitle => _t('clashStoryMenuTitle');
+  String get clashStoryMenuResume => _t('clashStoryMenuResume');
+  String get clashStoryMenuExit => _t('clashStoryMenuExit');
+  String get clashStoryMenuExitHint => _t('clashStoryMenuExitHint');
+  String get clashStoryNotEnoughEnergy => _t('clashStoryNotEnoughEnergy');
   String get clashStoryBackToMap => _t('clashStoryBackToMap');
   String get clashStoryNextLevel => _t('clashStoryNextLevel');
   String get clashStoryTeamFormed => _t('clashStoryTeamFormed');

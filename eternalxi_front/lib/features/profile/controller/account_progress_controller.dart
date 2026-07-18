@@ -160,4 +160,30 @@ class AccountProgressController extends ChangeNotifier {
     );
     await _secureStorageService.saveUser(updated);
   }
+
+  /// Aplica XP de cuenta en local (p. ej. recompensa de historia) y anima la barra.
+  /// No sustituye al backend; al recargar progreso se sincroniza de nuevo.
+  void applyOptimisticXp(int amount) {
+    final current = progress;
+    if (current == null || amount <= 0) {
+      return;
+    }
+    var nivel = current.nivel;
+    var xpEn = current.xpEnNivel + amount;
+    var maxXp = current.xpParaSiguienteNivel <= 0
+        ? 100
+        : current.xpParaSiguienteNivel;
+    while (xpEn >= maxXp) {
+      xpEn -= maxXp;
+      nivel += 1;
+      maxXp = (maxXp * 1.08).round().clamp(100, 9999);
+    }
+    progress = current.copyWith(
+      nivel: nivel,
+      xpEnNivel: xpEn,
+      xpParaSiguienteNivel: maxXp,
+      experienciaTotal: current.experienciaTotal + amount,
+    );
+    notifyListeners();
+  }
 }

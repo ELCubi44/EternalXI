@@ -56,16 +56,23 @@ class ClashStoryLevel {
     final scenesRaw = json['scenes'] as List? ?? const [];
     final objectivesRaw = json['matchObjectives'] as List? ?? const [];
 
+    final type = ClashStoryLevelType.fromJson(
+      clashRequireString(json['type'], 'type'),
+    );
+    final defaultEnergy = switch (type) {
+      ClashStoryLevelType.story => 5,
+      ClashStoryLevelType.match ||
+      ClashStoryLevelType.mixed => 20,
+    };
+
     return ClashStoryLevel(
       id: clashRequireString(json['id'], 'id'),
       chapterId: clashRequireString(json['chapterId'], 'chapterId'),
       title: clashRequireString(json['title'], 'title'),
       description: clashRequireString(json['description'], 'description'),
       order: clashRequireInt(json['order'], 'order'),
-      type: ClashStoryLevelType.fromJson(
-        clashRequireString(json['type'], 'type'),
-      ),
-      energyCost: clashAsInt(json['energyCost'], fallback: 1),
+      type: type,
+      energyCost: clashAsInt(json['energyCost'], fallback: defaultEnergy),
       recommendedPower: json['recommendedPower'] == null
           ? null
           : clashAsInt(json['recommendedPower']),
