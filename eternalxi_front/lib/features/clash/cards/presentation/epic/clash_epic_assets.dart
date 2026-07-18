@@ -112,6 +112,7 @@ abstract final class ClashEpicAssets {
   static const clashHeaderPlateBg = '$_base/ui/bg_clash_header_ornate.png';
   static const clashBottomNavBg = '$_base/ui/bg_clash_bottom_nav.png';
   static const clashStoryMapButton = '$_base/ui/btn_clash_story_map.png';
+  static const clashEventsButton = '$_base/ui/btn_clash_events.png';
   static const clashNavHomeIcon = '$_base/ui/icon_nav_home.png';
   static const clashNavTeamIcon = '$_base/ui/icon_nav_team.png';
   static const clashNavSummonIcon = '$_base/ui/icon_nav_summon.png';

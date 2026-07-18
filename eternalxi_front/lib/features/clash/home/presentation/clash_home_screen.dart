@@ -1,3 +1,4 @@
+import 'package:eternal_xi/features/clash/home/presentation/widgets/clash_home_events_button.dart';
 import 'package:eternal_xi/features/clash/home/presentation/widgets/clash_home_story_map_button.dart';
 import 'package:eternal_xi/features/clash/sync/data/clash_sync_auto_check_service.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +57,6 @@ class _ClashHomeScreenState extends State<ClashHomeScreen> {
             color: Color(0xFF0A1020),
           ),
         ),
-        // Velo: un poco más arriba para legibilidad de la cabecera; abajo para nav.
         const DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -72,14 +72,17 @@ class _ClashHomeScreenState extends State<ClashHomeScreen> {
             ),
           ),
         ),
-        // Historia abajo-izquierda; a la derecha quedará Eventos.
+        // Historia (izq) + Eventos bloqueados (der), encima de la barra.
         Align(
-          alignment: Alignment.bottomLeft,
+          alignment: Alignment.bottomCenter,
           child: Padding(
-            padding: EdgeInsets.fromLTRB(12, 0, 12, 88 + bottomInset * 0.35),
-            child: SizedBox(
-              width: MediaQuery.sizeOf(context).width * 0.44,
-              child: const ClashHomeStoryMapButton(),
+            padding: EdgeInsets.fromLTRB(10, 0, 10, 88 + bottomInset * 0.35),
+            child: Row(
+              children: [
+                const Expanded(child: ClashHomeStoryMapButton()),
+                SizedBox(width: MediaQuery.sizeOf(context).width * 0.04),
+                const Expanded(child: ClashHomeEventsButton()),
+              ],
             ),
           ),
         ),

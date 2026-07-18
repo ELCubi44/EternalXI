@@ -138,6 +138,7 @@ class AppLocalizations {
       'clashHomeMainAccess': 'Accesos principales',
       'clashHomeStory': 'Historia',
       'clashHomeEvents': 'Eventos',
+      'clashHomeEventsLocked': 'Eventos bloqueados por ahora.',
       'clashHomeChallenges': 'Desafíos',
       'clashHomeNews': 'Noticias',
       'clashHomeProtagonistSquad': 'Equipo Eternal XI',
@@ -1352,6 +1353,7 @@ class AppLocalizations {
       'clashHomeMainAccess': 'Main access',
       'clashHomeStory': 'Story',
       'clashHomeEvents': 'Events',
+      'clashHomeEventsLocked': 'Events are locked for now.',
       'clashHomeChallenges': 'Challenges',
       'clashHomeNews': 'News',
       'clashHomeProtagonistSquad': 'Eternal XI Squad',
@@ -2634,6 +2636,7 @@ class AppLocalizations {
   String get clashHomeMainAccess => _t('clashHomeMainAccess');
   String get clashHomeStory => _t('clashHomeStory');
   String get clashHomeEvents => _t('clashHomeEvents');
+  String get clashHomeEventsLocked => _t('clashHomeEventsLocked');
   String get clashHomeChallenges => _t('clashHomeChallenges');
   String get clashHomeNews => _t('clashHomeNews');
   String get clashHomeProtagonistSquad => _t('clashHomeProtagonistSquad');
