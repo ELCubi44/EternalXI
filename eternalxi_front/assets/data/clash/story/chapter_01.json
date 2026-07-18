@@ -210,6 +210,185 @@
           }
         ],
         "completionUnlocks": {}
+      },
+      {
+        "id": "prologue-lvl-03",
+        "chapterId": "chapter-01",
+        "title": "Día de pruebas",
+        "description": "En el campo del Instituto Eternal empiezan las pruebas. Siluetas y cracks se mezclan… y el secreto de Thiago sale a la luz.",
+        "order": 3,
+        "type": "story",
+        "energyCost": 5,
+        "rewards": {
+          "gems": 5,
+          "accountXp": 40,
+          "items": []
+        },
+        "scenes": [
+          {
+            "id": "ep03-s1",
+            "order": 1,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Llega el día. El campo del Instituto Eternal brilla bajo el sol… y cada uno lleva un peto distinto. Empiezan las pruebas.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_01_arrival.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s2",
+            "order": 2,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Calentamiento. Caras conocidas entre docenas de siluetas. Nadie quiere fallar el primer corte.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_02_warmup.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s3",
+            "order": 3,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Prueba de centrales. Lucien Vauclair, DFC, corta el remate de un rival que ni siquiera tiene cara… solo intención.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_03_lucien_dfc.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s4",
+            "order": 4,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Miguel Gracia Cubo, extremo, encara, deja atrás al central-silueta y busca el disparo. El peto amarillo no para quieto.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_04_cubo_ext.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s5",
+            "order": 5,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Y entonces Thiago. Un regate limpio, un lateral-silueta en el suelo… y el campo entero se queda mirando.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_05_thiago_epic1.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s6",
+            "order": 6,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "No solo brilla contra desconocidos. También choca con Francisco Sierra: extremo contra central, peto naranja contra azul marino.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_06_thiago_sierra.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s7",
+            "order": 7,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "En la portería, Hugo Salvatierra vuela. Guantes, peto negro… y el disparo de una silueta muere en sus manos.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_07_hugo_save.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s8",
+            "order": 8,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Arriba, los delanteros. Dariel y David Sánchez se pelean el área: remates, desmarques, hambre de gol.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_08_strikers.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s9",
+            "order": 9,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "En el medio: Jorge Ros, Sacha, Mini George, Alejandro Mir… el balón no para. Quien no piense rápido, se queda fuera.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_09_midfield.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s10",
+            "order": 10,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "En banda, los laterales. Eti Oroz y Mihai cierran carriles contra extremos-silueta. Nadie pasa fácil.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_10_laterals.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s11",
+            "order": 11,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Ricardo Gómez abre la pierna y dispara desde la derecha. El peto lima corta el aire.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_11_ricardo.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s12",
+            "order": 12,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Otra vez Thiago. Esta vez no es regate: es un trallazo de lejos. El portero-silueta ni lo huele. Cubo y Lucien se miran sin palabras.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_12_thiago_epic2.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s13",
+            "order": 13,
+            "type": "comic",
+            "speaker": "Javier Naval Ortega",
+            "text": "Thiago… Cubo. Acercaos un segundo. No lo digo para todo el campo.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_13_naval_lore1.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s14",
+            "order": 14,
+            "type": "comic",
+            "speaker": "Javier Naval Ortega",
+            "text": "Sé quién eres. Tus padres te trajeron aquí porque este instituto… no tenía club de fútbol. Querían que estudiaras. Que te adaptaras a España. Que no te comiera la agresividad de ahí abajo.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_14_naval_lore2.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s15",
+            "order": 15,
+            "type": "comic",
+            "speaker": "Javier Naval Ortega",
+            "text": "Pensaban que sin equipo no jugarías. Pero hoy hay pruebas. Y tú… eres un crack. Si te apuntas, es a escondidas. Ellos no pueden enterarse.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_14_naval_lore2.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s16",
+            "order": 16,
+            "type": "comic",
+            "speaker": "Thiago Solari",
+            "text": "…Lo sé. Por eso estoy aquí. No para que me miren… para jugar. Aunque sea en silencio.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_15_thiago_resolve.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s17",
+            "order": 17,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Las pruebas siguen. Andrés, María Jesús, Pardos, Leo… casi todo el futuro Once pasa por este césped.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_16_roster_more.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s18",
+            "order": 18,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Al caer el sol, el campo se vacía. Sudor, petos de colores… y la certeza de que pronto dirán diecinueve nombres.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_17_day_end.png",
+            "isSkippable": true
+          }
+        ],
+        "completionUnlocks": {}
       }
     ]
   }

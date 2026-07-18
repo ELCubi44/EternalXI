@@ -111,6 +111,7 @@ flutter:
     - assets/data/clash/help_topics.json
     - assets/images/clash/story/ep01/
     - assets/images/clash/story/ep02/
+    - assets/images/clash/story/ep03/
     - assets/images/clash/story/ref/
 
   fonts:
