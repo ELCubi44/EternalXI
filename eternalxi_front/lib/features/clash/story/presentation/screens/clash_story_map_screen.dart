@@ -38,8 +38,8 @@ class _ClashStoryMapScreenState extends State<ClashStoryMapScreen> {
       }
       // Zoom inicial hacia Europa / Zaragoza.
       _transform.value = Matrix4.identity()
-        ..translateByDouble(-420.0, -180.0, 0)
-        ..scaleByDouble(2.2, 2.2, 2.2, 1);
+        ..translateByDouble(-420.0, -180.0, 0.0, 1.0)
+        ..scaleByDouble(2.2, 2.2, 2.2, 1.0);
       if (mounted) setState(() {});
     });
   }
