@@ -59,9 +59,13 @@ class ClashShellScreen extends StatelessWidget {
     final isCardDetail = RegExp(r'^/clash/cards/[^/]+$').hasMatch(path);
     final isCardCollection = path == AppRoutes.clashCards ||
         path == '${AppRoutes.clashCards}/';
-    final hideClashHeader = isCardDetail || isCardCollection;
+    final isStoryPath = path == AppRoutes.clashStory ||
+        path.startsWith('${AppRoutes.clashStory}/');
+    final hideClashHeader =
+        isCardDetail || isCardCollection || isStoryPath;
     // Inicio: fondo a pantalla completa con la cabecera encima (overlay).
-    final headerOverBackground = !hideClashHeader && selectedIndex == 0;
+    final headerOverBackground =
+        !hideClashHeader && path == AppRoutes.clash && selectedIndex == 0;
     final showHomeHubButtons =
         path == AppRoutes.clash && selectedIndex == 0 && !isCardDetail;
 

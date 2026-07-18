@@ -9,7 +9,7 @@ import 'package:eternal_xi/features/clash/story/presentation/widgets/clash_story
 import 'package:eternal_xi/features/clash/story/presentation/widgets/clash_story_reward_preview.dart';
 import 'package:flutter/material.dart';
 
-/// Tarjeta visual de un nivel en el mapa de historia (Fase 49).
+/// Tarjeta de misión en el listado de historia.
 class ClashStoryLevelCard extends StatelessWidget {
   const ClashStoryLevelCard({
     required this.level,
@@ -31,6 +31,13 @@ class ClashStoryLevelCard extends StatelessWidget {
     final isLocked = status == ClashStoryLevelStatus.locked;
     final isCompleted = status == ClashStoryLevelStatus.completed;
     final rewardsClaimed = progress.areRewardsClaimed(level.id);
+    final typeIcon = clashStoryLevelTypeIcon(level.type);
+
+    final accent = isCompleted
+        ? Colors.green
+        : isLocked
+        ? context.xiTextSecondary
+        : theme.colorScheme.primary;
 
     final borderColor = isCompleted
         ? Colors.green.withValues(alpha: 0.5)
@@ -53,15 +60,32 @@ class ClashStoryLevelCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: isCompleted
-                      ? Colors.green.withValues(alpha: 0.12)
-                      : theme.colorScheme.primary.withValues(alpha: 0.12),
-                  child: Text(
-                    '${level.order}',
-                    style: theme.textTheme.titleSmall?.copyWith(
+                SizedBox(
+                  width: 52,
+                  height: 52,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: accent.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: accent.withValues(alpha: 0.35),
                       ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '${level.order}',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: accent,
+                            fontWeight: FontWeight.w700,
+                            height: 1,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Icon(typeIcon, size: 18, color: accent),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -71,8 +95,7 @@ class ClashStoryLevelCard extends StatelessWidget {
                     children: [
                       Text(
                         level.title,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          ),
+                        style: theme.textTheme.titleMedium,
                       ),
                       const SizedBox(height: 4),
                       Text(

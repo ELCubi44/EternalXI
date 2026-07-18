@@ -1,6 +1,7 @@
 import 'package:eternal_xi/app/localization/app_localizations.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level_status.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level_type.dart';
+import 'package:flutter/material.dart';
 
 String clashStoryLevelTypeLabel(
   ClashStoryLevelType type,
@@ -10,6 +11,15 @@ String clashStoryLevelTypeLabel(
     ClashStoryLevelType.story => l10n.clashStoryTypeStory,
     ClashStoryLevelType.match => l10n.clashStoryTypeMatch,
     ClashStoryLevelType.mixed => l10n.clashStoryTypeMixed,
+  };
+}
+
+/// Libro = historia; campo = partido (o mixto).
+IconData clashStoryLevelTypeIcon(ClashStoryLevelType type) {
+  return switch (type) {
+    ClashStoryLevelType.story => Icons.menu_book_rounded,
+    ClashStoryLevelType.match ||
+    ClashStoryLevelType.mixed => Icons.stadium_rounded,
   };
 }
 

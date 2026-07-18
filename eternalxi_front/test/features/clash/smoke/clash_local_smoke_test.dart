@@ -217,11 +217,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(ClashStoryMapScreen), findsOneWidget);
-      expect(find.text('Historia'), findsOneWidget);
-      // Pin Zaragoza abre la ficha de la primera misión.
-      await tester.tap(find.text('Zaragoza'));
-      await tester.pumpAndSettle();
+      expect(find.text('Historia'), findsWidgets);
       expect(find.text('Torneo Eterno Campeón!'), findsOneWidget);
+      expect(find.byIcon(Icons.menu_book_rounded), findsWidgets);
       _expectNoFlutterErrors(tester);
     });
 

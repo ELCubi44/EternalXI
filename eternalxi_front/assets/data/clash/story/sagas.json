@@ -3,7 +3,7 @@
     {
       "id": "saga-01",
       "title": "Torneo Eterno Campeón",
-      "description": "Eternal Zaragoza clasifica por IQ. Sin equipo de fútbol, el camino empieza en el aula… y en el mapa.",
+      "description": "Eternal Zaragoza clasifica por IQ. Sin equipo de fútbol, el camino empieza en el aula.",
       "order": 1,
       "chapterIds": ["chapter-01"],
       "isUnlocked": true
