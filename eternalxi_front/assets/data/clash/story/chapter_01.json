@@ -91,6 +91,15 @@
             "text": "Una mano alzada. Dos miradas cómplices. Faltan dieciséis… y el Torneo Eterno Campeón deja de ser solo el logo de siempre en la pizarra.",
             "imagePath": "assets/images/clash/story/ep01/ep01_06_hook.png",
             "isSkippable": true
+          },
+          {
+            "id": "ep01-s9",
+            "order": 9,
+            "type": "comic",
+            "speaker": "Thiago Solari",
+            "text": "Este torneo… no lo vamos a mirar desde la grada. Empezamos aquí. Empezamos ahora.",
+            "imagePath": "assets/images/clash/story/ep01/ep01_08_thiago_epic.png",
+            "isSkippable": true
           }
         ],
         "completionUnlocks": {}
