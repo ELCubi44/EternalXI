@@ -78,8 +78,17 @@
             "id": "ep01-s7",
             "order": 7,
             "type": "comic",
+            "speaker": "Thiago Solari",
+            "text": "Cubo… Lucien… si vamos a montar esto de verdad, cuento con vosotros. ¿Estáis dentro?",
+            "imagePath": "assets/images/clash/story/ep01/ep01_07_recruits.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep01-s8",
+            "order": 8,
+            "type": "comic",
             "speaker": "Narrador",
-            "text": "Una mano alzada. Una chispa. Faltan dieciocho… y el Torneo Eterno Campeón deja de ser solo el logo de siempre en la pizarra.",
+            "text": "Una mano alzada. Dos miradas cómplices. Faltan dieciséis… y el Torneo Eterno Campeón deja de ser solo el logo de siempre en la pizarra.",
             "imagePath": "assets/images/clash/story/ep01/ep01_06_hook.png",
             "isSkippable": true
           }
