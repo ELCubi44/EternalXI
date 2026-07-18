@@ -2,8 +2,8 @@
   "sagas": [
     {
       "id": "saga-01",
-      "title": "El despertar de Eternal XI",
-      "description": "El origen del equipo protagonista y la primera chispa del camino hacia la gloria.",
+      "title": "Torneo Eterno Campeón",
+      "description": "Eternal Zaragoza clasifica por IQ. Sin equipo de fútbol, el camino empieza en el aula… y en el mapa.",
       "order": 1,
       "chapterIds": ["chapter-01"],
       "isUnlocked": true

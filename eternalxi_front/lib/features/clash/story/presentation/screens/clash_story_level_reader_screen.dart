@@ -1,10 +1,11 @@
 import 'package:eternal_xi/app/localization/l10n_extension.dart';
 import 'package:eternal_xi/app/routes.dart';
+import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/features/clash/cards/presentation/controllers/clash_cards_controller.dart';
 import 'package:eternal_xi/features/clash/story/domain/clash_story_level_status.dart';
+import 'package:eternal_xi/features/clash/story/domain/clash_story_scene.dart';
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_reward_screen.dart';
-import 'package:eternal_xi/features/clash/story/presentation/widgets/clash_story_level_detail_header.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -118,109 +119,350 @@ class _ClashStoryLevelReaderScreenState
     }
 
     final level = controller.activeLevel!;
-    final chapterTitle = controller.activeChapter?.title ?? level.chapterId;
     final status = controller.statusFor(level);
     final isCompleted = status == ClashStoryLevelStatus.completed;
-    final rewardsClaimed = controller.progress.areRewardsClaimed(level.id);
     final scene = level.scenes[controller.sceneIndex];
-    final progressLabel = '${controller.sceneIndex + 1}/${level.scenes.length}';
+    final hasArt = (scene.imagePath?.isNotEmpty ?? false) ||
+        (scene.backgroundPath?.isNotEmpty ?? false);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0B1020),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
-        title: Text(l10n.clashHomeStory),
-        actions: [
-          if (scene.isSkippable)
-            TextButton(
-              onPressed: () => controller.skipScene(),
-              child: Text(l10n.clashStorySkipScene),
+      body: hasArt
+          ? _MangaSceneView(
+              scene: scene,
+              progressLabel:
+                  '${controller.sceneIndex + 1}/${level.scenes.length}',
+              progress:
+                  (controller.sceneIndex + 1) / level.scenes.length,
+              onBack: () => context.go(AppRoutes.clashStory),
+              onSkip: scene.isSkippable ? () => controller.skipScene() : null,
+              onNext: () => _onNext(controller),
+              nextLabel: controller.hasNextScene
+                  ? l10n.clashStoryNextScene
+                  : isCompleted
+                      ? l10n.clashStoryReadAgain
+                      : l10n.clashStoryFinishLevel,
+              skipLabel: l10n.clashStorySkipScene,
+            )
+          : _LegacyTextSceneView(
+              scene: scene,
+              levelTitle: level.title,
+              progressLabel:
+                  '${controller.sceneIndex + 1}/${level.scenes.length}',
+              progress:
+                  (controller.sceneIndex + 1) / level.scenes.length,
+              onBack: () => context.go(AppRoutes.clashStory),
+              onSkip: scene.isSkippable ? () => controller.skipScene() : null,
+              onNext: () => _onNext(controller),
+              nextLabel: controller.hasNextScene
+                  ? l10n.clashStoryNextScene
+                  : isCompleted
+                      ? l10n.clashStoryReadAgain
+                      : l10n.clashStoryFinishLevel,
+              skipLabel: l10n.clashStorySkipScene,
+              backLabel: l10n.clashStoryBackToMap,
             ),
-        ],
-      ),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-          children: [
-            Theme(
-              data: Theme.of(context).copyWith(
-                textTheme: Theme.of(context).textTheme.apply(
-                  bodyColor: Colors.white,
-                  displayColor: Colors.white,
-                ),
-              ),
-              child: ClashStoryLevelDetailHeader(
-                title: level.title,
-                chapterTitle: chapterTitle,
-                type: level.type,
-                status: status,
-                rewards: level.rewards,
-                rewardsClaimed: rewardsClaimed,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Divider(color: Colors.white.withValues(alpha: 0.12)),
-            const SizedBox(height: 12),
-            LinearProgressIndicator(
-              value: (controller.sceneIndex + 1) / level.scenes.length,
-              backgroundColor: Colors.white12,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              progressLabel,
-              style: Theme.of(
-                context,
-              ).textTheme.labelLarge?.copyWith(color: Colors.white70),
-            ),
-            const SizedBox(height: 20),
-            if (scene.speaker != null) ...[
-              Text(
-                scene.speaker!,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              const SizedBox(height: 8),
-            ],
-            Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: Colors.white12),
-              ),
-              child: Text(
-                scene.text,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.white,
-                  height: 1.55,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: () => _onNext(controller),
-              child: Text(
-                controller.hasNextScene
-                    ? l10n.clashStoryNextScene
-                    : isCompleted
-                    ? l10n.clashStoryReadAgain
-                    : l10n.clashStoryFinishLevel,
-              ),
-            ),
-            const SizedBox(height: 8),
-            OutlinedButton(
-              onPressed: () => context.go(AppRoutes.clashStory),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.white,
-                side: const BorderSide(color: Colors.white24),
-              ),
-              child: Text(l10n.clashStoryBackToMap),
-            ),
-          ],
+    );
+  }
+}
+
+class _MangaSceneView extends StatelessWidget {
+  const _MangaSceneView({
+    required this.scene,
+    required this.progressLabel,
+    required this.progress,
+    required this.onBack,
+    required this.onNext,
+    required this.nextLabel,
+    required this.skipLabel,
+    this.onSkip,
+  });
+
+  final ClashStoryScene scene;
+  final String progressLabel;
+  final double progress;
+  final VoidCallback onBack;
+  final VoidCallback onNext;
+  final String nextLabel;
+  final String skipLabel;
+  final VoidCallback? onSkip;
+
+  @override
+  Widget build(BuildContext context) {
+    final art = scene.imagePath ?? scene.backgroundPath!;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.asset(
+          art,
+          fit: BoxFit.cover,
+          alignment: Alignment.center,
+          filterQuality: FilterQuality.high,
+          errorBuilder: (_, __, ___) => const ColoredBox(
+            color: Color(0xFF0B1020),
+          ),
         ),
+        const DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: [0.0, 0.45, 0.72, 1.0],
+              colors: [
+                Color(0x66000000),
+                Color(0x14000000),
+                Color(0x66000000),
+                Color(0xE6000000),
+              ],
+            ),
+          ),
+        ),
+        SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 0, 8, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: onBack,
+                      icon: const Icon(Icons.arrow_back_rounded),
+                      color: Colors.white,
+                    ),
+                    Expanded(
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        backgroundColor: Colors.white24,
+                        color: XiColors.techCyan,
+                        minHeight: 3,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      progressLabel,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                    if (onSkip != null)
+                      TextButton(
+                        onPressed: onSkip,
+                        child: Text(
+                          skipLabel,
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: _DialoguePlate(
+                  speaker: scene.speaker,
+                  text: scene.text,
+                  onNext: onNext,
+                  nextLabel: nextLabel,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DialoguePlate extends StatelessWidget {
+  const _DialoguePlate({
+    required this.text,
+    required this.onNext,
+    required this.nextLabel,
+    this.speaker,
+  });
+
+  final String? speaker;
+  final String text;
+  final VoidCallback onNext;
+  final String nextLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onNext,
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: XiColors.classicGold.withValues(alpha: 0.55),
+            ),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xF0141C2C),
+                XiColors.royalBlue.withValues(alpha: 0.35),
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: XiColors.techCyan.withValues(alpha: 0.18),
+                blurRadius: 16,
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (speaker != null && speaker!.trim().isNotEmpty) ...[
+                  Text(
+                    speaker!,
+                    style: const TextStyle(
+                      fontFamily: 'Lumiare',
+                      color: XiColors.techCyan,
+                      fontSize: 14,
+                      letterSpacing: 0.6,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                ],
+                Text(
+                  text,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    height: 1.45,
+                    fontSize: 15.5,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    nextLabel,
+                    style: TextStyle(
+                      color: XiColors.classicGold.withValues(alpha: 0.9),
+                      fontSize: 12,
+                      letterSpacing: 0.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LegacyTextSceneView extends StatelessWidget {
+  const _LegacyTextSceneView({
+    required this.scene,
+    required this.levelTitle,
+    required this.progressLabel,
+    required this.progress,
+    required this.onBack,
+    required this.onNext,
+    required this.nextLabel,
+    required this.skipLabel,
+    required this.backLabel,
+    this.onSkip,
+  });
+
+  final ClashStoryScene scene;
+  final String levelTitle;
+  final String progressLabel;
+  final double progress;
+  final VoidCallback onBack;
+  final VoidCallback onNext;
+  final String nextLabel;
+  final String skipLabel;
+  final String backLabel;
+  final VoidCallback? onSkip;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+        children: [
+          Row(
+            children: [
+              IconButton(
+                onPressed: onBack,
+                icon: const Icon(Icons.arrow_back_rounded),
+                color: Colors.white,
+              ),
+              Expanded(
+                child: Text(
+                  levelTitle,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              if (onSkip != null)
+                TextButton(
+                  onPressed: onSkip,
+                  child: Text(skipLabel),
+                ),
+            ],
+          ),
+          LinearProgressIndicator(
+            value: progress,
+            backgroundColor: Colors.white12,
+            color: XiColors.techCyan,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            progressLabel,
+            style: const TextStyle(color: Colors.white70),
+          ),
+          const SizedBox(height: 20),
+          if (scene.speaker != null) ...[
+            Text(
+              scene.speaker!,
+              style: const TextStyle(color: XiColors.techCyan, fontSize: 16),
+            ),
+            const SizedBox(height: 8),
+          ],
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: Colors.white12),
+            ),
+            child: Text(
+              scene.text,
+              style: const TextStyle(
+                color: Colors.white,
+                height: 1.55,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          FilledButton(onPressed: onNext, child: Text(nextLabel)),
+          const SizedBox(height: 8),
+          OutlinedButton(
+            onPressed: onBack,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.white,
+              side: const BorderSide(color: Colors.white24),
+            ),
+            child: Text(backLabel),
+          ),
+        ],
       ),
     );
   }
