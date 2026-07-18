@@ -139,7 +139,7 @@ class _ClashBottomNavBarState extends State<ClashBottomNavBar>
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(28, 6, 28, 8),
+                padding: const EdgeInsets.fromLTRB(22, 3, 22, 4),
                 child: Row(
                   children: List.generate(widget.items.length, (i) {
                     return Expanded(
@@ -167,7 +167,7 @@ class _ClashBottomNavBarState extends State<ClashBottomNavBar>
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Container(
-                                    width: (16 * sel).clamp(0.0, 16.0),
+                                    width: (18 * sel).clamp(0.0, 18.0),
                                     height: 2.5,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(2),
@@ -192,28 +192,27 @@ class _ClashBottomNavBarState extends State<ClashBottomNavBar>
                                           : null,
                                     ),
                                   ),
-                                  const SizedBox(height: 2),
+                                  const SizedBox(height: 1),
                                   Opacity(
                                     opacity: selected ? 1.0 : 0.58,
                                     child: Image.asset(
                                       widget.items[i].iconAsset,
-                                      width: 26,
-                                      height: 26,
+                                      width: 34,
+                                      height: 34,
                                       fit: BoxFit.contain,
                                       filterQuality: FilterQuality.medium,
                                       gaplessPlayback: true,
                                     ),
                                   ),
-                                  const SizedBox(height: 1),
                                   Text(
                                     widget.items[i].label,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontFamily: 'Lumiare',
-                                      fontSize: 9,
-                                      letterSpacing: 0.25,
-                                      height: 1.05,
+                                      fontSize: 10.5,
+                                      letterSpacing: 0.2,
+                                      height: 1.0,
                                       color: labelColor,
                                     ),
                                   ),
