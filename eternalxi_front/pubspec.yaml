@@ -87,6 +87,7 @@ flutter:
     - assets/images/clash/epic/positions/
     - assets/images/clash/epic/teams/
     - assets/images/clash/epic/ui/
+    - assets/images/clash/home/
     - assets/images/clash/items/
     - assets/data/clash/cards.json
     - assets/data/clash/cards_manifest.json
