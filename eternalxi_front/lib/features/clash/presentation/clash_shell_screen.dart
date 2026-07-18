@@ -45,8 +45,9 @@ class ClashShellScreen extends StatelessWidget {
     final isCardCollection = path == AppRoutes.clashCards ||
         path == '${AppRoutes.clashCards}/';
     final hideClashHeader = isCardDetail || isCardCollection;
+    // Inicio: fondo a pantalla completa con la cabecera encima (overlay).
+    final headerOverBackground = !hideClashHeader && selectedIndex == 0;
 
-    // Fondo estadio en tabs; el Inicio pinta su propio arte debajo de la cabecera.
     return WithFantasyAtmosphere(
       child: Theme(
         data: Theme.of(context).copyWith(
@@ -55,13 +56,24 @@ class ClashShellScreen extends StatelessWidget {
         ),
         child: Scaffold(
           backgroundColor: Colors.transparent,
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (!hideClashHeader) const ClashHeaderBar(),
-              Expanded(child: body),
-            ],
-          ),
+          body: headerOverBackground
+              ? Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    body,
+                    const Align(
+                      alignment: Alignment.topCenter,
+                      child: ClashHeaderBar(),
+                    ),
+                  ],
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (!hideClashHeader) const ClashHeaderBar(),
+                    Expanded(child: body),
+                  ],
+                ),
           bottomNavigationBar: isCardDetail
               ? null
               : NavigationBar(

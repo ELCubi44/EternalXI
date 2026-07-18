@@ -53,17 +53,17 @@ class _ClashHomeScreenState extends State<ClashHomeScreen> {
             color: Color(0xFF0A1020),
           ),
         ),
-        // Velo suave: la escena se lee y deja sitio a UI futura.
+        // Velo: un poco más arriba para legibilidad de la cabecera; abajo para nav.
         const DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              stops: [0.0, 0.35, 0.72, 1.0],
+              stops: [0.0, 0.22, 0.55, 1.0],
               colors: [
-                Color(0x4D000000),
+                Color(0x66000000),
                 Color(0x14000000),
-                Color(0x33000000),
+                Color(0x28000000),
                 Color(0x99000000),
               ],
             ),
