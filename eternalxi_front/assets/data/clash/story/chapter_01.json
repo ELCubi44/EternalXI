@@ -103,6 +103,113 @@
           }
         ],
         "completionUnlocks": {}
+      },
+      {
+        "id": "prologue-lvl-02",
+        "chapterId": "chapter-01",
+        "title": "Inscripciones en el hall",
+        "description": "En el hall del instituto todo el mundo quiere apuntarse al equipo. Entre el ruido aparecen caras conocidas… y las pruebas que decidirán a los 19.",
+        "order": 2,
+        "type": "story",
+        "energyCost": 5,
+        "rewards": {
+          "gems": 3,
+          "accountXp": 30,
+          "items": []
+        },
+        "scenes": [
+          {
+            "id": "ep02-s1",
+            "order": 1,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "El hall principal del Instituto Eternal es un hervidero. En el tablón de inscripciones del equipo de fútbol… nadie quiere quedarse fuera.",
+            "imagePath": "assets/images/clash/story/ep02/ep02_01_hall_crowd.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep02-s2",
+            "order": 2,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Entre el ruido destacan algunos. Alexandre Mihau, enorme, con Alexandra Pardos trepada como si fuera su torre personal… y Francisco Sierra abriéndose paso en la cola.",
+            "imagePath": "assets/images/clash/story/ep02/ep02_02_mihau_pardos_sierra.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep02-s3",
+            "order": 3,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Mientras esperan, dos chicos se acercan al grupo de Thiago: Dariel Mejía Lanza y Ricardo Gómez.",
+            "imagePath": "assets/images/clash/story/ep02/ep02_03_dariel_ricardo_approach.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep02-s4",
+            "order": 4,
+            "type": "comic",
+            "speaker": "Dariel Mejía Lanza",
+            "text": "Oye… ¿tú no eras el famoso crack argentino que venía a este instituto?",
+            "imagePath": "assets/images/clash/story/ep02/ep02_04_dariel_asks.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep02-s5",
+            "order": 5,
+            "type": "comic",
+            "speaker": "Thiago Solari",
+            "text": "Je… soy el nuevo de Primero. Thiago Solari. Nada de leyendas… todavía.",
+            "imagePath": "assets/images/clash/story/ep02/ep02_05_thiago_reply.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep02-s6",
+            "order": 6,
+            "type": "comic",
+            "speaker": "Miguel Gracia Cubo",
+            "text": "¿En serio? Pensaba que ibas a aparecer con confeti y una camiseta firmada…",
+            "imagePath": "assets/images/clash/story/ep02/ep02_06_cubo_surprise.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep02-s7",
+            "order": 7,
+            "type": "comic",
+            "speaker": "Thiago Solari",
+            "text": "Dejad que se disuelva un poco esto… y nos apuntamos sin salir aplastados.",
+            "imagePath": "assets/images/clash/story/ep02/ep02_07_wait_crowd.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep02-s8",
+            "order": 8,
+            "type": "comic",
+            "speaker": "Thiago Solari",
+            "text": "Con tanta gente apuntándose… ¿qué va a pasar?",
+            "imagePath": "assets/images/clash/story/ep02/ep02_07b_what_happens.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep02-s9",
+            "order": 9,
+            "type": "comic",
+            "speaker": "Ricardo Gómez",
+            "text": "Habrá pruebas. Ahí se decide quiénes son los mejores diecinueve para representar al instituto.",
+            "imagePath": "assets/images/clash/story/ep02/ep02_08_ricardo_tests.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep02-s10",
+            "order": 10,
+            "type": "comic",
+            "speaker": "Thiago Solari",
+            "text": "Vale. Entonces nos vemos ahí. Que empiecen las pruebas.",
+            "imagePath": "assets/images/clash/story/ep02/ep02_09_see_you_there.png",
+            "isSkippable": true
+          }
+        ],
+        "completionUnlocks": {}
       }
     ]
   }
