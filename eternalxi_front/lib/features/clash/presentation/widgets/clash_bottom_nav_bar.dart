@@ -12,7 +12,7 @@ class ClashBottomNavItem {
   final String label;
 }
 
-/// Barra inferior Clash: placa ornamental + iconos custom (flujo epic).
+/// Barra inferior Clash: placa ornamental con tabs centrados dentro.
 class ClashBottomNavBar extends StatefulWidget {
   const ClashBottomNavBar({
     super.key,
@@ -36,6 +36,9 @@ class _ClashBottomNavBarState extends State<ClashBottomNavBar>
   late final List<AnimationController> _pressCtrl;
   late final List<Animation<double>> _pressAnim;
 
+  /// Recorte real del asset: 1200×213.
+  static const double _plateAspect = 1200 / 213;
+
   @override
   void initState() {
     super.initState();
@@ -44,7 +47,7 @@ class _ClashBottomNavBarState extends State<ClashBottomNavBar>
       n,
       (_) => AnimationController(
         vsync: this,
-        duration: const Duration(milliseconds: 280),
+        duration: const Duration(milliseconds: 260),
       ),
     );
     _selectAnim = _selectCtrl
@@ -54,7 +57,7 @@ class _ClashBottomNavBarState extends State<ClashBottomNavBar>
       n,
       (_) => AnimationController(
         vsync: this,
-        duration: const Duration(milliseconds: 110),
+        duration: const Duration(milliseconds: 100),
       ),
     );
     _pressAnim = _pressCtrl
@@ -104,170 +107,129 @@ class _ClashBottomNavBarState extends State<ClashBottomNavBar>
   @override
   Widget build(BuildContext context) {
     final bottomPad = MediaQuery.paddingOf(context).bottom;
-    final barHeight = 72.0 + bottomPad;
 
     return Material(
-      color: Colors.transparent,
-      child: SizedBox(
-        height: barHeight,
-        width: double.infinity,
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            // Velo suave para legibilidad sobre fondos claros.
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              height: barHeight + 12,
-              child: IgnorePointer(
-                child: DecoratedBox(
+      type: MaterialType.transparency,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          8,
+          0,
+          8,
+          bottomPad > 0 ? (bottomPad * 0.4).clamp(4.0, 14.0) : 6,
+        ),
+        child: AspectRatio(
+          aspectRatio: _plateAspect,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(
+                ClashEpicAssets.clashBottomNavBg,
+                fit: BoxFit.fill,
+                filterQuality: FilterQuality.high,
+                gaplessPlayback: true,
+                errorBuilder: (_, __, ___) => DecoratedBox(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black.withValues(alpha: 0.0),
-                        Colors.black.withValues(alpha: 0.55),
-                      ],
+                    color: const Color(0xE608101C),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: XiColors.classicGold.withValues(alpha: 0.55),
+                      width: 1.2,
                     ),
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              left: 8,
-              right: 8,
-              bottom: bottomPad > 0 ? bottomPad * 0.35 : 4,
-              child: AspectRatio(
-                aspectRatio: 1200 / 360,
-                child: Image.asset(
-                  ClashEpicAssets.clashBottomNavBg,
-                  fit: BoxFit.fill,
-                  filterQuality: FilterQuality.high,
-                  errorBuilder: (_, __, ___) => DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.72),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: XiColors.classicGold.withValues(alpha: 0.45),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 18,
-              right: 18,
-              bottom: bottomPad > 0 ? bottomPad * 0.35 + 6 : 10,
-              height: 58,
-              child: Row(
-                children: List.generate(widget.items.length, (i) {
-                  return Expanded(
-                    child: GestureDetector(
-                      onTapDown: (_) => _onTapDown(i),
-                      onTapUp: (_) => _onTapUp(i),
-                      onTapCancel: () => _onTapCancel(i),
-                      behavior: HitTestBehavior.opaque,
-                      child: AnimatedBuilder(
-                        animation: Listenable.merge([
-                          _selectAnim[i],
-                          _pressAnim[i],
-                        ]),
-                        builder: (context, _) {
-                          final sel = _selectAnim[i].value;
-                          final selected = widget.selectedIndex == i;
-                          final labelColor = Color.lerp(
-                            XiColors.steelGray,
-                            XiColors.techCyan,
-                            sel,
-                          )!;
-                          return Transform.scale(
-                            scale: _pressAnim[i].value,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                _GlowDot(active: sel),
-                                const SizedBox(height: 2),
-                                AnimatedScale(
-                                  scale: selected ? 1.08 : 1.0,
-                                  duration: const Duration(milliseconds: 220),
-                                  curve: Curves.easeOutCubic,
-                                  child: Opacity(
-                                    opacity: selected ? 1.0 : 0.62,
-                                    child: Image.asset(
-                                      widget.items[i].iconAsset,
-                                      width: 30,
-                                      height: 30,
-                                      fit: BoxFit.contain,
-                                      filterQuality: FilterQuality.medium,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(28, 6, 28, 8),
+                child: Row(
+                  children: List.generate(widget.items.length, (i) {
+                    return Expanded(
+                      child: GestureDetector(
+                        onTapDown: (_) => _onTapDown(i),
+                        onTapUp: (_) => _onTapUp(i),
+                        onTapCancel: () => _onTapCancel(i),
+                        behavior: HitTestBehavior.opaque,
+                        child: AnimatedBuilder(
+                          animation: Listenable.merge([
+                            _selectAnim[i],
+                            _pressAnim[i],
+                          ]),
+                          builder: (context, _) {
+                            final sel = _selectAnim[i].value;
+                            final selected = widget.selectedIndex == i;
+                            final labelColor = Color.lerp(
+                              XiColors.steelGray,
+                              XiColors.techCyan,
+                              sel,
+                            )!;
+                            return Transform.scale(
+                              scale: _pressAnim[i].value,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: (16 * sel).clamp(0.0, 16.0),
+                                    height: 2.5,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(2),
+                                      gradient: sel > 0.05
+                                          ? const LinearGradient(
+                                              colors: [
+                                                XiColors.classicGold,
+                                                XiColors.techCyan,
+                                              ],
+                                            )
+                                          : null,
+                                      boxShadow: sel > 0.05
+                                          ? [
+                                              BoxShadow(
+                                                color: XiColors.techCyan
+                                                    .withValues(
+                                                      alpha: 0.5 * sel,
+                                                    ),
+                                                blurRadius: 5 * sel,
+                                              ),
+                                            ]
+                                          : null,
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  widget.items[i].label,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontFamily: 'Lumiare',
-                                    fontSize: 9,
-                                    letterSpacing: 0.3,
-                                    height: 1.1,
-                                    color: labelColor,
-                                    shadows: selected
-                                        ? [
-                                            Shadow(
-                                              color: XiColors.techCyan
-                                                  .withValues(alpha: 0.55),
-                                              blurRadius: 8,
-                                            ),
-                                          ]
-                                        : null,
+                                  const SizedBox(height: 2),
+                                  Opacity(
+                                    opacity: selected ? 1.0 : 0.58,
+                                    child: Image.asset(
+                                      widget.items[i].iconAsset,
+                                      width: 26,
+                                      height: 26,
+                                      fit: BoxFit.contain,
+                                      filterQuality: FilterQuality.medium,
+                                      gaplessPlayback: true,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                                  const SizedBox(height: 1),
+                                  Text(
+                                    widget.items[i].label,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontFamily: 'Lumiare',
+                                      fontSize: 9,
+                                      letterSpacing: 0.25,
+                                      height: 1.05,
+                                      color: labelColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _GlowDot extends StatelessWidget {
-  const _GlowDot({required this.active});
-
-  final double active;
-
-  @override
-  Widget build(BuildContext context) {
-    final w = (18 * active).clamp(0.0, 18.0);
-    if (w < 1) return const SizedBox(height: 4);
-    return Container(
-      width: w,
-      height: 3,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(2),
-        gradient: const LinearGradient(
-          colors: [XiColors.classicGold, XiColors.techCyan],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: XiColors.techCyan.withValues(alpha: 0.55 * active),
-            blurRadius: 6 * active,
-            spreadRadius: active,
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

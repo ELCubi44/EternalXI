@@ -79,27 +79,36 @@ class ClashShellScreen extends StatelessWidget {
                 ),
           bottomNavigationBar: isCardDetail
               ? null
-              : ClashBottomNavBar(
-                  selectedIndex: selectedIndex,
-                  onItemSelected: (index) => _onTabSelected(context, index),
-                  items: [
-                    ClashBottomNavItem(
-                      iconAsset: ClashEpicAssets.clashNavHomeIcon,
-                      label: l10n.clashTabHome,
+              : Theme(
+                  data: Theme.of(context).copyWith(
+                    canvasColor: Colors.transparent,
+                    bottomAppBarTheme: const BottomAppBarThemeData(
+                      color: Colors.transparent,
+                      elevation: 0,
                     ),
-                    ClashBottomNavItem(
-                      iconAsset: ClashEpicAssets.clashNavTeamIcon,
-                      label: l10n.clashTabTeam,
-                    ),
-                    ClashBottomNavItem(
-                      iconAsset: ClashEpicAssets.clashNavSummonIcon,
-                      label: l10n.clashTabSummon,
-                    ),
-                    ClashBottomNavItem(
-                      iconAsset: ClashEpicAssets.clashNavShopIcon,
-                      label: l10n.clashTabShop,
-                    ),
-                  ],
+                  ),
+                  child: ClashBottomNavBar(
+                    selectedIndex: selectedIndex,
+                    onItemSelected: (index) => _onTabSelected(context, index),
+                    items: [
+                      ClashBottomNavItem(
+                        iconAsset: ClashEpicAssets.clashNavHomeIcon,
+                        label: l10n.clashTabHome,
+                      ),
+                      ClashBottomNavItem(
+                        iconAsset: ClashEpicAssets.clashNavTeamIcon,
+                        label: l10n.clashTabTeam,
+                      ),
+                      ClashBottomNavItem(
+                        iconAsset: ClashEpicAssets.clashNavSummonIcon,
+                        label: l10n.clashTabSummon,
+                      ),
+                      ClashBottomNavItem(
+                        iconAsset: ClashEpicAssets.clashNavShopIcon,
+                        label: l10n.clashTabShop,
+                      ),
+                    ],
+                  ),
                 ),
         ),
       ),
