@@ -26,7 +26,6 @@ List<ClashSuperTechnique> resolveActiveTechniques({
   }
 
   final effective = current.effectiveRarity;
-  final level = current.displayLevel;
   final byRarity = _siblingsByRarity(playerId, catalog);
   final merged = <ClashSuperTechnique>[];
   final seen = <String>{};
@@ -50,11 +49,6 @@ List<ClashSuperTechnique> resolveActiveTechniques({
       break;
     }
     addFrom(byRarity[rarity]);
-  }
-
-  // Cartas N: a nivel 50+ desbloquean la 2ª técnica de la versión R.
-  if (effective == ClashRarity.n && level >= 50) {
-    addFrom(byRarity[ClashRarity.r]);
   }
 
   if (merged.isEmpty) {
@@ -106,16 +100,10 @@ List<ClashLockedTechniquePreview> resolveLockedTechniquePreviews({
         continue;
       }
       seenNames.add(key);
-      final unlockLevel = rarity == ClashRarity.r &&
-              current.effectiveRarity == ClashRarity.n &&
-              previews.isEmpty
-          ? 50
-          : null;
       previews.add(
         ClashLockedTechniquePreview(
           technique: technique,
           unlockRarity: rarity,
-          unlockLevel: unlockLevel,
         ),
       );
     }

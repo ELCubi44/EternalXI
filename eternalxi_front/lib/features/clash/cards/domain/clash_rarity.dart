@@ -16,10 +16,11 @@ enum ClashRarity {
   };
 
   /// Número máximo de supertécnicas activas (sin contar pasiva XI).
+  /// N = 2 primeras, R = 3, SR+ = 4 (orden: más débil → más fuerte).
   int get maxSuperTechniques => switch (this) {
-    ClashRarity.n => 1,
-    ClashRarity.r => 2,
-    ClashRarity.sr => 3,
+    ClashRarity.n => 2,
+    ClashRarity.r => 3,
+    ClashRarity.sr => 4,
     ClashRarity.lr => 4,
     ClashRarity.xi => 4,
   };

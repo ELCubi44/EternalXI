@@ -82,9 +82,9 @@ void main() {
     });
 
     test('cantidad de supertécnicas por rareza', () {
-      expect(ClashRarity.n.maxSuperTechniques, 1);
-      expect(ClashRarity.r.maxSuperTechniques, 2);
-      expect(ClashRarity.sr.maxSuperTechniques, 3);
+      expect(ClashRarity.n.maxSuperTechniques, 2);
+      expect(ClashRarity.r.maxSuperTechniques, 3);
+      expect(ClashRarity.sr.maxSuperTechniques, 4);
       expect(ClashRarity.lr.maxSuperTechniques, 4);
       expect(ClashRarity.xi.maxSuperTechniques, 4);
     });

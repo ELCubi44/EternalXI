@@ -1,8 +1,7 @@
 {
-  "schemaVersion": 1,
-  "cardsVersion": 2,
+  "cardsVersion": 3,
   "cardsUrl": "https://api.eternalxi.com/api/v1/assets/clash/cards.json",
-  "cardsBytes": 1010055,
+  "cardsBytes": 1267997,
   "playerCount": 304,
   "cardCount": 912,
   "portraitsBaseUrl": "https://api.eternalxi.com/api/v1/assets/players",

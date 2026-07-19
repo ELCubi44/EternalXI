@@ -64,7 +64,7 @@ void main() {
 
   manifestFile.writeAsStringSync(
     const JsonEncoder.withIndent('  ').convert({
-      'cardsVersion': 2,
+      'cardsVersion': 3,
       'cardsUrl': 'https://api.eternalxi.com/api/v1/assets/clash/cards.json',
       'cardsBytes': sizeBytes,
       'playerCount': players.length,
@@ -163,7 +163,7 @@ const _posProfile = {
 };
 
 const _rarityMult = {'n': 1.0, 'r': 1.08, 'sr': 1.18};
-const _rarityStCount = {'n': 1, 'r': 2, 'sr': 3};
+const _rarityStCount = {'n': 2, 'r': 3, 'sr': 4};
 
 class _PlayerRow {
   _PlayerRow({
@@ -242,8 +242,13 @@ Map<int, List<_StRow>> _loadSuperTechniques(File file) {
           ),
         );
   }
+  // Desbloqueo: de la más débil a la más fuerte (potencia ASC).
   for (final list in map.values) {
-    list.sort((a, b) => a.orden.compareTo(b.orden));
+    list.sort((a, b) {
+      final byPower = a.potencia.compareTo(b.potencia);
+      if (byPower != 0) return byPower;
+      return a.orden.compareTo(b.orden);
+    });
   }
   return map;
 }
@@ -257,9 +262,31 @@ String _slugify(String text) {
 }
 
 String _clashPosition(String pos, int dorsal) {
-  switch (pos) {
+  switch (pos.toUpperCase()) {
     case 'POR':
       return 'goalkeeper';
+    case 'LAT':
+    case 'LATERAL':
+      return 'fullBack';
+    case 'DFC':
+    case 'CENTRAL':
+    case 'DEFENSA CENTRAL':
+      return 'centreBack';
+    case 'MCD':
+    case 'MEDIOCENTRO ATRASADO':
+      return 'defensiveMidfielder';
+    case 'MCO':
+    case 'MEDIOCENTRO OFENSIVO':
+      return 'attackingMidfielder';
+    case 'EXT':
+    case 'EXTREMO':
+      return 'winger';
+    case 'DEL':
+    case 'DC':
+    case 'DELANTERO':
+    case 'DELANTERO CENTRO':
+      return 'striker';
+    // Legado grueso (por si queda alguna fila sin migrar).
     case 'DEF':
       return dorsal.isEven ? 'fullBack' : 'centreBack';
     case 'MED':
