@@ -23,7 +23,7 @@ class FantasyAtmosphereBackground extends StatelessWidget {
               color: Color(0xFF0A0A0A),
             ),
           ),
-          // Velo ligero: el estadio se lee bien detr·s de la UI.
+          // Velo ligero: el estadio se lee bien detr√°s de la UI.
           const DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -43,7 +43,7 @@ class FantasyAtmosphereBackground extends StatelessWidget {
   }
 }
 
-/// Envuelve una pantalla con el estadio N detr·s (Fantasy / modo / perfil).
+/// Envuelve una pantalla con el estadio N detr√°s (Fantasy / modo / perfil).
 class WithFantasyAtmosphere extends StatelessWidget {
   const WithFantasyAtmosphere({super.key, required this.child});
 
