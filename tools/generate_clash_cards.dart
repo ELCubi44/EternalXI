@@ -64,7 +64,7 @@ void main() {
 
   manifestFile.writeAsStringSync(
     const JsonEncoder.withIndent('  ').convert({
-      'cardsVersion': 3,
+      'cardsVersion': 4,
       'cardsUrl': 'https://api.eternalxi.com/api/v1/assets/clash/cards.json',
       'cardsBytes': sizeBytes,
       'playerCount': players.length,

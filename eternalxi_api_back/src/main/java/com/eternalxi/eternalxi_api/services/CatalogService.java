@@ -66,6 +66,7 @@ public class CatalogService {
             String sql = """
                     SELECT e.id,
                            COALESCE(et.nombre, e.nombre) AS nombre,
+                           e.pais,
                            e.id_temporada,
                            e.foto
                     FROM equipos e
@@ -89,6 +90,7 @@ public class CatalogService {
                         teams.add(new CatalogTeamResponse(
                                 teamId,
                                 rs.getString("nombre"),
+                                rs.getString("pais"),
                                 rs.getLong("id_temporada"),
                                 teamPhoto,
                                 teamPhoto
@@ -156,6 +158,7 @@ public class CatalogService {
                 ? """
                 SELECT e.id,
                        COALESCE(et.nombre, e.nombre) AS nombre,
+                       e.pais,
                        e.id_temporada,
                        e.foto
                 FROM equipos e
@@ -168,6 +171,7 @@ public class CatalogService {
                 : """
                 SELECT e.id,
                        COALESCE(et.nombre, e.nombre) AS nombre,
+                       e.pais,
                        e.id_temporada,
                        e.foto
                 FROM equipos e
@@ -200,6 +204,7 @@ public class CatalogService {
                 return new CatalogTeamResponse(
                         teamId,
                         rs.getString("nombre"),
+                        rs.getString("pais"),
                         rs.getLong("id_temporada"),
                         teamPhoto,
                         teamPhoto
@@ -275,6 +280,7 @@ public class CatalogService {
                        %s AS valoracion,
                        j.genero,
                        j.posicion,
+                       j.pais,
                        j.foto
                 FROM jugadores j
                 LEFT JOIN jugador_traduccion jt
@@ -313,6 +319,7 @@ public class CatalogService {
                             rs.getObject("valoracion", Integer.class),
                             rs.getString("genero"),
                             rs.getString("posicion"),
+                            rs.getString("pais"),
                             playerPhoto,
                             playerPhoto,
                             rs.getObject("valor", Long.class),

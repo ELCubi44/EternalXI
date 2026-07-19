@@ -11,6 +11,7 @@ public record CatalogTeamPlayerResponse(
         Integer valoracion,
         String genero,
         String posicion,
+        String pais,
         String foto,
         String fotoUrl,
         Long valor,

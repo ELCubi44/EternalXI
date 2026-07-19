@@ -9,6 +9,7 @@ class CatalogTeamSummary {
     required this.idTemporada,
     required this.foto,
     this.fotoUrl,
+    this.pais,
     this.formacionEquipo = '',
   });
 
@@ -17,6 +18,7 @@ class CatalogTeamSummary {
   final int idTemporada;
   final String foto;
   final String? fotoUrl;
+  final String? pais;
 
   /// Formación del equipo en competición (no confundir con la del entrenador fantasy).
   /// Si el backend no envía este campo, queda vacío.
@@ -44,6 +46,7 @@ class CatalogTeamSummary {
       ]),
       foto: readLeagueString(json, const ['foto', 'escudo', 'imagen', 'logo']),
       fotoUrl: _readOptionalString(json, const ['fotoUrl', 'foto_url']),
+      pais: _readOptionalString(json, const ['pais', 'país', 'country', 'nationality']),
       formacionEquipo: readLeagueString(json, const [
         'formacionEquipo',
         'formacion_equipo',

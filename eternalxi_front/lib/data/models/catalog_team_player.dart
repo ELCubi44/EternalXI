@@ -17,6 +17,7 @@ class CatalogTeamPlayer {
     this.fotoUrl,
     this.estado,
     this.idUsuarioDueno,
+    this.pais,
     required this.idEquipo,
     required this.nombreEquipo,
     required this.fotoEquipo,
@@ -34,6 +35,7 @@ class CatalogTeamPlayer {
   final String? fotoUrl;
   final String? estado;
   final int? idUsuarioDueno;
+  final String? pais;
   final int idEquipo;
   final String nombreEquipo;
   final String fotoEquipo;
@@ -124,6 +126,7 @@ class CatalogTeamPlayer {
         'idUsuarioDueno',
         'id_usuario_dueno',
       ]),
+      pais: _readOptionalString(json, const ['pais', 'país', 'country', 'nationality']),
       idEquipo: equipo.id > 0
           ? equipo.id
           : readLeagueInt(json, const ['idEquipo', 'id_equipo']),
@@ -193,6 +196,7 @@ class CatalogTeamPlayer {
         'idUsuarioDueno',
         'id_usuario_dueno',
       ]),
+      pais: _readOptionalString(json, const ['pais', 'país', 'country', 'nationality']),
       idEquipo: readLeagueInt(json, const ['idEquipo', 'id_equipo', 'equipoId']),
       nombreEquipo: readLeagueString(json, const [
         'nombreEquipo',

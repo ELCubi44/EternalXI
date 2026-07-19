@@ -21560,13 +21560,13 @@
       "position": "goalkeeper",
       "basicPortraitPath": "network",
       "stats": {
-        "save": 41,
-        "defense": 22,
-        "pass": 17,
+        "save": 40,
+        "defense": 21,
+        "pass": 16,
         "dribble": 9,
-        "shot": 6,
-        "techniquePoints": 22,
-        "stamina": 106
+        "shot": 5,
+        "techniquePoints": 21,
+        "stamina": 105
       },
       "superTechniques": [
         {
@@ -21604,13 +21604,13 @@
       "position": "goalkeeper",
       "basicPortraitPath": "network",
       "stats": {
-        "save": 44,
-        "defense": 24,
-        "pass": 18,
-        "dribble": 10,
+        "save": 43,
+        "defense": 23,
+        "pass": 17,
+        "dribble": 9,
         "shot": 6,
-        "techniquePoints": 24,
-        "stamina": 115
+        "techniquePoints": 23,
+        "stamina": 114
       },
       "superTechniques": [
         {
@@ -21658,13 +21658,13 @@
       "position": "goalkeeper",
       "basicPortraitPath": "network",
       "stats": {
-        "save": 48,
-        "defense": 26,
-        "pass": 20,
-        "dribble": 11,
-        "shot": 7,
-        "techniquePoints": 26,
-        "stamina": 125
+        "save": 47,
+        "defense": 25,
+        "pass": 19,
+        "dribble": 10,
+        "shot": 6,
+        "techniquePoints": 25,
+        "stamina": 124
       },
       "superTechniques": [
         {
@@ -21723,8 +21723,8 @@
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
-        "defense": 31,
-        "pass": 20,
+        "defense": 30,
+        "pass": 19,
         "dribble": 16,
         "shot": 11,
         "techniquePoints": 20,
@@ -21767,12 +21767,12 @@
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
-        "defense": 33,
+        "defense": 32,
         "pass": 21,
         "dribble": 17,
         "shot": 12,
-        "techniquePoints": 22,
-        "stamina": 116
+        "techniquePoints": 21,
+        "stamina": 115
       },
       "superTechniques": [
         {
@@ -21821,11 +21821,11 @@
       "basicPortraitPath": "network",
       "stats": {
         "save": 6,
-        "defense": 36,
+        "defense": 35,
         "pass": 23,
         "dribble": 19,
         "shot": 13,
-        "techniquePoints": 24,
+        "techniquePoints": 23,
         "stamina": 126
       },
       "superTechniques": [
@@ -21872,7 +21872,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-n-cb-003",
+      "id": "faro-del-alba-n-fb-003",
       "playerId": 703,
       "name": "Bruno Carapuça",
       "team": "Faro del Alba",
@@ -21881,20 +21881,20 @@
       "rarity": "n",
       "level": 1,
       "style": "valiente",
-      "position": "centreBack",
+      "position": "fullBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
-        "defense": 35,
-        "pass": 15,
-        "dribble": 9,
-        "shot": 8,
+        "defense": 29,
+        "pass": 18,
+        "dribble": 15,
+        "shot": 10,
         "techniquePoints": 19,
-        "stamina": 105
+        "stamina": 106
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-n-cb-003-st1",
+          "id": "faro-del-alba-n-fb-003-st1",
           "name": "Carrera de Orilla",
           "description": "Carrera de Orilla",
           "type": "dribble",
@@ -21904,7 +21904,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-n-cb-003-st2",
+          "id": "faro-del-alba-n-fb-003-st2",
           "name": "Centro de Boya",
           "description": "Centro de Boya",
           "type": "dribble",
@@ -21916,7 +21916,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-r-cb-003",
+      "id": "faro-del-alba-r-fb-003",
       "playerId": 703,
       "name": "Bruno Carapuça",
       "team": "Faro del Alba",
@@ -21925,20 +21925,20 @@
       "rarity": "r",
       "level": 1,
       "style": "valiente",
-      "position": "centreBack",
+      "position": "fullBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
-        "defense": 38,
-        "pass": 16,
-        "dribble": 10,
-        "shot": 9,
+        "defense": 31,
+        "pass": 20,
+        "dribble": 16,
+        "shot": 11,
         "techniquePoints": 20,
-        "stamina": 113
+        "stamina": 114
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-r-cb-003-st1",
+          "id": "faro-del-alba-r-fb-003-st1",
           "name": "Carrera de Orilla",
           "description": "Carrera de Orilla",
           "type": "dribble",
@@ -21948,7 +21948,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-cb-003-st2",
+          "id": "faro-del-alba-r-fb-003-st2",
           "name": "Centro de Boya",
           "description": "Centro de Boya",
           "type": "dribble",
@@ -21958,7 +21958,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-cb-003-st3",
+          "id": "faro-del-alba-r-fb-003-st3",
           "name": "Cruce de Tabla",
           "description": "Cruce de Tabla",
           "type": "dribble",
@@ -21970,7 +21970,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-sr-cb-003",
+      "id": "faro-del-alba-sr-fb-003",
       "playerId": 703,
       "name": "Bruno Carapuça",
       "team": "Faro del Alba",
@@ -21979,20 +21979,20 @@
       "rarity": "sr",
       "level": 1,
       "style": "valiente",
-      "position": "centreBack",
+      "position": "fullBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
-        "defense": 41,
-        "pass": 18,
-        "dribble": 11,
-        "shot": 9,
+        "defense": 34,
+        "pass": 22,
+        "dribble": 18,
+        "shot": 12,
         "techniquePoints": 22,
-        "stamina": 123
+        "stamina": 125
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-sr-cb-003-st1",
+          "id": "faro-del-alba-sr-fb-003-st1",
           "name": "Carrera de Orilla",
           "description": "Carrera de Orilla",
           "type": "dribble",
@@ -22002,7 +22002,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-cb-003-st2",
+          "id": "faro-del-alba-sr-fb-003-st2",
           "name": "Centro de Boya",
           "description": "Centro de Boya",
           "type": "dribble",
@@ -22012,7 +22012,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-cb-003-st3",
+          "id": "faro-del-alba-sr-fb-003-st3",
           "name": "Cruce de Tabla",
           "description": "Cruce de Tabla",
           "type": "dribble",
@@ -22022,7 +22022,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-cb-003-st4",
+          "id": "faro-del-alba-sr-fb-003-st4",
           "name": "Empujón de Muelle",
           "description": "Empujón de Muelle",
           "type": "defense",
@@ -22034,7 +22034,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-n-fb-004",
+      "id": "faro-del-alba-n-cb-004",
       "playerId": 705,
       "name": "Mateus Redes",
       "team": "Faro del Alba",
@@ -22043,20 +22043,20 @@
       "rarity": "n",
       "level": 1,
       "style": "potente",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
-        "defense": 30,
-        "pass": 19,
-        "dribble": 16,
-        "shot": 11,
+        "defense": 36,
+        "pass": 16,
+        "dribble": 10,
+        "shot": 8,
         "techniquePoints": 20,
-        "stamina": 107
+        "stamina": 106
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-n-fb-004-st1",
+          "id": "faro-del-alba-n-cb-004-st1",
           "name": "Ancla Baja",
           "description": "Ancla Baja",
           "type": "defense",
@@ -22066,7 +22066,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-n-fb-004-st2",
+          "id": "faro-del-alba-n-cb-004-st2",
           "name": "Corte de Muelle",
           "description": "Corte de Muelle",
           "type": "defense",
@@ -22078,7 +22078,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-r-fb-004",
+      "id": "faro-del-alba-r-cb-004",
       "playerId": 705,
       "name": "Mateus Redes",
       "team": "Faro del Alba",
@@ -22087,20 +22087,20 @@
       "rarity": "r",
       "level": 1,
       "style": "potente",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
-        "defense": 32,
-        "pass": 21,
-        "dribble": 17,
-        "shot": 12,
+        "defense": 39,
+        "pass": 17,
+        "dribble": 11,
+        "shot": 9,
         "techniquePoints": 21,
-        "stamina": 115
+        "stamina": 114
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-r-fb-004-st1",
+          "id": "faro-del-alba-r-cb-004-st1",
           "name": "Ancla Baja",
           "description": "Ancla Baja",
           "type": "defense",
@@ -22110,7 +22110,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-fb-004-st2",
+          "id": "faro-del-alba-r-cb-004-st2",
           "name": "Corte de Muelle",
           "description": "Corte de Muelle",
           "type": "defense",
@@ -22120,7 +22120,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-fb-004-st3",
+          "id": "faro-del-alba-r-cb-004-st3",
           "name": "Despeje de Espuma",
           "description": "Despeje de Espuma",
           "type": "defense",
@@ -22132,7 +22132,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-sr-fb-004",
+      "id": "faro-del-alba-sr-cb-004",
       "playerId": 705,
       "name": "Mateus Redes",
       "team": "Faro del Alba",
@@ -22141,20 +22141,20 @@
       "rarity": "sr",
       "level": 1,
       "style": "potente",
-      "position": "fullBack",
+      "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
         "save": 6,
-        "defense": 35,
-        "pass": 23,
-        "dribble": 19,
-        "shot": 13,
+        "defense": 43,
+        "pass": 19,
+        "dribble": 12,
+        "shot": 10,
         "techniquePoints": 23,
-        "stamina": 126
+        "stamina": 125
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-sr-fb-004-st1",
+          "id": "faro-del-alba-sr-cb-004-st1",
           "name": "Ancla Baja",
           "description": "Ancla Baja",
           "type": "defense",
@@ -22164,7 +22164,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-fb-004-st2",
+          "id": "faro-del-alba-sr-cb-004-st2",
           "name": "Corte de Muelle",
           "description": "Corte de Muelle",
           "type": "defense",
@@ -22174,7 +22174,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-fb-004-st3",
+          "id": "faro-del-alba-sr-cb-004-st3",
           "name": "Despeje de Espuma",
           "description": "Despeje de Espuma",
           "type": "defense",
@@ -22184,7 +22184,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-fb-004-st4",
+          "id": "faro-del-alba-sr-cb-004-st4",
           "name": "Red de Rompeolas",
           "description": "Red de Rompeolas",
           "type": "defense",
@@ -22210,11 +22210,11 @@
       "stats": {
         "save": 5,
         "defense": 38,
-        "pass": 16,
+        "pass": 17,
         "dribble": 10,
         "shot": 9,
-        "techniquePoints": 20,
-        "stamina": 106
+        "techniquePoints": 21,
+        "stamina": 107
       },
       "superTechniques": [
         {
@@ -22252,7 +22252,7 @@
       "position": "centreBack",
       "basicPortraitPath": "network",
       "stats": {
-        "save": 5,
+        "save": 6,
         "defense": 41,
         "pass": 18,
         "dribble": 11,
@@ -22307,8 +22307,8 @@
       "basicPortraitPath": "network",
       "stats": {
         "save": 6,
-        "defense": 44,
-        "pass": 19,
+        "defense": 45,
+        "pass": 20,
         "dribble": 12,
         "shot": 10,
         "techniquePoints": 24,
@@ -22520,7 +22520,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-n-st-007",
+      "id": "faro-del-alba-n-wg-007",
       "playerId": 714,
       "name": "Nuno Solaz",
       "team": "Faro del Alba",
@@ -22529,20 +22529,20 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 16,
-        "pass": 15,
-        "dribble": 23,
-        "shot": 36,
+        "defense": 14,
+        "pass": 20,
+        "dribble": 31,
+        "shot": 28,
         "techniquePoints": 23,
-        "stamina": 111
+        "stamina": 112
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-n-st-007-st1",
+          "id": "faro-del-alba-n-wg-007-st1",
           "name": "Zigzag de Espuma",
           "description": "Zigzag de Espuma",
           "type": "dribble",
@@ -22552,7 +22552,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-n-st-007-st2",
+          "id": "faro-del-alba-n-wg-007-st2",
           "name": "Centro de Salitre",
           "description": "Centro de Salitre",
           "type": "dribble",
@@ -22564,7 +22564,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-r-st-007",
+      "id": "faro-del-alba-r-wg-007",
       "playerId": 714,
       "name": "Nuno Solaz",
       "team": "Faro del Alba",
@@ -22573,20 +22573,20 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 17,
-        "pass": 16,
-        "dribble": 25,
-        "shot": 39,
+        "defense": 15,
+        "pass": 22,
+        "dribble": 33,
+        "shot": 31,
         "techniquePoints": 25,
-        "stamina": 120
+        "stamina": 121
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-r-st-007-st1",
+          "id": "faro-del-alba-r-wg-007-st1",
           "name": "Zigzag de Espuma",
           "description": "Zigzag de Espuma",
           "type": "dribble",
@@ -22596,7 +22596,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-st-007-st2",
+          "id": "faro-del-alba-r-wg-007-st2",
           "name": "Centro de Salitre",
           "description": "Centro de Salitre",
           "type": "dribble",
@@ -22606,7 +22606,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-st-007-st3",
+          "id": "faro-del-alba-r-wg-007-st3",
           "name": "Recorte de Aleta",
           "description": "Recorte de Aleta",
           "type": "dribble",
@@ -22618,7 +22618,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-sr-st-007",
+      "id": "faro-del-alba-sr-wg-007",
       "playerId": 714,
       "name": "Nuno Solaz",
       "team": "Faro del Alba",
@@ -22627,20 +22627,20 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 19,
-        "pass": 18,
-        "dribble": 27,
-        "shot": 43,
+        "defense": 17,
+        "pass": 24,
+        "dribble": 37,
+        "shot": 33,
         "techniquePoints": 27,
-        "stamina": 131
+        "stamina": 133
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-sr-st-007-st1",
+          "id": "faro-del-alba-sr-wg-007-st1",
           "name": "Zigzag de Espuma",
           "description": "Zigzag de Espuma",
           "type": "dribble",
@@ -22650,7 +22650,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-st-007-st2",
+          "id": "faro-del-alba-sr-wg-007-st2",
           "name": "Centro de Salitre",
           "description": "Centro de Salitre",
           "type": "dribble",
@@ -22660,7 +22660,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-st-007-st3",
+          "id": "faro-del-alba-sr-wg-007-st3",
           "name": "Recorte de Aleta",
           "description": "Recorte de Aleta",
           "type": "dribble",
@@ -22670,7 +22670,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-st-007-st4",
+          "id": "faro-del-alba-sr-wg-007-st4",
           "name": "Ráfaga de Costa Dorada",
           "description": "Ráfaga de Costa Dorada",
           "type": "dribble",
@@ -22682,7 +22682,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-n-dm-008",
+      "id": "faro-del-alba-n-am-008",
       "playerId": 712,
       "name": "Joel Barquinho",
       "team": "Faro del Alba",
@@ -22691,20 +22691,20 @@
       "rarity": "n",
       "level": 1,
       "style": "valiente",
-      "position": "defensiveMidfielder",
+      "position": "attackingMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
-        "defense": 24,
-        "pass": 26,
-        "dribble": 18,
-        "shot": 14,
+        "defense": 16,
+        "pass": 27,
+        "dribble": 23,
+        "shot": 20,
         "techniquePoints": 21,
         "stamina": 107
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-n-dm-008-st1",
+          "id": "faro-del-alba-n-am-008-st1",
           "name": "Amago de Brisa",
           "description": "Amago de Brisa",
           "type": "dribble",
@@ -22714,7 +22714,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-n-dm-008-st2",
+          "id": "faro-del-alba-n-am-008-st2",
           "name": "Pase de Gaviota",
           "description": "Pase de Gaviota",
           "type": "dribble",
@@ -22726,7 +22726,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-r-dm-008",
+      "id": "faro-del-alba-r-am-008",
       "playerId": 712,
       "name": "Joel Barquinho",
       "team": "Faro del Alba",
@@ -22735,20 +22735,20 @@
       "rarity": "r",
       "level": 1,
       "style": "valiente",
-      "position": "defensiveMidfielder",
+      "position": "attackingMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 26,
-        "pass": 28,
-        "dribble": 19,
-        "shot": 15,
+        "defense": 17,
+        "pass": 29,
+        "dribble": 25,
+        "shot": 21,
         "techniquePoints": 23,
         "stamina": 115
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-r-dm-008-st1",
+          "id": "faro-del-alba-r-am-008-st1",
           "name": "Amago de Brisa",
           "description": "Amago de Brisa",
           "type": "dribble",
@@ -22758,7 +22758,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-dm-008-st2",
+          "id": "faro-del-alba-r-am-008-st2",
           "name": "Pase de Gaviota",
           "description": "Pase de Gaviota",
           "type": "dribble",
@@ -22768,7 +22768,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-dm-008-st3",
+          "id": "faro-del-alba-r-am-008-st3",
           "name": "Toque de Papel",
           "description": "Toque de Papel",
           "type": "dribble",
@@ -22780,7 +22780,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-sr-dm-008",
+      "id": "faro-del-alba-sr-am-008",
       "playerId": 712,
       "name": "Joel Barquinho",
       "team": "Faro del Alba",
@@ -22789,20 +22789,20 @@
       "rarity": "sr",
       "level": 1,
       "style": "valiente",
-      "position": "defensiveMidfielder",
+      "position": "attackingMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 29,
-        "pass": 30,
-        "dribble": 21,
-        "shot": 16,
+        "defense": 18,
+        "pass": 31,
+        "dribble": 27,
+        "shot": 23,
         "techniquePoints": 25,
         "stamina": 126
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-sr-dm-008-st1",
+          "id": "faro-del-alba-sr-am-008-st1",
           "name": "Amago de Brisa",
           "description": "Amago de Brisa",
           "type": "dribble",
@@ -22812,7 +22812,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-dm-008-st2",
+          "id": "faro-del-alba-sr-am-008-st2",
           "name": "Pase de Gaviota",
           "description": "Pase de Gaviota",
           "type": "dribble",
@@ -22822,7 +22822,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-dm-008-st3",
+          "id": "faro-del-alba-sr-am-008-st3",
           "name": "Toque de Papel",
           "description": "Toque de Papel",
           "type": "dribble",
@@ -22832,7 +22832,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-dm-008-st4",
+          "id": "faro-del-alba-sr-am-008-st4",
           "name": "Barquito en Diagonal",
           "description": "Barquito en Diagonal",
           "type": "dribble",
@@ -22844,7 +22844,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-n-st-009",
+      "id": "faro-del-alba-n-wg-009",
       "playerId": 717,
       "name": "Simão Aleta",
       "team": "Faro del Alba",
@@ -22853,42 +22853,42 @@
       "rarity": "n",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 16,
-        "pass": 15,
-        "dribble": 23,
-        "shot": 36,
+        "defense": 14,
+        "pass": 20,
+        "dribble": 31,
+        "shot": 28,
         "techniquePoints": 23,
-        "stamina": 111
+        "stamina": 112
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-n-st-009-st1",
-          "name": "Picotazo de Gaviota",
-          "description": "Picotazo de Gaviota",
-          "type": "shot",
+          "id": "faro-del-alba-n-wg-009-st1",
+          "name": "Zigzag de Espuma",
+          "description": "Zigzag de Espuma",
+          "type": "dribble",
           "style": "agil",
-          "basePower": 30,
+          "basePower": 25,
           "ptCost": 8,
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-n-st-009-st2",
-          "name": "Remate de Boya",
-          "description": "Remate de Boya",
-          "type": "shot",
-          "style": "potente",
-          "basePower": 35,
+          "id": "faro-del-alba-n-wg-009-st2",
+          "name": "Centro de Salitre",
+          "description": "Centro de Salitre",
+          "type": "dribble",
+          "style": "preciso",
+          "basePower": 30,
           "ptCost": 8,
           "level": "normal"
         }
       ]
     },
     {
-      "id": "faro-del-alba-r-st-009",
+      "id": "faro-del-alba-r-wg-009",
       "playerId": 717,
       "name": "Simão Aleta",
       "team": "Faro del Alba",
@@ -22897,40 +22897,40 @@
       "rarity": "r",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 17,
-        "pass": 16,
-        "dribble": 25,
-        "shot": 39,
+        "defense": 15,
+        "pass": 22,
+        "dribble": 33,
+        "shot": 30,
         "techniquePoints": 25,
-        "stamina": 120
+        "stamina": 121
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-r-st-009-st1",
-          "name": "Picotazo de Gaviota",
-          "description": "Picotazo de Gaviota",
-          "type": "shot",
+          "id": "faro-del-alba-r-wg-009-st1",
+          "name": "Zigzag de Espuma",
+          "description": "Zigzag de Espuma",
+          "type": "dribble",
           "style": "agil",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "faro-del-alba-r-wg-009-st2",
+          "name": "Centro de Salitre",
+          "description": "Centro de Salitre",
+          "type": "dribble",
+          "style": "preciso",
           "basePower": 30,
           "ptCost": 8,
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-st-009-st2",
-          "name": "Remate de Boya",
-          "description": "Remate de Boya",
-          "type": "shot",
-          "style": "potente",
-          "basePower": 35,
-          "ptCost": 8,
-          "level": "normal"
-        },
-        {
-          "id": "faro-del-alba-r-st-009-st3",
+          "id": "faro-del-alba-r-wg-009-st3",
           "name": "Desmarque de Aleta",
           "description": "Desmarque de Aleta",
           "type": "dribble",
@@ -22942,7 +22942,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-sr-st-009",
+      "id": "faro-del-alba-sr-wg-009",
       "playerId": 717,
       "name": "Simão Aleta",
       "team": "Faro del Alba",
@@ -22951,40 +22951,40 @@
       "rarity": "sr",
       "level": 1,
       "style": "agil",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 19,
-        "pass": 18,
-        "dribble": 27,
-        "shot": 43,
+        "defense": 16,
+        "pass": 24,
+        "dribble": 36,
+        "shot": 33,
         "techniquePoints": 27,
-        "stamina": 131
+        "stamina": 132
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-sr-st-009-st1",
-          "name": "Picotazo de Gaviota",
-          "description": "Picotazo de Gaviota",
-          "type": "shot",
+          "id": "faro-del-alba-sr-wg-009-st1",
+          "name": "Zigzag de Espuma",
+          "description": "Zigzag de Espuma",
+          "type": "dribble",
           "style": "agil",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "faro-del-alba-sr-wg-009-st2",
+          "name": "Centro de Salitre",
+          "description": "Centro de Salitre",
+          "type": "dribble",
+          "style": "preciso",
           "basePower": 30,
           "ptCost": 8,
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-st-009-st2",
-          "name": "Remate de Boya",
-          "description": "Remate de Boya",
-          "type": "shot",
-          "style": "potente",
-          "basePower": 35,
-          "ptCost": 8,
-          "level": "normal"
-        },
-        {
-          "id": "faro-del-alba-sr-st-009-st3",
+          "id": "faro-del-alba-sr-wg-009-st3",
           "name": "Desmarque de Aleta",
           "description": "Desmarque de Aleta",
           "type": "dribble",
@@ -22994,7 +22994,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-st-009-st4",
+          "id": "faro-del-alba-sr-wg-009-st4",
           "name": "Zambullida de Medianoche",
           "description": "Zambullida de Medianoche",
           "type": "shot",
@@ -23006,7 +23006,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-n-am-010",
+      "id": "faro-del-alba-n-fb-010",
       "playerId": 711,
       "name": "Alejandro Brisamar",
       "team": "Faro del Alba",
@@ -23015,32 +23015,32 @@
       "rarity": "n",
       "level": 1,
       "style": "preciso",
-      "position": "attackingMidfielder",
+      "position": "fullBack",
       "basicPortraitPath": "network",
       "stats": {
-        "save": 4,
-        "defense": 18,
-        "pass": 31,
-        "dribble": 27,
-        "shot": 22,
-        "techniquePoints": 24,
+        "save": 6,
+        "defense": 34,
+        "pass": 22,
+        "dribble": 18,
+        "shot": 12,
+        "techniquePoints": 23,
         "stamina": 110
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-n-am-010-st1",
-          "name": "Amago de Brisa",
-          "description": "Amago de Brisa",
+          "id": "faro-del-alba-n-fb-010-st1",
+          "name": "Carrera de Orilla",
+          "description": "Carrera de Orilla",
           "type": "dribble",
-          "style": "picaro",
+          "style": "agil",
           "basePower": 25,
           "ptCost": 8,
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-n-am-010-st2",
-          "name": "Pase de Gaviota",
-          "description": "Pase de Gaviota",
+          "id": "faro-del-alba-n-fb-010-st2",
+          "name": "Centro de Boya",
+          "description": "Centro de Boya",
           "type": "dribble",
           "style": "preciso",
           "basePower": 30,
@@ -23050,7 +23050,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-r-am-010",
+      "id": "faro-del-alba-r-fb-010",
       "playerId": 711,
       "name": "Alejandro Brisamar",
       "team": "Faro del Alba",
@@ -23059,32 +23059,32 @@
       "rarity": "r",
       "level": 1,
       "style": "preciso",
-      "position": "attackingMidfielder",
+      "position": "fullBack",
       "basicPortraitPath": "network",
       "stats": {
-        "save": 4,
-        "defense": 20,
-        "pass": 33,
-        "dribble": 29,
-        "shot": 24,
-        "techniquePoints": 26,
-        "stamina": 119
+        "save": 6,
+        "defense": 37,
+        "pass": 23,
+        "dribble": 19,
+        "shot": 13,
+        "techniquePoints": 24,
+        "stamina": 118
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-r-am-010-st1",
-          "name": "Amago de Brisa",
-          "description": "Amago de Brisa",
+          "id": "faro-del-alba-r-fb-010-st1",
+          "name": "Carrera de Orilla",
+          "description": "Carrera de Orilla",
           "type": "dribble",
-          "style": "picaro",
+          "style": "agil",
           "basePower": 25,
           "ptCost": 8,
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-am-010-st2",
-          "name": "Pase de Gaviota",
-          "description": "Pase de Gaviota",
+          "id": "faro-del-alba-r-fb-010-st2",
+          "name": "Centro de Boya",
+          "description": "Centro de Boya",
           "type": "dribble",
           "style": "preciso",
           "basePower": 30,
@@ -23092,7 +23092,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-am-010-st3",
+          "id": "faro-del-alba-r-fb-010-st3",
           "name": "Vals de Espuma",
           "description": "Vals de Espuma",
           "type": "dribble",
@@ -23104,7 +23104,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-sr-am-010",
+      "id": "faro-del-alba-sr-fb-010",
       "playerId": 711,
       "name": "Alejandro Brisamar",
       "team": "Faro del Alba",
@@ -23113,32 +23113,32 @@
       "rarity": "sr",
       "level": 1,
       "style": "preciso",
-      "position": "attackingMidfielder",
+      "position": "fullBack",
       "basicPortraitPath": "network",
       "stats": {
-        "save": 4,
-        "defense": 22,
-        "pass": 36,
-        "dribble": 32,
-        "shot": 26,
-        "techniquePoints": 29,
-        "stamina": 130
+        "save": 7,
+        "defense": 40,
+        "pass": 26,
+        "dribble": 21,
+        "shot": 14,
+        "techniquePoints": 27,
+        "stamina": 129
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-sr-am-010-st1",
-          "name": "Amago de Brisa",
-          "description": "Amago de Brisa",
+          "id": "faro-del-alba-sr-fb-010-st1",
+          "name": "Carrera de Orilla",
+          "description": "Carrera de Orilla",
           "type": "dribble",
-          "style": "picaro",
+          "style": "agil",
           "basePower": 25,
           "ptCost": 8,
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-am-010-st2",
-          "name": "Pase de Gaviota",
-          "description": "Pase de Gaviota",
+          "id": "faro-del-alba-sr-fb-010-st2",
+          "name": "Centro de Boya",
+          "description": "Centro de Boya",
           "type": "dribble",
           "style": "preciso",
           "basePower": 30,
@@ -23146,7 +23146,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-am-010-st3",
+          "id": "faro-del-alba-sr-fb-010-st3",
           "name": "Vals de Espuma",
           "description": "Vals de Espuma",
           "type": "dribble",
@@ -23156,7 +23156,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-am-010-st4",
+          "id": "faro-del-alba-sr-fb-010-st4",
           "name": "Brisa de Horizonte",
           "description": "Brisa de Horizonte",
           "type": "dribble",
@@ -23168,7 +23168,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-n-st-011",
+      "id": "faro-del-alba-n-wg-011",
       "playerId": 715,
       "name": "Leandro Prata",
       "team": "Faro del Alba",
@@ -23177,20 +23177,20 @@
       "rarity": "n",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 16,
-        "pass": 15,
-        "dribble": 23,
-        "shot": 36,
+        "defense": 14,
+        "pass": 20,
+        "dribble": 31,
+        "shot": 28,
         "techniquePoints": 23,
-        "stamina": 111
+        "stamina": 112
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-n-st-011-st1",
+          "id": "faro-del-alba-n-wg-011-st1",
           "name": "Zigzag de Espuma",
           "description": "Zigzag de Espuma",
           "type": "dribble",
@@ -23200,7 +23200,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-n-st-011-st2",
+          "id": "faro-del-alba-n-wg-011-st2",
           "name": "Centro de Salitre",
           "description": "Centro de Salitre",
           "type": "dribble",
@@ -23212,7 +23212,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-r-st-011",
+      "id": "faro-del-alba-r-wg-011",
       "playerId": 715,
       "name": "Leandro Prata",
       "team": "Faro del Alba",
@@ -23221,20 +23221,20 @@
       "rarity": "r",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 17,
-        "pass": 16,
-        "dribble": 25,
-        "shot": 39,
+        "defense": 15,
+        "pass": 22,
+        "dribble": 33,
+        "shot": 30,
         "techniquePoints": 25,
-        "stamina": 120
+        "stamina": 121
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-r-st-011-st1",
+          "id": "faro-del-alba-r-wg-011-st1",
           "name": "Zigzag de Espuma",
           "description": "Zigzag de Espuma",
           "type": "dribble",
@@ -23244,7 +23244,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-st-011-st2",
+          "id": "faro-del-alba-r-wg-011-st2",
           "name": "Centro de Salitre",
           "description": "Centro de Salitre",
           "type": "dribble",
@@ -23254,7 +23254,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-st-011-st3",
+          "id": "faro-del-alba-r-wg-011-st3",
           "name": "Curva de Viento Suave",
           "description": "Curva de Viento Suave",
           "type": "dribble",
@@ -23266,7 +23266,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-sr-st-011",
+      "id": "faro-del-alba-sr-wg-011",
       "playerId": 715,
       "name": "Leandro Prata",
       "team": "Faro del Alba",
@@ -23275,20 +23275,20 @@
       "rarity": "sr",
       "level": 1,
       "style": "preciso",
-      "position": "striker",
+      "position": "winger",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 18,
-        "pass": 18,
-        "dribble": 27,
-        "shot": 42,
+        "defense": 16,
+        "pass": 24,
+        "dribble": 36,
+        "shot": 33,
         "techniquePoints": 27,
-        "stamina": 131
+        "stamina": 132
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-sr-st-011-st1",
+          "id": "faro-del-alba-sr-wg-011-st1",
           "name": "Zigzag de Espuma",
           "description": "Zigzag de Espuma",
           "type": "dribble",
@@ -23298,7 +23298,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-st-011-st2",
+          "id": "faro-del-alba-sr-wg-011-st2",
           "name": "Centro de Salitre",
           "description": "Centro de Salitre",
           "type": "dribble",
@@ -23308,7 +23308,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-st-011-st3",
+          "id": "faro-del-alba-sr-wg-011-st3",
           "name": "Curva de Viento Suave",
           "description": "Curva de Viento Suave",
           "type": "dribble",
@@ -23318,7 +23318,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-st-011-st4",
+          "id": "faro-del-alba-sr-wg-011-st4",
           "name": "Carrera de Plata Marina",
           "description": "Carrera de Plata Marina",
           "type": "dribble",
@@ -23342,13 +23342,13 @@
       "position": "goalkeeper",
       "basicPortraitPath": "network",
       "stats": {
-        "save": 34,
-        "defense": 19,
-        "pass": 14,
+        "save": 33,
+        "defense": 18,
+        "pass": 13,
         "dribble": 7,
-        "shot": 5,
-        "techniquePoints": 19,
-        "stamina": 103
+        "shot": 4,
+        "techniquePoints": 18,
+        "stamina": 102
       },
       "superTechniques": [
         {
@@ -23386,13 +23386,13 @@
       "position": "goalkeeper",
       "basicPortraitPath": "network",
       "stats": {
-        "save": 37,
-        "defense": 20,
-        "pass": 15,
-        "dribble": 8,
+        "save": 36,
+        "defense": 19,
+        "pass": 14,
+        "dribble": 7,
         "shot": 5,
-        "techniquePoints": 20,
-        "stamina": 111
+        "techniquePoints": 19,
+        "stamina": 110
       },
       "superTechniques": [
         {
@@ -23440,13 +23440,13 @@
       "position": "goalkeeper",
       "basicPortraitPath": "network",
       "stats": {
-        "save": 41,
-        "defense": 22,
+        "save": 39,
+        "defense": 21,
         "pass": 16,
-        "dribble": 9,
+        "dribble": 8,
         "shot": 5,
-        "techniquePoints": 22,
-        "stamina": 121
+        "techniquePoints": 21,
+        "stamina": 120
       },
       "superTechniques": [
         {
@@ -23492,7 +23492,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-n-am-013",
+      "id": "faro-del-alba-n-dm-013",
       "playerId": 709,
       "name": "Gonçalo Viseira",
       "team": "Faro del Alba",
@@ -23501,20 +23501,20 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 17,
-        "pass": 28,
-        "dribble": 25,
-        "shot": 21,
+        "defense": 26,
+        "pass": 27,
+        "dribble": 19,
+        "shot": 15,
         "techniquePoints": 22,
         "stamina": 108
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-n-am-013-st1",
+          "id": "faro-del-alba-n-dm-013-st1",
           "name": "Barrido de Arena",
           "description": "Barrido de Arena",
           "type": "defense",
@@ -23524,7 +23524,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-n-am-013-st2",
+          "id": "faro-del-alba-n-dm-013-st2",
           "name": "Pase de Faro Corto",
           "description": "Pase de Faro Corto",
           "type": "dribble",
@@ -23536,7 +23536,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-r-am-013",
+      "id": "faro-del-alba-r-dm-013",
       "playerId": 709,
       "name": "Gonçalo Viseira",
       "team": "Faro del Alba",
@@ -23545,20 +23545,20 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 18,
-        "pass": 30,
-        "dribble": 26,
-        "shot": 22,
+        "defense": 28,
+        "pass": 29,
+        "dribble": 20,
+        "shot": 16,
         "techniquePoints": 24,
         "stamina": 117
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-r-am-013-st1",
+          "id": "faro-del-alba-r-dm-013-st1",
           "name": "Barrido de Arena",
           "description": "Barrido de Arena",
           "type": "defense",
@@ -23568,7 +23568,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-am-013-st2",
+          "id": "faro-del-alba-r-dm-013-st2",
           "name": "Pase de Faro Corto",
           "description": "Pase de Faro Corto",
           "type": "dribble",
@@ -23578,7 +23578,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-am-013-st3",
+          "id": "faro-del-alba-r-dm-013-st3",
           "name": "Amago de Marea",
           "description": "Amago de Marea",
           "type": "dribble",
@@ -23590,7 +23590,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-sr-am-013",
+      "id": "faro-del-alba-sr-dm-013",
       "playerId": 709,
       "name": "Gonçalo Viseira",
       "team": "Faro del Alba",
@@ -23599,20 +23599,20 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 19,
-        "pass": 33,
-        "dribble": 29,
-        "shot": 24,
+        "defense": 30,
+        "pass": 32,
+        "dribble": 22,
+        "shot": 17,
         "techniquePoints": 26,
         "stamina": 127
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-sr-am-013-st1",
+          "id": "faro-del-alba-sr-dm-013-st1",
           "name": "Barrido de Arena",
           "description": "Barrido de Arena",
           "type": "defense",
@@ -23622,7 +23622,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-am-013-st2",
+          "id": "faro-del-alba-sr-dm-013-st2",
           "name": "Pase de Faro Corto",
           "description": "Pase de Faro Corto",
           "type": "dribble",
@@ -23632,7 +23632,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-am-013-st3",
+          "id": "faro-del-alba-sr-dm-013-st3",
           "name": "Amago de Marea",
           "description": "Amago de Marea",
           "type": "dribble",
@@ -23642,7 +23642,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-am-013-st4",
+          "id": "faro-del-alba-sr-dm-013-st4",
           "name": "Rebote de Sombrilla",
           "description": "Rebote de Sombrilla",
           "type": "defense",
@@ -23667,9 +23667,9 @@
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 32,
+        "defense": 33,
         "pass": 14,
-        "dribble": 8,
+        "dribble": 9,
         "shot": 7,
         "techniquePoints": 17,
         "stamina": 103
@@ -23765,12 +23765,12 @@
       "basicPortraitPath": "network",
       "stats": {
         "save": 5,
-        "defense": 38,
+        "defense": 39,
         "pass": 16,
         "dribble": 10,
         "shot": 9,
         "techniquePoints": 20,
-        "stamina": 121
+        "stamina": 122
       },
       "superTechniques": [
         {
@@ -24001,21 +24001,21 @@
       "superTechniques": [
         {
           "id": "faro-del-alba-n-st-016-st1",
-          "name": "Amago de Brisa",
-          "description": "Amago de Brisa",
+          "name": "Zigzag de Espuma",
+          "description": "Zigzag de Espuma",
           "type": "dribble",
-          "style": "picaro",
+          "style": "agil",
           "basePower": 25,
           "ptCost": 8,
           "level": "normal"
         },
         {
           "id": "faro-del-alba-n-st-016-st2",
-          "name": "Zigzag de Espuma",
-          "description": "Zigzag de Espuma",
-          "type": "dribble",
+          "name": "Picotazo de Gaviota",
+          "description": "Picotazo de Gaviota",
+          "type": "shot",
           "style": "agil",
-          "basePower": 25,
+          "basePower": 30,
           "ptCost": 8,
           "level": "normal"
         }
@@ -24045,16 +24045,6 @@
       "superTechniques": [
         {
           "id": "faro-del-alba-r-st-016-st1",
-          "name": "Amago de Brisa",
-          "description": "Amago de Brisa",
-          "type": "dribble",
-          "style": "picaro",
-          "basePower": 25,
-          "ptCost": 8,
-          "level": "normal"
-        },
-        {
-          "id": "faro-del-alba-r-st-016-st2",
           "name": "Zigzag de Espuma",
           "description": "Zigzag de Espuma",
           "type": "dribble",
@@ -24064,12 +24054,22 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-st-016-st3",
-          "name": "Centro de Salitre",
-          "description": "Centro de Salitre",
-          "type": "dribble",
-          "style": "preciso",
+          "id": "faro-del-alba-r-st-016-st2",
+          "name": "Picotazo de Gaviota",
+          "description": "Picotazo de Gaviota",
+          "type": "shot",
+          "style": "agil",
           "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "faro-del-alba-r-st-016-st3",
+          "name": "Remate de Boya",
+          "description": "Remate de Boya",
+          "type": "shot",
+          "style": "potente",
+          "basePower": 35,
           "ptCost": 8,
           "level": "normal"
         }
@@ -24099,16 +24099,6 @@
       "superTechniques": [
         {
           "id": "faro-del-alba-sr-st-016-st1",
-          "name": "Amago de Brisa",
-          "description": "Amago de Brisa",
-          "type": "dribble",
-          "style": "picaro",
-          "basePower": 25,
-          "ptCost": 8,
-          "level": "normal"
-        },
-        {
-          "id": "faro-del-alba-sr-st-016-st2",
           "name": "Zigzag de Espuma",
           "description": "Zigzag de Espuma",
           "type": "dribble",
@@ -24118,12 +24108,22 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-st-016-st3",
-          "name": "Centro de Salitre",
-          "description": "Centro de Salitre",
-          "type": "dribble",
-          "style": "preciso",
+          "id": "faro-del-alba-sr-st-016-st2",
+          "name": "Picotazo de Gaviota",
+          "description": "Picotazo de Gaviota",
+          "type": "shot",
+          "style": "agil",
           "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "faro-del-alba-sr-st-016-st3",
+          "name": "Remate de Boya",
+          "description": "Remate de Boya",
+          "type": "shot",
+          "style": "potente",
+          "basePower": 35,
           "ptCost": 8,
           "level": "normal"
         },
@@ -24302,7 +24302,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-n-am-018",
+      "id": "faro-del-alba-n-dm-018",
       "playerId": 713,
       "name": "Mauro Cobalto",
       "team": "Faro del Alba",
@@ -24311,20 +24311,20 @@
       "rarity": "n",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
-        "defense": 14,
-        "pass": 24,
-        "dribble": 21,
-        "shot": 18,
+        "defense": 22,
+        "pass": 23,
+        "dribble": 16,
+        "shot": 12,
         "techniquePoints": 19,
         "stamina": 105
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-n-am-018-st1",
+          "id": "faro-del-alba-n-dm-018-st1",
           "name": "Amago de Brisa",
           "description": "Amago de Brisa",
           "type": "dribble",
@@ -24334,7 +24334,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-n-am-018-st2",
+          "id": "faro-del-alba-n-dm-018-st2",
           "name": "Pase de Gaviota",
           "description": "Pase de Gaviota",
           "type": "dribble",
@@ -24346,7 +24346,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-r-am-018",
+      "id": "faro-del-alba-r-dm-018",
       "playerId": 713,
       "name": "Mauro Cobalto",
       "team": "Faro del Alba",
@@ -24355,20 +24355,20 @@
       "rarity": "r",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 3,
-        "defense": 15,
-        "pass": 26,
-        "dribble": 22,
-        "shot": 19,
+        "defense": 24,
+        "pass": 25,
+        "dribble": 17,
+        "shot": 13,
         "techniquePoints": 20,
         "stamina": 113
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-r-am-018-st1",
+          "id": "faro-del-alba-r-dm-018-st1",
           "name": "Amago de Brisa",
           "description": "Amago de Brisa",
           "type": "dribble",
@@ -24378,7 +24378,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-am-018-st2",
+          "id": "faro-del-alba-r-dm-018-st2",
           "name": "Pase de Gaviota",
           "description": "Pase de Gaviota",
           "type": "dribble",
@@ -24388,7 +24388,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-am-018-st3",
+          "id": "faro-del-alba-r-dm-018-st3",
           "name": "Toque de Papel",
           "description": "Toque de Papel",
           "type": "dribble",
@@ -24400,7 +24400,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-sr-am-018",
+      "id": "faro-del-alba-sr-dm-018",
       "playerId": 713,
       "name": "Mauro Cobalto",
       "team": "Faro del Alba",
@@ -24409,20 +24409,20 @@
       "rarity": "sr",
       "level": 1,
       "style": "picaro",
-      "position": "attackingMidfielder",
+      "position": "defensiveMidfielder",
       "basicPortraitPath": "network",
       "stats": {
         "save": 4,
-        "defense": 16,
-        "pass": 28,
-        "dribble": 25,
-        "shot": 21,
+        "defense": 26,
+        "pass": 27,
+        "dribble": 18,
+        "shot": 15,
         "techniquePoints": 22,
         "stamina": 124
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-sr-am-018-st1",
+          "id": "faro-del-alba-sr-dm-018-st1",
           "name": "Amago de Brisa",
           "description": "Amago de Brisa",
           "type": "dribble",
@@ -24432,7 +24432,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-am-018-st2",
+          "id": "faro-del-alba-sr-dm-018-st2",
           "name": "Pase de Gaviota",
           "description": "Pase de Gaviota",
           "type": "dribble",
@@ -24442,7 +24442,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-am-018-st3",
+          "id": "faro-del-alba-sr-dm-018-st3",
           "name": "Toque de Papel",
           "description": "Toque de Papel",
           "type": "dribble",
@@ -24452,7 +24452,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-am-018-st4",
+          "id": "faro-del-alba-sr-dm-018-st4",
           "name": "Mirada de Cobalto",
           "description": "Mirada de Cobalto",
           "type": "dribble",
@@ -24464,7 +24464,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-n-fb-019",
+      "id": "faro-del-alba-n-am-019",
       "playerId": 704,
       "name": "Enzo Bóia",
       "team": "Faro del Alba",
@@ -24473,32 +24473,32 @@
       "rarity": "n",
       "level": 1,
       "style": "preciso",
-      "position": "fullBack",
+      "position": "attackingMidfielder",
       "basicPortraitPath": "network",
       "stats": {
-        "save": 5,
-        "defense": 28,
-        "pass": 18,
-        "dribble": 15,
-        "shot": 10,
-        "techniquePoints": 18,
-        "stamina": 105
+        "save": 3,
+        "defense": 15,
+        "pass": 26,
+        "dribble": 22,
+        "shot": 19,
+        "techniquePoints": 20,
+        "stamina": 106
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-n-fb-019-st1",
-          "name": "Carrera de Orilla",
-          "description": "Carrera de Orilla",
+          "id": "faro-del-alba-n-am-019-st1",
+          "name": "Amago de Brisa",
+          "description": "Amago de Brisa",
           "type": "dribble",
-          "style": "agil",
+          "style": "picaro",
           "basePower": 25,
           "ptCost": 8,
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-n-fb-019-st2",
-          "name": "Centro de Boya",
-          "description": "Centro de Boya",
+          "id": "faro-del-alba-n-am-019-st2",
+          "name": "Pase de Gaviota",
+          "description": "Pase de Gaviota",
           "type": "dribble",
           "style": "preciso",
           "basePower": 30,
@@ -24508,7 +24508,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-r-fb-019",
+      "id": "faro-del-alba-r-am-019",
       "playerId": 704,
       "name": "Enzo Bóia",
       "team": "Faro del Alba",
@@ -24517,32 +24517,32 @@
       "rarity": "r",
       "level": 1,
       "style": "preciso",
-      "position": "fullBack",
+      "position": "attackingMidfielder",
       "basicPortraitPath": "network",
       "stats": {
-        "save": 5,
-        "defense": 30,
-        "pass": 19,
-        "dribble": 16,
-        "shot": 11,
-        "techniquePoints": 20,
-        "stamina": 114
+        "save": 4,
+        "defense": 16,
+        "pass": 28,
+        "dribble": 24,
+        "shot": 20,
+        "techniquePoints": 22,
+        "stamina": 115
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-r-fb-019-st1",
-          "name": "Carrera de Orilla",
-          "description": "Carrera de Orilla",
+          "id": "faro-del-alba-r-am-019-st1",
+          "name": "Amago de Brisa",
+          "description": "Amago de Brisa",
           "type": "dribble",
-          "style": "agil",
+          "style": "picaro",
           "basePower": 25,
           "ptCost": 8,
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-fb-019-st2",
-          "name": "Centro de Boya",
-          "description": "Centro de Boya",
+          "id": "faro-del-alba-r-am-019-st2",
+          "name": "Pase de Gaviota",
+          "description": "Pase de Gaviota",
           "type": "dribble",
           "style": "preciso",
           "basePower": 30,
@@ -24550,7 +24550,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-r-fb-019-st3",
+          "id": "faro-del-alba-r-am-019-st3",
           "name": "Freno de Arena",
           "description": "Freno de Arena",
           "type": "defense",
@@ -24562,7 +24562,7 @@
       ]
     },
     {
-      "id": "faro-del-alba-sr-fb-019",
+      "id": "faro-del-alba-sr-am-019",
       "playerId": 704,
       "name": "Enzo Bóia",
       "team": "Faro del Alba",
@@ -24571,32 +24571,32 @@
       "rarity": "sr",
       "level": 1,
       "style": "preciso",
-      "position": "fullBack",
+      "position": "attackingMidfielder",
       "basicPortraitPath": "network",
       "stats": {
-        "save": 5,
-        "defense": 33,
-        "pass": 21,
-        "dribble": 17,
-        "shot": 12,
-        "techniquePoints": 21,
-        "stamina": 124
+        "save": 4,
+        "defense": 18,
+        "pass": 30,
+        "dribble": 26,
+        "shot": 22,
+        "techniquePoints": 24,
+        "stamina": 125
       },
       "superTechniques": [
         {
-          "id": "faro-del-alba-sr-fb-019-st1",
-          "name": "Carrera de Orilla",
-          "description": "Carrera de Orilla",
+          "id": "faro-del-alba-sr-am-019-st1",
+          "name": "Amago de Brisa",
+          "description": "Amago de Brisa",
           "type": "dribble",
-          "style": "agil",
+          "style": "picaro",
           "basePower": 25,
           "ptCost": 8,
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-fb-019-st2",
-          "name": "Centro de Boya",
-          "description": "Centro de Boya",
+          "id": "faro-del-alba-sr-am-019-st2",
+          "name": "Pase de Gaviota",
+          "description": "Pase de Gaviota",
           "type": "dribble",
           "style": "preciso",
           "basePower": 30,
@@ -24604,7 +24604,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-fb-019-st3",
+          "id": "faro-del-alba-sr-am-019-st3",
           "name": "Freno de Arena",
           "description": "Freno de Arena",
           "type": "defense",
@@ -24614,7 +24614,7 @@
           "level": "normal"
         },
         {
-          "id": "faro-del-alba-sr-fb-019-st4",
+          "id": "faro-del-alba-sr-am-019-st4",
           "name": "Ruta de Salvamento",
           "description": "Ruta de Salvamento",
           "type": "defense",
