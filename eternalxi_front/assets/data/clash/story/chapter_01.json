@@ -416,6 +416,244 @@
           }
         ],
         "completionUnlocks": {}
+      },
+      {
+        "id": "prologue-lvl-04",
+        "chapterId": "chapter-01",
+        "title": "La convocatoria",
+        "description": "Amanece en el campo. Víctor Ricarte llama a los elegidos… y Eternal XI nace con escudo y nombre.",
+        "order": 4,
+        "type": "story",
+        "energyCost": 5,
+        "rewards": {
+          "gems": 10,
+          "accountXp": 80,
+          "items": [],
+          "starterRosterKey": "eternal_xi_starter_n"
+        },
+        "scenes": [
+          {
+            "id": "ep04-s1",
+            "order": 1,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "7:30. El patio del instituto se llena en silencio. El campo parece más grande con tanta gente… y alguien con libreta ya está delante de todos.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_01_institute_crowd.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s2",
+            "order": 2,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Una silueta negra se aclara la garganta. Levanta las gafas con un dedo. El murmullo muere de golpe.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_02_coach_silhouette.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s3",
+            "order": 3,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Soy Víctor Ricarte. Entrenador del Instituto Eternal. Hoy no hay más pruebas: hay convocatoria. Escuchad vuestro nombre… y responded.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_03_victor_intro.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s4",
+            "order": 4,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Empezamos por la portería. Hugo Salvatierra.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_04_hugo.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s5",
+            "order": 5,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Leo Valcárcel.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_05_leo.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s6",
+            "order": 6,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "En defensa jugarán… Andrés Ruiz.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_06_andres.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s7",
+            "order": 7,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Lucien Vauclair.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_07_lucien.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s8",
+            "order": 8,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Javier Naval Ortega.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_08_naval.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s9",
+            "order": 9,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Mihai Alexandru Dragan Tonie Basaldiu.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_09_mihai.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s10",
+            "order": 10,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Francisco Sierra.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_10_sierra.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s11",
+            "order": 11,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "En el medio… Alejandro Mir.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_12_alejandro.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s12",
+            "order": 12,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "María Jesús Gracia Cubo.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_13_maria.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s13",
+            "order": 13,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Alexandra Pardos.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_14_pardos.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s14",
+            "order": 14,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Jorge Ros.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_15_jorge.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s15",
+            "order": 15,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Mini George.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_16_mini.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s16",
+            "order": 16,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Sacha Legrand.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_17_sacha.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s17",
+            "order": 17,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Arriba… Dariel Mejía Lanza.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_18_dariel.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s18",
+            "order": 18,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Ricardo Gómez.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_19_ricardo.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s19",
+            "order": 19,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "David Sánchez.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_20_david.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s20",
+            "order": 20,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Miguel Gracia Cubo.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_21_cubo.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s21",
+            "order": 21,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "…Y el último. Thiago Solari.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_22_thiago.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s22",
+            "order": 22,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Esta es la convocatoria. Representaréis al instituto con este escudo… y lo llevaréis en el uniforme cuando os lo entreguemos.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_23_crest_reveal.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s23",
+            "order": 23,
+            "type": "comic",
+            "speaker": "Víctor Ricarte",
+            "text": "Yo seré vuestro entrenador. El equipo se llama Eternal XI. A partir de ahora… sois uno.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_23_crest_reveal.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep04-s24",
+            "order": 24,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "El sol se clava detrás de la torre. Diecinueve sombras… y un escudo que ya no es solo un dibujo. Eternal XI ha nacido.",
+            "imagePath": "assets/images/clash/story/ep04/ep04_23_crest_reveal.png",
+            "isSkippable": true
+          }
+        ],
+        "completionUnlocks": {
+          "clashTeamUnlocked": true,
+          "firstLineupUnlocked": true,
+          "nextPlayableLevelUnlocked": true
+        }
       }
     ]
   }

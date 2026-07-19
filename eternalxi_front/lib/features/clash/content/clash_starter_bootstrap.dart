@@ -28,8 +28,18 @@ class ClashStarterBootstrap {
   Future<void> runOnce() async {
     if (_ran) return;
     _ran = true;
-    await _collectionRepository.grantEternalXiStarterNCards();
-    await _storyRepository.ensureSummonUnlocked();
+    // Las cartas N se conceden al completar Ep4 (prologue-lvl-04).
+    // Aquí solo se repara inventario/desbloqueos si ya se completó o ya existen.
+    final progress = _storyRepository.loadProgress();
+    final formed = progress.completedLevelIds.contains(
+          ClashStoryRepository.eternalXiFormedLevelId,
+        ) ||
+        progress.eternalXiCardsGranted ||
+        await _collectionRepository.ownsEternalXiStarterNCards();
+    if (formed) {
+      await _collectionRepository.grantEternalXiStarterNCards();
+      await _storyRepository.ensureSummonUnlocked();
+    }
     await _grantSrProgressPackOnce();
     await _storyController?.load();
   }

@@ -52,7 +52,8 @@ class ClashStoryRepository {
     ticketRepository: _ticketRepository,
   );
 
-  static const eternalXiFormedLevelId = 'prologue-lvl-03';
+  /// Tras la convocatoria (Ep4) se forman Eternal XI y se conceden las cartas N.
+  static const eternalXiFormedLevelId = 'prologue-lvl-04';
 
   static const _eternalXiFormedUnlocks = ClashStoryCompletionUnlocks(
     clashTeamUnlocked: true,
