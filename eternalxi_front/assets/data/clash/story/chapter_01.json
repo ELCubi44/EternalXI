@@ -215,7 +215,7 @@
         "id": "prologue-lvl-03",
         "chapterId": "chapter-01",
         "title": "Día de pruebas",
-        "description": "En el campo del Instituto Eternal empiezan las pruebas. Thiago brilla… y alguien que aún no tiene nombre conoce su secreto.",
+        "description": "De un día para otro hay un campo en el instituto. Empiezan las pruebas. Thiago brilla… y un alumno de Tercero conoce su secreto.",
         "order": 3,
         "type": "story",
         "energyCost": 5,
@@ -226,8 +226,17 @@
         },
         "scenes": [
           {
-            "id": "ep03-s1",
+            "id": "ep03-s0",
             "order": 1,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Ayer el patio era patio. Hoy… hay un campo de fútbol entero. Césped, porterías, líneas. De un día para otro. Los alumnos no dan crédito.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_00b_field_overnight.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s1",
+            "order": 2,
             "type": "comic",
             "speaker": "Narrador",
             "text": "Llega el día. El campo del Instituto Eternal brilla bajo el sol… y cada uno lleva un peto distinto. Empiezan las pruebas.",
@@ -236,70 +245,70 @@
           },
           {
             "id": "ep03-s2",
-            "order": 2,
+            "order": 3,
             "type": "comic",
             "speaker": "Narrador",
-            "text": "Calentamiento. Thiago, Cubo y Lucien entre docenas de siluetas y petos de colores. Nadie quiere fallar el primer corte.",
+            "text": "Calentamiento. Thiago, Cubo y Lucien entre docenas de alumnos y petos de colores. Nadie quiere fallar el primer corte.",
             "imagePath": "assets/images/clash/story/ep03/ep03_02_warmup.png",
             "isSkippable": true
           },
           {
             "id": "ep03-s3",
-            "order": 3,
+            "order": 4,
             "type": "comic",
             "speaker": "Narrador",
-            "text": "Prueba de laterales. Lucien corta el avance de un rival-silueta en la banda… solo intención.",
+            "text": "Prueba de laterales. Lucien corta el avance de un alumno rival en la banda… solo intención.",
             "imagePath": "assets/images/clash/story/ep03/ep03_03_lucien_dfc.png",
             "isSkippable": true
           },
           {
             "id": "ep03-s4",
-            "order": 4,
+            "order": 5,
             "type": "comic",
             "speaker": "Narrador",
-            "text": "Cubo, de delantero, encara, deja atrás al central-silueta y busca el disparo. El peto amarillo no para quieto.",
+            "text": "Cubo, de delantero, encara, deja atrás a un central rival y busca el disparo. El peto amarillo no para quieto.",
             "imagePath": "assets/images/clash/story/ep03/ep03_04_cubo_ext.png",
             "isSkippable": true
           },
           {
             "id": "ep03-s5",
-            "order": 5,
+            "order": 6,
             "type": "comic",
             "speaker": "Narrador",
-            "text": "Y entonces Thiago. Un regate imposible, un lateral-silueta en el suelo… y el campo entero se queda helado.",
+            "text": "Y entonces Thiago. Un regate imposible, un lateral rival en el suelo… y el campo entero se queda helado.",
             "imagePath": "assets/images/clash/story/ep03/ep03_05_thiago_epic1.png",
             "isSkippable": true
           },
           {
             "id": "ep03-s5b",
-            "order": 6,
+            "order": 7,
             "type": "comic",
             "speaker": "Narrador",
-            "text": "Manos en la cabeza. Saltos. Siluetas que no entienden qué han visto. Thiago solo sigue andando… como si fuera normal.",
+            "text": "Manos en la cabeza. Saltos. Alumnos que no entienden qué han visto. Thiago solo sigue andando… como si fuera normal.",
             "imagePath": "assets/images/clash/story/ep03/ep03_05b_thiago_crowd.png",
             "isSkippable": true
           },
           {
             "id": "ep03-s6",
-            "order": 7,
+            "order": 8,
             "type": "comic",
             "speaker": "Narrador",
-            "text": "No solo brilla contra siluetas. También choca con un alumno de Segundo de peto azul marino: extremo contra defensa central.",
+            "text": "No solo brilla contra cualquiera. También choca con un alumno de Segundo de peto azul marino: extremo contra defensa central.",
             "imagePath": "assets/images/clash/story/ep03/ep03_06_thiago_sierra.png",
             "isSkippable": true
           },
           {
             "id": "ep03-s7",
-            "order": 8,
+            "order": 9,
             "type": "comic",
             "speaker": "Narrador",
-            "text": "En la portería, un alumno de Segundo con peto negro vuela. Guantes… y el disparo de una silueta muere en sus manos.",
+            "text": "En la portería, un alumno de Segundo con peto negro vuela. Guantes… y el disparo de otro alumno muere en sus manos.",
             "imagePath": "assets/images/clash/story/ep03/ep03_07_hugo_save.png",
             "isSkippable": true
           },
           {
             "id": "ep03-s8",
-            "order": 9,
+            "order": 10,
             "type": "comic",
             "speaker": "Narrador",
             "text": "Arriba, dos delanteros sin nombre todavía se pelean el área: peto amarillo y peto coral, remates y hambre de gol.",
@@ -308,7 +317,7 @@
           },
           {
             "id": "ep03-s9",
-            "order": 10,
+            "order": 11,
             "type": "comic",
             "speaker": "Narrador",
             "text": "En el medio, varios alumnos de Primero y Segundo se pasan el balón sin parar. Quien no piense rápido, se queda fuera.",
@@ -317,7 +326,7 @@
           },
           {
             "id": "ep03-s10",
-            "order": 11,
+            "order": 12,
             "type": "comic",
             "speaker": "Narrador",
             "text": "En el eje, un alumno enorme de peto morado (central) y una alumna bajita de peto rosa cierran el pase. Nadie pasa fácil.",
@@ -326,7 +335,7 @@
           },
           {
             "id": "ep03-s11",
-            "order": 12,
+            "order": 13,
             "type": "comic",
             "speaker": "Narrador",
             "text": "Un alumno de Primero de peto lima abre la pierna y dispara desde la derecha.",
@@ -335,16 +344,16 @@
           },
           {
             "id": "ep03-s12",
-            "order": 13,
+            "order": 14,
             "type": "comic",
             "speaker": "Narrador",
-            "text": "Otra vez Thiago. Un trallazo de lejos que parte el aire. El portero-silueta ni lo huele. El campo entero flipa. Cubo y Lucien se miran sin palabras.",
+            "text": "Otra vez Thiago. Un trallazo de lejos que parte el aire. El portero rival ni lo huele. El campo entero flipa. Cubo y Lucien se miran sin palabras.",
             "imagePath": "assets/images/clash/story/ep03/ep03_12_thiago_epic2.png",
             "isSkippable": true
           },
           {
             "id": "ep03-s13",
-            "order": 14,
+            "order": 15,
             "type": "comic",
             "speaker": "Alumno de Tercero",
             "text": "Thiago… Cubo. Acercaos un segundo. No lo digo para todo el campo.",
@@ -353,7 +362,7 @@
           },
           {
             "id": "ep03-s14",
-            "order": 15,
+            "order": 16,
             "type": "comic",
             "speaker": "Alumno de Tercero",
             "text": "Sé quién eres. Tus padres te trajeron aquí porque este instituto… no tenía club de fútbol. Querían que estudiaras. Que te adaptaras a España. Que no te comiera la agresividad de ahí abajo.",
@@ -362,7 +371,7 @@
           },
           {
             "id": "ep03-s15",
-            "order": 16,
+            "order": 17,
             "type": "comic",
             "speaker": "Alumno de Tercero",
             "text": "Pensaban que sin equipo no jugarías. Pero hoy hay pruebas. Y tú… eres un crack. Si te apuntas, es a escondidas. Ellos no pueden enterarse.",
@@ -371,7 +380,7 @@
           },
           {
             "id": "ep03-s16",
-            "order": 17,
+            "order": 18,
             "type": "comic",
             "speaker": "Thiago Solari",
             "text": "…Lo sé. Por eso estoy aquí. No para que me miren… para jugar. Aunque sea en silencio.",
@@ -380,20 +389,29 @@
           },
           {
             "id": "ep03-s17",
-            "order": 18,
+            "order": 19,
             "type": "comic",
             "speaker": "Narrador",
-            "text": "Las pruebas siguen. Más alumnos, más petos, más siluetas… el césped no para.",
+            "text": "Las pruebas siguen. Más alumnos, más petos… el césped no para.",
             "imagePath": "assets/images/clash/story/ep03/ep03_16_roster_more.png",
             "isSkippable": true
           },
           {
             "id": "ep03-s18",
-            "order": 19,
+            "order": 20,
             "type": "comic",
             "speaker": "Narrador",
-            "text": "Al caer el sol, el campo se vacía. Sudor, petos de colores… y la certeza de que pronto dirán diecinueve nombres. Entonces sí: cada uno se presentará.",
+            "text": "Al caer el sol, el campo se vacía. Mañana, a las 7:30 de la mañana, antes de entrar a clase, en el patio del colegio… se dirán los jugadores.",
             "imagePath": "assets/images/clash/story/ep03/ep03_17_day_end.png",
+            "isSkippable": true
+          },
+          {
+            "id": "ep03-s19",
+            "order": 21,
+            "type": "comic",
+            "speaker": "Narrador",
+            "text": "Y desde el borde del césped, alguien con gafas observa en silencio… y sonríe. Todavía no tiene nombre. Pero el equipo sí tendrá entrenador.",
+            "imagePath": "assets/images/clash/story/ep03/ep03_18_coach_watch.png",
             "isSkippable": true
           }
         ],
