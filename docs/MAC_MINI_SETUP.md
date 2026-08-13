@@ -75,7 +75,13 @@ En Xcode: Signing & Capabilities ? Team = el de `5ZM8MBAC3X`, Bundle Identifier 
 1. **Eternal Fantasy** primero (si la app no existe en App Store Connect, créala; no reutilices el Bundle de XI).
 2. **Eternal XI** después: reutiliza la ficha `es.eternalxi.app` y sube el build de historia/Clash del repo EternalXI.
 
-Detalle paso a paso para el agente Cursor: `docs/CURSOR_MACMINI_CONTEXT.md`.
+### Versiones entre plataformas
+
+Cada juego tiene su propia versión. Android e iOS de **la misma** app deben llevar el mismo `version:` de `pubspec.yaml` (ej. Fantasy `1.0.1+2`, XI `1.3.9+17`). No hace falta que Fantasy y XI compartan número.
+
+Tras cambios en Windows/Play: en el Mini di *«Comprueba cambios en GitHub y alinea iOS con Android»* — el agente hace pull, lee el `pubspec` de cada repo y sube TestFlight con esa versión.
+
+Detalle: `docs/CURSOR_MACMINI_CONTEXT.md` (sección MODO SYNC).
 
 ## 7. Compilar y subir a TestFlight
 
