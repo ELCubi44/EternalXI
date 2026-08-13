@@ -2,6 +2,8 @@
 
 Hace falta **un Mac** (este Mini) para firmar, archivar y subir **Eternal XI** y **Eternal Fantasy** a App Store Connect. Android se sigue publicando desde Windows.
 
+Estado Android (agosto 2026): ambas apps ya están en Google Play por separado. En Apple hay que dejar **las dos** en TestFlight igual de separadas. Prompt listo para pegar en Cursor: `docs/CURSOR_MACMINI_CONTEXT.md`.
+
 ## 1. Cuentas
 
 - Apple ID con **Apple Developer Program** (99 USD/año) activo.
@@ -10,7 +12,7 @@ Hace falta **un Mac** (este Mini) para firmar, archivar y subir **Eternal XI** y
 
 ## 2. Software a instalar (en este orden)
 
-1. **Xcode** desde App Store (última estable) ? ábrelo una vez y acepta la licencia.
+1. **Xcode** desde App Store (última estable) — ábrelo una vez y acepta la licencia.
 2. Herramientas de línea:
    ```bash
    xcode-select --install
@@ -39,14 +41,16 @@ git clone git@github.com:ELCubi44/EternalXI.git
 git clone git@github.com:ELCubi44/EternalFantasy.git
 ```
 
+Mantén ambos en `main` actualizado (`git pull origin main`) antes de cada archive.
+
 ## 4. Identificadores (App Store Connect + Xcode)
 
-Crea **dos apps** en [App Store Connect](https://appstoreconnect.apple.com):
+Crea / confirma **dos apps** en [App Store Connect](https://appstoreconnect.apple.com):
 
-| App | Bundle ID | SKU sugerido |
-|-----|-----------|--------------|
-| Eternal XI | `es.eternalxi.app` | `eternalxi` |
-| Eternal Fantasy | `es.eternalfantasy.app` | `eternalfantasy` |
+| App | Bundle ID | SKU sugerido | Repo |
+|-----|-----------|--------------|------|
+| Eternal XI | `es.eternalxi.app` | `eternalxi` | EternalXI |
+| Eternal Fantasy | `es.eternalfantasy.app` | `eternalfantasy` | EternalFantasy |
 
 En [developer.apple.com ? Identifiers](https://developer.apple.com/account/resources/identifiers/list) registra ambos Bundle IDs (App + Push Notifications si usas FCM).
 
@@ -61,14 +65,19 @@ open ios/Runner.xcworkspace
 
 En Xcode: Signing & Capabilities ? Team = el de `5ZM8MBAC3X`, Bundle Identifier = el de esa app. Repite con `EternalFantasy` (`es.eternalfantasy.app`).
 
-**Mismo logo** de momento: `eternalxi_front/assets/app/logo.png` en ambos.
-
 ## 5. Firebase iOS
 
-- Eternal XI: ya tiene `GoogleService-Info.plist` con `es.eternalxi.app`.
-- Eternal Fantasy: crea la app iOS `es.eternalfantasy.app` en Firebase y sustituye `ios/Runner/GoogleService-Info.plist`.
+- **Eternal Fantasy:** `GoogleService-Info.plist` con bundle `es.eternalfantasy.app` (repo Fantasy).
+- **Eternal XI:** `GoogleService-Info.plist` con `es.eternalxi.app` (repo EternalXI).
 
-## 6. Compilar y subir a TestFlight
+## 6. Orden recomendado TestFlight
+
+1. **Eternal Fantasy** primero (si la app no existe en App Store Connect, créala; no reutilices el Bundle de XI).
+2. **Eternal XI** después: reutiliza la ficha `es.eternalxi.app` y sube el build de historia/Clash del repo EternalXI.
+
+Detalle paso a paso para el agente Cursor: `docs/CURSOR_MACMINI_CONTEXT.md`.
+
+## 7. Compilar y subir a TestFlight
 
 Con el `.xcworkspace` abierto: Product ? Archive ? Distribute App ? App Store Connect.
 
@@ -80,7 +89,7 @@ flutter build ipa --release
 
 El `.ipa` queda en `build/ios/ipa/`.
 
-## 7. Qué no hace falta duplicar
+## 8. Qué no hace falta duplicar
 
-- El **backend** es uno solo (VPS). Las dos apps apuntan a la misma API.
+- El **backend** es uno solo (VPS / `api.eternalxi.com`). Las dos apps apuntan a la misma API.
 - El **keystore de Android** y Fastlane de Play se quedan en el PC Windows.
