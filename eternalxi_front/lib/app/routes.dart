@@ -7,7 +7,10 @@ class AppRoutes {
   static const passwordResetRequest = '/password-reset/request';
   static const passwordResetConfirm = '/password-reset/confirm';
   static const home = '/home';
-  static const mode = '/mode';
+
+  /// Destino tras splash/login en Eternal XI (modo historia).
+  static const postAuthHome = clash;
+
   static const clashPrepare = '/clash/prepare';
   static const clash = '/clash';
   static const clashCards = '/clash/cards';

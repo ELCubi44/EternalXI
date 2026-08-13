@@ -9,7 +9,7 @@ import 'package:eternal_xi/shared/widgets/xi_brand_wordmark.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Solo se muestra si falta descargar fotos Clash; si ya est· listo, redirige sin UI.
+/// Solo se muestra si falta descargar fotos Clash; si ya estù listo, redirige sin UI.
 class ClashMediaDownloadScreen extends StatefulWidget {
   const ClashMediaDownloadScreen({super.key});
 
@@ -78,7 +78,7 @@ class _ClashMediaDownloadScreenState extends State<ClashMediaDownloadScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
-    // Sin flash de "Preparando Clash" si ya est· todo descargado.
+    // Sin flash de "Preparando Clash" si ya estù todo descargado.
     if (_phase == _Phase.redirecting) {
       return const Scaffold(
         backgroundColor: XiColors.nightBlue,
@@ -138,7 +138,7 @@ class _ClashMediaDownloadScreenState extends State<ClashMediaDownloadScreen> {
                 ),
                 const SizedBox(height: 10),
                 TextButton(
-                  onPressed: () => context.go(AppRoutes.mode),
+                  onPressed: () => context.go(AppRoutes.splash),
                   child: Text(
                     l10n.contentDownloadLater,
                     style: TextStyle(
@@ -188,9 +188,9 @@ class _ClashMediaDownloadScreenState extends State<ClashMediaDownloadScreen> {
               const Spacer(flex: 2),
               if (_phase != _Phase.prompt)
                 TextButton(
-                  onPressed: () => context.go(AppRoutes.mode),
+                  onPressed: () => context.go(AppRoutes.splash),
                   child: Text(
-                    l10n.backToModeSelection,
+                    l10n.profileBackToTitle,
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.7),
                     ),

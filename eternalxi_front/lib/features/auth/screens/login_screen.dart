@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       return;
                     }
                     if (ok) {
-                      context.go(AppRoutes.mode);
+                      context.go(AppRoutes.postAuthHome);
                     } else {
                       _showError(auth.errorMessage);
                     }
@@ -128,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     final ok = await auth.loginWithGoogle();
                     if (!context.mounted) return;
                     if (ok) {
-                      context.go(AppRoutes.mode);
+                      context.go(AppRoutes.postAuthHome);
                     } else if (auth.errorMessage != null) {
                       _showError(auth.errorMessage);
                     }
@@ -137,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     final ok = await auth.loginWithApple();
                     if (!context.mounted) return;
                     if (ok) {
-                      context.go(AppRoutes.mode);
+                      context.go(AppRoutes.postAuthHome);
                     } else if (auth.errorMessage != null) {
                       _showError(auth.errorMessage);
                     }

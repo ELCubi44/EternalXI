@@ -41,12 +41,7 @@ import 'package:eternal_xi/features/clash/match/presentation/screens/clash_match
 import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_level_reader_screen.dart';
 import 'package:eternal_xi/features/clash/story/presentation/screens/clash_story_map_screen.dart';
 import 'package:eternal_xi/features/clash/team/presentation/screens/clash_lineup_7v7_screen.dart';
-import 'package:eternal_xi/features/leagues/screens/create_league_screen.dart';
-import 'package:eternal_xi/features/leagues/screens/join_league_screen.dart';
-import 'package:eternal_xi/features/leagues/shell/league_shell_screen.dart';
-import 'package:eternal_xi/features/leagues/screens/my_leagues_screen.dart';
 import 'package:eternal_xi/features/clash/content/clash_media_download_screen.dart';
-import 'package:eternal_xi/features/mode/screens/mode_selection_screen.dart';
 import 'package:eternal_xi/features/profile/screens/confirm_change_email_screen.dart';
 import 'package:eternal_xi/features/profile/screens/confirm_account_deletion_screen.dart';
 import 'package:eternal_xi/features/profile/screens/confirm_change_nickname_screen.dart';
@@ -117,12 +112,15 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.home,
-      redirect: (context, state) => AppRoutes.leagues,
+      redirect: (context, state) => AppRoutes.clash,
     ),
     GoRoute(
-      path: AppRoutes.mode,
-      redirect: redirectIfUnauthenticated,
-      builder: (context, state) => const ModeSelectionScreen(),
+      path: '/mode',
+      redirect: (context, state) => AppRoutes.clash,
+    ),
+    GoRoute(
+      path: '/leagues',
+      redirect: (context, state) => AppRoutes.clash,
     ),
     GoRoute(
       path: AppRoutes.clashPrepare,
@@ -305,34 +303,6 @@ final GoRouter appRouter = GoRouter(
               ),
             ),
           ],
-        ),
-      ],
-    ),
-    GoRoute(
-      path: AppRoutes.leagues,
-      builder: (context, state) => const MyLeaguesScreen(),
-      routes: [
-        GoRoute(
-          path: 'create',
-          builder: (context, state) => const CreateLeagueScreen(),
-        ),
-        GoRoute(
-          path: 'join',
-          builder: (context, state) => JoinLeagueScreen(
-            prefilledCode: state.uri.queryParameters['code'],
-          ),
-        ),
-        GoRoute(
-          path: ':leagueId',
-          builder: (context, state) {
-            final raw = state.pathParameters['leagueId'] ?? '';
-            final id = int.tryParse(raw) ?? 0;
-            final idUsuarioRaw = state.uri.queryParameters['idUsuario'];
-            final idUsuario = idUsuarioRaw != null
-                ? int.tryParse(idUsuarioRaw)
-                : null;
-            return LeagueShellScreen(leagueId: id, idUsuario: idUsuario);
-          },
         ),
       ],
     ),

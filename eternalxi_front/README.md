@@ -1,35 +1,34 @@
 # Eternal XI
 
-Frontend inicial en Flutter para autenticacion y perfil, conectado al backend Spring.
+App Flutter del **modo historia** (Clash). El fantasy vive en el repositorio aparte [EternalFantasy](https://github.com/ELCubi44/EternalFantasy).
+
+| | |
+|---|---|
+| Nombre en tienda | Eternal XI |
+| Android `applicationId` | `es.eternalxi.app` |
+| iOS bundle | `es.eternalxi.app` |
+| API | `http://217.154.184.202:8080/api/v1` (mismo backend que Eternal Fantasy) |
 
 ## Requisitos
 
-- Flutter SDK instalado
-- Backend Java Spring corriendo en `http://217.154.184.202:8080`
+- Flutter SDK
+- Backend Spring (este repo incluye `eternalxi_api_back/` para desplegar la API compartida)
 
-## Configuracion API
+## Ejecutar
 
-La base URL esta en `lib/core/constants/api_constants.dart`:
+```powershell
+cd eternalxi_front
+flutter pub get
+flutter run
+```
 
-- URL actual: `http://217.154.184.202:8080/api/v1`
+Tras login se entra directo al hub de historia. El perfil se abre desde la cabecera del hub Clash.
 
-## Ejecutar local
+La pantalla de carga usa el mismo arte que Eternal Fantasy (`assets/app/splash_loading.png`).
 
-1. Instalar dependencias:
-   - `flutter pub get`
-2. Analizar proyecto:
-   - `flutter analyze`
-3. Ejecutar app (emulador Android):
-   - `flutter run`
+## iOS / Mac
 
-## Flujos implementados
+Bundle ID: `es.eternalxi.app`  
+Team de Xcode: `5ZM8MBAC3X`
 
-- Splash con restauracion de sesion (`flutter_secure_storage`)
-- Login
-- Verificacion de email (request + confirm)
-- Registro final
-- Recuperacion de contrasena (request + confirm)
-- Home base con logout
-- Perfil (GET usuario)
-- Editar perfil (PATCH nickname/nivel)
-- Borrar cuenta (DELETE + limpieza de sesion)
+En App Store Connect esta es la app **Eternal XI**. En Firebase ya está registrada como `es.eternalxi.app`.

@@ -79,11 +79,6 @@ class ClashHomeHeader extends StatelessWidget {
             runSpacing: 8,
             children: [
               ActionChip(
-                avatar: const Icon(Icons.swap_horiz_rounded, size: 18),
-                label: Text(l10n.backToModeSelection),
-                onPressed: () => context.go(AppRoutes.mode),
-              ),
-              ActionChip(
                 avatar: const Icon(Icons.help_outline_rounded, size: 18),
                 label: Text(l10n.clashHelpTitle),
                 onPressed: () => context.push(AppRoutes.clashHelp),

@@ -8,6 +8,7 @@ import 'package:eternal_xi/features/auth/controller/auth_controller.dart';
 import 'package:eternal_xi/features/auth/widgets/app_settings_sheet.dart';
 import 'package:eternal_xi/features/clash/content/clash_content_download_service.dart';
 import 'package:eternal_xi/features/clash/content/clash_content_manifest.dart';
+import 'package:eternal_xi/features/clash/content/clash_media_pack_service.dart';
 import 'package:eternal_xi/features/clash/content/player_image_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -154,9 +155,15 @@ class _SplashScreenState extends State<SplashScreen>
     super.dispose();
   }
 
-  void _enter() {
+  Future<void> _enter() async {
     if (!_sessionReady || !_contentReady) return;
-    context.go(_hasSession ? AppRoutes.mode : AppRoutes.login);
+    if (!_hasSession) {
+      context.go(AppRoutes.login);
+      return;
+    }
+    final ready = await ClashMediaPackService().isPackReadyQuick();
+    if (!mounted) return;
+    context.go(ready ? AppRoutes.clash : AppRoutes.clashPrepare);
   }
 
   void _openSettings() => AppSettingsSheet.show(context);
