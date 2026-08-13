@@ -1,8 +1,8 @@
 # Dos apps: Eternal XI y Eternal Fantasy
 
-Desde agosto 2026 el cliente único se partió en dos aplicaciones y dos repositorios.
+Desde agosto 2026 el cliente Ãºnico se partiÃ³ en dos aplicaciones y dos repositorios.
 
-| App | Repo GitHub | Package / Bundle | Qué es |
+| App | Repo GitHub | Package / Bundle | QuÃ© es |
 |-----|-------------|------------------|--------|
 | **Eternal XI** | `ELCubi44/EternalXI` | `es.eternalxi.app` | Modo historia (Clash). Listing existente en Play. |
 | **Eternal Fantasy** | `ELCubi44/EternalFantasy` | `es.eternalfantasy.app` | Ligas fantasy. App **nueva** en Play y App Store. |

@@ -2,18 +2,18 @@
 
 Hace falta **un Mac** (este Mini) para firmar, archivar y subir **Eternal XI** y **Eternal Fantasy** a App Store Connect. Android se sigue publicando desde Windows.
 
-Estado Android (agosto 2026): ambas apps ya están en Google Play por separado. En Apple hay que dejar **las dos** en TestFlight igual de separadas. Prompt listo para pegar en Cursor: `docs/CURSOR_MACMINI_CONTEXT.md`.
+Estado Android (agosto 2026): ambas apps ya estÃ¡n en Google Play por separado. En Apple hay que dejar **las dos** en TestFlight igual de separadas. Prompt listo para pegar en Cursor: `docs/CURSOR_MACMINI_CONTEXT.md`.
 
 ## 1. Cuentas
 
-- Apple ID con **Apple Developer Program** (99 USD/año) activo.
+- Apple ID con **Apple Developer Program** (99 USD/aÃ±o) activo.
 - El proyecto iOS ya tiene `DEVELOPMENT_TEAM = 5ZM8MBAC3X` en Xcode. Confirma en [developer.apple.com](https://developer.apple.com/account) que ese Team ID es el tuyo.
 - GitHub: misma cuenta `ELCubi44` (SSH o GitHub CLI).
 
 ## 2. Software a instalar (en este orden)
 
-1. **Xcode** desde App Store (última estable) — ábrelo una vez y acepta la licencia.
-2. Herramientas de línea:
+1. **Xcode** desde App Store (Ãºltima estable) â€” Ã¡brelo una vez y acepta la licencia.
+2. Herramientas de lÃ­nea:
    ```bash
    xcode-select --install
    sudo xcodebuild -license accept
@@ -24,7 +24,7 @@ Estado Android (agosto 2026): ambas apps ya están en Google Play por separado. E
    ```
 4. **Flutter** (misma major que en el PC, ahora SDK `^3.11`):
    - https://docs.flutter.dev/get-started/install/macos/desktop
-   - Añade `flutter/bin` al `PATH` en `~/.zshrc`.
+   - AÃ±ade `flutter/bin` al `PATH` en `~/.zshrc`.
    ```bash
    flutter doctor
    ```
@@ -41,7 +41,7 @@ git clone git@github.com:ELCubi44/EternalXI.git
 git clone git@github.com:ELCubi44/EternalFantasy.git
 ```
 
-Mantén ambos en `main` actualizado (`git pull origin main`) antes de cada archive.
+MantÃ©n ambos en `main` actualizado (`git pull origin main`) antes de cada archive.
 
 ## 4. Identificadores (App Store Connect + Xcode)
 
@@ -72,16 +72,16 @@ En Xcode: Signing & Capabilities ? Team = el de `5ZM8MBAC3X`, Bundle Identifier 
 
 ## 6. Orden recomendado TestFlight
 
-1. **Eternal Fantasy** primero (si la app no existe en App Store Connect, créala; no reutilices el Bundle de XI).
-2. **Eternal XI** después: reutiliza la ficha `es.eternalxi.app` y sube el build de historia/Clash del repo EternalXI.
+1. **Eternal Fantasy** primero (si la app no existe en App Store Connect, crÃ©ala; no reutilices el Bundle de XI).
+2. **Eternal XI** despuÃ©s: reutiliza la ficha `es.eternalxi.app` y sube el build de historia/Clash del repo EternalXI.
 
 ### Versiones entre plataformas
 
-Cada juego tiene su propia versión. Android e iOS de **la misma** app deben llevar el mismo `version:` de `pubspec.yaml` (ej. Fantasy `1.0.1+2`, XI `1.3.9+17`). No hace falta que Fantasy y XI compartan número.
+Cada juego tiene su propia versiÃ³n. Android e iOS de **la misma** app deben llevar el mismo `version:` de `pubspec.yaml` (ej. Fantasy `1.0.1+2`, XI `1.3.9+17`). No hace falta que Fantasy y XI compartan nÃºmero.
 
-Tras cambios en Windows/Play: en el Mini di *«Comprueba cambios en GitHub y alinea iOS con Android»* — el agente hace pull, lee el `pubspec` de cada repo y sube TestFlight con esa versión.
+Tras cambios en Windows/Play: en el Mini di *Â«Comprueba cambios en GitHub y alinea iOS con AndroidÂ»* â€” el agente hace pull, lee el `pubspec` de cada repo y sube TestFlight con esa versiÃ³n.
 
-Detalle: `docs/CURSOR_MACMINI_CONTEXT.md` (sección MODO SYNC).
+Detalle: `docs/CURSOR_MACMINI_CONTEXT.md` (secciÃ³n MODO SYNC).
 
 ## 7. Compilar y subir a TestFlight
 
@@ -95,7 +95,7 @@ flutter build ipa --release
 
 El `.ipa` queda en `build/ios/ipa/`.
 
-## 8. Qué no hace falta duplicar
+## 8. QuÃ© no hace falta duplicar
 
 - El **backend** es uno solo (VPS / `api.eternalxi.com`). Las dos apps apuntan a la misma API.
 - El **keystore de Android** y Fastlane de Play se quedan en el PC Windows.

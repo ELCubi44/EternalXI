@@ -1,22 +1,22 @@
 # Mensaje para Cursor en el Mac Mini
 
-Copia **todo el bloque entre las líneas** en un chat nuevo de Cursor en el Mac Mini.
+Copia **todo el bloque entre las lÃ­neas** en un chat nuevo de Cursor en el Mac Mini.
 
-Cuando solo quieras actualizar (después del setup inicial), basta decirle:
-**«Comprueba cambios en GitHub y alinea iOS con Android (versión más reciente de cada app).»**
+Cuando solo quieras actualizar (despuÃ©s del setup inicial), basta decirle:
+**Â«Comprueba cambios en GitHub y alinea iOS con Android (versiÃ³n mÃ¡s reciente de cada app).Â»**
 
 ---
 
 ```
-# Misión Mac Mini — Eternal Fantasy + Eternal XI en TestFlight
+# MisiÃ³n Mac Mini â€” Eternal Fantasy + Eternal XI en TestFlight
 
-Eres el agente en el Mac Mini. Trabaja en español. No pidas al usuario pasos manuales si puedes ejecutarlos tú (terminal, Xcode, git, flutter, navegador App Store Connect).
+Eres el agente en el Mac Mini. Trabaja en espaÃ±ol. No pidas al usuario pasos manuales si puedes ejecutarlos tÃº (terminal, Xcode, git, flutter, navegador App Store Connect).
 
 ## Contexto
 
-En Windows ya hay **dos apps** en Google Play y en GitHub. Aquí haces **lo mismo en Apple** (App Store Connect / TestFlight), cada una desde su repo.
+En Windows ya hay **dos apps** en Google Play y en GitHub. AquÃ­ haces **lo mismo en Apple** (App Store Connect / TestFlight), cada una desde su repo.
 
-| App | Repo | Bundle ID | Qué es |
+| App | Repo | Bundle ID | QuÃ© es |
 |-----|------|-----------|--------|
 | **Eternal Fantasy** | https://github.com/ELCubi44/EternalFantasy | `es.eternalfantasy.app` | Ligas fantasy |
 | **Eternal XI** | https://github.com/ELCubi44/EternalXI | `es.eternalxi.app` | Historia / Clash |
@@ -32,50 +32,50 @@ Team Xcode: **`5ZM8MBAC3X`**.
 
 ---
 
-## Política de versiones (OBLIGATORIA)
+## PolÃ­tica de versiones (OBLIGATORIA)
 
-Objetivo: **misma versión entre Android e iOS dentro de cada juego**. Los dos juegos pueden (y suelen) tener versiones distintas entre sí.
+Objetivo: **misma versiÃ³n entre Android e iOS dentro de cada juego**. Los dos juegos pueden (y suelen) tener versiones distintas entre sÃ­.
 
 | Juego | Android y iOS deben coincidir | Independiente del otro juego |
 |-------|-------------------------------|------------------------------|
-| Eternal Fantasy | Sí ? mismo `name` y `number` en `pubspec.yaml` | Sí |
-| Eternal XI | Sí ? mismo `name` y `number` en `pubspec.yaml` | Sí |
+| Eternal Fantasy | SÃ­ ? mismo `name` y `number` en `pubspec.yaml` | SÃ­ |
+| Eternal XI | SÃ­ ? mismo `name` y `number` en `pubspec.yaml` | SÃ­ |
 
-Ejemplo válido:
+Ejemplo vÃ¡lido:
 - Fantasy: Android `1.0.1+2` e iOS `1.0.1+2`
 - XI: Android `1.3.9+17` e iOS `1.3.9+17`
 
-Ejemplo inválido:
-- Fantasy Android `1.0.2+3` e iOS Fantasy todavía en `1.0.1+2`
-- Subir iOS de XI a `1.0.1+2` solo porque Fantasy está en esa versión
+Ejemplo invÃ¡lido:
+- Fantasy Android `1.0.2+3` e iOS Fantasy todavÃ­a en `1.0.1+2`
+- Subir iOS de XI a `1.0.1+2` solo porque Fantasy estÃ¡ en esa versiÃ³n
 
-### Cómo leer la versión canónica
+### CÃ³mo leer la versiÃ³n canÃ³nica
 
-Fuente de verdad por app: `eternalxi_front/pubspec.yaml` en el `main` más reciente de GitHub:
+Fuente de verdad por app: `eternalxi_front/pubspec.yaml` en el `main` mÃ¡s reciente de GitHub:
 
 ```yaml
 version: X.Y.Z+N   # X.Y.Z = CFBundleShortVersionString / versionName
                    # N     = CFBundleVersion / versionCode
 ```
 
-Flutter usa ese valor para Android e iOS. Tras `git pull`, **no inventes números**: usa exactamente el `version:` del repo de esa app.
+Flutter usa ese valor para Android e iOS. Tras `git pull`, **no inventes nÃºmeros**: usa exactamente el `version:` del repo de esa app.
 
 Si iOS en App Store Connect / TestFlight tiene un build number igual o mayor al del repo y Apple rechaza el upload, entonces:
 1. Avisa al usuario.
-2. Solo si él lo confirma, sube el `+N` en **ese** repo (mismo `X.Y.Z`, `N` = último TestFlight + 1), commit + push, y vuelve a archivar.
-3. Nunca alinees Fantasy con XI ni al revés.
+2. Solo si Ã©l lo confirma, sube el `+N` en **ese** repo (mismo `X.Y.Z`, `N` = Ãºltimo TestFlight + 1), commit + push, y vuelve a archivar.
+3. Nunca alinees Fantasy con XI ni al revÃ©s.
 
 ---
 
-## Frase gatillo — actualización rutinaria
+## Frase gatillo â€” actualizaciÃ³n rutinaria
 
 Si el usuario dice algo como:
-- «Comprueba cambios en GitHub»
-- «Actualiza a la versión de Android»
-- «Sincroniza iOS con lo último»
-- «Actualiza TestFlight»
+- Â«Comprueba cambios en GitHubÂ»
+- Â«Actualiza a la versiÃ³n de AndroidÂ»
+- Â«Sincroniza iOS con lo ÃºltimoÂ»
+- Â«Actualiza TestFlightÂ»
 
-Ejecuta **MODO SYNC** (abajo) en **ambas apps**, de forma independiente. No hace falta repetir el setup completo si ya está hecho.
+Ejecuta **MODO SYNC** (abajo) en **ambas apps**, de forma independiente. No hace falta repetir el setup completo si ya estÃ¡ hecho.
 
 ### MODO SYNC (checklist)
 
@@ -85,13 +85,13 @@ Para **cada** repo (`EternalFantasy` y `EternalXI`), por separado:
    ```bash
    cd ~/Proyectos/<REPO> && git fetch origin && git checkout main && git pull origin main
    ```
-2. **Leer versión canónica**
+2. **Leer versiÃ³n canÃ³nica**
    ```bash
    grep '^version:' eternalxi_front/pubspec.yaml
    ```
-3. **Comparar con lo local / último archive**
-   - Si no hay commits nuevos y la versión iOS en TestFlight ya es esa ? reporta «al día» y no subas.
-   - Si hay código nuevo o la versión de GitHub es más nueva que la última iOS subida ? continúa.
+3. **Comparar con lo local / Ãºltimo archive**
+   - Si no hay commits nuevos y la versiÃ³n iOS en TestFlight ya es esa ? reporta Â«al dÃ­aÂ» y no subas.
+   - Si hay cÃ³digo nuevo o la versiÃ³n de GitHub es mÃ¡s nueva que la Ãºltima iOS subida ? continÃºa.
 4. **Preparar iOS**
    ```bash
    cd eternalxi_front
@@ -109,10 +109,10 @@ Para **cada** repo (`EternalFantasy` y `EternalXI`), por separado:
    - What to Test: incluir nombre de app + `X.Y.Z (N)` + resumen breve del pull (`git log -5 --oneline`).
 8. **Informe al usuario** (tabla):
 
-| App | Repo HEAD | version pubspec | Último TestFlight | Acción |
+| App | Repo HEAD | version pubspec | Ãšltimo TestFlight | AcciÃ³n |
 |-----|-----------|-----------------|-------------------|--------|
-| Fantasy | … | … | … | subido / al día / bloqueado |
-| XI | … | … | … | … |
+| Fantasy | â€¦ | â€¦ | â€¦ | subido / al dÃ­a / bloqueado |
+| XI | â€¦ | â€¦ | â€¦ | â€¦ |
 
 Orden habitual: primero Fantasy, luego XI (o solo la que el usuario nombre).
 
@@ -130,9 +130,9 @@ Nunca mezcles repos, bundles ni versiones entre juegos.
 
 ---
 
-## Setup inicial (solo la primera vez o si el Mini está limpio)
+## Setup inicial (solo la primera vez o si el Mini estÃ¡ limpio)
 
-### FASE 0 — Clonar / pull
+### FASE 0 â€” Clonar / pull
 
 ```bash
 mkdir -p ~/Proyectos && cd ~/Proyectos
@@ -143,7 +143,7 @@ cd ~/Proyectos/EternalFantasy && git fetch origin && git checkout main && git pu
 cd ~/Proyectos/EternalXI && git fetch origin && git checkout main && git pull origin main
 ```
 
-### FASE 1 — Herramientas
+### FASE 1 â€” Herramientas
 
 ```bash
 xcode-select -p
@@ -158,14 +158,14 @@ ssh -T git@github.com
 
 Checklist: Xcode, CocoaPods, Flutter ^3.11, SSH GitHub, ambos repos en `~/Proyectos`.
 
-### FASE 2 — App Store Connect
+### FASE 2 â€” App Store Connect
 
 1. https://appstoreconnect.apple.com ? My Apps: anota nombre + Bundle ID.
 2. Identifiers: confirma `es.eternalfantasy.app` y `es.eternalxi.app` (Sign in with Apple + Push si aplica).
 3. Si falta Fantasy: New App ? Eternal Fantasy / `es.eternalfantasy.app` / SKU `eternalfantasy`.
 4. Si existe XI con `es.eternalxi.app`: **conservarla** (no borrar, no convertir en Fantasy).
 
-### FASE 3 — Primera subida Fantasy
+### FASE 3 â€” Primera subida Fantasy
 
 ```bash
 cd ~/Proyectos/EternalFantasy/eternalxi_front
@@ -181,19 +181,19 @@ Smoke: login ? **Mis ligas** (sin Clash / sin selector de modo).
 flutter build ipa --release
 ```
 
-TestFlight What to Test: «Eternal Fantasy — ligas, sin historia. Versión = pubspec.»
+TestFlight What to Test: Â«Eternal Fantasy â€” ligas, sin historia. VersiÃ³n = pubspec.Â»
 
-### FASE 4 — Primera subida Eternal XI
+### FASE 4 â€” Primera subida Eternal XI
 
 Igual en `~/Proyectos/EternalXI/eternalxi_front`, bundle `es.eternalxi.app`, Display Name Eternal XI.
 
 Smoke: login ? **historia / Clash**.
 
-What to Test: «Eternal XI — historia/Clash. Versión = pubspec.»
+What to Test: Â«Eternal XI â€” historia/Clash. VersiÃ³n = pubspec.Â»
 
 ---
 
-## Qué incluye cada app
+## QuÃ© incluye cada app
 
 ### Eternal Fantasy
 Auth, perfil, amigos, ligas, mercado, jornadas, recompensas liga, legal. Tras login: `/leagues`. Sin Clash/historia.
@@ -203,10 +203,10 @@ Auth + modo historia / Clash. No es la app de ligas.
 
 ---
 
-## Qué NO hacer
+## QuÃ© NO hacer
 
 - Mezclar repos / bundles / versiones entre Fantasy y XI.
-- Forzar la misma versión en ambos juegos.
+- Forzar la misma versiÃ³n en ambos juegos.
 - Dejar iOS desfasado respecto al `pubspec` de Android de **esa** app.
 - Borrar `es.eternalxi.app` en Apple.
 - Commitear secretos (.p12, passwords, `.env`, `.local/`).
@@ -216,9 +216,9 @@ Auth + modo historia / Clash. No es la app de ligas.
 
 ## Reglas de trabajo
 
-1. Español.
-2. Ejecuta tú; informa resultados.
-3. Tras cambios de código en el Mini: `git commit` + `git push origin main` en el repo tocado.
+1. EspaÃ±ol.
+2. Ejecuta tÃº; informa resultados.
+3. Tras cambios de cÃ³digo en el Mini: `git commit` + `git push origin main` en el repo tocado.
 4. Tras cada SYNC o fase: checklist + tabla de versiones.
 
 ---
