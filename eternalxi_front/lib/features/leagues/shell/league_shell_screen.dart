@@ -27,6 +27,7 @@ import 'package:eternal_xi/shared/widgets/fantasy_atmosphere_background.dart';
 import 'package:eternal_xi/shared/widgets/league_settings_icon.dart';
 import 'package:eternal_xi/shared/widgets/notification_bell_icon.dart';
 import 'package:eternal_xi/shared/widgets/user_tokens_action.dart';
+import 'package:eternal_xi/shared/widgets/fade_indexed_stack.dart';
 import 'package:eternal_xi/shared/widgets/xi_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -340,44 +341,57 @@ class _LeagueShellScreenState extends State<LeagueShellScreen> {
               ),
             // ── Content ──────────────────────────────────────────────────
             Expanded(
-              child: _loading
-                  ? const _XiLoadingState()
-                  : _error != null && _detail == null
-                  ? _XiErrorState(
-                      message: _error!,
-                      onRetry: _load,
-                    )
-                  : _detail == null
-                  ? const SizedBox.shrink()
-                  : LeagueShellData(
-                      leagueId: widget.leagueId,
-                      idUsuario: idUsuario,
-                      detail: _detail,
-                      isRefreshing: _refreshing,
-                      refreshGeneration: _refreshGeneration,
-                      reload: _reload,
-                      selectTab: _selectTab,
-                      currentTabIndex: _tabIndex,
-                      openSquad: _openSquad,
-                      registerLineupLeaveGuard: _registerLineupLeaveGuard,
-                      confirmLeaveLineupIfNeeded: _confirmLeaveLineupIfNeeded,
-                      child: SafeArea(
-                        left: true,
-                        right: true,
-                        top: false,
-                        bottom: false,
-                        child: IndexedStack(
-                          index: _tabIndex,
-                          children: const [
-                            LeagueTabHome(),
-                            LeagueTabStandings(),
-                            LeagueTabSquad(),
-                            LeagueTabMarket(),
-                            LeagueTabChat(),
-                          ],
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 320),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                child: _loading
+                    ? const KeyedSubtree(
+                        key: ValueKey('loading'),
+                        child: _XiLoadingState(),
+                      )
+                    : _error != null && _detail == null
+                    ? KeyedSubtree(
+                        key: const ValueKey('error'),
+                        child: _XiErrorState(
+                          message: _error!,
+                          onRetry: _load,
+                        ),
+                      )
+                    : _detail == null
+                    ? const SizedBox.shrink(key: ValueKey('empty'))
+                    : LeagueShellData(
+                        key: const ValueKey('ready'),
+                        leagueId: widget.leagueId,
+                        idUsuario: idUsuario,
+                        detail: _detail,
+                        isRefreshing: _refreshing,
+                        refreshGeneration: _refreshGeneration,
+                        reload: _reload,
+                        selectTab: _selectTab,
+                        currentTabIndex: _tabIndex,
+                        openSquad: _openSquad,
+                        registerLineupLeaveGuard: _registerLineupLeaveGuard,
+                        confirmLeaveLineupIfNeeded:
+                            _confirmLeaveLineupIfNeeded,
+                        child: SafeArea(
+                          left: true,
+                          right: true,
+                          top: false,
+                          bottom: false,
+                          child: FadeIndexedStack(
+                            index: _tabIndex,
+                            children: const [
+                              LeagueTabHome(),
+                              LeagueTabStandings(),
+                              LeagueTabSquad(),
+                              LeagueTabMarket(),
+                              LeagueTabChat(),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
+              ),
             ),
           ],
         ),

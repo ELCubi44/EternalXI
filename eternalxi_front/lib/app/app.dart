@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/page_transitions.dart';
 import 'package:eternal_xi/app/router.dart';
 import 'package:eternal_xi/app/theme/app_colors.dart';
 import 'package:eternal_xi/app/theme/xi_typography.dart';
@@ -64,6 +65,7 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
     );
     return XiTypography.sanitizeTheme(ThemeData(
       useMaterial3: true,
+      pageTransitionsTheme: appPageTransitionsTheme,
       colorScheme: scheme,
       fontFamily: XiTypography.family,
       brightness: Brightness.light,
@@ -161,6 +163,7 @@ class _EternalXiAppState extends State<EternalXiApp> with WidgetsBindingObserver
     const scheme = XiColors.colorScheme;
     return XiTypography.sanitizeTheme(ThemeData(
       useMaterial3: true,
+      pageTransitionsTheme: appPageTransitionsTheme,
       colorScheme: scheme,
       fontFamily: XiTypography.family,
       scaffoldBackgroundColor: Colors.transparent,

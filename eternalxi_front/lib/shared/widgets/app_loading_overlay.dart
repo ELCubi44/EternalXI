@@ -16,11 +16,21 @@ class AppLoadingOverlay extends StatelessWidget {
     return Stack(
       children: [
         child,
-        if (isLoading)
-          ColoredBox(
-            color: scrim,
-            child: const Center(child: CircularProgressIndicator()),
+        Positioned.fill(
+          child: IgnorePointer(
+            ignoring: !isLoading,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 220),
+              child: isLoading
+                  ? ColoredBox(
+                      key: const ValueKey('loading'),
+                      color: scrim,
+                      child: const Center(child: CircularProgressIndicator()),
+                    )
+                  : const SizedBox.shrink(key: ValueKey('idle')),
+            ),
           ),
+        ),
       ],
     );
   }

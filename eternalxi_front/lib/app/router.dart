@@ -1,3 +1,4 @@
+import 'package:eternal_xi/app/page_transitions.dart';
 import 'package:eternal_xi/app/router_auth.dart';
 import 'package:eternal_xi/app/routes.dart';
 import 'package:eternal_xi/features/auth/screens/confirm_email_verification_screen.dart';
@@ -59,20 +60,21 @@ import 'package:provider/provider.dart';
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.splash,
   routes: [
-    GoRoute(
+    fadeGoRoute(
       path: AppRoutes.splash,
+      duration: const Duration(milliseconds: 480),
       builder: (context, state) => const SplashScreen(),
     ),
-    GoRoute(
+    fadeGoRoute(
       path: AppRoutes.login,
       builder: (context, state) =>
           LoginScreen(prefilledCorreo: state.uri.queryParameters['correo']),
     ),
-    GoRoute(
+    fadeGoRoute(
       path: AppRoutes.legalHub,
       builder: (context, state) => const LegalHubScreen(),
       routes: [
-        GoRoute(
+        fadeGoRoute(
           path: ':docType',
           builder: (context, state) {
             final typeName = state.pathParameters['docType'] ?? 'terms';
@@ -85,26 +87,26 @@ final GoRouter appRouter = GoRouter(
         ),
       ],
     ),
-    GoRoute(
+    fadeGoRoute(
       path: AppRoutes.verifyEmailRequest,
       builder: (context, state) => const RequestEmailVerificationScreen(),
     ),
-    GoRoute(
+    fadeGoRoute(
       path: AppRoutes.verifyEmailConfirm,
       builder: (context, state) => ConfirmEmailVerificationScreen(
         prefilledCorreo: state.uri.queryParameters['correo'],
       ),
     ),
-    GoRoute(
+    fadeGoRoute(
       path: AppRoutes.register,
       builder: (context, state) =>
           RegisterScreen(prefilledCorreo: state.uri.queryParameters['correo']),
     ),
-    GoRoute(
+    fadeGoRoute(
       path: AppRoutes.passwordResetRequest,
       builder: (context, state) => const RequestPasswordResetScreen(),
     ),
-    GoRoute(
+    fadeGoRoute(
       path: AppRoutes.passwordResetConfirm,
       builder: (context, state) => ConfirmPasswordResetScreen(
         prefilledCorreo: state.uri.queryParameters['correo'],
@@ -122,7 +124,7 @@ final GoRouter appRouter = GoRouter(
       path: '/leagues',
       redirect: (context, state) => AppRoutes.clash,
     ),
-    GoRoute(
+    fadeGoRoute(
       path: AppRoutes.clashPrepare,
       redirect: redirectIfUnauthenticated,
       builder: (context, state) => const ClashMediaDownloadScreen(),
@@ -138,22 +140,21 @@ final GoRouter appRouter = GoRouter(
         );
       },
       routes: [
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clash,
-          pageBuilder: (context, state) =>
-              const NoTransitionPage(child: ClashTabHost()),
+          builder: (context, state) => const ClashTabHost(),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashStory,
           builder: (context, state) => const ClashStoryMapScreen(),
           routes: [
-            GoRoute(
+            fadeGoRoute(
               path: 'level/:levelId',
               builder: (context, state) => ClashStoryLevelReaderScreen(
                 levelId: state.pathParameters['levelId'] ?? '',
               ),
               routes: [
-                GoRoute(
+                fadeGoRoute(
                   path: 'prepare',
                   builder: (context, state) => ClashMatchPrepareScreen(
                     levelId: state.pathParameters['levelId'] ?? '',
@@ -163,64 +164,64 @@ final GoRouter appRouter = GoRouter(
             ),
           ],
         ),
-        GoRoute(
+        fadeGoRoute(
           path: '/clash/match/:levelId',
           builder: (context, state) => ClashMatchScreen(
             levelId: state.pathParameters['levelId'] ?? '',
           ),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: '/clash/decisive/:levelId',
           builder: (context, state) => ClashDecisiveMomentsScreen(
             levelId: state.pathParameters['levelId'] ?? '',
           ),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashTeam7v7,
           builder: (context, state) => const ClashLineup7v7Screen(),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashInventory,
           builder: (context, state) => const ClashInventoryScreen(),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashMissions,
           builder: (context, state) => const ClashDailyMissionsScreen(),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashWeeklyMissions,
           builder: (context, state) => const ClashWeeklyMissionsScreen(),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashAchievements,
           builder: (context, state) => const ClashAchievementsScreen(),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashNews,
           builder: (context, state) => const ClashNewsScreen(),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashGifts,
           builder: (context, state) => const ClashGiftsScreen(),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashTrials,
           builder: (context, state) => const ClashTrialsScreen(),
           routes: [
-            GoRoute(
+            fadeGoRoute(
               path: ':trialId',
               builder: (context, state) => ClashTrialDetailScreen(
                 trialId: state.pathParameters['trialId'] ?? '',
               ),
               routes: [
-                GoRoute(
+                fadeGoRoute(
                   path: 'floor/:floorId/prepare',
                   builder: (context, state) => ClashTrialPrepareScreen(
                     trialId: state.pathParameters['trialId'] ?? '',
                     floorId: state.pathParameters['floorId'] ?? '',
                   ),
                 ),
-                GoRoute(
+                fadeGoRoute(
                   path: 'floor/:floorId/match',
                   builder: (context, state) => ClashChainMatchScreen(
                     trialId: state.pathParameters['trialId'] ?? '',
@@ -231,31 +232,31 @@ final GoRouter appRouter = GoRouter(
             ),
           ],
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashEvents,
           builder: (context, state) => const ClashEventsScreen(),
           routes: [
-            GoRoute(
+            fadeGoRoute(
               path: ':eventId',
               builder: (context, state) => ClashEventDetailScreen(
                 eventId: state.pathParameters['eventId'] ?? '',
               ),
               routes: [
-                GoRoute(
+                fadeGoRoute(
                   path: 'stage/:stageId',
                   builder: (context, state) => ClashEventStoryStageScreen(
                     eventId: state.pathParameters['eventId'] ?? '',
                     stageId: state.pathParameters['stageId'] ?? '',
                   ),
                   routes: [
-                    GoRoute(
+                    fadeGoRoute(
                       path: 'prepare',
                       builder: (context, state) => ClashEventMatchPrepareScreen(
                         eventId: state.pathParameters['eventId'] ?? '',
                         stageId: state.pathParameters['stageId'] ?? '',
                       ),
                     ),
-                    GoRoute(
+                    fadeGoRoute(
                       path: 'match',
                       builder: (context, state) => ClashEventMatchScreen(
                         eventId: state.pathParameters['eventId'] ?? '',
@@ -268,11 +269,11 @@ final GoRouter appRouter = GoRouter(
             ),
           ],
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashHelp,
           builder: (context, state) => const ClashHelpScreen(),
           routes: [
-            GoRoute(
+            fadeGoRoute(
               path: ':topicId',
               builder: (context, state) => ClashHelpTopicScreen(
                 topicId: state.pathParameters['topicId'] ?? '',
@@ -280,23 +281,23 @@ final GoRouter appRouter = GoRouter(
             ),
           ],
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashSummonHistory,
           builder: (context, state) => const ClashGachaHistoryScreen(),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashRewardHistory,
           builder: (context, state) => const ClashRewardHistoryScreen(),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashDebug,
           builder: (context, state) => const ClashDebugScreen(),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: AppRoutes.clashCards,
           builder: (context, state) => const ClashCardCollectionScreen(),
           routes: [
-            GoRoute(
+            fadeGoRoute(
               path: ':cardId',
               builder: (context, state) => ClashCardDetailScreen(
                 cardId: state.pathParameters['cardId'] ?? '',
@@ -306,17 +307,17 @@ final GoRouter appRouter = GoRouter(
         ),
       ],
     ),
-    GoRoute(
+    fadeGoRoute(
       path: AppRoutes.profile,
       builder: (context, state) => const EditProfileScreen(),
       routes: [
-        GoRoute(
+        fadeGoRoute(
           path: 'change-email',
           builder: (context, state) => RequestChangeEmailScreen(
             correoActual: context.read<AuthController>().currentUser?.correo,
           ),
           routes: [
-            GoRoute(
+            fadeGoRoute(
               path: 'confirm',
               builder: (context, state) => ConfirmChangeEmailScreen(
                 prefilledCorreo: state.uri.queryParameters['correo'],
@@ -324,11 +325,11 @@ final GoRouter appRouter = GoRouter(
             ),
           ],
         ),
-        GoRoute(
+        fadeGoRoute(
           path: 'delete-account/confirm',
           builder: (context, state) => const ConfirmAccountDeletionScreen(),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: 'change-nickname',
           builder: (context, state) => RequestChangeNicknameScreen(
             nicknameActual: context
@@ -337,7 +338,7 @@ final GoRouter appRouter = GoRouter(
                 ?.nickname,
           ),
           routes: [
-            GoRoute(
+            fadeGoRoute(
               path: 'confirm',
               builder: (context, state) => ConfirmChangeNicknameScreen(
                 prefilledNickname: state.uri.queryParameters['nickname'],
@@ -345,11 +346,11 @@ final GoRouter appRouter = GoRouter(
             ),
           ],
         ),
-        GoRoute(
+        fadeGoRoute(
           path: 'friends',
           builder: (context, state) => const FriendsScreen(),
         ),
-        GoRoute(
+        fadeGoRoute(
           path: 'users/:userId',
           builder: (context, state) {
             final raw = state.pathParameters['userId'] ?? '';
@@ -359,7 +360,7 @@ final GoRouter appRouter = GoRouter(
         ),
       ],
     ),
-    GoRoute(
+    fadeGoRoute(
       path: AppRoutes.tokensShop,
       builder: (context, state) {
         final raw = state.uri.queryParameters['idLiga'];

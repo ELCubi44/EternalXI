@@ -9,6 +9,7 @@ import 'package:eternal_xi/features/clash/story/data/repositories/clash_story_re
 import 'package:eternal_xi/features/clash/story/presentation/controllers/clash_story_controller.dart';
 import 'package:eternal_xi/features/clash/summon/presentation/clash_summon_screen.dart';
 import 'package:eternal_xi/features/clash/team/presentation/clash_team_screen.dart';
+import 'package:eternal_xi/shared/widgets/fade_indexed_stack.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -50,6 +51,6 @@ class _ClashTabHostState extends State<ClashTabHost> {
   @override
   Widget build(BuildContext context) {
     final tabIndex = context.watch<ClashNavigationController>().tabIndex;
-    return IndexedStack(index: tabIndex, children: _screens);
+    return FadeIndexedStack(index: tabIndex, children: _screens);
   }
 }

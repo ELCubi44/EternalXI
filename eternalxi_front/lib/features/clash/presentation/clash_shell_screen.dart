@@ -96,21 +96,55 @@ class ClashShellScreen extends StatelessWidget {
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        if (!hideClashHeader) const ClashHeaderBar(),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 280),
+                          switchInCurve: Curves.easeOutCubic,
+                          switchOutCurve: Curves.easeInCubic,
+                          transitionBuilder: (child, animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: SizeTransition(
+                                sizeFactor: animation,
+                                axis: Axis.vertical,
+                                alignment: Alignment.topCenter,
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: hideClashHeader
+                              ? const SizedBox.shrink(key: ValueKey('no-header'))
+                              : const ClashHeaderBar(key: ValueKey('header')),
+                        ),
                         Expanded(child: body),
                       ],
                     ),
-              bottomNavigationBar: (isCardDetail || isStoryPath)
-                  ? null
-                  : Theme(
-                      data: Theme.of(context).copyWith(
-                        canvasColor: Colors.transparent,
-                        bottomAppBarTheme: const BottomAppBarThemeData(
-                          color: Colors.transparent,
-                          elevation: 0,
+              bottomNavigationBar: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                transitionBuilder: (child, animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SizeTransition(
+                      sizeFactor: animation,
+                      axis: Axis.vertical,
+                      alignment: Alignment.bottomCenter,
+                      child: child,
+                    ),
+                  );
+                },
+                child: (isCardDetail || isStoryPath)
+                    ? const SizedBox(key: ValueKey('no-nav'), height: 0)
+                    : Theme(
+                        key: const ValueKey('nav'),
+                        data: Theme.of(context).copyWith(
+                          canvasColor: Colors.transparent,
+                          bottomAppBarTheme: const BottomAppBarThemeData(
+                            color: Colors.transparent,
+                            elevation: 0,
+                          ),
                         ),
-                      ),
-                      child: ClashBottomNavBar(
+                        child: ClashBottomNavBar(
                         selectedIndex: selectedIndex,
                         onItemSelected: (index) =>
                             _onTabSelected(context, index),
@@ -134,6 +168,7 @@ class ClashShellScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+              ),
             ),
             // Encima de la nav: si van en el body con extendBody, los toques
             // los come el tab Inicio y "Historia" parece muerto.
