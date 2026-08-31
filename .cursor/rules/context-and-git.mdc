@@ -1,0 +1,13 @@
+---
+description: Git seguro y contexto duradero en este repositorio
+alwaysApply: true
+---
+
+# Este proyecto
+
+- Lee `AGENTS.md` y `docs/CURRENT_STATUS.md` al empezar.
+- Al terminar trabajo relevante, actualiza `docs/CURRENT_STATUS.md`.
+- GitHub es la fuente de verdad. Prohibido reset, clean, checkout de archivos rastreados, force-push y stashes automáticos.
+- `git pull` solo `--ff-only` con árbol limpio.
+- No leas ni imprimas secretos.
+- Comandos: `/actualizar-proyecto`, `/cerrar-trabajo`.

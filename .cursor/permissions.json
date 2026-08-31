@@ -1,0 +1,16 @@
+{
+  "autoRun": {
+    "allow_instructions": [
+      "Allow read-only git commands that inspect status, remotes, log, diff, or branches without changing files or history.",
+      "Allow git fetch and git pull --ff-only when the working tree is already confirmed clean.",
+      "Allow read-only tests, linters, and build checks that do not publish, deploy, or mutate git history."
+    ],
+    "block_instructions": [
+      "Any git reset, git clean, git checkout --, git restore of tracked files, git stash apply/pop/drop, or git push --force must be blocked and require explicit user confirmation.",
+      "Any command that reads, prints, copies, or uploads .env, deploy.env, keystores, certificates, private keys, or credential files must be blocked.",
+      "Creating or deleting GitHub repositories, force-updating remotes, or running gh repo delete must require confirmation.",
+      "Installing global packages, changing git config, or writing outside the current project directory must require confirmation.",
+      "Do not enable a general run-everything policy. Dangerous actions require Auto-review or a human approval prompt."
+    ]
+  }
+}

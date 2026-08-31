@@ -1,6 +1,11 @@
 # General
 debug_screenshots/
-.cursor/
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
+!.cursor/commands/
+!.cursor/commands/**
+!.cursor/permissions.json
 NUL
 .local/tmp/
 .idea/
@@ -42,3 +47,33 @@ eternalxi_front/ios/Flutter/ephemeral/
 # Backend Java
 eternalxi_api_back/target/
 eternalxi_api_back/src/main/resources/application.properties
+
+# --- mac-mini-setup security (2026-08-31) ---
+# --- secretos y credenciales (nunca subir) ---
+.env
+.env.*
+!.env.example
+!.env.*.example
+.local/
+!.local/deploy.env.example
+!.local/**/*.example
+**/*.pem
+**/*.p12
+**/*.p8
+**/*.key
+**/*.pfx
+**/*.jks
+**/*.keystore
+**/*.mobileprovision
+**/key.properties
+**/*service-account*.json
+**/google-services.json
+**/GoogleService-Info.plist
+**/id_rsa
+**/id_ed25519
+**/*.ppk
+**/credentials.json
+**/secrets.json
+application-prod.properties
+application-secret.properties
+
