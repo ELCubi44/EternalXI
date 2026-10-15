@@ -5,6 +5,7 @@ const Profile = preload("res://scripts/profile.gd")
 const Field = preload("res://scripts/rupture_pitch.gd")
 const Gauge = preload("res://scripts/pulse_gauge.gd")
 const SuperScene = preload("res://scripts/super_cinematic.gd")
+const PortraitSuperScene = preload("res://scripts/super_portrait_cinematic.gd")
 const BG = Color("09131f")
 const PANEL = Color("142638")
 const GOLD = Color("f4cf7a")
@@ -166,7 +167,7 @@ func _render() -> void:
  var title = _label("RUPTURA",25,GOLD)
  title.custom_minimum_size.x = 155
  header.add_child(title)
- var status = _label("%s monedas · 0.3" % int(profile.data.coins),21,MUTED)
+ var status = _label("%s monedas · 0.4" % int(profile.data.coins),21,MUTED)
  status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
  status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
  status.custom_minimum_size.x = 280
@@ -229,6 +230,9 @@ func _home_page() -> void:
  var play = _button("CONTINUAR PARTIDO" if _active() else "JUGAR RUPTURA",_start,true)
  play.custom_minimum_size.y = 86
  column.add_child(play)
+ var showcase = _button("VER SUPERTÉCNICAS",_open_showcase)
+ showcase.custom_minimum_size.y = 70
+ column.add_child(showcase)
  var rules = _panel(column)
  rules.add_child(_label("TOCA, ENLAZA Y ROMPE",26,GOLD))
  rules.add_child(_label("Elige una carta, toca al compañero y confirma la ruta. Paredes y señuelos abren huecos para el remate.",24))
@@ -682,13 +686,53 @@ func _duel_super(technique_id: String) -> void:
 
 func _show_super(technique: Dictionary,id: int) -> void:
  busy = true
- var cinema = SuperScene.new()
+ # Solo mostramos un cuerpo propio cuando existe su apariencia preparada.
+ var cinema = SuperScene.new() if id in [434,444,435] else PortraitSuperScene.new()
  cinema.technique = technique.duplicate(true)
  cinema.technique.cost = game.technique_cost(technique)
  cinema.portrait = portraits[id]
  cinema.player_name = _name(id)
+ cinema.player_id = id
  _fill(cinema,frame)
  _sfx("super")
  await cinema.finished
  busy = false
  cinema.queue_free()
+
+func _open_showcase() -> void:
+ if busy:
+  return
+ var panel = PanelContainer.new()
+ panel.add_theme_stylebox_override("panel",_box(BG,0))
+ _fill(panel,frame)
+ var column = VBoxContainer.new()
+ column.add_theme_constant_override("separation",18)
+ panel.add_child(column)
+ column.add_child(_label("SUPERTÉCNICAS",32,GOLD))
+ column.add_child(_label("Prueba visual · Sin gastar PT",24,GREEN))
+ column.add_child(_label("El mismo movimiento con dos personajes. Esta muestra no desbloquea técnicas en el partido.",22,MUTED))
+ var actors = HBoxContainer.new()
+ column.add_child(actors)
+ for id in [434,444]:
+  var card = VBoxContainer.new()
+  card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+  actors.add_child(card)
+  card.add_child(_portrait(id,310,280))
+  card.add_child(_label(_name(id),22))
+  var button = _button("Disparo Valestia",_preview_move.bind(id,"shot"),true)
+  button.custom_minimum_size.y = 76
+  card.add_child(button)
+ for entry in [["Regate del Eclipse",434,"dribble"],["Muro de Puños",435,"save"]]:
+  var button = _button(entry[0],_preview_move.bind(entry[1],entry[2]))
+  button.custom_minimum_size.y = 76
+  column.add_child(button)
+ column.add_child(_button("Volver",_render))
+
+func _preview_move(id: int,kind: String) -> void:
+ if busy:
+  return
+ var source = cards[435 if kind=="save" else 434]
+ for technique in source.superTechniques:
+  if technique.type == kind:
+   await _show_super(technique,id)
+   return

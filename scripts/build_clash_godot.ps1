@@ -8,12 +8,12 @@ param(
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $projectPath = Join-Path $repoRoot 'eternalclash_godot'
-$outputPath = Join-Path $repoRoot 'releases\eternal-clash-prototype-0.3.0.apk'
+$outputPath = Join-Path $repoRoot 'releases\eternal-clash-prototype-0.4.0.apk'
 if (-not (Test-Path -LiteralPath $GodotPath)) { throw 'Indica -GodotPath con la ruta al ejecutable Godot 4.7.2.' }
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $outputPath) | Out-Null
 & $GodotPath --headless --path $projectPath --editor --import --quit
 if ($LASTEXITCODE -ne 0) { throw 'Falló la importación Godot.' }
-foreach ($testFile in @('tests/test_game.gd', 'tests/test_ui.gd')) {
+foreach ($testFile in @('tests/test_game.gd', 'tests/test_ui.gd', 'tests/test_cinematic.gd')) {
     & $GodotPath --headless --path $projectPath --script $testFile
     if ($LASTEXITCODE -ne 0) { throw "Falló $testFile" }
 }

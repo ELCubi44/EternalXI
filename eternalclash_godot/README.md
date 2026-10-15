@@ -1,4 +1,4 @@
-# Eternal Clash — RUPTURA 0.3
+# Eternal Clash — RUPTURA 0.4
 
 Prototipo Godot 4.7.2 / GDScript para probar una mecánica nueva de fútbol con cartas. El combate anterior de porcentajes se ha sustituido; el cliente Flutter y la API Spring originales no se modifican.
 
@@ -38,7 +38,7 @@ El botón morado **SÚPER**, abajo a la derecha, abre las técnicas reales del p
 - **Disparo Valestia**, de Thiago: 30 PT y un pulso. Se puede lanzar al ganar terreno (o con Ruptura), con una zona de acierto mayor. También puede activarse en un duelo de tiro normal antes de elegir enfoque.
 - **Muro de Puños**, de Hugo: 24 PT en el duelo defensivo, antes de elegir enfoque. Refuerza la parada sin gastar otro pulso de ataque.
 
-Cada técnica tiene una presentación animada de dos segundos con su nombre y retrato: ecos y aura para regate, balón con estela para tiro y arco de escudo para parada. Después se resuelve el duelo manual; activar una técnica no garantiza acertar. La potencia del catálogo aumenta la ventana de acierto.
+Thiago, Miguel y Hugo tienen figuras 3D provisionales articuladas. Disparo Valestia incluye preparación, patada y recuperación (5,2 s); Regate del Eclipse, giro (4,2 s); Muro de Puños, brazos y barrera (4,4 s). El resto de personajes conserva su presentación de retrato. Después se resuelve el duelo manual; activar una técnica no garantiza acertar. La potencia del catálogo aumenta la ventana de acierto.
 
 El coste general es `max(20, ptCost × 3)`. No se descuenta otra vez al reabrir ni se permite activar dos técnicas sobre un mismo duelo. Las técnicas no compatibles con la fase aparecen deshabilitadas con su motivo. Las técnicas de defensa de jugadores de campo aún no tienen una fase manual propia.
 
@@ -59,18 +59,21 @@ Desde la raíz:
 ./scripts/build_clash_godot.ps1 -Install -DeviceId '<id de adb devices>'
 ```
 
-APK debug ARM64: `releases/eternal-clash-prototype-0.3.0.apk`. Paquete separado de `es.eternalxi.app`; la instalación actualiza solo la demo. Añadir `-GodotPath` si el editor está en otra ubicación.
+APK debug ARM64: `releases/eternal-clash-prototype-0.4.0.apk`. Paquete separado de `es.eternalxi.app`; la instalación actualiza solo la demo. Añadir `-GodotPath` si el editor está en otra ubicación.
 
-El script importa recursos y ejecuta ambos tests antes de exportar. Los APK, cachés y firmas quedan fuera de Git. Los datos y retratos están versionados; `scripts/export_clash_godot_content.ps1` permite reexportar el subconjunto del cliente original.
+El script importa recursos y ejecuta los tres tests antes de exportar. Los APK, cachés y firmas quedan fuera de Git. Los datos y retratos están versionados; `scripts/export_clash_godot_content.ps1` permite reexportar el subconjunto del cliente original.
 
 Pruebas por separado:
 
 ```powershell
 & '<Godot_console.exe>' --headless --path eternalclash_godot --script tests/test_game.gd
 & '<Godot_console.exe>' --headless --path eternalclash_godot --script tests/test_ui.gd
+& '<Godot_console.exe>' --headless --path eternalclash_godot --script tests/test_cinematic.gd
 ```
 
 La primera valida 120 partidos con perfiles de decisiones/pulso distintos, rutas, señuelos, identidades de duelo, guardados y recompensa única. La segunda carga Inicio, Equipo, Cartas, campo, selección, duelo y resultado, incluyendo textos largos y límites de pantalla en 720×1600.
+
+La tercera valida la biblioteca compartida con dos apariencias, las articulaciones de la patada, el balón y la finalización/liberación de escenas. Capturas reales 0.4 en `docs/images/rupture_0_4/`.
 
 ## Estado y límites
 
@@ -83,3 +86,5 @@ Ver `docs/CLASH_RUPTURE_DESIGN.md` y `docs/CURRENT_STATUS.md`. El primer prototi
 Capturas históricas 0.2: [campo](../docs/images/rupture_0_2/field.png), [señuelo](../docs/images/rupture_0_2/preview.png), [Thiago contra Magnus](../docs/images/rupture_0_2/duel.png) y [Hugo contra Ralf](../docs/images/rupture_0_2/defense.png).
 
 Capturas reales de 0.3: `docs/images/rupture_0_3/` (campo vertical, menú SÚPER, Regate del Eclipse, Disparo Valestia, Muro de Puños y resultado). Las capturas 0.2 enlazadas arriba son históricas del diseño horizontal.
+
+En Inicio, **Ver supertécnicas** permite repetir las escenas sin gastar PT y comparar Valestia con Thiago y Miguel. La muestra no desbloquea técnicas. Son modelos de prueba: falta acabado artístico. Arquitectura, límites y pruebas: docs/CLASH_CHARACTER_ANIMATION.md.

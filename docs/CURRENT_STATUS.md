@@ -2,7 +2,18 @@
 
 Última actualización: 2026-10-15.
 
-## Ahora: RUPTURA 0.3 vertical
+## Ahora: RUPTURA 0.4, primera prueba de personajes 3D
+
+- Petición: personajes de cuerpo completo que ejecuten supertécnicas reutilizables según su apariencia, empezando por Thiago.
+- Modelo 3D provisional de piezas articuladas por nodos y biblioteca `AnimationLibrary` compartida. Apariencias Thiago, Miguel y Hugo basadas en sus retratos; cara/pelo/ropa aproximados, no modelado orgánico final ni reconstrucción automática desde una foto.
+- Disparo Valestia: concentración, preparación de la pierna, patada, balón/estela y recuperación; cámara de cara a cuerpo completo (5,2 s). Movimientos adicionales provisionales de giro para Eclipse (4,2 s) y brazos/barrera para Muro (4,4 s).
+- Inicio → **Ver supertécnicas** permite repetir sin gastar PT y comparar la misma patada con Thiago/Miguel. La muestra no desbloquea Valestia para Miguel. El resto de jugadores conserva el retrato hasta disponer de apariencia propia.
+- Integradas en la activación del partido, conservando reglas, PT y guardado. Escena aislada con ancho máximo de render 540 px. Paquete `es.eternalxi.clash.prototype`, 0.4.0 (4), APK local fuera de Git.
+- Reglas: 3177 comprobaciones/120 partidos, cero fallos. Pruebas UI incluyendo visor sin cambios de perfil; prueba específica de animación, cambio de apariencia, biblioteca compartida, señal única y liberación. Capturas de escritorio con renderer real y pruebas visuales en ZTE A7050.
+- Android: visor, Valestia con Thiago/Miguel y parada con Hugo; retorno al visor, sin errores en log filtrado. Primera apertura más lenta; pendiente medir FPS, arranque, memoria y batería. No dar por validada la fluidez por capturas.
+- Detalle técnico y siguiente trabajo artístico: `docs/CLASH_CHARACTER_ANIMATION.md`. Código/recursos procedurales versionados; original Flutter/API conservado.
+
+## Base anterior: RUPTURA 0.3 vertical
 
 - El usuario considera interesante la nueva mecánica y pide juego vertical, más campo, líneas/círculos claros, interfaz mejorada y supertécnicas visibles.
 - Godot 4.7.2/GDScript, diseño 720×1600 con ataque hacia arriba. Campo a todo el ancho y más del 70% de la altura; áreas/círculo central de alto contraste, retratos dentro de discos con shader, aros dobles por equipo y selección destacada. HUD compacto arriba y acciones/confirmación abajo.
@@ -12,7 +23,7 @@
 - Una técnica activada se guarda antes de animar y no vuelve a cobrarse al reabrir. Las partidas 0.2 conservan posiciones, marcador, monedas y niveles y añaden 60 PT.
 - App **Eternal Clash Prueba**, `es.eternalxi.clash.prototype`, versión `0.3.0` (3), APK debug ARM64 en `releases/eternal-clash-prototype-0.3.0.apk`, fuera de Git. Instalada en el ZTE A7050.
 
-## Verificado
+## Verificado en 0.3 (histórico)
 
 - Importación/exportación/firma debug correctas. Pruebas de dominio: 3177 comprobaciones, 120 partidos, cero fallos. Incluyen activación/coste/efecto de las técnicas, PT insuficientes, recarga y reanudación sin cobro doble.
 - UI: campo vertical dominante, 14 retratos circulares, controles en pantalla, textos largos, menú SÚPER, dos presentaciones animadas, duelos ofensivos/defensivos y resultados; sin fallos en el viewport base. Las pruebas UI usan perfil en memoria.
@@ -25,7 +36,7 @@
 ## Siguiente objetivo
 
 - Probar en vertical: claridad de las rutas, tamaño de los círculos, comodidad de controles y uso de las técnicas. Afinar el ritmo con la respuesta del usuario.
-- Las presentaciones de supertécnica son efectos 2D provisionales, no animaciones dibujadas de acciones futbolísticas. Faltan más disposiciones/conductas rivales, campaña, adquisición de cartas, PvP, API/economía autoritativa y acabado audiovisual final.
+- Las presentaciones 0.4 animan figuras 3D provisionales. Falta modelo base con malla/pesos/esqueleto definitivo, parecido facial, coreografías propias para más técnicas y acabado anime. También más disposiciones/conductas rivales, campaña, adquisición de cartas, PvP y API/economía autoritativa.
 - Técnicas de defensa de jugadores de campo pendientes de una fase compatible; el menú informa cuando una técnica no se puede activar. Las técnicas de regate, tiro, pase y parada tienen soporte según su fase.
 - Sin medición de FPS/batería ni QA en otros dispositivos. No se considera que pasar tests valide diversión.
 
