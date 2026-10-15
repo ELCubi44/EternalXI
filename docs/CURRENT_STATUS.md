@@ -2,7 +2,14 @@
 
 Última actualización: 2026-10-15.
 
-## Ahora: RUPTURA 0.4, primera prueba de personajes 3D
+## Revisión artística posterior a 0.4: calidad rechazada
+
+- El usuario ha visto la prueba 0.4 y rechaza el aspecto del personaje y las animaciones. Quiere conservar la identidad y el diseño artístico exacto de las ilustraciones y secuencias de calidad inspirada en su referencia de Inazuma Eleven GO Galaxy: `https://www.youtube.com/watch?v=sIJTPFxqYFI`.
+- Las figuras rígidas de 0.4 demuestran reutilización técnica, pero **no cumplen** la dirección artística ni la calidad pedida. No seguir presentándolas como una aproximación suficiente al personaje original.
+- Se han revisado fragmentos del vídeo en el navegador y generado, usando el retrato original como referencia, una hoja de Thiago de cuerpo completo y cuatro imágenes clave de Valestia. Archivos en `docs/art/thiago-v2/`, con prompts y límites. Son borradores visuales; no implican aprobación del usuario ni constituyen animación fluida o modelo 3D.
+- Pendiente el modelo anime fiel con malla, pesos, esqueleto/expresiones y coreografía real. La herramienta de imágenes produce referencias raster; no convierte automáticamente una foto en un modelo riggeado de esa calidad. La APK no se modifica en esta revisión.
+
+## Última demo instalada: RUPTURA 0.4, prueba técnica de personajes 3D
 
 - Petición: personajes de cuerpo completo que ejecuten supertécnicas reutilizables según su apariencia, empezando por Thiago.
 - Modelo 3D provisional de piezas articuladas por nodos y biblioteca `AnimationLibrary` compartida. Apariencias Thiago, Miguel y Hugo basadas en sus retratos; cara/pelo/ropa aproximados, no modelado orgánico final ni reconstrucción automática desde una foto.
