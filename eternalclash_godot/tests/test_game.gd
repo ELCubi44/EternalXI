@@ -115,6 +115,49 @@ func _run() -> void:
  bad = fresh().state.duplicate(true)
  bad.pending = {"kind": "shot"}
  check(not Rules.new().restore(bad, cards), "Duelo incompleto se rechaza sin romper el arranque")
+ var special = fresh()
+ var dribble = "eternal-xi-n-wg-010-st1"
+ var shot = "eternal-xi-n-wg-010-st2"
+ check(special.preview_super(dribble).legal, "El regate especial está disponible al inicio")
+ check(not special.preview_super(shot).legal, "El tiro especial exige ganar terreno")
+ var x_before = special.home_position(4).x
+ var activated = special.execute_super(dribble)
+ check(activated.accepted and int(special.state.technique_points)==33, "Regate del Eclipse cuesta 27 PT")
+ check(special.state.pending.kind=="dribble" and special.state.pending.technique.name=="Regate del Eclipse", "La técnica real se incorpora al duelo")
+ check(not special.execute_super(dribble).accepted, "No activar otra técnica sobre el duelo pendiente")
+ var stored = Rules.new()
+ check(stored.restore(JSON.parse_string(JSON.stringify(special.state)),cards), "Reanuda un duelo especial sin volver a cobrar")
+ check(int(stored.state.technique_points)==33, "PT conservados al reabrir")
+ special.resolve_duel(.5,Rules.COUNTERS[int(special.state.pending.stance)])
+ check(special.home_position(4).x > x_before+.15, "El regate especial gana terreno real")
+ check(special.preview_super(shot).legal, "El avance habilita Disparo Valestia")
+ var normal = fresh()
+ normal.state.home[4] = [.70,.17]
+ normal.execute("shot")
+ var width_before = normal.duel_width(1)
+ var pt_before = int(normal.state.technique_points)
+ check(normal.activate_duel_technique(shot).accepted, "Activar supertiro durante duelo")
+ check(normal.duel_width(1)>width_before, "Supertécnica mejora la ventana de acierto")
+ check(int(normal.state.technique_points)==pt_before-30, "Disparo Valestia cuesta 30 PT")
+ check(not normal.activate_duel_technique(shot).accepted, "No cobrar técnica dos veces en un duelo")
+ normal.resolve_duel(.5,1)
+ normal.state.technique_points = 60
+ var save_technique = "eternal-xi-n-gk-001-st1"
+ check(normal.activate_duel_technique(save_technique).accepted, "Muro de Puños activable como superparada")
+ check(normal.state.pending.technique.name=="Muro de Puños", "Nombre real de superparada")
+ var empty = fresh()
+ empty.state.technique_points = 0
+ var snapshot = empty.state.duplicate(true)
+ check(not empty.execute_super(dribble).accepted and empty.state==snapshot, "Sin PT, no hay cargo ni movimiento")
+ var legacy = fresh().state.duplicate(true)
+ legacy.erase("technique_points")
+ legacy.erase("super_uses")
+ var migrated = Rules.new()
+ check(migrated.restore(legacy,cards) and int(migrated.state.technique_points)==60, "La partida 0.2 añade PT sin perder posiciones")
+ var charge = fresh()
+ charge.state.technique_points = 99
+ charge.execute("decoy",1)
+ check(int(charge.state.technique_points)==100, "La recarga se limita a cien PT")
  var profile = Profile.new()
  profile.data = profile.defaults()
  check(profile.train(435) and int(profile.data.levels["435"]) == 2, "Entrenamiento conservado")

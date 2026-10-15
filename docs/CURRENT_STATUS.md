@@ -2,35 +2,38 @@
 
 Última actualización: 2026-10-15.
 
-## Ahora: RUPTURA 0.2
+## Ahora: RUPTURA 0.3 vertical
 
-- Tras la prueba del usuario se abandona la jugabilidad del prototipo 0.1: no resultaba divertida, el campo era pequeño y los duelos no identificaban bien al rival.
-- Nuevo motor y nueva UI en `eternalclash_godot/`: Godot 4.7.2/GDScript, horizontal 1600×720, campo grande y acciones sobre compañeros elegidos tocando el campo. Los scripts del combate 0.1 se retiraron del proyecto activo y permanecen en Git.
-- Mecánica: pases que dejan huellas, marcas que reaccionan al lugar anterior del balón, paredes que hacen avanzar y señuelos que desplazan a compañero y marcador. Previsualización del interceptor real; rutas libres sin dados.
-- Ruptura exige tres identidades, amplitud y profundidad; habilita un remate combinado con mayor zona de acierto. No basta pasar hacia atrás.
-- Duelos con nombres completos, retratos y técnicas de ambos; intención visible, enfoque y pulso manual. También se controla al portero ante un contraataque identificado. Sin RNG; seis pulsos por posesión y hasta seis rondas o tres goles.
-- App **Eternal Clash Prueba**, paquete `es.eternalxi.clash.prototype`, versión `0.2.0` (2). APK debug ARM64 en `releases/eternal-clash-prototype-0.2.0.apk`, fuera de Git. Instalada en el ZTE A7050.
-- Conservados catálogo/retratos de dos equipos, colección de 19 cartas Eternal XI, formación, entrenamiento, monedas y niveles. La partida 0.1 no se usa en el motor nuevo. Original Flutter y API Spring sin modificar.
+- El usuario considera interesante la nueva mecánica y pide juego vertical, más campo, líneas/círculos claros, interfaz mejorada y supertécnicas visibles.
+- Godot 4.7.2/GDScript, diseño 720×1600 con ataque hacia arriba. Campo a todo el ancho y más del 70% de la altura; áreas/círculo central de alto contraste, retratos dentro de discos con shader, aros dobles por equipo y selección destacada. HUD compacto arriba y acciones/confirmación abajo.
+- Menús, colección, formación, resultados y duelos adaptados a vertical. Sigue Ruptura: huellas, paredes, señuelos, rutas previsualizadas e intervención manual en ataque y portería.
+- Botón morado **SÚPER** abre las técnicas reales del poseedor. Hay 60 PT iniciales, límite 100, y recarga por pases/paredes/señuelos, perfectos y nuevas rondas.
+- Supertécnicas activables con coste, presentación animada propia y efecto: Regate del Eclipse (27 PT, duelo reforzado y avance al ganarlo), Disparo Valestia (30 PT, refuerzo de tiro) y Muro de Puños (24 PT, refuerzo de parada antes de elegir enfoque). La potencia del catálogo influye en la ventana de acierto.
+- Una técnica activada se guarda antes de animar y no vuelve a cobrarse al reabrir. Las partidas 0.2 conservan posiciones, marcador, monedas y niveles y añaden 60 PT.
+- App **Eternal Clash Prueba**, `es.eternalxi.clash.prototype`, versión `0.3.0` (3), APK debug ARM64 en `releases/eternal-clash-prototype-0.3.0.apk`, fuera de Git. Instalada en el ZTE A7050.
 
 ## Verificado
 
-- Importación, exportación y firma debug; 3159 comprobaciones de reglas, 120 partidos con distintos perfiles de acciones/pulso y cero fallos. Se comprueban rutas liberadas por señuelos, identidades, guardado/reanudación, límites y premio único.
-- UI: Inicio, Equipo, Cartas, campo, selección, duelo y resultado; incluye texto largo y límites del viewport base, sin fallos.
-- ZTE A7050: arranque horizontal, campo y previsualización; duelo de tiro Thiago–Magnus resuelto mediante input real, seguido de parada manual Hugo–Ralf. Se verificó reabrir manteniendo posiciones, posesión, marcador y perfil. No equivale a un partido completo humano de la versión nueva.
-- Capturas reales de 0.2 en `docs/images/rupture_0_2/`: Inicio, campo, señuelo, duelo de tiro y defensa manual. Se deja seleccionada la previsualización del señuelo de Andrés, sin gastar el pulso; marcador de prueba 1–0 en la segunda posesión.
-- Se conservan las pruebas previas de Android 0.1 (partidos completos y entrenamiento), pero no se presentan como validación de la nueva jugabilidad.
-- Scripts: `scripts/build_clash_godot.ps1` y `scripts/export_clash_godot_content.ps1`; reglas/instrucciones en `eternalclash_godot/README.md`, diseño en `docs/CLASH_RUPTURE_DESIGN.md`.
+- Importación/exportación/firma debug correctas. Pruebas de dominio: 3177 comprobaciones, 120 partidos, cero fallos. Incluyen activación/coste/efecto de las técnicas, PT insuficientes, recarga y reanudación sin cobro doble.
+- UI: campo vertical dominante, 14 retratos circulares, controles en pantalla, textos largos, menú SÚPER, dos presentaciones animadas, duelos ofensivos/defensivos y resultados; sin fallos en el viewport base. Las pruebas UI usan perfil en memoria.
+- Android real: campo vertical y menú SÚPER inspeccionados. Regate del Eclipse activado contra Till, coste 60→33 PT y avance real tras ganar. Muro de Puños activado por 24 PT y parada manual contra Ralf. Disparo Valestia activado por 30 PT y gol manual contra Magnus, cerrando la partida reanudada 3–0.
+- Se comprobó cerrar/reabrir el supertiro pendiente: conservó técnica y PT, sin segundo cobro; premio final y saldo también conservados tras reabrir. Tres usos especiales registrados en esa prueba, saldo resultante 400 monedas.
+- Se deja una partida nueva abierta en el campo, 0–0 y 60 PT, con monedas, formación y nivel 2 del portero conservados. Sin errores Godot/AndroidRuntime en el log filtrado de la comprobación.
+- Capturas reales de 0.3 en `docs/images/rupture_0_3/`. Capturas 0.2 y 0.1 conservadas como histórico, no como evidencia del diseño actual.
+- Build/instalación: `scripts/build_clash_godot.ps1`; instrucciones y costes en `eternalclash_godot/README.md`. Diseño en `docs/CLASH_RUPTURE_DESIGN.md`.
 
 ## Siguiente objetivo
 
-- Que el usuario pruebe RUPTURA y valore si crear huecos y resolver los duelos resulta interesante. No considerar la diversión validada por los tests.
-- Observar legibilidad, dificultad, uso real de señuelos/paredes, ritmo y estrategias repetitivas; después ampliar escenarios y conductas rivales.
-- Sin medición de FPS, batería ni QA en otros dispositivos. Aún sin campaña jugable, gacha, adquisición de cartas, PvP, API/economía autoritativa o cinemáticas finales. Sonidos breves y animaciones básicas incluidos.
+- Probar en vertical: claridad de las rutas, tamaño de los círculos, comodidad de controles y uso de las técnicas. Afinar el ritmo con la respuesta del usuario.
+- Las presentaciones de supertécnica son efectos 2D provisionales, no animaciones dibujadas de acciones futbolísticas. Faltan más disposiciones/conductas rivales, campaña, adquisición de cartas, PvP, API/economía autoritativa y acabado audiovisual final.
+- Técnicas de defensa de jugadores de campo pendientes de una fase compatible; el menú informa cuando una técnica no se puede activar. Las técnicas de regate, tiro, pase y parada tienen soporte según su fase.
+- Sin medición de FPS/batería ni QA en otros dispositivos. No se considera que pasar tests valide diversión.
 
 ## Límites del proyecto original
 
-- Rama de trabajo: `codex/clash-godot-android-prototype`; la demo 0.1 es recuperable en `8d98626`. Cambios revisables en el PR de la rama, sin merge/deploy de producción.
-- Auditoría inicial: `docs/CLASH_GODOT_REVIEW.md`; catálogo Flutter completo de 912 variantes/304 jugadores/16 equipos. Flutter sigue en `1.3.10+18`, independiente de Fantasy.
-- Pruebas Flutter originales: 765 aprobadas y 121 fallidas con la resolución local de Flutter 3.44.5/Dart 3.12.2; lock restaurado. No se han vuelto a ejecutar porque no se ha cambiado ese cliente.
-- El backend registra reclamaciones, pero todavía no concede recompensas autoritativas. No se ha desplegado ni modificado la API.
-- No usar `EternalXI-play-publish` como origen ni copiar versión de Fantasy. APK, firmas, cachés y archivos privados quedan fuera de Git.
+- Rama `codex/clash-godot-android-prototype`, PR de trabajo sin merge ni deploy de producción. La demo 0.1 es recuperable en `8d98626`; el rediseño 0.2 en `19f5236`.
+- Cliente Flutter y API Spring originales sin modificar. Flutter sigue en `1.3.10+18`, independiente de Fantasy. No se ha desplegado la API.
+- Auditoría original: `docs/CLASH_GODOT_REVIEW.md`; catálogo completo 912 variantes/304 jugadores/16 equipos. La demo usa 38 variantes N de dos equipos y 19 cartas propias iniciales con retratos locales.
+- Pruebas Flutter originales: 765 aprobadas y 121 fallidas en la resolución local Flutter 3.44.5/Dart 3.12.2; lock restaurado. No se vuelven a ejecutar porque no se cambia ese cliente.
+- Backend original registra reclamaciones sin conceder aún recompensas autoritativas. El guardado de la demo es local.
+- No usar `EternalXI-play-publish` como origen ni copiar versión de Fantasy. APK, firmas, cachés y archivos privados fuera de Git; código, sonidos y recursos del prototipo versionados.

@@ -1,6 +1,6 @@
 # RUPTURA — rediseño de la jugabilidad
 
-Fecha: 2026-10-15. Estado: implementado como prototipo Android 0.2, pendiente de valoración del usuario.
+Fecha: 2026-10-15. Estado: mecánica valorada positivamente por el usuario; revisión visual vertical y supertécnicas activables en Android 0.3.
 
 ## Problema que motivó el cambio
 
@@ -14,7 +14,7 @@ No se afirma exclusividad respecto a otros juegos. Es la dirección de diseño p
 
 ## Una posesión
 
-1. Se ven siete jugadores de cada equipo en un campo horizontal grande. El poseedor y el receptor seleccionado se destacan. Las flechas anuncian el compromiso de las marcas tras el pase.
+1. Se ven siete jugadores de cada equipo en un campo vertical grande, atacando hacia arriba. El poseedor y el receptor seleccionado se destacan. Las flechas anuncian el compromiso de las marcas tras el pase.
 2. El usuario selecciona una carta de acción y toca al compañero. Pase cambia al poseedor; Pared devuelve y hace avanzar al pasador; Señuelo desplaza al compañero y a su marcador, dejando el balón donde estaba.
 3. La previsualización identifica al interceptor real. Si la ruta está libre, el pase llega sin azar. Si está marcada, se abre un duelo contra ese defensor.
 4. Las rutas anteriores permanecen dibujadas. Tres identidades enlazadas, amplitud y profundidad cargan una Ruptura. No basta repetir un pase fácil hacia atrás.
@@ -55,3 +55,15 @@ Se han retirado los scripts activos del combate 0.1. Se conservan su historial G
 La prioridad es observar si el usuario ve una apertura, entiende a quién está arrastrando y quiere probar una segunda ruta. Después: legibilidad, tamaño de blancos táctiles, velocidad de duelos y repetición de la estrategia dominante.
 
 Todavía faltan variedad de disposiciones rivales, más conductas de defensa, mejores transiciones de gol y evaluación de dificultad. Las posiciones base alternan de banda entre rondas; no son todavía una campaña de escenarios. La lectura y el pulso necesitan pruebas humanas: los tests no prueban diversión.
+
+## Revisión 0.3 tras probar el usuario
+
+Se conserva Ruptura: el usuario la considera una dirección interesante. Pide vertical, casi toda la pantalla para el campo, mejores líneas y círculos, interfaz más clara y supertécnicas que se vean.
+
+El campo utiliza todo el ancho y supera el 70% de la altura en el diseño 720×1600. Líneas y áreas tienen más contraste; los personajes usan retratos circulares recortados con shader, aros dobles por equipo y selección destacada. El panel lateral desaparece: se muestran marcador/PT arriba y cartas/contexto/confirmación abajo. Menús y duelos también son verticales.
+
+Antes los nombres de técnicas aparecían en el duelo aunque no existía una activación diferenciada. Ahora los movimientos normales se identifican como normales y SÚPER abre las técnicas del catálogo. Activarlas consume PT, muestra una animación de dos segundos y refuerza el duelo; un regate especial ganado además avanza y deja a la marca atrás. Las paradas tienen activación propia antes de elegir enfoque.
+
+60 PT iniciales, límite 100; el coste usa ptCost del catálogo multiplicado por tres, con mínimo 20. Pase/Pared/Señuelo, perfectos y nuevas rondas recargan PT. La activación se guarda antes de animar: reabrir recupera el duelo especial y no cobra otra vez. Las partidas de 0.2 migran añadiendo esos campos.
+
+Las presentaciones son efectos 2D propios y provisionales: ecos/aura, estela de balón y escudo. Aún no son cinemáticas de personajes dibujadas o animadas a mano. Las técnicas de defensa de jugadores de campo quedan pendientes de una fase compatible; el menú informa del límite.

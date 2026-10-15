@@ -15,7 +15,8 @@ func begin(lineup: Array, levels: Dictionary, captain: int, cards: Dictionary) -
 	catalog = cards
 	state = {"mode": MODE, "lineup": lineup.duplicate(), "levels": levels.duplicate(), "captain": captain,
 		"score": 0, "rival_score": 0, "round": 1, "finished": false, "rewarded": false,
-		"total_actions": 0, "pending": {}, "momentum": 0, "last_event": "start"}
+		"total_actions": 0, "pending": {}, "momentum": 0, "last_event": "start",
+		"technique_points": 60, "super_uses": 0}
 	_reset_possession()
 	state.log = "Prueba un SEÑUELO con Andrés: arrastra a Till y abre el pase a Alejandro."
 
@@ -24,6 +25,8 @@ func restore(snapshot: Dictionary, cards: Dictionary) -> bool:
 		return false
 	catalog = cards
 	state = snapshot.duplicate(true)
+	state.technique_points = clampi(int(state.get("technique_points", 60)), 0, 100)
+	state.super_uses = int(state.get("super_uses", 0))
 	return true
 
 func valid(s: Dictionary, cards: Dictionary) -> bool:
@@ -46,10 +49,13 @@ func valid(s: Dictionary, cards: Dictionary) -> bool:
 	if not s.pending.is_empty():
 		if not s.pending.has_all(["kind", "target", "defender", "stance", "left", "right", "rupture"]):
 			return false
-		if s.pending.kind not in ["pass", "wall", "shot", "defend"] or int(s.pending.stance) < 0 or int(s.pending.stance) > 2 or not cards.has(int(s.pending.left)) or not cards.has(int(s.pending.right)):
+		if s.pending.kind not in ["pass", "wall", "shot", "defend", "dribble"] or int(s.pending.stance) < 0 or int(s.pending.stance) > 2 or not cards.has(int(s.pending.left)) or not cards.has(int(s.pending.right)):
 			return false
 		if s.pending.kind in ["pass", "wall"] and (int(s.pending.target) < 1 or int(s.pending.target) > 6):
 			return false
+		if s.pending.get("super", false) or s.pending.kind == "dribble":
+			if not s.pending.get("technique") is Dictionary or not s.pending.technique.has_all(["id", "name", "type", "basePower", "ptCost"]):
+				return false
 	return int(s.holder) >= 1 and int(s.holder) <= 6 and int(s.beats) >= 0
 
 func _reset_possession() -> void:
@@ -157,6 +163,7 @@ func execute(action: String, target: int = -1) -> Dictionary:
 		state.away[defender] = [moved.x, moved.y]
 		state.log = p.reason + ". La marca deja un hueco."
 		state.last_event = "decoy"
+		_gain_points(5)
 		_after_action()
 	elif p.duel:
 		_open_duel(action, target, int(p.defender))
@@ -165,6 +172,7 @@ func execute(action: String, target: int = -1) -> Dictionary:
 	return {"accepted": true, "text": state.log, "event": state.last_event}
 
 func _complete_pass(action: String, target: int) -> void:
+	_gain_points(12 if action == "wall" else 8)
 	var old_holder = int(state.holder)
 	var old_position = home_position(old_holder)
 	var receiver = int(state.lineup[target])
@@ -205,7 +213,7 @@ func duel_width(approach: int) -> float:
 	var duel = state.pending
 	var left = catalog[int(duel.left)]
 	var right = catalog[int(duel.right)]
-	var stat = "save" if duel.kind == "defend" else "shot" if duel.kind == "shot" else "pass"
+	var stat = "save" if duel.kind == "defend" else "shot" if duel.kind == "shot" else "dribble" if duel.kind == "dribble" else "pass"
 	var other_stat = "shot" if duel.kind == "defend" else "save" if duel.kind == "shot" else "defense"
 	var level = int(state.levels.get(str(int(duel.left)), 1))
 	var width = 0.23 + (float(left.stats[stat]) + (level - 1) * 2 - float(right.stats[other_stat])) * 0.003
@@ -213,7 +221,9 @@ func duel_width(approach: int) -> float:
 	width += 0.10 if duel.rupture and duel.kind == "shot" else 0.0
 	width += mini(3, int(state.momentum)) * 0.012
 	width += 0.015 if int(duel.left) == int(state.captain) else 0.0
-	return clampf(width, 0.15, 0.52)
+	if duel.get("super", false):
+		width += clampf(float(duel.technique.basePower) * 0.002, 0.06, 0.16)
+	return clampf(width, 0.15, 0.64)
 
 static func timing_success(pointer: float, width: float) -> bool:
 	return absf(pointer - 0.5) <= width * 0.5
@@ -227,6 +237,7 @@ func resolve_duel(pointer: float, approach: int, timed_out: bool = false) -> Dic
 	state.pending = {}
 	if perfect:
 		state.momentum += 1
+		_gain_points(5)
 	var result_text = ""
 	if duel.kind == "defend":
 		if success:
@@ -244,6 +255,19 @@ func resolve_duel(pointer: float, approach: int, timed_out: bool = false) -> Dic
 		if int(state.score) >= 3:
 			state.finished = true
 		else:
+			_begin_counter()
+	elif duel.kind == "dribble":
+		if success:
+			var origin = home_position(int(state.holder))
+			var marker = away_position(int(duel.defender))
+			var next = Vector2(minf(0.86, origin.x + 0.18), clampf(origin.y + (-0.10 if marker.y >= origin.y else 0.10), 0.10, 0.90))
+			state.home[int(state.holder)] = [next.x, next.y]
+			state.away[int(duel.defender)] = [maxf(0.14, origin.x - 0.04), origin.y]
+			state.trail.append([next.x, next.y])
+			result_text = "¡%s! %s deja atrás a %s y gana terreno." % [duel.technique.name, _short(duel.left), _short(duel.right)]
+			_after_action()
+		else:
+			result_text = "%s detiene %s. ¡Contraataque!" % [_short(duel.right), duel.technique.name]
 			_begin_counter()
 	else:
 		if success:
@@ -271,7 +295,106 @@ func _end_round() -> void:
 		state.finished = true
 		return
 	state.round += 1
+	_gain_points(10)
 	_reset_possession()
+
+func _gain_points(amount: int) -> void:
+	state.technique_points = mini(100, int(state.get("technique_points", 60)) + amount)
+
+func technique_cost(technique: Dictionary) -> int:
+	return maxi(20, int(technique.get("ptCost", 8)) * 3)
+
+func _find_technique(player_id: int, technique_id: String) -> Dictionary:
+	for technique in catalog[player_id].get("superTechniques", []):
+		if technique.id == technique_id:
+			return technique
+	return {}
+
+func preview_super(technique_id: String, target: int = -1) -> Dictionary:
+	var result = {"legal": false, "reason": "Técnica no disponible."}
+	if state.is_empty() or state.finished or not state.pending.is_empty() or int(state.beats) < 1:
+		return result
+	var technique = _find_technique(int(state.lineup[int(state.holder)]), technique_id)
+	if technique.is_empty():
+		return result
+	result.technique = technique
+	result.cost = technique_cost(technique)
+	if int(state.technique_points) < int(result.cost):
+		result.reason = "Necesitas %s PT. Enlaza pases para recargar." % result.cost
+		return result
+	if technique.type == "shot":
+		if home_position(int(state.holder)).x < 0.55 and not rupture_ready():
+			result.reason = "Avanza hacia la portería antes de usar este disparo."
+			return result
+		result.reason = "Tiro especial: más potencia en el duelo contra Magnus."
+	elif technique.type == "dribble":
+		result.reason = "Supera a tu marca y avanza con un regate especial."
+	elif technique.type == "pass":
+		var route = preview("pass", target)
+		if not route.legal:
+			result.reason = "Selecciona antes al receptor en el campo."
+			return result
+		result.reason = "Pase especial con refuerzo en el duelo de intercepción."
+	else:
+		result.reason = "Esta técnica se utiliza al defender."
+		return result
+	result.legal = true
+	return result
+
+func execute_super(technique_id: String, target: int = -1) -> Dictionary:
+	var check = preview_super(technique_id, target)
+	if not check.legal:
+		return {"accepted": false, "text": check.reason}
+	var technique = check.technique
+	state.technique_points -= int(check.cost)
+	state.super_uses += 1
+	state.beats -= 1
+	state.total_actions += 1
+	if technique.type == "dribble":
+		_open_duel("dribble", -1, nearest_marker(home_position(int(state.holder))))
+	elif technique.type == "shot":
+		_open_duel("shot", -1, 0)
+	else:
+		var route = preview_route_for_super(target)
+		if int(route.defender) >= 0:
+			_open_duel("pass", target, int(route.defender))
+		else:
+			_complete_pass("pass", target)
+			state.momentum += 1
+	if not state.pending.is_empty() and state.pending.kind != "defend":
+		state.pending["super"] = true
+		state.pending.technique = technique.duplicate(true)
+	state.log = "¡%s activa %s!" % [_short(int(state.lineup[int(state.holder)])), technique.name]
+	return {"accepted": true, "technique": technique, "text": state.log}
+
+func preview_route_for_super(target: int) -> Dictionary:
+	# Previsualiza sin volver a consumir ni exigir un pulso ya gastado.
+	var beats = int(state.beats)
+	state.beats = maxi(1, beats)
+	var route = preview("pass", target)
+	state.beats = beats
+	return route
+
+func available_duel_techniques() -> Array:
+	if state.pending.is_empty() or state.pending.get("super", false):
+		return []
+	var kind = state.pending.kind
+	var needed = "save" if kind == "defend" else "shot" if kind == "shot" else "dribble" if kind == "dribble" else "pass"
+	var result: Array = []
+	for technique in catalog[int(state.pending.left)].get("superTechniques", []):
+		if technique.type == needed and int(state.technique_points) >= technique_cost(technique):
+			result.append(technique)
+	return result
+
+func activate_duel_technique(technique_id: String) -> Dictionary:
+	for technique in available_duel_techniques():
+		if technique.id == technique_id:
+			state.technique_points -= technique_cost(technique)
+			state.super_uses += 1
+			state.pending["super"] = true
+			state.pending.technique = technique.duplicate(true)
+			return {"accepted": true, "technique": technique}
+	return {"accepted": false}
 
 func outcome() -> String:
 	return "victory" if int(state.score) > int(state.rival_score) else "draw" if int(state.score) == int(state.rival_score) else "defeat"
