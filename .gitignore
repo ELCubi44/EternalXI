@@ -1,5 +1,10 @@
 # General
 debug_screenshots/
+eternalclash_godot/.godot/
+eternalclash_godot/build/
+eternalclash_godot/export_credentials.cfg
+releases/*.apk
+releases/*.idsig
 .cursor/*
 !.cursor/rules/
 !.cursor/rules/**

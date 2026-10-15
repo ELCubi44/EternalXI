@@ -1,0 +1,1678 @@
+{
+  "source": "EternalXI/assets/data/clash/cards.json",
+  "schemaVersion": 1,
+  "cards": [
+    {
+      "id": "bastion-adler-n-gk-001",
+      "playerId": 624,
+      "name": "Magnus Stahlberg",
+      "team": "Bastion Adler",
+      "dorsal": 1,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "potente",
+      "position": "goalkeeper",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 40,
+        "defense": 22,
+        "pass": 16,
+        "dribble": 9,
+        "shot": 5,
+        "techniquePoints": 22,
+        "stamina": 106
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-gk-001-st1",
+          "name": "Bloqueo de Portón",
+          "description": "Bloqueo de Portón",
+          "type": "save",
+          "style": "potente",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-gk-001-st2",
+          "name": "Salto de Campanario",
+          "description": "Salto de Campanario",
+          "type": "save",
+          "style": "agil",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-fb-002",
+      "playerId": 626,
+      "name": "Oskar Falkenrath",
+      "team": "Bastion Adler",
+      "dorsal": 2,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "picaro",
+      "position": "fullBack",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 5,
+        "defense": 33,
+        "pass": 21,
+        "dribble": 17,
+        "shot": 12,
+        "techniquePoints": 21,
+        "stamina": 108
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-fb-002-st1",
+          "name": "Paso de Bisagra",
+          "description": "Paso de Bisagra",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-fb-002-st2",
+          "name": "Finta de Cerrajero",
+          "description": "Finta de Cerrajero",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-fb-003",
+      "playerId": 627,
+      "name": "Lukas Weißmann",
+      "team": "Bastion Adler",
+      "dorsal": 3,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "preciso",
+      "position": "fullBack",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 5,
+        "defense": 31,
+        "pass": 20,
+        "dribble": 16,
+        "shot": 11,
+        "techniquePoints": 20,
+        "stamina": 107
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-fb-003-st1",
+          "name": "Barrida de Guardia",
+          "description": "Barrida de Guardia",
+          "type": "defense",
+          "style": "valiente",
+          "basePower": 20,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-fb-003-st2",
+          "name": "Paso de Bisagra",
+          "description": "Paso de Bisagra",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-cb-004",
+      "playerId": 629,
+      "name": "Bruno Hartkopf",
+      "team": "Bastion Adler",
+      "dorsal": 4,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "potente",
+      "position": "centreBack",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 5,
+        "defense": 38,
+        "pass": 16,
+        "dribble": 10,
+        "shot": 9,
+        "techniquePoints": 20,
+        "stamina": 106
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-cb-004-st1",
+          "name": "Barrida de Guardia",
+          "description": "Barrida de Guardia",
+          "type": "defense",
+          "style": "valiente",
+          "basePower": 20,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-cb-004-st2",
+          "name": "Empuje de Muralla",
+          "description": "Empuje de Muralla",
+          "type": "defense",
+          "style": "potente",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-cb-005",
+      "playerId": 630,
+      "name": "Timo Bruckner",
+      "team": "Bastion Adler",
+      "dorsal": 5,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "valiente",
+      "position": "centreBack",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 5,
+        "defense": 36,
+        "pass": 15,
+        "dribble": 10,
+        "shot": 8,
+        "techniquePoints": 19,
+        "stamina": 105
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-cb-005-st1",
+          "name": "Barrida de Guardia",
+          "description": "Barrida de Guardia",
+          "type": "defense",
+          "style": "valiente",
+          "basePower": 20,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-cb-005-st2",
+          "name": "Empuje de Muralla",
+          "description": "Empuje de Muralla",
+          "type": "defense",
+          "style": "potente",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-dm-006",
+      "playerId": 632,
+      "name": "Konrad Glasner",
+      "team": "Bastion Adler",
+      "dorsal": 6,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "preciso",
+      "position": "defensiveMidfielder",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 26,
+        "pass": 28,
+        "dribble": 19,
+        "shot": 15,
+        "techniquePoints": 23,
+        "stamina": 109
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-dm-006-st1",
+          "name": "Paso de Bisagra",
+          "description": "Paso de Bisagra",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-dm-006-st2",
+          "name": "Giro de Balcón",
+          "description": "Giro de Balcón",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-wg-007",
+      "playerId": 638,
+      "name": "Till Brandt",
+      "team": "Bastion Adler",
+      "dorsal": 7,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "picaro",
+      "position": "winger",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 14,
+        "pass": 20,
+        "dribble": 31,
+        "shot": 28,
+        "techniquePoints": 23,
+        "stamina": 112
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-wg-007-st1",
+          "name": "Giro de Balcón",
+          "description": "Giro de Balcón",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-wg-007-st2",
+          "name": "Golpe de Campana",
+          "description": "Golpe de Campana",
+          "type": "shot",
+          "style": "potente",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-dm-008",
+      "playerId": 633,
+      "name": "Caspar Lenz",
+      "team": "Bastion Adler",
+      "dorsal": 8,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "preciso",
+      "position": "defensiveMidfielder",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 3,
+        "defense": 25,
+        "pass": 27,
+        "dribble": 18,
+        "shot": 14,
+        "techniquePoints": 22,
+        "stamina": 108
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-dm-008-st1",
+          "name": "Paso de Bisagra",
+          "description": "Paso de Bisagra",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-dm-008-st2",
+          "name": "Finta de Cerrajero",
+          "description": "Finta de Cerrajero",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-st-009",
+      "playerId": 641,
+      "name": "Ralf Königswald",
+      "team": "Bastion Adler",
+      "dorsal": 9,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "potente",
+      "position": "striker",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 18,
+        "pass": 17,
+        "dribble": 26,
+        "shot": 41,
+        "techniquePoints": 26,
+        "stamina": 115
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-st-009-st1",
+          "name": "Finta de Cerrajero",
+          "description": "Finta de Cerrajero",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-st-009-st2",
+          "name": "Golpe de Campana",
+          "description": "Golpe de Campana",
+          "type": "shot",
+          "style": "potente",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-am-010",
+      "playerId": 635,
+      "name": "Levin Klein",
+      "team": "Bastion Adler",
+      "dorsal": 10,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "potente",
+      "position": "attackingMidfielder",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 18,
+        "pass": 31,
+        "dribble": 27,
+        "shot": 22,
+        "techniquePoints": 24,
+        "stamina": 110
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-am-010-st1",
+          "name": "Giro de Balcón",
+          "description": "Giro de Balcón",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-am-010-st2",
+          "name": "Estrella de Cañón",
+          "description": "Estrella de Cañón",
+          "type": "shot",
+          "style": "potente",
+          "basePower": 45,
+          "ptCost": 9,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-wg-011",
+      "playerId": 639,
+      "name": "Lennart Hagedorn",
+      "team": "Bastion Adler",
+      "dorsal": 11,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "picaro",
+      "position": "winger",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 14,
+        "pass": 20,
+        "dribble": 30,
+        "shot": 27,
+        "techniquePoints": 22,
+        "stamina": 111
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-wg-011-st1",
+          "name": "Finta de Cerrajero",
+          "description": "Finta de Cerrajero",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-wg-011-st2",
+          "name": "Golpe de Campana",
+          "description": "Golpe de Campana",
+          "type": "shot",
+          "style": "potente",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-gk-012",
+      "playerId": 625,
+      "name": "Elise Winterfeld",
+      "team": "Bastion Adler",
+      "dorsal": 12,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "preciso",
+      "position": "goalkeeper",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 34,
+        "defense": 18,
+        "pass": 14,
+        "dribble": 7,
+        "shot": 5,
+        "techniquePoints": 18,
+        "stamina": 102
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-gk-012-st1",
+          "name": "Palma de Madrugada",
+          "description": "Palma de Madrugada",
+          "type": "save",
+          "style": "valiente",
+          "basePower": 20,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-gk-012-st2",
+          "name": "Bloqueo de Portón",
+          "description": "Bloqueo de Portón",
+          "type": "save",
+          "style": "potente",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-am-013",
+      "playerId": 637,
+      "name": "Florian Nachtigall",
+      "team": "Bastion Adler",
+      "dorsal": 14,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "agil",
+      "position": "attackingMidfielder",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 3,
+        "defense": 15,
+        "pass": 26,
+        "dribble": 22,
+        "shot": 19,
+        "techniquePoints": 20,
+        "stamina": 106
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-am-013-st1",
+          "name": "Disparo de Cornisa",
+          "description": "Disparo de Cornisa",
+          "type": "shot",
+          "style": "preciso",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-am-013-st2",
+          "name": "Paso de Bisagra",
+          "description": "Paso de Bisagra",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-cb-014",
+      "playerId": 631,
+      "name": "Felix Morgenstern",
+      "team": "Bastion Adler",
+      "dorsal": 15,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "picaro",
+      "position": "centreBack",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 32,
+        "pass": 13,
+        "dribble": 8,
+        "shot": 7,
+        "techniquePoints": 16,
+        "stamina": 102
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-cb-014-st1",
+          "name": "Barrida de Guardia",
+          "description": "Barrida de Guardia",
+          "type": "defense",
+          "style": "valiente",
+          "basePower": 20,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-cb-014-st2",
+          "name": "Cierre de Garita",
+          "description": "Cierre de Garita",
+          "type": "defense",
+          "style": "preciso",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-fb-015",
+      "playerId": 628,
+      "name": "Nico Eisenfels",
+      "team": "Bastion Adler",
+      "dorsal": 16,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "picaro",
+      "position": "fullBack",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 27,
+        "pass": 17,
+        "dribble": 14,
+        "shot": 10,
+        "techniquePoints": 17,
+        "stamina": 104
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-fb-015-st1",
+          "name": "Cierre de Garita",
+          "description": "Cierre de Garita",
+          "type": "defense",
+          "style": "preciso",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-fb-015-st2",
+          "name": "Paso de Bisagra",
+          "description": "Paso de Bisagra",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-dm-016",
+      "playerId": 634,
+      "name": "Severin Krone",
+      "team": "Bastion Adler",
+      "dorsal": 17,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "preciso",
+      "position": "defensiveMidfielder",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 3,
+        "defense": 22,
+        "pass": 23,
+        "dribble": 16,
+        "shot": 12,
+        "techniquePoints": 19,
+        "stamina": 105
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-dm-016-st1",
+          "name": "Cambio de Aguja",
+          "description": "Cambio de Aguja",
+          "type": "dribble",
+          "style": "preciso",
+          "basePower": 20,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-dm-016-st2",
+          "name": "Paso de Bisagra",
+          "description": "Paso de Bisagra",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-am-017",
+      "playerId": 636,
+      "name": "Jannik Dorn",
+      "team": "Bastion Adler",
+      "dorsal": 18,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "picaro",
+      "position": "attackingMidfielder",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 17,
+        "pass": 28,
+        "dribble": 25,
+        "shot": 21,
+        "techniquePoints": 22,
+        "stamina": 108
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-am-017-st1",
+          "name": "Finta de Cerrajero",
+          "description": "Finta de Cerrajero",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-am-017-st2",
+          "name": "Golpe de Campana",
+          "description": "Golpe de Campana",
+          "type": "shot",
+          "style": "potente",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-wg-018",
+      "playerId": 640,
+      "name": "Finn Eberwein",
+      "team": "Bastion Adler",
+      "dorsal": 19,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "valiente",
+      "position": "winger",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 3,
+        "defense": 11,
+        "pass": 16,
+        "dribble": 24,
+        "shot": 22,
+        "techniquePoints": 18,
+        "stamina": 106
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-wg-018-st1",
+          "name": "Cambio de Aguja",
+          "description": "Cambio de Aguja",
+          "type": "dribble",
+          "style": "preciso",
+          "basePower": 20,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-wg-018-st2",
+          "name": "Disparo de Cornisa",
+          "description": "Disparo de Cornisa",
+          "type": "shot",
+          "style": "preciso",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "bastion-adler-n-st-019",
+      "playerId": 642,
+      "name": "Jonas Himmelreich",
+      "team": "Bastion Adler",
+      "dorsal": 20,
+      "teamId": 27,
+      "rarity": "n",
+      "level": 1,
+      "style": "picaro",
+      "position": "striker",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 3,
+        "defense": 15,
+        "pass": 14,
+        "dribble": 22,
+        "shot": 34,
+        "techniquePoints": 22,
+        "stamina": 110
+      },
+      "superTechniques": [
+        {
+          "id": "bastion-adler-n-st-019-st1",
+          "name": "Paso de Bisagra",
+          "description": "Paso de Bisagra",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "bastion-adler-n-st-019-st2",
+          "name": "Golpe de Campana",
+          "description": "Golpe de Campana",
+          "type": "shot",
+          "style": "potente",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-gk-001",
+      "playerId": 435,
+      "name": "Hugo Salvatierra",
+      "team": "Eternal XI",
+      "dorsal": 1,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "valiente",
+      "position": "goalkeeper",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 38,
+        "defense": 21,
+        "pass": 16,
+        "dribble": 8,
+        "shot": 5,
+        "techniquePoints": 21,
+        "stamina": 105
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-gk-001-st1",
+          "name": "Muro de Puños",
+          "description": "Muro de Puños",
+          "type": "save",
+          "style": "potente",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-gk-001-st2",
+          "name": "Despeje Firme",
+          "description": "Despeje Firme",
+          "type": "defense",
+          "style": "potente",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-fb-002",
+      "playerId": 437,
+      "name": "Andrés Ruiz",
+      "team": "Eternal XI",
+      "dorsal": 2,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "valiente",
+      "position": "fullBack",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 5,
+        "defense": 30,
+        "pass": 19,
+        "dribble": 16,
+        "shot": 11,
+        "techniquePoints": 20,
+        "stamina": 107
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-fb-002-st1",
+          "name": "Giro Rápido",
+          "description": "Giro Rápido",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-fb-002-st2",
+          "name": "Entrada Limpia",
+          "description": "Entrada Limpia",
+          "type": "defense",
+          "style": "preciso",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-fb-003",
+      "playerId": 436,
+      "name": "Lucien Vauclair",
+      "team": "Eternal XI",
+      "dorsal": 3,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "preciso",
+      "position": "fullBack",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 5,
+        "defense": 33,
+        "pass": 21,
+        "dribble": 17,
+        "shot": 12,
+        "techniquePoints": 22,
+        "stamina": 109
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-fb-003-st1",
+          "name": "Flecha Cruzada",
+          "description": "Flecha Cruzada",
+          "type": "shot",
+          "style": "preciso",
+          "basePower": 40,
+          "ptCost": 9,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-fb-003-st2",
+          "name": "Giro de Niebla",
+          "description": "Giro de Niebla",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 45,
+          "ptCost": 9,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-cb-004",
+      "playerId": 438,
+      "name": "Mihai Alexandru Drăgan Tonie Basaldiu",
+      "team": "Eternal XI",
+      "dorsal": 4,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "potente",
+      "position": "centreBack",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 5,
+        "defense": 39,
+        "pass": 17,
+        "dribble": 11,
+        "shot": 9,
+        "techniquePoints": 21,
+        "stamina": 107
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-cb-004-st1",
+          "name": "Choque Firme",
+          "description": "Choque Firme",
+          "type": "defense",
+          "style": "potente",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-cb-004-st2",
+          "name": "Cierre Pesado",
+          "description": "Cierre Pesado",
+          "type": "defense",
+          "style": "potente",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-cb-005",
+      "playerId": 439,
+      "name": "Francisco Sierra",
+      "team": "Eternal XI",
+      "dorsal": 5,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "potente",
+      "position": "centreBack",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 6,
+        "defense": 40,
+        "pass": 18,
+        "dribble": 11,
+        "shot": 9,
+        "techniquePoints": 22,
+        "stamina": 108
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-cb-005-st1",
+          "name": "Choque Firme",
+          "description": "Choque Firme",
+          "type": "defense",
+          "style": "potente",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-cb-005-st2",
+          "name": "Trallazo Seco",
+          "description": "Trallazo Seco",
+          "type": "shot",
+          "style": "potente",
+          "basePower": 45,
+          "ptCost": 9,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-dm-006",
+      "playerId": 440,
+      "name": "Alejandro Mir",
+      "team": "Eternal XI",
+      "dorsal": 6,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "preciso",
+      "position": "defensiveMidfielder",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 26,
+        "pass": 27,
+        "dribble": 19,
+        "shot": 15,
+        "techniquePoints": 22,
+        "stamina": 108
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-dm-006-st1",
+          "name": "Giro Suave",
+          "description": "Giro Suave",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-dm-006-st2",
+          "name": "Robo Sereno",
+          "description": "Robo Sereno",
+          "type": "defense",
+          "style": "preciso",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-wg-007",
+      "playerId": 442,
+      "name": "Dariel Mejía Lanza",
+      "team": "Eternal XI",
+      "dorsal": 7,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "picaro",
+      "position": "winger",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 14,
+        "pass": 21,
+        "dribble": 32,
+        "shot": 29,
+        "techniquePoints": 23,
+        "stamina": 113
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-wg-007-st1",
+          "name": "Amago Travieso",
+          "description": "Amago Travieso",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 40,
+          "ptCost": 9,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-wg-007-st2",
+          "name": "Golpe Rasante",
+          "description": "Golpe Rasante",
+          "type": "shot",
+          "style": "preciso",
+          "basePower": 45,
+          "ptCost": 9,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-dm-008",
+      "playerId": 441,
+      "name": "María Jesús Gracia Cubo",
+      "team": "Eternal XI",
+      "dorsal": 8,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "preciso",
+      "position": "defensiveMidfielder",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 26,
+        "pass": 27,
+        "dribble": 19,
+        "shot": 15,
+        "techniquePoints": 22,
+        "stamina": 108
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-dm-008-st1",
+          "name": "Paso de Brisa",
+          "description": "Paso de Brisa",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-dm-008-st2",
+          "name": "Disparo Creciente",
+          "description": "Disparo Creciente",
+          "type": "shot",
+          "style": "preciso",
+          "basePower": 40,
+          "ptCost": 9,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-st-009",
+      "playerId": 451,
+      "name": "David Sánchez",
+      "team": "Eternal XI",
+      "dorsal": 9,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "agil",
+      "position": "striker",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 3,
+        "defense": 15,
+        "pass": 14,
+        "dribble": 22,
+        "shot": 34,
+        "techniquePoints": 22,
+        "stamina": 110
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-st-009-st1",
+          "name": "Chispa de Motor",
+          "description": "Chispa de Motor",
+          "type": "shot",
+          "style": "agil",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-st-009-st2",
+          "name": "Cambio de Carril",
+          "description": "Cambio de Carril",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-wg-010",
+      "playerId": 434,
+      "name": "Thiago Solari",
+      "team": "Eternal XI",
+      "dorsal": 10,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "valiente",
+      "position": "winger",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 16,
+        "pass": 23,
+        "dribble": 35,
+        "shot": 32,
+        "techniquePoints": 26,
+        "stamina": 116
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-wg-010-st1",
+          "name": "Regate del Eclipse",
+          "description": "Regate del Eclipse",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 45,
+          "ptCost": 9,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-wg-010-st2",
+          "name": "Disparo Valestia",
+          "description": "Disparo Valestia",
+          "type": "shot",
+          "style": "preciso",
+          "basePower": 55,
+          "ptCost": 10,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-wg-011",
+      "playerId": 448,
+      "name": "Ricardo Gómez",
+      "team": "Eternal XI",
+      "dorsal": 11,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "potente",
+      "position": "winger",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 14,
+        "pass": 21,
+        "dribble": 32,
+        "shot": 29,
+        "techniquePoints": 23,
+        "stamina": 113
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-wg-011-st1",
+          "name": "Rebote de Suerte",
+          "description": "Rebote de Suerte",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-wg-011-st2",
+          "name": "Trallazo Sin Puntería",
+          "description": "Trallazo Sin Puntería",
+          "type": "shot",
+          "style": "potente",
+          "basePower": 45,
+          "ptCost": 9,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-fb-012",
+      "playerId": 445,
+      "name": "Javier Naval Ortega",
+      "team": "Eternal XI",
+      "dorsal": 12,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "valiente",
+      "position": "fullBack",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 5,
+        "defense": 30,
+        "pass": 19,
+        "dribble": 16,
+        "shot": 11,
+        "techniquePoints": 20,
+        "stamina": 107
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-fb-012-st1",
+          "name": "Acrobacias sin Sentido",
+          "description": "Acrobacias sin Sentido",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 15,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-fb-012-st2",
+          "name": "Pirueta de Más",
+          "description": "Pirueta de Más",
+          "type": "dribble",
+          "style": "agil",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-gk-013",
+      "playerId": 450,
+      "name": "Leo Valcárcel",
+      "team": "Eternal XI",
+      "dorsal": 13,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "agil",
+      "position": "goalkeeper",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 34,
+        "defense": 18,
+        "pass": 14,
+        "dribble": 7,
+        "shot": 5,
+        "techniquePoints": 18,
+        "stamina": 102
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-gk-013-st1",
+          "name": "Manos Nerviosas",
+          "description": "Manos Nerviosas",
+          "type": "save",
+          "style": "agil",
+          "basePower": 20,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-gk-013-st2",
+          "name": "Bloqueo de Rodillas",
+          "description": "Bloqueo de Rodillas",
+          "type": "save",
+          "style": "valiente",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-am-014",
+      "playerId": 443,
+      "name": "Jorge Ros",
+      "team": "Eternal XI",
+      "dorsal": 14,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "preciso",
+      "position": "attackingMidfielder",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 17,
+        "pass": 29,
+        "dribble": 25,
+        "shot": 21,
+        "techniquePoints": 23,
+        "stamina": 109
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-am-014-st1",
+          "name": "Amago de Revés",
+          "description": "Amago de Revés",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-am-014-st2",
+          "name": "Golpe Plano",
+          "description": "Golpe Plano",
+          "type": "shot",
+          "style": "preciso",
+          "basePower": 40,
+          "ptCost": 9,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-dm-015",
+      "playerId": 449,
+      "name": "Alexandra Pardos",
+      "team": "Eternal XI",
+      "dorsal": 15,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "picaro",
+      "position": "defensiveMidfielder",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 3,
+        "defense": 25,
+        "pass": 27,
+        "dribble": 18,
+        "shot": 14,
+        "techniquePoints": 22,
+        "stamina": 108
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-dm-015-st1",
+          "name": "Corte Sombrío",
+          "description": "Corte Sombrío",
+          "type": "defense",
+          "style": "picaro",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-dm-015-st2",
+          "name": "Cambio Inquietante",
+          "description": "Cambio Inquietante",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-cb-016",
+      "playerId": 446,
+      "name": "Eti Oroz",
+      "team": "Eternal XI",
+      "dorsal": 16,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "picaro",
+      "position": "centreBack",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 5,
+        "defense": 36,
+        "pass": 16,
+        "dribble": 10,
+        "shot": 8,
+        "techniquePoints": 20,
+        "stamina": 106
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-cb-016-st1",
+          "name": "Pisotón Fantasma",
+          "description": "Pisotón Fantasma",
+          "type": "defense",
+          "style": "picaro",
+          "basePower": 30,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-cb-016-st2",
+          "name": "Pisada Infinita",
+          "description": "Pisada Infinita",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-am-017",
+      "playerId": 452,
+      "name": "Sacha Legrand",
+      "team": "Eternal XI",
+      "dorsal": 19,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "preciso",
+      "position": "attackingMidfielder",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 3,
+        "defense": 15,
+        "pass": 26,
+        "dribble": 23,
+        "shot": 19,
+        "techniquePoints": 21,
+        "stamina": 107
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-am-017-st1",
+          "name": "Tacón de Porcelana",
+          "description": "Tacón de Porcelana",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-am-017-st2",
+          "name": "Disparo de Campanario",
+          "description": "Disparo de Campanario",
+          "type": "shot",
+          "style": "preciso",
+          "basePower": 35,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-st-018",
+      "playerId": 444,
+      "name": "Miguel Gracia Cubo",
+      "team": "Eternal XI",
+      "dorsal": 44,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "potente",
+      "position": "striker",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 4,
+        "defense": 17,
+        "pass": 17,
+        "dribble": 25,
+        "shot": 40,
+        "techniquePoints": 25,
+        "stamina": 114
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-st-018-st1",
+          "name": "Robo Callejero",
+          "description": "Robo Callejero",
+          "type": "defense",
+          "style": "picaro",
+          "basePower": 25,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-st-018-st2",
+          "name": "Quiebro del Barrio",
+          "description": "Quiebro del Barrio",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 55,
+          "ptCost": 10,
+          "level": "normal"
+        }
+      ]
+    },
+    {
+      "id": "eternal-xi-n-am-019",
+      "playerId": 447,
+      "name": "Mini George",
+      "team": "Eternal XI",
+      "dorsal": 73,
+      "teamId": 17,
+      "rarity": "n",
+      "level": 1,
+      "style": "picaro",
+      "position": "attackingMidfielder",
+      "basicPortraitPath": "network",
+      "stats": {
+        "save": 3,
+        "defense": 15,
+        "pass": 26,
+        "dribble": 22,
+        "shot": 19,
+        "techniquePoints": 20,
+        "stamina": 106
+      },
+      "superTechniques": [
+        {
+          "id": "eternal-xi-n-am-019-st1",
+          "name": "Trompo sin Manual",
+          "description": "Trompo sin Manual",
+          "type": "dribble",
+          "style": "picaro",
+          "basePower": 15,
+          "ptCost": 8,
+          "level": "normal"
+        },
+        {
+          "id": "eternal-xi-n-am-019-st2",
+          "name": "Choque Despistado",
+          "description": "Choque Despistado",
+          "type": "defense",
+          "style": "picaro",
+          "basePower": 20,
+          "ptCost": 8,
+          "level": "normal"
+        }
+      ]
+    }
+  ]
+}
