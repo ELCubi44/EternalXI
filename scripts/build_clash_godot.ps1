@@ -8,7 +8,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $projectPath = Join-Path $repoRoot 'eternalclash_godot'
-$outputPath = Join-Path $repoRoot 'releases\eternal-clash-prototype-0.1.0.apk'
+$outputPath = Join-Path $repoRoot 'releases\eternal-clash-prototype-0.2.0.apk'
 if (-not (Test-Path -LiteralPath $GodotPath)) { throw 'Indica -GodotPath con la ruta al ejecutable Godot 4.7.2.' }
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $outputPath) | Out-Null
 & $GodotPath --headless --path $projectPath --editor --import --quit

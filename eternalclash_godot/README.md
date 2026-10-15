@@ -1,59 +1,71 @@
-# Eternal Clash — primera prueba Android
+# Eternal Clash — RUPTURA 0.2
 
-Proyecto independiente en Godot 4.7.2 / GDScript. El cliente Flutter y la API Spring originales no se sustituyen.
+Prototipo Godot 4.7.2 / GDScript para probar una mecánica nueva de fútbol con cartas. El combate anterior de porcentajes se ha sustituido; el cliente Flutter y la API Spring originales no se modifican.
 
-## Jugar
+## Cómo jugar
 
-La app se llama **Eternal Clash Prueba**, identificador `es.eternalxi.clash.prototype`. No requiere cuenta ni conexión y puede coexistir con `es.eternalxi.app`.
+La app **Eternal Clash Prueba** (`es.eternalxi.clash.prototype`) se juega en horizontal y no necesita conexión ni cuenta.
 
-- Inicio → Jugar partido: Eternal XI contra Bastion Adler, 7v7 táctico.
-- Pase y regate avanzan hasta el área y cargan energía. El pase hace circular el balón entre los seis jugadores de campo.
-- En el área se puede tirar o gastar 30 de energía en una supertécnica. La interfaz muestra su probabilidad antes de jugar.
-- Replegar recupera 20 de energía y reduce el riesgo del ataque rival.
-- Se termina con tres goles de uno de los equipos o tras 18 acciones; 100 monedas por victoria, 50 por empate/derrota.
-- Equipo permite sustituir cartas y elegir capitán (+6 puntos de probabilidad). Portería solo admite porteros; las otras posiciones son libres en esta demo.
-- Cartas permite mejorar por 50 × nivel monedas, hasta nivel 10. Los atributos del poseedor influyen en las probabilidades; portero y defensores influyen en el riesgo rival. No se puede entrenar/cambiar equipo durante el partido.
-- El partido se guarda después de cada acción y puede continuarse desde Inicio al reabrir.
+1. Elige una carta: **Pase**, **Pared** o **Señuelo**.
+2. Toca al compañero en el campo. La ruta y el nombre del posible interceptor se muestran antes de actuar.
+3. Pulsa **Ejecutar**. Un pase libre llega sin sorteo; una ruta marcada abre un duelo contra el defensor señalado.
+4. Para rematar, elige **Tiro**. Está disponible al avanzar suficientemente por el campo o al cargar una Ruptura.
 
-Se entregan las 19 cartas N de Eternal XI. Los 19 personajes de Adler actúan como catálogo rival; su formación de siete es fija. Todos los retratos necesarios están empaquetados localmente.
+Cada ataque tiene seis pulsos. Pase, Señuelo y Tiro consumen uno; Pared consume dos.
 
-## Alcance de esta demo
+- **Pase:** cambia el poseedor. Las marcas reaccionan al lugar que acaba de abandonar el balón, no a una tirada de probabilidad.
+- **Pared:** un compañero devuelve el balón mientras el pasador avanza. Cuesta más, pero permite ganar profundidad sin cambiar al poseedor final.
+- **Señuelo:** el compañero corre hacia una banda y arrastra a su marcador. No cambia al poseedor. Las flechas de previsualización muestran ambos movimientos.
+- **Ruptura:** conectar tres identidades distintas, abrir de una banda a otra y ganar profundidad permite un remate combinado desde la mitad ofensiva, con una ventana de pulso mayor. Pasar hacia atrás repetidamente no basta.
 
-Reglas nuevas y simplificadas, no una conversión exacta del motor Dart. Ataques rivales, defensa y paradas automáticos; sin selección manual de defensor. El capitán es la primera bonificación de equipo, todavía sin enlaces entre personajes o categorías. Sin historia jugable, gacha, adquisición de cartas, rarezas R/SR, pagos, PvP, sonido ni sincronización con la API. Las monedas y partidas son exclusivas de la demo y no se importan a Flutter. Los efectos actuales son transiciones y retratos, no cinemáticas definitivas de técnicas.
+Ejemplo de aprendizaje en la posición inicial: elegir Señuelo y tocar a Andrés arrastra a Till y libera el pase hacia Alejandro. Esa apertura está comprobada en las pruebas de reglas.
 
-## Desarrollo y compilación
+## Duelos: leer y ejecutar
 
-Abrir `project.godot` con Godot 4.7.2 estándar y pulsar F6/F5 según escena/proyecto. Renderer Compatibility, orientación vertical, diseño base 720×1600 y APK arm64.
+Se muestran ambos nombres completos, retratos, técnicas e intención rival. No hay dados.
 
-Configurar en Godot Editor Settings → Export → Android el SDK Android y JDK 17. Instalar export templates **4.7.2.stable**; requiere `android_debug.apk` y `android_release.apk`. En la máquina inicial se usó el SDK de `%LOCALAPPDATA%/Android/Sdk` y su build-tools 36.0.0. No se usan keystores de producción.
+Atacando: Potencia contra quien espera, Efecto contra quien cierra y Amago contra quien presiona. El enfoque correcto ensancha la zona verde; los atributos, nivel, capitán y enlaces también influyen en su tamaño. Después hay que pulsar cuando la aguja cruza la zona. El oro central es un pulso perfecto.
 
-Desde la raíz del repositorio:
+Defendiendo: controlas al portero contra un atacante identificado. Bloquear responde al tiro potente, Estirarse a la escuadra y Aguantar al amago. La resolución también es manual.
+
+Hay siete segundos después de activar la aguja; agotarlos equivale a perder el duelo. Un gol o una posesión agotada dan paso al contraataque rival. Primero a tres goles o máximo seis rondas de ataque y defensa; entonces se compara el marcador.
+
+## Contenido y progreso
+
+19 cartas iniciales de Eternal XI, 19 personajes de Bastion Adler en el catálogo rival, formación de siete editable entre partidos y mejoras locales. Todos los retratos están empaquetados.
+
+100 monedas por victoria; 50 por empate/derrota. El capitán ensancha ligeramente su propia ventana de pulso; ya no existe el antiguo +6% global. El guardado incluye posiciones, huellas y duelos pendientes. Se conservan monedas, niveles y formación de la demo 0.1, pero su motor y su partida antigua no se usan en Ruptura.
+
+## Compilar e instalar
+
+Configurar Godot 4.7.2 estándar, export templates 4.7.2.stable, JDK 17 y SDK Android en Editor Settings → Export → Android. En la máquina de desarrollo ya están configurados.
+
+Desde la raíz:
 
 ```powershell
 ./scripts/build_clash_godot.ps1
-# Para instalar en un dispositivo autorizado:
 ./scripts/build_clash_godot.ps1 -Install -DeviceId '<id de adb devices>'
 ```
 
-Si el editor está en otra ruta, añadir `-GodotPath`. El script importa recursos, ejecuta ambos tests, exporta una APK debug e instala solo cuando se solicita. Los APK/idsig y cachés no se versionan. La descarga inicial del motor se verificó con SHA512-SUMS oficial.
+APK debug ARM64: `releases/eternal-clash-prototype-0.2.0.apk`. Paquete separado de `es.eternalxi.app`; la instalación actualiza solo la demo. Añadir `-GodotPath` si el editor está en otra ubicación.
 
-Pruebas sin dispositivo:
+El script importa recursos y ejecuta ambos tests antes de exportar. Los APK, cachés y firmas quedan fuera de Git. Los datos y retratos están versionados; `scripts/export_clash_godot_content.ps1` permite reexportar el subconjunto del cliente original.
+
+Pruebas por separado:
 
 ```powershell
 & '<Godot_console.exe>' --headless --path eternalclash_godot --script tests/test_game.gd
 & '<Godot_console.exe>' --headless --path eternalclash_godot --script tests/test_ui.gd
 ```
 
-El primer test simula 200 partidos y comprueba acciones ilegales, energía, límites de partido, recompensa única, entrenamiento, guardado, recuperación de backup y continuidad RNG. El segundo carga cinco pantallas más el selector de formación y comprueba ancho y cabecera en el viewport base.
+La primera valida 120 partidos con perfiles de decisiones/pulso distintos, rutas, señuelos, identidades de duelo, guardados y recompensa única. La segunda carga Inicio, Equipo, Cartas, campo, selección, duelo y resultado, incluyendo textos largos y límites de pantalla en 1600×720.
 
-Para reexportar cartas conservando IDs: `./scripts/export_clash_godot_content.ps1`. Solo con `-RefreshPortraits` vuelve a descargar imágenes del backend y optimizarlas a 360×480. Requiere Windows/System.Drawing. Los fondos, escudos y logo se copiaron del original; el logo se normalizó a PNG 512×512 porque su copia inicial no era importable en Godot.
+## Estado y límites
 
-## Guardado
+Prueba de jugabilidad, no juego final ni paridad con Flutter. Arte del catálogo reutilizado, animaciones de desplazamiento y sonidos breves; faltan cinemáticas, contenido narrativo jugable, adquisición de cartas, enlaces entre personajes por categorías, gacha, PvP, API y economía de servidor.
 
-`user://clash_profile_v1.json`, con esquema 1, copia `.bak` y archivo temporal antes de reemplazar. Incluye semilla y estado RNG como texto para evitar pérdida de precisión en JSON. No usar el guardado local como economía segura de un juego competitivo/comercial.
+El campo es un tablero espacial de posesión: los jugadores no se mueven libremente en tiempo real. La intención de diseño es crear huecos y elegir rutas, con intervención manual en los momentos de choque. La diversión y dificultad necesitan la prueba del usuario; no se dan por demostradas por pasar tests. Sin medición de FPS o batería ni validación en otros teléfonos.
 
-## Primera comprobación en móvil
+Ver `docs/CLASH_RUPTURE_DESIGN.md` y `docs/CURRENT_STATUS.md`. El primer prototipo 0.1 queda recuperable en Git (`8d98626`); su motor y UI se retiraron del proyecto activo.
 
-ZTE A7050, Android/ARM64 y Mali-G57: instalación, arranque, partido completo, recompensa y reanudación comprobados. Ver `docs/CURRENT_STATUS.md` para el resultado final de la sesión. No se ha medido todavía FPS, consumo o compatibilidad en otros teléfonos.
-
-Capturas reales del teléfono: [Inicio](../docs/images/clash_godot/home.png), [partido](../docs/images/clash_godot/match.png), [colección](../docs/images/clash_godot/cards.png), [formación](../docs/images/clash_godot/team.png) y [resultado](../docs/images/clash_godot/result.png).
+Capturas reales: [campo](../docs/images/rupture_0_2/field.png), [señuelo](../docs/images/rupture_0_2/preview.png), [Thiago contra Magnus](../docs/images/rupture_0_2/duel.png) y [Hugo contra Ralf](../docs/images/rupture_0_2/defense.png).

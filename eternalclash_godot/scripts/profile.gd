@@ -30,7 +30,7 @@ func save(path: String = SAVE_PATH) -> bool:
 	var file = FileAccess.open(path + ".tmp", FileAccess.WRITE)
 	if file == null:
 		return false
-	file.store_string(JSON.stringify(data))
+	file.store_string(JSON.stringify(data, "", true, true))
 	file.close()
 	var abs_path = ProjectSettings.globalize_path(path)
 	if FileAccess.file_exists(path):
