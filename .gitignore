@@ -1,5 +1,10 @@
 # General
 debug_screenshots/
+eternalclash_godot/.godot/
+eternalclash_godot/build/
+eternalclash_godot/export_credentials.cfg
+releases/*.apk
+releases/*.idsig
 .cursor/*
 !.cursor/rules/
 !.cursor/rules/**
@@ -34,6 +39,9 @@ releases/*.apk
 *.pem
 application-prod.properties
 application-secret.properties
+
+# Copias automáticas de Blender; el editable seleccionado se guarda en Git.
+art_source/**/*.blend[0-9]
 
 # Flutter
 eternalxi_front/build/
