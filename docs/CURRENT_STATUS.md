@@ -1,6 +1,16 @@
 # Estado actual — Eternal XI / Eternal Clash
 
-Última actualización: 2026-10-15.
+Última actualización: 2026-10-19.
+
+## En curso: modelado de Thiago y ensayo de movimiento
+
+- Blender 4.5.3 portátil operativo y verificado mediante SHA256. Se resolvió el fallo de carga de `blender.crt` usando la ubicación física de archivos virtualizados por la aplicación de escritorio. Herramientas fuera del repositorio.
+- Editable `art_source/thiago/thiago.blend`, GLB con malla/pesos y una acción de patada; 18 huesos. Materiales/texturas del dibujo proyectados y colores base exportados explícitamente, evitando que la red toon de Blender produzca materiales blancos en Godot.
+- Pipeline reproducible: `scripts/build_thiago_art.ps1`, con validación de pesos/poses/materiales y prueba de importación real en Godot. Pruebas técnicas superadas; no equivalen a revisión artística aprobada.
+- Ensayo renderizado de 5 s, 150 fotogramas y 540×960: `docs/art/thiago-v2/model-review/valestia-motion-review.mp4`. Fotogramas del MP4 inspeccionados para comprobar movimiento/cámara/balón. No es la cinemática final ni tiene todavía los efectos y la coreografía pedidos.
+- **Pendiente de calidad:** discontinuidades de pintura en pelo/mejillas, perfil poco fiel, acabado de hombros/manos/pies y expresiones. Esta reconstrucción por proyección todavía no alcanza el estilo/nivel solicitado; no presentarla como terminada.
+- Modelo fuera de partidos/interfaz y expresamente excluido del exportador Android. No se instala una APK nueva ni se modifica el progreso. Detalles: `art_source/thiago/README.md`.
+- Build 0.4 de regresión completado sin instalar: 3177 comprobaciones/120 partidos, pruebas UI y cinematográficas sin fallos; exclusión de Thiago comprobada en el archivo APK generado. Validación de arte: 18036 vértices con pesos, 26 mallas, 18 huesos, colores/texturas empaquetados e importación animada en Godot, sin fallos técnicos.
 
 ## Revisión artística posterior a 0.4: calidad rechazada
 

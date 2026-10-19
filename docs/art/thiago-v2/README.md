@@ -1,6 +1,6 @@
 # Thiago: dirección artística revisada
 
-Fecha: 2026-10-15. Estado: desarrollo visual, no arte final aprobado ni animación terminada.
+Fecha inicial: 2026-10-15. Actualizado: 2026-10-19. Estado: desarrollo visual y modelo en curso, sin aprobación artística ni animación final terminada.
 
 El usuario ha rechazado las figuras rígidas y las animaciones de la demo 0.4: no se parecen al retrato ni alcanzan el estilo de la referencia. No continuar ese acabado como solución artística final.
 
@@ -25,4 +25,4 @@ La ilustración original `eternalclash_godot/art/portraits/434.png` define la id
 5. En Godot, aplicar la técnica al modelo compatible del jugador. Verificar otra identidad con la misma coreografía y conservar las reglas de técnicas aprendidas.
 6. Exportar/probar en Android y medir carga/FPS/memoria. No declarar una calidad equivalente a la referencia por tener una escena que funciona o por superar tests.
 
-No se ha generado vídeo, no se ha creado el nuevo modelo 3D ni se ha reemplazado la APK en esta revisión artística. El prototipo 0.4 permanece recuperable en Git; Flutter/API no se modifican. Se necesita trabajo real de modelado/rigging/animación para el objetivo 3D solicitado; la generación de imágenes disponible aquí produce referencias raster, no automáticamente un GLB riggeado de calidad equivalente al vídeo.
+En la revisión inicial del 15 no se había creado un modelo ni vídeo. El 19 se continúa con un editable Blender, GLB con pesos y ensayo de movimiento de cinco segundos. Están en `art_source/thiago/` y `model-review/`, con comprobación de importación en Godot. **No superan todavía la revisión visual**: hay defectos de proyección del pelo/cara y falta acabar perfil, anatomía y expresiones. No se reemplaza la APK ni se consideran equivalentes al vídeo de referencia. Ver `art_source/thiago/README.md` para reconstrucción, pruebas y límites.

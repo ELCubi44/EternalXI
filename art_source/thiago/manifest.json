@@ -1,0 +1,9 @@
+{
+  "blender": "4.5.3 LTS",
+  "vertices": 18036,
+  "mesh_objects": 26,
+  "bones": 18,
+  "action": "Disparo_Valestia",
+  "reference": "docs/art/thiago-v2/character-turnaround-draft.png",
+  "status": "work_in_progress_requires_visual_review"
+}
